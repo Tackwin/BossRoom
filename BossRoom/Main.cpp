@@ -2,13 +2,12 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "AssetsManager.hpp"
-#include "InputsManager.hpp"
-#include "TimerManager.hpp"
-#include "Patterns.hpp"
-#include "Systems.hpp"
-#include "Const.hpp"
-#include "Game.hpp"
+#include "Global/Const.hpp"
+#include "Managers/AssetsManager.hpp"
+#include "Managers/InputsManager.hpp"
+#include "Managers/TimerManager.hpp"
+#include "Gameplay/Patterns.hpp"
+#include "Gameplay/Game.hpp"
 
 sf::Color sf::Color::hexToColor(const std::string& hex) {
 	return sf::Color(
