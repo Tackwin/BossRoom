@@ -165,5 +165,6 @@
     <None Include="..\BossRoom\res\config.json">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="..\.gitignore" />
   </ItemGroup>
 </Project>
