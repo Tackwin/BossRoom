@@ -1,0 +1,344 @@
+{
+  "bosses": [
+    {
+      "name": "boss 0",
+      "sprite": {
+        "idle": "images/boss0_idle.png"
+      },
+      "life": 100,
+      "radius": 65,
+      "color": "FF3C8320",
+      "startpos": {
+        "x": 1100,
+        "y": 360
+      }
+    },
+    {
+      "name": "boss 1",
+      "sprite": {
+        "idle": "images/boss0_idle.png"
+      },
+      "life": 150,
+      "radius": 65,
+      "color": "FF3C8320",
+      "startpos": {
+        "x": 1100,
+        "y": 360
+      }
+    },
+    {
+      "name": "boss 2",
+      "sprite": {
+        "idle": "images/boss0_idle.png"
+      },
+      "life": 200,
+      "radius": 65,
+      "color": "FF3C8320",
+      "startpos": {
+        "x": 1100,
+        "y": 360
+      }
+    },
+    {
+      "name": "boss 3",
+      "sprite": {
+        "idle": "images/boss0_idle.png"
+      },
+      "life": 200,
+      "radius": 65,
+      "color": "FF3C8320",
+      "startpos": {
+        "x": 1100,
+        "y": 360
+      }
+    },
+    {
+      "name": "boss 4",
+      "sprite": {
+        "idle": "images/boss0_idle.png"
+      },
+      "life": 200,
+      "radius": 65,
+      "color": "FF3C8320",
+      "startpos": {
+        "x": 1100,
+        "y": 360
+      }
+    }
+  ],
+  "player": {
+    "upKey": 25,
+    "leftKey": 16,
+    "downKey": 18,
+    "rightKey": 3,
+    "dashKey": 57,
+    "slowKey": 38,
+    "actionButton": 0,
+
+    "life": 3,
+    "dash": 150,
+    "speed": 200,
+    "radius": 25,
+    "specialSpeed": 400,
+    "invincibilityTime": 0.2,
+
+    "sprites": {
+      "sheet": "images/player.png",
+      "idle": [ 0, 0, 60, 60 ],
+      "action":  [60, 0, 60, 60]
+    },
+    "startpos": {
+      "x": 200,
+      "y": 360
+    }
+  },
+  "patterns": {
+    "randomFire": {
+      "nOrbs": 300,
+      "eTime": 2.5,
+      "a": 0,
+      "dtA": 6.28318530718,
+
+      "projectile": {
+        "damage": 1,
+        "speed": 300,
+        "radius": 5,
+        "lifespan": 5.5,
+
+        "sprites": {
+          "idle": "images/projectiles-2.png"
+        }
+      }
+    },
+    "directionalFire": {
+      "fireRate": 30,
+      "time": 1,
+
+      "projectile": {
+        "damage": 1,
+        "speed": 700,
+        "radius": 5,
+        "lifespan": 5,
+
+        "sprites": {
+          "idle": "images/projectiles-2.png"
+        }
+      }
+    },
+    "barage": {
+      "nOrbs": 18,
+      "nWaves": 1,
+      "iTime": 0,
+
+      "projectile": {
+        "damage": 1,
+        "speed": 300,
+        "radius": 5,
+        "lifespan": 4,
+
+        "sprites": {
+          "idle": "images/projectiles-2.png"
+        }
+      }
+    },
+    "snipe": {
+      "nShots": 1,
+      "aimTime": 1,
+      "iTime": 0.1,
+
+      "projectile": {
+        "damage": 1,
+        "speed": 1500,
+        "radius": 7,
+        "lifespan": 2,
+
+        "sprites": {
+          "idle": "images/projectiles-2.png"
+        }
+      }
+
+    },
+    "broyeur": {
+      "nOrbs": 20,
+
+      "projectile": {
+        "damage": 1,
+        "speed": 300,
+        "radius": 5,
+        "lifespan": 3,
+
+        "sprites": {
+          "idle": "images/projectiles-2.png"
+        }
+      }
+    },
+    "cerclique": {
+      "radius": 150,
+      "vA": 1.4,
+      "height": 0.5,
+      "dtHeight": 0.25,
+      "nOrbs": 3,
+      "iTime": 0.75,
+
+      "projectile": {
+        "damage": 1,
+        "speed": 200,
+        "radius": 5,
+        "lifespan": 30,
+
+        "sprites": {
+          "idle": "images/projectiles-2.png"
+        }
+      }
+    },
+    "rapprochement": {
+      "nOrbs": 4,
+      "eTime": 1.5,
+      "inSpawnRadius": 300,
+      "outSpawnRadius": 350,
+
+      "projectile": {
+        "damage": 1,
+        "speed": 400,
+        "radius": 5,
+        "lifespan": 7,
+        "sprites": {
+          "idle": "images/projectiles-2.png"
+        }
+      }
+    },
+    "boomerang": {
+      "nBooms": 2,
+      "waitTime": 0.5,
+      "overShoot": 300,
+
+      "projectile": {
+        "damage": 1,
+        "speed": 800,
+        "radius": 5,
+        "lifespan": 5,
+        "sprites": {
+          "idle": "images/projectiles-2.png"
+        }
+      }
+    },
+    "entonnoir": {
+      "nOrbs": 20,
+      "x": 0.1,
+
+      "projectile": {
+        "damage": 1,
+        "speed": 400,
+        "radius": 5,
+        "lifespan": 4,
+        "sprites": {
+          "idle": "images/projectiles-2.png"
+        }
+      }
+    },
+    "blastCosmopolitain": {
+      "nBlasts": 3,
+      "nOrbs": 7,
+      "r": 50,
+      "iTime": 0.2,
+      "waitTime": 1.5,
+
+      "projectile": {
+        "damage": 1,
+        "speed": 500,
+        "radius": 5,
+        "lifespan": 3,
+        "sprites": {
+          "idle": "images/projectiles-2.png"
+        }
+      }
+    }
+  },
+  "weapons": [
+    {
+      "cooldowns": [ 0.15 ],
+      "radius": 10,
+      "sprites": {
+        "idle": "images/weapon0.png"
+      },
+      "sounds": {
+        "active": [ "sounds/shoot1.wav" ]
+      },
+
+      "projectile": {
+        "damage": 1,
+        "speed": 700,
+        "radius": 5,
+        "lifespan": 3,
+
+        "sprites": {
+          "idle": "images/projectiles.png"
+        }
+      }
+    },
+    {
+      "cooldowns": [ 0.1 ],
+      "radius": 10,
+      "sprites": {
+        "idle": "images/weapon1.png"
+      },
+      "sounds": {
+        "active": [ "sounds/shoot1.wav" ]
+      },
+
+      "projectile": {
+        "damage": 1,
+        "speed": 700,
+        "radius": 5,
+        "lifespan": 3,
+
+        "sprites": {
+          "idle": "images/projectiles.png"
+        }
+      }
+    },
+    {
+      "cooldowns": [ 0.2 ],
+      "spray": 0.0628318530718,
+      "radius": 10,
+      "sprites": {
+        "idle": "images/weapon2.png"
+      },
+      "sounds": {
+        "active": [ "sounds/shoot1.wav" ]
+      },
+
+      "projectile": {
+        "damage": 1,
+        "speed": 700,
+        "radius": 5,
+        "lifespan": 3,
+
+        "sprites": {
+          "idle": "images/projectiles.png"
+        }
+      }
+    },
+    {
+      "cooldowns": [ 1.5 ],
+      "radius": 10,
+      "sprites": {
+        "idle": "images/weapon2.png"
+      },
+      "sounds": {
+        "active": [ "sounds/shoot1.wav" ]
+      },
+
+      "projectile": {
+        "damage": 3,
+        "speed": 400,
+        "radius": 10,
+        "lifespan": 5,
+
+        "sprites": {
+          "idle": "images/projectiles.png"
+        }
+      }
+    }
+  ]
+}
