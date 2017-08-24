@@ -10,7 +10,6 @@ class Boss;
 class Probe;
 class Weapon;
 class Player;
-class Particle;
 class Projectile;
 class Level  {
 public: // TODO: Make this private
@@ -20,7 +19,6 @@ public: // TODO: Make this private
 	std::shared_ptr<Player> _player;
 
 	std::vector<std::shared_ptr<Probe>> _probes;
-	std::vector<std::shared_ptr<Particle>> _particles;
 	std::vector<std::shared_ptr<Projectile>> _projectiles;
 	std::vector<std::weak_ptr<Projectile>> _projectilesBoss;
 	std::vector<std::weak_ptr<Projectile>> _projectilesPlayer;
@@ -46,7 +44,6 @@ public:
 	void update(float dt);
 	void updateEnding(float dt);
 	void updateRunning(float dt);
-	void updateParticle(float dt);
 	void render(sf::RenderTarget& target);
 
 	void CaCHit(unsigned int d);
