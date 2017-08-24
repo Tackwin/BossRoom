@@ -4,11 +4,9 @@
 #include "Managers/AssetsManager.hpp"
 #include "Managers/TimerManager.hpp"
 
-using namespace nlohmann;
-
 Projectile::Projectile() {
 }
-Projectile::Projectile(basic_json<> json, Vector2 pos, Vector2 dir, bool player) :
+Projectile::Projectile(nlohmann::json json, Vector2 pos, Vector2 dir, bool player) :
 	_pos(pos),
 	_dir(dir),
 	_player(player),
@@ -21,6 +19,7 @@ Projectile::Projectile(basic_json<> json, Vector2 pos, Vector2 dir, bool player)
 	_damage = json["damage"];
 	_radius = json["radius"];
 	_lifespan = json["lifespan"];
+	_destroyOthers = json["destroyOthers"];
 
 	std::uniform_int_distribution<int32> dist(0, 2);
 

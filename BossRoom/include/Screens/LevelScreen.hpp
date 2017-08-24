@@ -7,6 +7,7 @@
 
 class Level;
 class Player;
+class Particle;
 class LevelScreen : public Screen {
 public: //TODO: make this private
 	uint32 _n;
@@ -17,6 +18,8 @@ public: //TODO: make this private
 	Vector2 _gameViewSize;
 
 	std::shared_ptr<Level> _level;
+	
+	std::vector<std::shared_ptr<Particle>> _particles;
 
 	sf::RectangleShape _bossLifeShape;
 	std::vector<sf::RectangleShape> _playerLife;

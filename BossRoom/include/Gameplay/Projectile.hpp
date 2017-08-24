@@ -11,8 +11,8 @@
 class Projectile {
 public:
 	Projectile();
-	Projectile(nlohmann::basic_json<> json, Vector2 pos, Vector2 dir, bool player);
-	Projectile(nlohmann::basic_json<> json, Vector2 pos, Vector2 dir, bool player, 
+	Projectile(nlohmann::json json, Vector2 pos, Vector2 dir, bool player);
+	Projectile(nlohmann::json json, Vector2 pos, Vector2 dir, bool player, 
 			   std::function<void(Projectile&, float)> update);
 	~Projectile();
 
@@ -32,10 +32,9 @@ public:
 	int _damage;
 
 	bool _player;
-
 	bool _remove = false;
-
 	bool _damageable = true;
+	bool _destroyOthers = false;
 
 	sf::Sprite _sprite;
 
