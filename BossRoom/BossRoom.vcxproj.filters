@@ -30,12 +30,6 @@
     <Filter Include="Source Files\Game\Gameplays">
       <UniqueIdentifier>{ddcce708-5003-48a3-9d1a-61d1bb1c25aa}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Engine">
-      <UniqueIdentifier>{01f7e4c2-b658-4e58-b7f4-841e0f7a92a8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Game\Entity">
-      <UniqueIdentifier>{2f0a96d0-995e-46ef-897c-8dd9460b2164}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Game\Systems">
       <UniqueIdentifier>{6a02192f-ced0-405f-93ca-4f85fd8e6332}</UniqueIdentifier>
     </Filter>
@@ -91,6 +85,9 @@
     </ClCompile>
     <ClCompile Include="src\Gameplay\Game.cpp">
       <Filter>Source Files\Game\Logics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Particles\Particle.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -151,11 +148,15 @@
     <ClInclude Include="include\Gameplay\Patterns.hpp">
       <Filter>Source Files\Game\Gameplays</Filter>
     </ClInclude>
+    <ClInclude Include="include\Particles\Particle.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\BossRoom\res\config.json">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="..\.gitignore" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xsd Include="..\readme.xsd" />
   </ItemGroup>
 </Project>

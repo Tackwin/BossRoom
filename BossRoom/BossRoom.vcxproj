@@ -148,6 +148,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Particles\Particle.cpp" />
     <ClCompile Include="src\Managers\AssetsManager.cpp" />
     <ClCompile Include="src\Gameplay\Boss.cpp" />
     <ClCompile Include="src\Gameplay\Game.cpp" />
@@ -184,10 +185,19 @@
     <ClInclude Include="include\Managers\TimerManager.hpp" />
     <ClInclude Include="include\Math\Vector2.hpp" />
     <ClInclude Include="include\Gameplay\Weapon.hpp" />
+    <ClInclude Include="include\Particles\Particle.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\.gitignore" />
     <None Include="..\BossRoom\res\config.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xsd Include="..\readme.md">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Xsd>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
