@@ -2,7 +2,6 @@
 
 #include "Global/Const.hpp"
 #include "Managers/AssetsManager.hpp"
-#include "Graphics/Particle.hpp"
 #include "Gameplay/Weapon.hpp"
 #include "Gameplay/Player.hpp"
 #include "Gameplay/Level.hpp"
@@ -10,7 +9,8 @@
 #include "Gameplay/Boss.hpp"
 
 LevelScreen::LevelScreen(uint32 n) :
-	_n(n){
+	_n(n),
+	_particleGenerator(AssetsManager::getJson(JSON_KEY)["particles"], { 100, 100 }) {
 
 	_gameViewPos = { C::WIDTH / 2.f, C::HEIGHT / 2.f };
 	_gameViewSize = { static_cast<float>(C::WIDTH), static_cast<float>(C::HEIGHT) };
@@ -48,16 +48,7 @@ void LevelScreen::onExit() {
 }
 
 void LevelScreen::update(float dt) {
-	{ // Test particles
-		nlohmann::json json;
-		Vector2 pos{100, 100};
-		Vector2 dir = Vector2::createUnitVector(unitaryRng(RNG) * 2 * PIf);
-		json["sprite"] = ASSETS_PATH "images/particle.png";
-		json["lifetime"] = 1;
-		json["speed"] = 100;
-
-		_particles.push_back(std::make_shared<Particle>(json, pos, dir));
-	}
+	_particleGenerator.update(dt);
 
 	if (_gameViewPos != _gameView.getCenter())
 		_gameView.setCenter(_gameViewPos);
@@ -73,15 +64,6 @@ void LevelScreen::update(float dt) {
 		_playerLife[i].setPosition(10 + i * (_playerLife[i].getSize().x + 5), (C::HEIGHT - 10) - _playerLife[i].getSize().y);
 	}
 	if(_level) _level->update(dt);
-
-	for (auto& p : _particles) {
-		p->update(dt);
-	}
-
-	_particles.erase(
-		std::remove_if(_particles.begin(), _particles.end(), [](const auto& A) { return A->toRemove(); }),
-		_particles.end()
-	);
 }
 void LevelScreen::render(sf::RenderTarget& target) {
 	target.setView(_gameView);
@@ -95,7 +77,5 @@ void LevelScreen::render(sf::RenderTarget& target) {
 	for(auto& i : _playerLife)
 		target.draw(i);
 
-	for (auto& p : _particles) {
-		p->render(target);
-	}
+	_particleGenerator.render(target);
 }

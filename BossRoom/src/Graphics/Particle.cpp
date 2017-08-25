@@ -1,5 +1,6 @@
 #include "Graphics/Particle.hpp"
 
+#include "Global/Const.hpp"
 #include "Managers/AssetsManager.hpp"
 #include "Managers/TimerManager.hpp"
 
@@ -10,7 +11,7 @@ Particle::Particle(nlohmann::json json_, Vector2 pos_, Vector2 dir_, Function up
 	_update(update_)
 {
 	std::string strSprite = _json["sprite"];
-	assert(AssetsManager::loadTexture(strSprite, strSprite));
+	assert(AssetsManager::loadTexture(strSprite, std::string(ASSETS_PATH) + strSprite));
 	_sprite.setTexture(AssetsManager::getTexture(strSprite));
 	_keys["destroy"] = TimerManager::addFunction(_json["lifetime"], "destroy", [&](float)mutable->bool {
 		_remove = true;

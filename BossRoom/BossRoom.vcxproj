@@ -151,6 +151,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Graphics\Particle.cpp" />
+    <ClCompile Include="src\Graphics\ParticleGenerator.cpp" />
     <ClCompile Include="src\Managers\AssetsManager.cpp" />
     <ClCompile Include="src\Gameplay\Boss.cpp" />
     <ClCompile Include="src\Gameplay\Game.cpp" />
@@ -169,6 +170,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Graphics\Particle.hpp" />
+    <ClInclude Include="include\Graphics\ParticleGenerator.hpp" />
     <ClInclude Include="include\Managers\AssetsManager.hpp" />
     <ClInclude Include="include\Gameplay\Boss.hpp" />
     <ClInclude Include="include\Global\Clock.hpp" />

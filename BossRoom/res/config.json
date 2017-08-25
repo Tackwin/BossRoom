@@ -358,5 +358,13 @@
         }
       }
     }
-  ]
+  ],
+  "particles": {
+    "iTime": 0.005,
+    "particle": {
+      "sprite": "images/particle.png",
+      "lifetime": 2,
+      "speed": 125
+    }
+  }
 }

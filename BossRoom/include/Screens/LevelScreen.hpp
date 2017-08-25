@@ -4,10 +4,11 @@
 #include "Global/Const.hpp"
 #include "Math/Vector2.hpp"
 #include "Screens/Screen.hpp"
+#include "Graphics/ParticleGenerator.hpp"
+
 
 class Level;
 class Player;
-class Particle;
 class LevelScreen : public Screen {
 public: //TODO: make this private
 	uint32 _n;
@@ -19,20 +20,20 @@ public: //TODO: make this private
 
 	std::shared_ptr<Level> _level;
 	
-	std::vector<std::shared_ptr<Particle>> _particles;
-
 	sf::RectangleShape _bossLifeShape;
 	std::vector<sf::RectangleShape> _playerLife;
+
+	ParticleGenerator _particleGenerator;
 
 public:
 	LevelScreen(uint32 n);
 	~LevelScreen();
 
-	virtual void onEnter();
-	virtual void onExit();
+	virtual void onEnter() override;
+	virtual void onExit() override;
 
-	virtual void update(float dt);
-	virtual void render(sf::RenderTarget& target);
+	virtual void update(float dt) override;
+	virtual void render(sf::RenderTarget& target) override;
 
 };
 
