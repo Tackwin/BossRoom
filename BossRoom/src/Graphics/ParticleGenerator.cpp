@@ -12,7 +12,7 @@ ParticleGenerator::ParticleGenerator(nlohmann::json json_, Vector2 pos_) :
 	_pos(pos_) {
 
 	_lambda = [&](float)mutable -> bool {
-		float timer = _json["iTime"];
+		float timer = getJsonValue<float>(_json, "iTime");
 
 		_particles.push_back(std::make_shared<Particle>(_json["particle"], _pos, Vector2::createUnitVector(unitaryRng(RNG) * 2 * PIf)));
 		TimerManager::addFunction(timer, "", _lambda);

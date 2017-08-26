@@ -360,11 +360,22 @@
     }
   ],
   "particles": {
-    "iTime": 0.005,
+    "iTime": {
+      "range": 0.004,
+      "mean": 0.005
+    },
     "particle": {
       "sprite": "images/particle.png",
       "lifetime": 2,
       "speed": 125
+    }
+  },
+  "particleBurst": {
+    "nParticles": {"mean": 20, "range": 5, "type": "normal", "real":  false},
+    "particle": {
+      "sprite": "images/particle.png",
+      "lifetime": {"mean": 0.2, "range": 0.1, "type": "normal"},
+      "speed": {"mean": 300, "range": 100, "type": "normal"}
     }
   }
 }

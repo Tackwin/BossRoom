@@ -4,8 +4,6 @@
 #include "Global/Const.hpp"
 #include "Math/Vector2.hpp"
 #include "Screens/Screen.hpp"
-#include "Graphics/ParticleGenerator.hpp"
-
 
 class Level;
 class Player;
@@ -22,8 +20,6 @@ public: //TODO: make this private
 	
 	sf::RectangleShape _bossLifeShape;
 	std::vector<sf::RectangleShape> _playerLife;
-
-	ParticleGenerator _particleGenerator;
 
 public:
 	LevelScreen(uint32 n);

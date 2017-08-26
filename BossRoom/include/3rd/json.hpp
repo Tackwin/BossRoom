@@ -8869,7 +8869,6 @@ class basic_json
                 }
             }
         }
-
         /*!
         @brief  return the key of an object iterator
         @pre The iterator is initialized; i.e. `m_object != nullptr`.

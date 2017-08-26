@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <enTT/registry.hpp>
 #include <cstdint>
 #include <string>
@@ -8,6 +8,7 @@
 #include <mutex>
 #include <map>
 
+#include "3rd/json.hpp"
 
 #define ASSETS_PATH "res/"
 
@@ -48,5 +49,38 @@ namespace C {
 #ifdef ECS
 	extern Ecs ecs;
 #endif
+	template<typename T>
+	T getJsonValue(nlohmann::json json_, std::string key) {
+		assert(json_.find(key) != json_.end());
+		auto j = json_[key];
+
+		if (j.is_primitive())
+			return j;
+		if (j.find("type") == j.end())
+			j["type"] = "uniform";
+		
+		if (j.find("real") == j.end())
+			j["real"] = true;
+
+		assert(j.find("range") != j.end());
+		assert(j.find("mean") != j.end());
+
+		float mean = j["mean"]; 
+		float range = j["range"];
+		if (j["type"] == "uniform") {
+			return static_cast<T>(j["real"].get<bool>() ? 
+				std::uniform_real_distribution<float>(mean - range, mean + range)(RNG) :
+				std::uniform_int_distribution<int>((int)(mean - range), (int)(mean + range))(RNG)
+			);
+		} 
+		else if (j["type"] == "normal") {
+			return static_cast<T>(j["real"].get<bool>() ? 
+				std::normal_distribution<float>(mean, range)(RNG) :
+				static_cast<int>(std::normal_distribution<float>(mean, range)(RNG))
+			);
+		} else {
+			return j;
+		}
+	}
 };
 using namespace C;

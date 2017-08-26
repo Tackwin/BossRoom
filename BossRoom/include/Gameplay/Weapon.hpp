@@ -11,6 +11,7 @@
 #include "Math/Vector2.hpp"
 #include "Global/Const.hpp"
 
+
 class Player;
 class Weapon {
 public: //TODO: Make this private

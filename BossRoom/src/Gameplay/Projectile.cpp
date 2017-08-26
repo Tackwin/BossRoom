@@ -15,10 +15,10 @@ Projectile::Projectile(nlohmann::json json, Vector2 pos, Vector2 dir, bool playe
 	
 	_dir.normalize();
 
-	_speed = json["speed"];
-	_damage = json["damage"];
-	_radius = json["radius"];
-	_lifespan = json["lifespan"];
+	_speed = getJsonValue<float>(json, "speed");
+	_damage = getJsonValue<int>(json, "damage");
+	_radius = getJsonValue<float>(json, "radius");
+	_lifespan = getJsonValue<float>(json, "lifespan");
 	_destroyOthers = json["destroyOthers"];
 
 	std::uniform_int_distribution<int32> dist(0, 2);

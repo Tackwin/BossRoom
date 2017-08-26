@@ -9,8 +9,7 @@
 #include "Gameplay/Boss.hpp"
 
 LevelScreen::LevelScreen(uint32 n) :
-	_n(n),
-	_particleGenerator(AssetsManager::getJson(JSON_KEY)["particles"], { 100, 100 }) {
+	_n(n) {
 
 	_gameViewPos = { C::WIDTH / 2.f, C::HEIGHT / 2.f };
 	_gameViewSize = { static_cast<float>(C::WIDTH), static_cast<float>(C::HEIGHT) };
@@ -48,8 +47,6 @@ void LevelScreen::onExit() {
 }
 
 void LevelScreen::update(float dt) {
-	_particleGenerator.update(dt);
-
 	if (_gameViewPos != _gameView.getCenter())
 		_gameView.setCenter(_gameViewPos);
 	if (_gameViewSize != _gameView.getSize())
@@ -76,6 +73,4 @@ void LevelScreen::render(sf::RenderTarget& target) {
 
 	for(auto& i : _playerLife)
 		target.draw(i);
-
-	_particleGenerator.render(target);
 }

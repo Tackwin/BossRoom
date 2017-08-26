@@ -1,6 +1,7 @@
 #include "Gameplay/Probe.hpp"
 
 #include "Managers/TimerManager.hpp"
+#include "Global/Const.hpp"
 
 using namespace nlohmann;
 
@@ -10,8 +11,8 @@ Probe::Probe(basic_json<> json, Vector2 pos, Vector2 dest,
 			 std::function<void(Probe&)> unInit) :
 	_json(json), _pos(pos), _dest(dest), _init(init), _update(update), _unInit(unInit) {
 
-	_speed = json["SPEED"].get<float>();
-	_radius = json["RADIUS"].get<float>();
+	_speed = getJsonValue<float>(json, "SPEED");
+	_radius = getJsonValue<float>(json, "RADIUS");
 	_color = sf::Color(
 		json["COLOR"]["R"].get<sf::Uint8>(),
 		json["COLOR"]["G"].get<sf::Uint8>(),

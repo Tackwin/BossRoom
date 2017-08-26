@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+#include <memory>
 #include <functional>
 #include <unordered_map>
 
@@ -8,7 +10,6 @@
 #include "3rd/json.hpp"
 
 #include "Math/Vector2.hpp"
-
 
 class Particle {
 public:
@@ -35,4 +36,6 @@ public:
 	void render(sf::RenderTarget& target);
 
 	bool toRemove() const { return _remove; }
+
+	static std::vector<std::shared_ptr<Particle>> burst(nlohmann::json json_, Vector2 pos_);
 };
