@@ -196,6 +196,7 @@
   <ItemGroup>
     <None Include="..\.gitignore" />
     <None Include="..\BossRoom\res\config.json" />
+    <None Include="readme.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

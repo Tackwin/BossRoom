@@ -165,5 +165,6 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="..\.gitignore" />
+    <None Include="readme.md" />
   </ItemGroup>
 </Project>
