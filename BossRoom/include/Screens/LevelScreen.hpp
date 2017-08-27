@@ -15,6 +15,7 @@ public: //TODO: make this private
 	sf::View _gameView;
 	Vector2 _gameViewPos;
 	Vector2 _gameViewSize;
+	Vector2 _gameViewOffset;
 
 	std::shared_ptr<Level> _level;
 	
@@ -31,5 +32,6 @@ public:
 	virtual void update(float dt) override;
 	virtual void render(sf::RenderTarget& target) override;
 
+	void shakeScreen(float power = 1.0f);
 };
 

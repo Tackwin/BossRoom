@@ -12,6 +12,7 @@ class Weapon;
 class Player;
 class Particle; 
 class Projectile;
+class LevelScreen;
 class Level  {
 public: // TODO: Make this private
 	uint32 _n;
@@ -29,6 +30,9 @@ public: // TODO: Make this private
 	
 	std::vector<std::shared_ptr<Weapon>> _loot;
 
+	LevelScreen* _screen = nullptr; //How the fuck i'm supposed to make LevelScreen pass this as a shared_ptr
+									//(std::enable_shared_from_this has his probleme) anyway, i DON'T have the ownership
+
 	sf::CircleShape _entranceToNext;
 	
 	sf::Sprite _aimSprite;
@@ -42,7 +46,7 @@ public:
 	Level(std::shared_ptr<Boss> boss, uint32 _n);
 	~Level();
 
-	void start();
+	void start(LevelScreen* screen_);
 	void stop();
 
 	void update(float dt);

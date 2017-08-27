@@ -3,6 +3,8 @@
 #include <memory>
 #include <functional>
 
+#include "Global/Clock.hpp"
+
 struct Function;
 class TimerManager {
 private:
@@ -85,10 +87,10 @@ std::string TimerManager::addSinIOEase(float t, std::string key, T* V, T mmin, T
 }
 template<typename T>
 std::string TimerManager::addCustomEase(float t, std::string key, T* v, T min, T max, std::function<float(float)> pf) {
-	auto f = [t, v, min, max, pf, intT = 0.f](float dt)mutable->bool {
-		intT += dt;
-		*v = static_cast<T>(min + (max - min) * pf(intT / t));
-		if(intT >= t) {
+	std::shared_ptr<Clock> clock = std::make_shared<Clock>(t);
+	auto f = [t, v, min, max, pf, clock, intT = 0.f](float)mutable->bool {
+		*v = static_cast<T>(min + (max - min) * pf((float)clock->elapsed() / t));
+		if(clock->isOver()) {
 			*v = max;
 			return true;
 		}

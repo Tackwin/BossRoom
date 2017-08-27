@@ -2,6 +2,7 @@
 
 #include "Global/Const.hpp"
 #include "Managers/AssetsManager.hpp"
+#include "Managers/TimerManager.hpp"
 #include "Gameplay/Weapon.hpp"
 #include "Gameplay/Player.hpp"
 #include "Gameplay/Level.hpp"
@@ -29,7 +30,7 @@ LevelScreen::~LevelScreen() {
 }
 
 void LevelScreen::onEnter() {
-	_level->start();
+	_level->start(this); // :(
 	
 	auto player = _level->_player;
 	for (int i = 0; i < player->_maxLife; i++) {
@@ -63,6 +64,7 @@ void LevelScreen::update(float dt) {
 	if(_level) _level->update(dt);
 }
 void LevelScreen::render(sf::RenderTarget& target) {
+	_gameView.setCenter(_gameViewPos + _gameViewOffset);
 	target.setView(_gameView);
 	if (_level) _level->render(target);
 
@@ -73,4 +75,19 @@ void LevelScreen::render(sf::RenderTarget& target) {
 
 	for(auto& i : _playerLife)
 		target.draw(i);
+}
+
+void LevelScreen::shakeScreen(float power) {
+	constexpr uint32_t nShakes = 5;
+	constexpr float iTimeShakes = 0.03f;
+
+	//TimerManager::addLinearEase(1.f, "", &_gameViewOffset, Vector2::ZERO, { 50, 0 });
+	TimerManager::addFunction(iTimeShakes, "shake", [&, p = power, n = nShakes](float)mutable->bool {
+		Vector2 to = Vector2::createUnitVector(unitaryRng(RNG) * 3 * PIf) * 5 * p;
+		Vector2 from = _gameViewOffset;
+		TimerManager::addLinearEase(iTimeShakes, "shake", &_gameViewOffset, from, to);
+		if (n-- <= 0) 
+			TimerManager::addLinearEase(iTimeShakes, "shakeBack", &_gameViewOffset, _gameViewOffset, Vector2::ZERO);
+		return n == 0;
+	});
 }

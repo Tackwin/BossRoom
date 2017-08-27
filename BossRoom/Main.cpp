@@ -47,10 +47,6 @@ int main(int, char**) {
 	sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT, 24), "Boss room");
 	//System::views["default"] = window.getDefaultView();
 
-	const auto& updateKey = TimerManager::addFunction(0, "update", [](float dt)->bool {
-		C::game->update(dt);
-		return false;
-	});
 	const auto& renderKey = TimerManager::addFunction(0.01666666f, "render", [&window](float)mutable->bool {
 		if (window.isOpen()) {
 			window.clear(sf::Color(50, 50, 50));
@@ -69,11 +65,11 @@ int main(int, char**) {
 
 		InputsManager::update(window);
 		TimerManager::update(dt);
+		C::game->update(dt);
 	}
 	C::game.reset();
 
 	//ecs.reset();
 	TimerManager::removeFunction(renderKey);
-	TimerManager::removeFunction(updateKey);
 	return 0;
 }
