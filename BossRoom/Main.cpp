@@ -40,6 +40,7 @@ int main(int, char**) {
 	assert(AssetsManager::loadSound("hit", ASSETS_PATH "hit.wav"));
 	printf("Loading textures...\n");
 	assert(AssetsManager::loadTexture("aim", ASSETS_PATH "images/aim.png"));
+	assert(AssetsManager::loadTexture("health_tile", ASSETS_PATH "images/health_tile.png"));
 	
 	Patterns::_json = AssetsManager::getJson(JSON_KEY)["patterns"];
 	C::game = std::make_shared<Game>();
@@ -47,6 +48,11 @@ int main(int, char**) {
 	sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT, 24), "Boss room");
 	//System::views["default"] = window.getDefaultView();
 
+	const auto& updateKey = TimerManager::addFunction(MIN_MS, "updaye", [&window](float dt)mutable->bool {
+		InputsManager::update(window);
+		C::game->update(dt > MIN_MS ? dt : MIN_MS);
+		return false;
+	});
 	const auto& renderKey = TimerManager::addFunction(0.01666666f, "render", [&window](float)mutable->bool {
 		if (window.isOpen()) {
 			window.clear(sf::Color(50, 50, 50));
@@ -63,13 +69,12 @@ int main(int, char**) {
 		dt = dtClock.restart().asSeconds();
 		dt = dt < MIN_DELTA ? dt : MIN_DELTA;
 
-		InputsManager::update(window);
 		TimerManager::update(dt);
-		C::game->update(dt);
 	}
 	C::game.reset();
 
 	//ecs.reset();
 	TimerManager::removeFunction(renderKey);
+	TimerManager::removeFunction(updateKey);
 	return 0;
 }

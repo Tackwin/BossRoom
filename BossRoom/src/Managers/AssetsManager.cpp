@@ -39,7 +39,7 @@ bool AssetsManager::loadTexture(const std::string &key, const std::string &path)
 	return loaded;
 }
 
-const sf::Texture& AssetsManager::getTexture(const std::string &key) {
+/*const*/ sf::Texture& AssetsManager::getTexture(const std::string &key) {
 	auto it = _textures.find(key);
 	assert(it != std::end(_textures) && "Texture don't exist");
 	return it->second;

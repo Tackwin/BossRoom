@@ -1,6 +1,8 @@
 #pragma once
 #include <memory>
 
+#include <SFML/Graphics.hpp>
+
 #include "Global/Const.hpp"
 #include "Math/Vector2.hpp"
 #include "Screens/Screen.hpp"
@@ -19,7 +21,7 @@ public: //TODO: make this private
 
 	std::shared_ptr<Level> _level;
 	
-	sf::RectangleShape _bossLifeShape;
+	sf::Sprite _bossHealthTileSprite;
 	std::vector<sf::RectangleShape> _playerLife;
 
 public:
@@ -31,6 +33,7 @@ public:
 
 	virtual void update(float dt) override;
 	virtual void render(sf::RenderTarget& target) override;
+	void renderGui(sf::RenderTarget& target_);
 
 	void shakeScreen(float power = 1.0f);
 };

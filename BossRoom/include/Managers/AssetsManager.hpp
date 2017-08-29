@@ -13,7 +13,10 @@ private:
 
 public:
 	static bool loadTexture(const std::string& key, const std::string& path);
-	static const sf::Texture& getTexture(const std::string& key);
+	static /*const*/ sf::Texture& getTexture(const std::string& key);  // TODO
+															// is const really nedded here ?
+															// i don't want somebody to change a texture for everyone else
+															// but then i can't set the smoothness of a texture for instance
 
 	static bool loadImage(const std::string& key, const std::string& path);
 	static const sf::Image& getImage(const std::string& key);

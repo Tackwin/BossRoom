@@ -57,6 +57,8 @@ public:
 
 	void CaCHit(unsigned int d);
 
+	void bossDied();
+
 	void startAim();
 	void stopAim();
 
@@ -67,5 +69,7 @@ public:
 	static void destroyLevels();
 
 	void addProjectile(const std::shared_ptr<Projectile>& projectile);
+
+	float getNormalizedBossLife() const;
 };
 

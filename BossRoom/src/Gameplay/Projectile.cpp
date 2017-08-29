@@ -63,3 +63,6 @@ void Projectile::render(sf::RenderTarget &target) {
 void Projectile::changeLifespan(float) {
 }
 
+bool Projectile::toRemove() {
+	return _remove;
+}

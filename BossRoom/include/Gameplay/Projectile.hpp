@@ -42,5 +42,7 @@ public:
 	void render(sf::RenderTarget& target);
 
 	void changeLifespan(float lifeSpan);
+
+	bool toRemove();
 };
 
