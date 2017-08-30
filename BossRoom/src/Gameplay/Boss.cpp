@@ -33,8 +33,12 @@ void Boss::createBosses() {
 			}
 		},
 		[](Boss& boss) { // Init function
+			boss._sounds.push_back(sf::Sound(AssetsManager::getSound("shoot2")));
+
 			boss._keyPatterns.push_back(TimerManager::addFunction(3, "P1", [&boss](float)mutable->bool {
 				Patterns::directionalFire(boss, Patterns::_json["directionalFire"]);
+				boss._sprite.startAnim(0, 0.2f);
+				boss._sounds[0].play();
 				return false;
 			}));
 			boss._keyPatterns.push_back(TimerManager::addFunction(4, "P2", [&boss](float)mutable->bool {
@@ -178,12 +182,20 @@ void Boss::enterLevel(Level* level) {
 	_radius = _json["radius"];
 	_color = sf::Color::hexToColor(_json["color"]);
 
-	const auto& str = std::string(ASSETS_PATH) + _json["sprite"]["idle"].get<std::string>();
-	AssetsManager::loadTexture(str, str);
-	_sprite = sf::Sprite(AssetsManager::getTexture(str));
-	_sprite.setScale(2 * _radius / 1000.f, 2 * _radius / 1000.f);
-	_sprite.setOrigin(500, 500);
-	
+	auto& jsonSprite = _json["sprite"]["idle"];
+	if (jsonSprite.is_string()) {
+		const auto& str = std::string(ASSETS_PATH) + jsonSprite.get<std::string>();
+		AssetsManager::loadTexture(str, str);
+		_sprite = AnimatedSprite(AssetsManager::getTexture(str), { 1 });
+	}
+	else { // Tempo
+		const auto& str = std::string(ASSETS_PATH) + jsonSprite["path"].get<std::string>();
+		AssetsManager::loadTexture(str, str);
+		_sprite = AnimatedSprite(AssetsManager::getTexture(str), jsonSprite["frames"], { jsonSprite["rect"][0], jsonSprite["rect"][1] });
+	}
+	_sprite.getSprite().setOrigin(_sprite.getSize() / 2);
+	_sprite.getSprite().setScale(-(4 * _radius) / _sprite.getSize().x, (4 * _radius) / _sprite.getSize().y);
+
 	_init(*this);
 }
 void Boss::exitLevel() {
@@ -210,19 +222,16 @@ void Boss::update(float dt) {
 }
 
 void Boss::render(sf::RenderTarget &target) {
-	_sprite.setPosition(_pos);
-	target.draw(_sprite);
-	for (auto &h : _rectBox) {
-		h.draw(target, sf::Color::White);
-	}
+	_sprite.getSprite().setPosition(_pos);
+	_sprite.render(target);
 }
 
 void Boss::hit(unsigned int d) {
 	_life -= d;
 	_life = _life < 0 ? 0 : _life;
-	_sprite.setColor(sf::Color(230, 230, 230));
+	_sprite.getSprite().setColor(sf::Color(230, 230, 230));
 	TimerManager::addFunction(0.05f, "blinkDown", [&](float)->bool {
-		_sprite.setColor(_color);
+		_sprite.getSprite().setColor(_color);
 		return true;
 	});
 }

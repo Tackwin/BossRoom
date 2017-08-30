@@ -19,3 +19,6 @@ https://github.com/nlohmann/json
 I use this little header only project to parse json. 
 
 that's about it for my dependencies, everything else is handmande :)
+
+# Credits
+Art: Inopia

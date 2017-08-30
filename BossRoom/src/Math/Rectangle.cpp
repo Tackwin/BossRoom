@@ -1,23 +1,32 @@
 #include "Math/Rectangle.hpp"
 
-
+const Rectangle Rectangle::ZERO = { 0, 0, 0, 0 };
 
 Rectangle::Rectangle() {
 }
-Rectangle::Rectangle(const Vector2& pos, const Vector2& size, float a) : 
-	A(pos), 
-	B(pos + Vector2(cosf(a) * size.x, sinf(a) * size.x)),
-	D(pos + Vector2(-sinf(a) * size.y, cosf(a) * size.y)) {
+Rectangle::Rectangle(const Rectangle& other) : Rectangle(other.pos, other.size) {
+	
+}
+Rectangle::Rectangle(float x, float y, float w, float h) : Rectangle({ x, y }, { w, h }) {
+
+}
+Rectangle::Rectangle(const Vector2& pos, const Vector2& size, float a) :
+	pos(pos),
+	size(size),
+	a(a){
 }
 Rectangle::Rectangle(const Vector2& A, const Vector2& B, const Vector2& D) : 
-	A(A), 
-	B(B), 
-	D(D) {
+	pos(A), 
+	size({ B.x - A.x, D.y - A.y }) {
 }
 Rectangle::~Rectangle() {
 }
 
 bool Rectangle::isInside(const Vector2 &P) {
+	Vector2 A = pos;
+	Vector2 B = { pos.x + size.x, pos.y };
+	Vector2 D = { pos.x, pos.y + size.y };
+
 	if(A.x == D.x && A.y == B.y)
 		if(A.x < B.x && A.y < D.y)
 			return A.x < P.x && P.x < B.x && A.y < P.y && P.y < D.y;
@@ -37,21 +46,15 @@ bool Rectangle::isInside(const Vector2 &P) {
 }
 
 Vector2 Rectangle::getSize() const {
-	return{ getWidth(), getHeight() };
+	return{ w, h };
 }
-float Rectangle::getWidth() const {
-	return (B - A).length();
-}
-float Rectangle::getHeight() const {
-	return (D - A).length();
-}
-void Rectangle::setSize(const Vector2& size) {
-	Vector2 AB = B - A;
-	Vector2 AD = D - A;
-	B = A + AB.normalize() * size.x;
-	D = A + AD.normalize() * size.y;
+void Rectangle::setSize(const Vector2& size_) {
+	size = size_;
 }
 const void Rectangle::draw(sf::RenderTarget& target, sf::Color color) {
+	Vector2 A = pos;
+	Vector2 B = { pos.x + size.x, pos.y };
+	Vector2 D = { pos.x, pos.y + size.y };
 	(B - A).render(target, A, color);
 	(D - A).render(target, A, color);
 	(B - A).render(target, D, color);
@@ -59,5 +62,10 @@ const void Rectangle::draw(sf::RenderTarget& target, sf::Color color) {
 }
 
 bool Rectangle::operator==(const Rectangle &r) {
-	return A == r.A && B == r.B && D == r.D;
+	return pos == r.pos && size == r.size && a == r.a;
+}
+Rectangle& Rectangle::operator=(const Rectangle& other) {
+	pos = other.pos;
+	size = other.size;
+	return *this;
 }

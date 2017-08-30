@@ -7,6 +7,7 @@
 
 #include "3rd/json.hpp"
 
+#include "Graphics/AnimatedSprite.hpp"
 #include "Math/Rectangle.hpp"
 #include "Math/Vector2.hpp"
 
@@ -20,27 +21,6 @@ public:
 		 std::function<void(Boss&)> initFunction,
 		 std::function<void(Boss&)> unInitFunction);
 	~Boss();
-
-public: //TODO: make this private
-	nlohmann::basic_json<> _json;
-
-	int _life;
-	int _maxLife;
-	Vector2 _pos;
-	float _radius;
-	sf::Color _color;
-
-	Level* _level;
-
-	std::vector<Rectangle> _rectBox;
-	std::vector<std::string> _keyPatterns; // (key, running)
-
-	std::function<void(Boss&)> _init;
-	std::function<void(float, Boss&)> _update;
-	std::function<void(Boss&)> _unInit;
-
-	sf::Sprite _sprite;
-public:
 
 	void enterLevel(Level* level);
 	void exitLevel();
@@ -58,4 +38,25 @@ public:
 	static std::vector<std::shared_ptr<Boss>> bosses;
 	static void createBosses();
 	static void destroyBosses();
+
+public: //TODO: make this private
+	nlohmann::basic_json<> _json;
+
+	int _life;
+	int _maxLife;
+	Vector2 _pos;
+	float _radius;
+	sf::Color _color;
+
+	Level* _level;
+
+	std::vector<std::string> _keyPatterns; // (key, running)
+
+	std::function<void(Boss&)> _init;
+	std::function<void(float, Boss&)> _update;
+	std::function<void(Boss&)> _unInit;
+
+	AnimatedSprite _sprite;
+
+	std::vector<sf::Sound> _sounds;
 };

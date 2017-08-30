@@ -98,6 +98,9 @@
     <ClCompile Include="src\Graphics\ParticleGenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Graphics\AnimatedSprite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Managers\AssetsManager.hpp">
@@ -159,6 +162,7 @@
     </ClInclude>
     <ClInclude Include="include\Graphics\Particle.hpp" />
     <ClInclude Include="include\Graphics\ParticleGenerator.hpp" />
+    <ClInclude Include="include\Graphics\AnimatedSprite.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\BossRoom\res\config.json">

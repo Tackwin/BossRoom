@@ -24,6 +24,7 @@ bool AssetsManager::loadTexture(const std::string &key, const std::string &path)
 	std::printf("Loading: ");
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 	auto &ref = _textures[key];
+	ref.setSmooth(true);
 	std::printf("%s ", path.c_str());
 
 	const bool loaded = ref.loadFromFile(path);

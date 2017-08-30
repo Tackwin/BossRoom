@@ -31,7 +31,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
-    <UseOfMfc>Static</UseOfMfc>
+    <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -73,15 +73,15 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Code\cpp\BossRoom\BossRoom\include;C:\SFML\include;C:\Code\cpp\enTT\src;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\SFML\lib\$(Configuration);C:\Code\cpp\Artemis-Cpp\build\lib\$(Configuration);$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Code\cpp\BossRoom\BossRoom\include;C:\SFML\include;C:\Code\cpp\enTT\src;C:\SFML\extlibs\headers;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\SFML\lib\$(Configuration);C:\Code\cpp\Artemis-Cpp\build\lib\$(Configuration);$(LibraryPath);C:\SFML\extlibs\libs-msvc-universal\x86</LibraryPath>
     <EnableCppCoreCheck>true</EnableCppCoreCheck>
     <CodeAnalysisRuleSet>D:\Program Files (x86)\Visual Studio 2017\Team Tools\Static Analysis Tools\Rule Sets\MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\Code\cpp\BossRoom\BossRoom\include;C:\SFML\include;C:\Code\cpp\enTT\src;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\SFML\lib\$(Configuration);$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Code\cpp\BossRoom\BossRoom\include;C:\SFML\include;C:\Code\cpp\enTT\src;C:\SFML\extlibs\headers;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\SFML\lib\$(Configuration);$(LibraryPath);C:\SFML\extlibs\libs-msvc-universal\x86</LibraryPath>
     <CodeAnalysisRuleSet>D:\Program Files (x86)\Visual Studio 2017\Team Tools\Static Analysis Tools\Rule Sets\MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <EnableCppCoreCheck>true</EnableCppCoreCheck>
@@ -95,12 +95,13 @@
       <SDLCheck>true</SDLCheck>
       <TreatWarningAsError>true</TreatWarningAsError>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <DisableSpecificWarnings>4273</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4273;4201</DisableSpecificWarnings>
       <EnablePREfast>false</EnablePREfast>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalOptions>/WL %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -118,15 +119,16 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
-      <DisableSpecificWarnings>4273</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4273;4201</DisableSpecificWarnings>
       <EnablePREfast>false</EnablePREfast>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalOptions>/WL %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-audio-d.lib;sfml-system-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;sfml-audio-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
@@ -152,6 +154,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Graphics\AnimatedSprite.cpp" />
     <ClCompile Include="src\Graphics\Particle.cpp" />
     <ClCompile Include="src\Graphics\ParticleGenerator.cpp" />
     <ClCompile Include="src\Managers\AssetsManager.cpp" />
@@ -171,6 +174,7 @@
     <ClCompile Include="src\Gameplay\Weapon.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\Graphics\AnimatedSprite.hpp" />
     <ClInclude Include="include\Graphics\Particle.hpp" />
     <ClInclude Include="include\Graphics\ParticleGenerator.hpp" />
     <ClInclude Include="include\Managers\AssetsManager.hpp" />

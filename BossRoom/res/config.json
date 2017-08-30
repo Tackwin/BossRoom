@@ -3,7 +3,11 @@
     {
       "name": "boss 0",
       "sprite": {
-        "idle": "images/boss0_idle.png"
+        "idle": {
+          "path": "images/phoenix_fire.png",
+          "frames": [ 6 ],
+          "rect": [600, 500]
+        }
       },
       "life": 100,
       "radius": 65,

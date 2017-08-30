@@ -9,15 +9,6 @@
 #include "Gameplay/Patterns.hpp"
 #include "Gameplay/Game.hpp"
 
-sf::Color sf::Color::hexToColor(const std::string& hex) {
-	return sf::Color(
-		(sf::Uint8)std::stoi(std::string(hex.data() + 2, 2), NULL, 16),
-		(sf::Uint8)std::stoi(std::string(hex.data() + 4, 2), NULL, 16),
-		(sf::Uint8)std::stoi(std::string(hex.data() + 6, 2), NULL, 16),
-		(sf::Uint8)std::stoi(std::string(hex.data() + 0, 2), NULL, 16)
-	);
-}
-
 std::map<std::string, std::shared_ptr<Function>> TimerManager::_functions;	//Initializing here just to make sure that it is destroyed at the END END of the program
 																			//(particularly after the destructor of everything)
 																			//TODO: make tihs more robust
@@ -37,6 +28,7 @@ int main(int, char**) {
 	assert(AssetsManager::loadFont("consola", ASSETS_PATH "consola.ttf"));
 	printf("Loading sound...\n");
 	assert(AssetsManager::loadSound("shoot", ASSETS_PATH "shoot.wav"));
+	assert(AssetsManager::loadSound("shoot2", ASSETS_PATH "sounds/shoot2.wav"));
 	assert(AssetsManager::loadSound("hit", ASSETS_PATH "hit.wav"));
 	printf("Loading textures...\n");
 	assert(AssetsManager::loadTexture("aim", ASSETS_PATH "images/aim.png"));
