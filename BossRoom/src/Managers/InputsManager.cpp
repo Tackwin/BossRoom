@@ -62,10 +62,16 @@ void InputsManager::update(sf::RenderWindow &window) {
 		if(event.type == sf::Event::Closed)
 			window.close();
 		if(event.type == sf::Event::KeyPressed) {
+			if (event.key.code == sf::Keyboard::Unknown)
+				continue;
+
 			keyJustPressed[event.key.code] = true;
 			keyPressed[event.key.code] = true;
 		}
 		if(event.type == sf::Event::KeyReleased) {
+			if (event.key.code == sf::Keyboard::Unknown)
+				continue;
+
 			keyJustReleased[event.key.code] = true;
 			keyPressed[event.key.code] = false;
 		}
