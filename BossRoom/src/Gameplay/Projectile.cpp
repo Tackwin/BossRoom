@@ -23,9 +23,7 @@ Projectile::Projectile(nlohmann::json json, Vector2 pos, Vector2 dir, bool playe
 
 	std::uniform_int_distribution<int32> dist(0, 2);
 
-	const std::string idleSprite = json["sprites"]["idle"];
-	AssetsManager::loadTexture(idleSprite, std::string(ASSETS_PATH) + idleSprite);
-	_sprite = sf::Sprite(AssetsManager::getTexture(idleSprite));
+	_sprite = sf::Sprite(AssetsManager::getTexture(json["sprite"]));
 	const int32 whole = _sprite.getTextureRect().width / 3;
 	_sprite.setTextureRect({
 		dist(RNG) * whole	, dist(RNG) * whole, 

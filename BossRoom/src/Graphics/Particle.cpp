@@ -11,7 +11,6 @@ Particle::Particle(nlohmann::json json_, Vector2 pos_, Vector2 dir_, Function up
 	_update(update_)
 {
 	std::string strSprite = _json["sprite"];
-	assert(AssetsManager::loadTexture(strSprite, std::string(ASSETS_PATH) + strSprite));
 	_sprite.setTexture(AssetsManager::getTexture(strSprite));
 	_sprite.setOrigin(_sprite.getTextureRect().width / 2.f, _sprite.getTextureRect().height / 2.f);
 	_keys["destroy"] = TimerManager::addFunction(getJsonValue<float>(_json, "lifetime"), "destroy", [&](float)mutable->bool {

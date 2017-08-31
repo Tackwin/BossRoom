@@ -37,7 +37,7 @@ void Boss::createBosses() {
 
 			boss._keyPatterns.push_back(TimerManager::addFunction(3, "P1", [&boss](float)mutable->bool {
 				Patterns::directionalFire(boss, Patterns::_json["directionalFire"]);
-				boss._sprite.startAnim(0, 0.2f);
+				boss._sprite.pushAnim("action");
 				boss._sounds[0].play();
 				return false;
 			}));
@@ -182,17 +182,10 @@ void Boss::enterLevel(Level* level) {
 	_radius = _json["radius"];
 	_color = sf::Color::hexToColor(_json["color"]);
 
-	auto& jsonSprite = _json["sprite"]["idle"];
-	if (jsonSprite.is_string()) {
-		const auto& str = std::string(ASSETS_PATH) + jsonSprite.get<std::string>();
-		AssetsManager::loadTexture(str, str);
-		_sprite = AnimatedSprite(AssetsManager::getTexture(str), { 1 });
-	}
-	else { // Tempo
-		const auto& str = std::string(ASSETS_PATH) + jsonSprite["path"].get<std::string>();
-		AssetsManager::loadTexture(str, str);
-		_sprite = AnimatedSprite(AssetsManager::getTexture(str), jsonSprite["frames"], { jsonSprite["rect"][0], jsonSprite["rect"][1] });
-	}
+	const auto& str = _json["sprite"].get<std::string>();
+	_sprite = AnimatedSprite(str);
+	_sprite.pushAnim("idle");
+
 	_sprite.getSprite().setOrigin(_sprite.getSize() / 2);
 	_sprite.getSprite().setScale(-(4 * _radius) / _sprite.getSize().x, (4 * _radius) / _sprite.getSize().y);
 

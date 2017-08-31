@@ -4,8 +4,8 @@
 
 #include "3rd/json.hpp"
 
+#include "Graphics/AnimatedSprite.hpp"
 #include "Global/Const.hpp"
-
 #include "Math/Vector2.hpp"
 
 class Level;
@@ -16,6 +16,21 @@ public:
 	Player() {};
 	Player(const nlohmann::json& json);
 	~Player();
+
+	void enterLevel(Level* level);
+	void exitLevel();
+
+	void update(float dt);
+	void render(sf::RenderTarget& target);
+
+	void shoot();
+	void hit(unsigned int damage);
+	void startCaC();
+
+	Vector2 getDirToFire();
+
+	void swapWeapon(std::shared_ptr<Weapon> weapon);
+	void addProjectile(const std::shared_ptr<Projectile>& projectile);
 
 public: //TODO: Make private
 
@@ -51,21 +66,7 @@ public: //TODO: Make private
 	Level* _level;
 	std::shared_ptr<Weapon> _weapon;
 
-	sf::Sprite _sprite;
+	AnimatedSprite _sprite;
 	sf::Sound _hitSound;
 
-public:
-	void enterLevel(Level* level);
-	void exitLevel();
-
-	void update(float dt);
-	void render(sf::RenderTarget& target);
-
-	void hit(unsigned int damage);
-	void startCaC();
-
-	Vector2 getDirToFire();
-
-	void swapWeapon(std::shared_ptr<Weapon> weapon);
-	void addProjectile(const std::shared_ptr<Projectile>& projectile);
 };

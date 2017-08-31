@@ -54,41 +54,6 @@ namespace C {
 #ifdef ECS
 	extern Ecs ecs;
 #endif
-	template<typename T>
-	T getJsonValue(nlohmann::json json_, std::string key) {
-		assert(json_.find(key) != json_.end());
-		auto j = json_[key];
-
-		if (j.is_primitive())
-			return j;
-		if (j.find("type") == j.end())
-			j["type"] = "uniform";
-
-		if (j.find("real") == j.end())
-			j["real"] = true;
-
-		assert(j.find("range") != j.end());
-		assert(j.find("mean") != j.end());
-
-		float mean = j["mean"];
-		float range = j["range"];
-
-		T rng = static_cast<T>(mean);
-		if (j["type"] == "uniform") {
-			rng = static_cast<T>(j["real"].get<bool>() ?
-				std::uniform_real_distribution<float>(mean - range, mean + range)(RNG) :
-				std::uniform_int_distribution<int>((int)(mean - range), (int)(mean + range))(RNG)
-			);
-		}
-		else if (j["type"] == "normal") {
-			rng = static_cast<T>(std::normal_distribution<float>(mean, range)(RNG));
-		}
-
-		if (auto it = j.find("min"); it != j.end() && rng < it.value().get<T>()) {
-			rng = it.value().get<T>();
-		}
-
-		return rng;
-	}
+	
 };
 using namespace C;

@@ -3,29 +3,41 @@
 
 #include <string>
 #include <vector>
+#include <stack>
+#include <map>
+
+#include "3rd/json.hpp"
 
 #include "Math/Rectangle.hpp"
+
 
 class AnimatedSprite{
 public:
 	AnimatedSprite();
 	AnimatedSprite(const AnimatedSprite& sprite);
-	AnimatedSprite(std::vector<uint32_t> nFrames_, Vector2 frameRectangle_ = { 0, 0 });
-	AnimatedSprite(const sf::Texture& texture_, std::vector<uint32_t> nFrames_, Vector2 frameRectangle_ = { 0, 0 });
+	AnimatedSprite(const std::string& json);
 
-	void startAnim(uint32_t i_, float speed_);
+	void pushAnim(const std::string& key, uint32_t offset = 0);
+	void popAnim();
 
 	void render(sf::RenderTarget& target);
 
 	sf::Sprite& getSprite();
-	const Vector2& getSize();
+	const Vector2 getSize();
 
 	AnimatedSprite& operator=(const AnimatedSprite& other);
 private:
+	struct Animation {
+		std::string keyCallback = "";
+		uint32_t col = 0;
+		uint32_t row = 0;
+		uint32_t w = 0;
+		uint32_t h = 0;
+		uint32_t i = 0;
+	};
+
+	std::stack<Animation> _stackAnim;
+	nlohmann::json _json;
+
 	sf::Sprite _sprite;
-
-	Rectangle _frameRectangle;
-
-	std::string _keyAnim;
-	std::vector<uint32_t> _nFrames;
 };

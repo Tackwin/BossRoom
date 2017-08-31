@@ -36,6 +36,7 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 		_weapons[0]->_active = [](Weapon& me, uint32)mutable->void {
 			if ((me._flags & 1) == 1) {
 				me._flags ^= 1;
+				me._player->shoot();
 				//TimerManager::resumeFunction(me._keys[0]);
 
 				Vector2 dir = (InputsManager::getMouseWorldPos() - me._player->_pos).normalize();
@@ -150,11 +151,8 @@ Weapon::Weapon(std::shared_ptr<Player> player, nlohmann::json json)
 	_json(json),
 	_radius(json["radius"]){
 
-	const std::string& str = _json["sprites"]["idle"];
-
-	AssetsManager::loadTexture(str, std::string(ASSETS_PATH) + str);
-	_lootedSprite = sf::Sprite(AssetsManager::getTexture(str));
-	_uiSprite = sf::Sprite(AssetsManager::getTexture(str));
+	_lootedSprite = sf::Sprite(AssetsManager::getTexture(_json["sprite"]));
+	_uiSprite = sf::Sprite(AssetsManager::getTexture(_json["sprite"]));
 	_uiSprite.setScale(2, 2);
 	_uiSprite.setOrigin(
 		(float)_uiSprite.getTextureRect().width, 
@@ -181,10 +179,8 @@ Weapon::Weapon(const Weapon& other) :
 	_activeSounds(other._activeSounds),
 	_lootedPos(other._lootedPos) {
 
-	const std::string& str = _json["sprites"]["idle"];
+	const std::string& str = _json["sprite"];
 
-	// Apriori pas besoin de reload la texture
-	//AssetsManager::loadTexture(str, std::string(ASSETS_PATH) + str);
 	_lootedSprite = sf::Sprite(AssetsManager::getTexture(str));
 	_uiSprite = sf::Sprite(AssetsManager::getTexture(str));
 	_uiSprite.setScale(2, 2);

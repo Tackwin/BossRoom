@@ -21,18 +21,18 @@ nlohmann::json Patterns::_json;
 //decltype(System::views) System::views; //Does that really work ?? Is it bad practice ??
 //decltype(System::currentView) System::currentView;;
 
+void loadSpriteFromJson(const nlohmann::json& json);
+void loadSoundsFromJson(const nlohmann::json& json);
+void loadFontsFromJson(const nlohmann::json& json);
+
 int main(int, char**) {
 	printf("Loading jsons...\n");
-	assert(AssetsManager::loadJson(JSON_KEY, JSON_PATH));
-	printf("Loading fonts...\n");
-	assert(AssetsManager::loadFont("consola", ASSETS_PATH "consola.ttf"));
-	printf("Loading sound...\n");
-	assert(AssetsManager::loadSound("shoot", ASSETS_PATH "shoot.wav"));
-	assert(AssetsManager::loadSound("shoot2", ASSETS_PATH "sounds/shoot2.wav"));
-	assert(AssetsManager::loadSound("hit", ASSETS_PATH "hit.wav"));
-	printf("Loading textures...\n");
-	assert(AssetsManager::loadTexture("aim", ASSETS_PATH "images/aim.png"));
-	assert(AssetsManager::loadTexture("health_tile", ASSETS_PATH "images/health_tile.png"));
+	bool loaded = AssetsManager::loadJson(JSON_KEY, JSON_PATH); 
+	assert(loaded);
+
+	loadSpriteFromJson(AssetsManager::getJson(JSON_KEY));
+	loadSoundsFromJson(AssetsManager::getJson(JSON_KEY));
+	loadFontsFromJson(AssetsManager::getJson(JSON_KEY));
 	
 	Patterns::_json = AssetsManager::getJson(JSON_KEY)["patterns"];
 	C::game = std::make_shared<Game>();
@@ -45,11 +45,18 @@ int main(int, char**) {
 		C::game->update(dt > MIN_MS ? dt : MIN_MS);
 		return false;
 	});
-	const auto& renderKey = TimerManager::addFunction(0.01666666f, "render", [&window](float)mutable->bool {
+	const auto& renderKey = TimerManager::addFunction(0, "render", [&window](float)mutable->bool {
+		static uint64_t i = 0;
+		Clock c;
 		if (window.isOpen()) {
 			window.clear(sf::Color(50, 50, 50));
 			C::game->render(window);
 			window.display();
+		}
+		if (i++ >= 10000) {
+			const auto& dt = c.elapsed() * 1'000'000.0;
+			printf("Rendered in %u us.\n", static_cast<uint32_t>(dt));
+			i = 0;
 		}
 		return false;
 	});
@@ -69,4 +76,57 @@ int main(int, char**) {
 	TimerManager::removeFunction(renderKey);
 	TimerManager::removeFunction(updateKey);
 	return 0;
+}
+
+void loadSpriteFromJson(const nlohmann::json& json) {
+	assert(!json["sprites"].is_null());
+	const auto& j = json["sprites"];
+	const uint32_t n = j.size();
+
+	printf("Loading %u textures from json...\n", n);
+
+	uint32_t i = 0;
+	for (auto it = j.begin(); it != j.end(); ++it, ++i) {
+		printf("\t%u/%u ", i, n);
+
+		assert(!it.value()["sheet"].is_null());
+
+		const std::string& key = it.key();
+		const std::string& path = it.value()["sheet"];
+		AssetsManager::loadTexture(key, ASSETS_PATH + path);
+	}
+}
+
+void loadSoundsFromJson(const nlohmann::json& json) {
+	assert(!json["sounds"].is_null());
+	const auto& j = json["sounds"];
+	const uint32_t n = j.size();
+
+	printf("Loading %u sounds from json...\n", n);
+
+	uint32_t i = 0;
+	for (auto it = j.begin(); it != j.end(); ++it, ++i) {
+		printf("\t%u/%u ", i, n);
+
+		const std::string& key = it.key();
+		const std::string& path = it.value();
+		AssetsManager::loadSound(key, ASSETS_PATH + path);
+	}
+}
+
+void loadFontsFromJson(const nlohmann::json& json) {
+	assert(!json["fonts"].is_null());
+	const auto& j = json["fonts"];
+	const uint32_t n = j.size();
+
+	printf("Loading %u fonts from json...\n", n);
+
+	uint32_t i = 0;
+	for (auto it = j.begin(); it != j.end(); ++it, ++i) {
+		printf("\t%u/%u ", i, n);
+
+		const std::string& key = it.key();
+		const std::string& path = it.value();
+		AssetsManager::loadFont(key, ASSETS_PATH + path);
+	}
 }

@@ -39,17 +39,11 @@ void Player::enterLevel(Level* level) {
 
 	_invincibilityTime = _json["invincibilityTime"].get<float>();
 	
-	const std::string sheetPlayer = _json["sprites"]["sheet"];
-	AssetsManager::loadTexture(sheetPlayer, std::string(ASSETS_PATH) + sheetPlayer);
+	_sprite = AnimatedSprite(_json["sprite"]);
+	_sprite.pushAnim("idle");
 
-	_sprite = sf::Sprite(AssetsManager::getTexture(sheetPlayer));
-	_sprite.setTextureRect({
-		_json["sprites"]["idle"][0], _json["sprites"]["idle"][1],
-		_json["sprites"]["idle"][2], _json["sprites"]["idle"][3]
-	});
-
-	_sprite.setOrigin(_sprite.getTextureRect().width / 2.f, _sprite.getTextureRect().height / 2.f);
-	_sprite.setPosition(_pos);
+	_sprite.getSprite().setOrigin(_sprite.getSprite().getGlobalBounds().width / 2.f, _sprite.getSprite().getGlobalBounds().height / 2.f);
+	_sprite.getSprite().setPosition(_pos);
 
 	_weapon->equip();
 
@@ -94,16 +88,11 @@ void Player::update(float dt) {
 }
 
 void Player::render(sf::RenderTarget &target) {
-
-	_sprite.setTextureRect((InputsManager::isMousePressed(_AK) && game->_distance) ? sf::IntRect(
-		_json["sprites"]["action"][0], _json["sprites"]["action"][1],
-		_json["sprites"]["action"][2], _json["sprites"]["action"][3]
-	) : sf::IntRect(
-		_json["sprites"]["idle"][0], _json["sprites"]["idle"][1],
-		_json["sprites"]["idle"][2], _json["sprites"]["idle"][3]
-	));
-	_sprite.setPosition(_pos);
-	target.draw(_sprite);
+	_sprite.getSprite().setPosition(_pos);
+	_sprite.render(target);
+}
+void Player::shoot() {
+	_sprite.pushAnim("action");
 }
 
 void Player::hit(unsigned int d) {
@@ -113,9 +102,9 @@ void Player::hit(unsigned int d) {
 		_hitSound.play();
 
 	_life -= d;
-	_sprite.setColor(sf::Color(230, 230, 230));
+	_sprite.getSprite().setColor(sf::Color(230, 230, 230));
 	TimerManager::addFunction(0.33f, "blinkDown", [&, n = 0](float) mutable -> bool {
-		_sprite.setColor((n++ % 2 == 0) ? sf::Color::White : sf::Color(230, 230, 230));
+		_sprite.getSprite().setColor((n++ % 2 == 0) ? sf::Color::White : sf::Color(230, 230, 230));
 		if (n >= 3) {
 			_invincible = false;
 			return true;
@@ -126,7 +115,7 @@ void Player::hit(unsigned int d) {
 
 void Player::startCaC() {
 	TimerManager::restartFunction(_keyCdActionCaC);
-	_sprite.setColor(sf::Color::Blue);
+	_sprite.getSprite().setColor(sf::Color::Blue);
 	_freeze = true;
 }
 
