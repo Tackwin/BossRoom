@@ -11,7 +11,8 @@
       },
       "life": 100,
       "radius": 65,
-      "color": "FF3C8320",
+      "color": "FFFFFFFF",
+      "blinkColor" :  "FFBBBBBB",
       "startpos": {
         "x": 1100,
         "y": 360
@@ -364,22 +365,40 @@
     }
   ],
   "particles": {
-    "iTime": {
-      "range": 0.004,
-      "mean": 0.005
-    },
-    "particle": {
-      "sprite": "images/particle.png",
-      "lifetime": 2,
-      "speed": 125
-    }
-  },
-  "particleBurst": {
-    "nParticles": {"mean": 20, "range": 5, "type": "normal", "real":  false},
-    "particle": {
-      "sprite": "images/particle.png",
-      "lifetime": {"mean": 0.2, "range": 0.1, "type": "normal"},
-      "speed": {"mean": 300, "range": 100, "type": "normal"}
+    "particleBurstFeather": {
+      "nParticles": {
+        "mean": 20,
+        "range": 5,
+        "type": "normal",
+        "real": false
+      },
+      "particle": {
+        "sprite": "images/particle_feather.png",
+        "size": {
+          "mean": 0.15,
+          "range": 0.05,
+          "type": "normal",
+          "real": true,
+          "min": 0
+        },
+        "lifetime": {
+          "mean": 0.17,
+          "range": 0.07,
+          "type": "normal"
+        },
+        "a": {
+          "mean": 0,
+          "range": 3.14159265,
+          "type": "uniform",
+          "real": true
+        },
+        "speed": {
+          "mean": 270,
+          "range": 80,
+          "type": "normal"
+        }
+      }
     }
   }
+
 }

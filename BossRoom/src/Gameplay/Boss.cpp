@@ -223,17 +223,18 @@ void Boss::update(float dt) {
 
 void Boss::render(sf::RenderTarget &target) {
 	_sprite.getSprite().setPosition(_pos);
+	_sprite.getSprite().setColor(_color);
 	_sprite.render(target);
 }
 
 void Boss::hit(unsigned int d) {
 	_life -= d;
 	_life = _life < 0 ? 0 : _life;
-	_sprite.getSprite().setColor(sf::Color(230, 230, 230));
-	TimerManager::addFunction(0.05f, "blinkDown", [&](float)->bool {
-		_sprite.getSprite().setColor(_color);
+	TimerManager::addFunction(0.05f, "blinkDown", [&](float)mutable->bool {
+		_color = sf::Color::hexToColor(_json["color"]);
 		return true;
 	});
+	_color = sf::Color::hexToColor(_json["blinkColor"]);
 }
 
 void Boss::addProjectile(const std::shared_ptr<Projectile>& projectile) {

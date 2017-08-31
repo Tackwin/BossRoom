@@ -13,12 +13,20 @@ Particle::Particle(nlohmann::json json_, Vector2 pos_, Vector2 dir_, Function up
 	std::string strSprite = _json["sprite"];
 	assert(AssetsManager::loadTexture(strSprite, std::string(ASSETS_PATH) + strSprite));
 	_sprite.setTexture(AssetsManager::getTexture(strSprite));
+	_sprite.setOrigin(_sprite.getTextureRect().width / 2.f, _sprite.getTextureRect().height / 2.f);
 	_keys["destroy"] = TimerManager::addFunction(getJsonValue<float>(_json, "lifetime"), "destroy", [&](float)mutable->bool {
 		_remove = true;
 		return true;
 	});
 
 	_json["speed"] = getJsonValue<float>(_json, "speed"); //collapse the wave function :p
+	if (_json.find("a") != _json.end()) {
+		_sprite.setRotation(getJsonValue<float>(_json, "a") * 360 / PIf);
+	}
+	if (_json.find("size") != _json.end()) {
+		const auto& size = getJsonValue<float>(_json, "size");
+		_sprite.setScale(size, size);
+	}
 }
 
 void Particle::update(float dt) {
@@ -33,7 +41,7 @@ void Particle::render(sf::RenderTarget& target) {
 
 std::vector<std::shared_ptr<Particle>> Particle::burst(nlohmann::json json_, Vector2 pos_){
 	std::vector<std::shared_ptr<Particle>> particles;
-	uint32_t nParticles = getJsonValue<uint32_t>(json_, "nParticles");
+	uint32_t nParticles = (uint32_t)getJsonValue<int>(json_, "nParticles");
 	auto particleJson = json_["particle"];
 
 	particles.reserve(nParticles);
