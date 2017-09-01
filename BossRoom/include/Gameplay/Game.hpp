@@ -11,19 +11,11 @@
 class Screen;
 class Player;
 class Game {
-public: //TODO: Make this private
-	std::shared_ptr<Player> _player;
-
-	std::stack<std::shared_ptr<Screen>> _screens;
-
-	sf::Text _fpsText;
-	std::map<std::string, sf::Text> _debugText;
-
-	bool _distance = true;
-
 public:
 	Game();
 	~Game();
+
+	void start();
 
 	void enterRoom(uint32 n);
 	void nextRoom();
@@ -35,4 +27,16 @@ public:
 	void updateDebugText(float dt);
 
 	void render(sf::RenderTarget& target);
+
+	void enterDungeon();
+public: //TODO: Make this private
+	std::shared_ptr<Player> _player;
+
+	std::stack<std::shared_ptr<Screen>> _screens;
+
+	sf::Text _fpsText;
+	std::map<std::string, sf::Text> _debugText;
+
+	bool _distance = true;
+
 };

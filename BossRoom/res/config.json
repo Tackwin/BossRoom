@@ -72,6 +72,18 @@
 		},
 		"weapon2": {
 			"sheet": "images/weapon2.png"
+		},
+		"merchant_shop": {
+			"sheet": "images/merchant_shop.png"
+		},
+		"dungeon_door": {
+			"sheet": "images/dungeon_door.png"
+		},
+		"dungeon": {
+			"sheet": "images/dungeon.png"
+		},
+		"start_background": {
+			"sheet": "images/start_background.png"
 		}
 	},
 	"sounds":{
@@ -447,6 +459,27 @@
 				}
 			}
 		}
+	},
+	"startZone": {
+		"startBackground": {
+			"sprite": "start_background",
+			"size": [3000, 720],
+			"pos": [0, 0]
+		},
+		"dungeon": {
+			"sprite": "dungeon",
+			"size": [975, 633],
+			"pos": [2555, 52]
+		},
+		"dungeonDoor": {
+			"sprite": "dungeon_door",
+			"size": [300, 500],
+			"pos": [2615, 147]
+		},
+		"merchantShop": {
+			"sprite": "merchant_shop",
+			"size": [530, 231],
+			"pos": [1001, 343]
+		}
 	}
-
 }

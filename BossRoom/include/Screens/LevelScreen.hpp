@@ -10,6 +10,19 @@
 class Level;
 class Player;
 class LevelScreen : public Screen {
+public:
+	LevelScreen(uint32 n);
+	~LevelScreen();
+
+	virtual void onEnter() override;
+	virtual void onExit() override;
+
+	virtual void update(float dt) override;
+	virtual void render(sf::RenderTarget& target) override;
+	void renderGui(sf::RenderTarget& target_);
+
+	void shakeScreen(float power = 1.0f);
+
 public: //TODO: make this private
 	uint32 _n;
 
@@ -24,17 +37,5 @@ public: //TODO: make this private
 	sf::Sprite _bossHealthTileSprite;
 	std::vector<sf::RectangleShape> _playerLife;
 
-public:
-	LevelScreen(uint32 n);
-	~LevelScreen();
-
-	virtual void onEnter() override;
-	virtual void onExit() override;
-
-	virtual void update(float dt) override;
-	virtual void render(sf::RenderTarget& target) override;
-	void renderGui(sf::RenderTarget& target_);
-
-	void shakeScreen(float power = 1.0f);
 };
 

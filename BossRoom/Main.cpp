@@ -36,9 +36,9 @@ int main(int, char**) {
 	
 	Patterns::_json = AssetsManager::getJson(JSON_KEY)["patterns"];
 	C::game = std::make_shared<Game>();
+	game->start();
 
 	sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT, 24), "Boss room");
-	//System::views["default"] = window.getDefaultView();
 
 	const auto& updateKey = TimerManager::addFunction(MIN_MS, "updaye", [&window](float dt)mutable->bool {
 		InputsManager::update(window);

@@ -172,6 +172,7 @@
     <ClCompile Include="src\Managers\TimerManager.cpp" />
     <ClCompile Include="src\Math\Vector2.cpp" />
     <ClCompile Include="src\Gameplay\Weapon.cpp" />
+    <ClCompile Include="src\Screens\StartScreen.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Graphics\AnimatedSprite.hpp" />
@@ -196,6 +197,7 @@
     <ClInclude Include="include\Managers\TimerManager.hpp" />
     <ClInclude Include="include\Math\Vector2.hpp" />
     <ClInclude Include="include\Gameplay\Weapon.hpp" />
+    <ClInclude Include="include\Screens\StartScreen.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\.gitignore" />

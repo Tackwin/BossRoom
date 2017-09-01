@@ -5,6 +5,7 @@
 #include "Managers/InputsManager.hpp"
 #include "Managers/TimerManager.hpp"
 #include "Screens/LevelScreen.hpp"
+#include "Screens/StartScreen.hpp"
 #include "Gameplay/Weapon.hpp"
 #include "Gameplay/Player.hpp"
 #include "Gameplay/Level.hpp"
@@ -30,8 +31,6 @@ Game::Game()
 	_debugText["#Entity"].setFont(AssetsManager::getFont("consola"));
 	_debugText["#Entity"].setCharacterSize(15);
 	_debugText["#Entity"].setPosition(5, 20);
-
-	enterScreen(std::make_shared<RoomSelectorScreen>(0));
 }
 
 Game::~Game() {
@@ -114,4 +113,12 @@ void Game::nextRoom() {
 	if (auto screen = dynamic_cast<LevelScreen*>(_screens.top().get())) {
 		enterRoom(screen->_n + 1);
 	}
+}
+
+void Game::enterDungeon() {
+	enterScreen(std::make_shared<RoomSelectorScreen>(0));
+}
+
+void Game::start() {
+	enterScreen(std::make_shared<StartScreen>());
 }

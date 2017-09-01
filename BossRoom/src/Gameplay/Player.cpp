@@ -19,7 +19,7 @@ Player::Player(const nlohmann::json& json) :
 Player::~Player() {
 }
 
-void Player::enterLevel(Level* level) {
+void Player::initializeJson() {
 	_life = _json["life"];
 	_maxLife = _life;
 	_speed = _json["speed"];
@@ -44,7 +44,10 @@ void Player::enterLevel(Level* level) {
 
 	_sprite.getSprite().setOrigin(_sprite.getSprite().getGlobalBounds().width / 2.f, _sprite.getSprite().getGlobalBounds().height / 2.f);
 	_sprite.getSprite().setPosition(_pos);
+}
 
+
+void Player::enterLevel(Level* level) {
 	_weapon->equip();
 
  	_level = level;

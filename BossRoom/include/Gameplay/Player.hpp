@@ -17,6 +17,8 @@ public:
 	Player(const nlohmann::json& json);
 	~Player();
 
+	void initializeJson();
+
 	void enterLevel(Level* level);
 	void exitLevel();
 
