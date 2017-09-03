@@ -2,12 +2,14 @@
 #include "Screen.hpp"
 
 #include <memory>
+#include <vector>
 
 #include <SFML/Graphics.hpp>
 
 #include "3rd/json.hpp"
 
 class Player;
+class Projectile;
 class StartScreen : public Screen {
 public:
 	StartScreen();
@@ -17,6 +19,10 @@ public:
 
 	virtual void update(float dt);
 	virtual void render(sf::RenderTarget& target);
+	void renderGui(sf::RenderTarget& target);
+
+	void enterShop();
+	void leaveShop();
 private:
 
 	void initializeSprite();
@@ -31,5 +37,8 @@ private:
 
 	nlohmann::json _json;
 
+	std::vector<std::shared_ptr<Projectile>> _projectiles;
 	std::shared_ptr<Player> _player;
+
+	bool _isInShop = false;
 };

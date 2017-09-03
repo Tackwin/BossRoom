@@ -1,4 +1,7 @@
 #pragma once
+#include <memory>
+#include <vector>
+
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 
@@ -71,4 +74,5 @@ public: //TODO: Make private
 	AnimatedSprite _sprite;
 	sf::Sound _hitSound;
 
+	std::vector<std::shared_ptr<Projectile>> _projectilesToShoot;
 };

@@ -84,6 +84,9 @@
 		},
 		"start_background": {
 			"sheet": "images/start_background.png"
+		},
+		"shop_screen": {
+			"sheet": "images/shop_screen.png"
 		}
 	},
 	"sounds":{

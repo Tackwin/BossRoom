@@ -22,7 +22,7 @@ Game::Game()
 	Level::createLevels();
 
 	auto weapon = std::make_shared<Weapon>(*Weapon::_weapons[0]);
-	_player->_weapon = weapon;
+	_player->swapWeapon(weapon);
 
 	_debugText["ups"].setFont(AssetsManager::getFont("consola"));
 	_debugText["ups"].setCharacterSize(15);

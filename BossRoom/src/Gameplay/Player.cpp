@@ -132,5 +132,5 @@ Vector2 Player::getDirToFire() {
 	return (InputsManager::getMouseWorldPos() - _pos).normalize();
 }
 void Player::addProjectile(const std::shared_ptr<Projectile>& projectile) {
-	_level->addProjectile(projectile);
+	_projectilesToShoot.push_back(projectile);
 }

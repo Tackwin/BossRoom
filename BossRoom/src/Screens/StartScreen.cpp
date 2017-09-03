@@ -4,6 +4,8 @@
 
 #include "Managers/AssetsManager.hpp"
 #include "Managers/InputsManager.hpp"
+#include "Gameplay/Projectile.hpp"
+#include "Gameplay/Weapon.hpp"
 #include "Gameplay/Player.hpp"
 #include "Gameplay/Game.hpp"
 #include "Global/Const.hpp"
@@ -25,15 +27,20 @@ void StartScreen::onEnter() {
 }
 void StartScreen::onExit() {
 }
-void StartScreen::update(float dt_) {
-	_player->update(dt_);
+void StartScreen::update(float dt) {
+	_projectiles.insert(_projectiles.end(), _player->_projectilesToShoot.begin(), _player->_projectilesToShoot.end());
+	_player->_projectilesToShoot.clear();
+
+	_player->update(dt);
+	for (auto& p : _projectiles)
+		p->update(dt);
 
 	if (_dungeonDoor.getGlobalBounds().contains(_player->_pos)) {
 		game->enterDungeon();
 	}
 }
-void StartScreen::render(sf::RenderTarget& target_) {
-	const auto oldView = target_.getView();
+void StartScreen::render(sf::RenderTarget& target) {
+	const auto oldView = target.getView();
 	
 	float minX = _startBackground.getGlobalBounds().left + _playerView.getSize().x / 2.f;
 	float maxX = _startBackground.getGlobalBounds().left + _startBackground.getGlobalBounds().width - _playerView.getSize().x / 2.f;
@@ -45,16 +52,33 @@ void StartScreen::render(sf::RenderTarget& target_) {
 		std::clamp(_player->_pos.x, minX, maxX),
 		std::clamp(_player->_pos.y, minY, maxY)
 	});
-	target_.setView(_playerView);
+	target.setView(_playerView);
 
-	target_.draw(_startBackground);
-	target_.draw(_dungeon);
-	target_.draw(_merchantShop);
-	target_.draw(_dungeonDoor);
-	game->_player->render(target_);
+	target.draw(_startBackground);
+	target.draw(_dungeon);
+	target.draw(_merchantShop);
+	target.draw(_dungeonDoor);
+	for (auto& p : _projectiles)
+		p->render(target);
+	_player->render(target);
 
-	target_.setView(oldView);
+	renderGui(target);
+
+	target.setView(oldView);
 }
+void StartScreen::renderGui(sf::RenderTarget& target) {
+	const auto oldView = target.getView();
+	target.setView(_guiView);
+	
+	if (_player->_weapon) {
+		auto& weaponGuiSprite = _player->_weapon->_uiSprite;
+		weaponGuiSprite.setPosition({ WIDTH - 50.f, HEIGHT - 50.f });
+		target.draw(weaponGuiSprite);
+	}
+		
+	target.setView(oldView);
+}
+
 
 void StartScreen::initializeSprite() {
 	{
@@ -102,4 +126,11 @@ void StartScreen::initializeSprite() {
 			json["pos"][1].get<float>()
 		);
 	}
+}
+
+void StartScreen::enterShop() {
+	_isInShop = true;
+}
+void StartScreen::leaveShop() {
+	_isInShop = false;
 }

@@ -72,13 +72,12 @@ void LevelScreen::render(sf::RenderTarget& target) {
 
 	target.setView(_guiView);
 
-	target.draw(game->_player->_weapon->_uiSprite);
 	renderGui(target);
 
 	for(auto& i : _playerLife)
 		target.draw(i);
 }
-void LevelScreen::renderGui(sf::RenderTarget& target_) {
+void LevelScreen::renderGui(sf::RenderTarget& target) {
 	constexpr uint32_t nTiles = 10;
 	constexpr float padding = -3;
 	constexpr std::tuple<float, float, float> colors[] = {
@@ -101,11 +100,15 @@ void LevelScreen::renderGui(sf::RenderTarget& target_) {
 		const float& b = std::get<2>(colors[color]); 
 
 		_bossHealthTileSprite.setColor(sf::Color((uint8_t)(r * 255), (uint8_t)(g * 255), (uint8_t)(b * 255)));
-		target_.draw(_bossHealthTileSprite);
+		target.draw(_bossHealthTileSprite);
 		
 		_bossHealthTileSprite.move(bossTileWidth + padding, 0);
 	}
 	_bossHealthTileSprite.setPosition(pos);
+
+	auto& weaponGuiSprite = game->_player->_weapon->_uiSprite;
+	weaponGuiSprite.setPosition({ WIDTH - 50.f, HEIGHT - 50.f });
+	target.draw(weaponGuiSprite);
 }
 
 

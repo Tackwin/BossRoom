@@ -50,7 +50,7 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 				//if (me._activeSounds[0].getStatus() != sf::Sound::Playing) {
 					me._activeSounds[0].play();
 				//}
-				me._player->_level->addProjectile(std::make_shared<Projectile>(me._json["projectile"], pos, dir, true));
+				me._player->addProjectile(std::make_shared<Projectile>(me._json["projectile"], pos, dir, true));
 			}
 		};
 		std::string sound1Str = _weapons[0]->_json["sounds"]["active"][0];
@@ -185,8 +185,8 @@ Weapon::Weapon(const Weapon& other) :
 	_uiSprite = sf::Sprite(AssetsManager::getTexture(str));
 	_uiSprite.setScale(2, 2);
 	_uiSprite.setOrigin(
-		(float)_uiSprite.getTextureRect().width,
-		(float)_uiSprite.getTextureRect().height
+		(float)_uiSprite.getTextureRect().width / 2.f,
+		(float)_uiSprite.getTextureRect().height / 2.f
 	);
 	_uiSprite.setPosition((float)WIDTH, (float)HEIGHT);
 }
@@ -200,7 +200,9 @@ void Weapon::render(sf::RenderTarget& target) {
 	if (_loot)
 		target.draw(_lootedSprite);
 }
-
+void Weapon::renderGui(sf::RenderTarget& target) {
+	target.draw(_uiSprite);
+}
 void Weapon::loot(Vector2 pos) {
 	_loot = true;
 	_lootedPos = pos;
