@@ -1,13 +1,14 @@
+
 #include <thread>
 
 #include <SFML/Graphics.hpp>
 
-#include "Global/Const.hpp"
 #include "Managers/AssetsManager.hpp"
 #include "Managers/InputsManager.hpp"
+#include "Gameplay/Game.hpp"
 #include "Managers/TimerManager.hpp"
 #include "Gameplay/Patterns.hpp"
-#include "Gameplay/Game.hpp"
+#include "Global/Const.hpp"
 
 std::map<std::string, std::shared_ptr<Function>> TimerManager::_functions;	//Initializing here just to make sure that it is destroyed at the END END of the program
 																			//(particularly after the destructor of everything)
@@ -16,6 +17,7 @@ std::default_random_engine C::RNG(SEED);
 std::uniform_real_distribution<float> C::unitaryRng(0.f, 1.f - FLT_EPSILON);
 std::shared_ptr<Game> C::game;
 nlohmann::json Patterns::_json;
+
 //Ecs C::ecs;
 
 //decltype(System::views) System::views; //Does that really work ?? Is it bad practice ??
