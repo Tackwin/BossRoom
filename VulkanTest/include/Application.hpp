@@ -14,10 +14,17 @@
 
 struct QueueFamilyIndices {
 	int32_t graphicsFamily = -1;
+	int32_t presentFamily = -1;
 
 	bool isComplete() {
-		return graphicsFamily >= 0;
+		return graphicsFamily >= 0 && presentFamily >= 0;
 	}
+};
+
+struct SwapChainSupportDetails {
+	VkSurfaceCapabilitiesKHR capabilities;
+	std::vector<VkSurfaceFormatKHR> formats;
+	std::vector<VkPresentModeKHR> presentModes;
 };
 
 class Application {
@@ -32,13 +39,21 @@ private:
 	void initializeVulkan();
 		void createInstance();
 		void setupDebugCallback();
-		void pullAvailableExtensions();
-		void pullAvailableLayers();
-		bool checkValidationLayerSupport();
+			void pullAvailableExtensions();
+			void pullAvailableLayers();
+			bool checkValidationLayerSupport();
+		void createSurface();
 		void pickPhysicalDevice();
 			uint32_t scorePhysicalDevice(const VkPhysicalDevice& device);
+				bool checkDeviceExtensionsSupport(VkPhysicalDevice device);
 			QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
 		void createLogicalDevice();
+		void createSwapChain();
+			SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
+			VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
+			VkPresentModeKHR choosePresentMode(const std::vector<VkPresentModeKHR>& presentModes);
+			VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
+		void createImageViews();
 	void loop();
 	void cleanup();
 
@@ -62,12 +77,23 @@ private:
 	VkDevice _device;
 
 	VkQueue _graphicQueue;
+	VkQueue _presentQueue;
+
+	VkSurfaceKHR _surface;
+
+	VkSwapchainKHR _swapChain;
+	std::vector<VkImage> _swapChainImages;
+	VkFormat _swapChainFormat;
+	VkExtent2D _swapChainExtent;
+
+	std::vector<VkImageView> _swapChainImageViews;
 
 	uint32_t _extensionsCount = 0u;
 	std::vector<VkExtensionProperties> _availableExtensions;
 	uint32_t _layerCount = 0u;
 	std::vector<VkLayerProperties> _availableLayers;
 
-	std::vector<const char*> _validationLayers;
+	std::vector<const char*> _validationLayersRequired;
+	std::vector<const char*> _deviceExtensionsRequired;
 };
 
