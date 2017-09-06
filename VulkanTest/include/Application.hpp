@@ -54,7 +54,15 @@ private:
 			VkPresentModeKHR choosePresentMode(const std::vector<VkPresentModeKHR>& presentModes);
 			VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 		void createImageViews();
+		void createGraphicsPipeline();
+			VkShaderModule createShaderModule(const std::vector<char>& code);
+		void createRenderPass();
+		void createFrameBuffers();
+		void createCommandPool();
+		void createCommandBuffer();
+		void createSemaphores();
 	void loop();
+		void render();
 	void cleanup();
 
 	std::vector<const char*> getRequiredExtensions();
@@ -86,7 +94,18 @@ private:
 	VkFormat _swapChainFormat;
 	VkExtent2D _swapChainExtent;
 
+	VkRenderPass _renderPass;
+	VkPipeline _graphicsPipeline;
+	VkPipelineLayout _pipelineLayout;
+
+	VkCommandPool _commandPool;
+	std::vector<VkCommandBuffer> _commandBuffers;
+
 	std::vector<VkImageView> _swapChainImageViews;
+	std::vector<VkFramebuffer> _swapChainFrameBuffers;
+
+	VkSemaphore _imageAvailableSemaphore;
+	VkSemaphore _renderFinishedSemaphore;
 
 	uint32_t _extensionsCount = 0u;
 	std::vector<VkExtensionProperties> _availableExtensions;
