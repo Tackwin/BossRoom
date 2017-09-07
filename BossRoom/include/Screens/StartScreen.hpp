@@ -8,6 +8,9 @@
 
 #include "3rd/json.hpp"
 
+#include "../../include/Graphics/Panel.hpp"
+
+
 class Player;
 class Projectile;
 class StartScreen : public Screen {
@@ -39,6 +42,8 @@ private:
 
 	std::vector<std::shared_ptr<Projectile>> _projectiles;
 	std::shared_ptr<Player> _player;
+
+	Panel _panelTest;
 
 	bool _isInShop = false;
 };

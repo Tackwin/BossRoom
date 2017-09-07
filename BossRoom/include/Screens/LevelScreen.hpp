@@ -6,6 +6,7 @@
 #include "Global/Const.hpp"
 #include "Math/Vector2.hpp"
 #include "Screens/Screen.hpp"
+#include "../../include/Graphics/Panel.hpp"
 
 class Level;
 class Player;
@@ -37,5 +38,6 @@ public: //TODO: make this private
 	sf::Sprite _bossHealthTileSprite;
 	std::vector<sf::RectangleShape> _playerLife;
 
+	std::vector<Panel> _panels;
 };
 

@@ -12,8 +12,13 @@
 
 StartScreen::StartScreen():
 	_playerView({ WIDTH / 2.f, HEIGHT / 2.f }, { (float)WIDTH, (float)HEIGHT }),
-	_guiView({ WIDTH / 2.f, HEIGHT / 2.f }, { (float)WIDTH, (float)HEIGHT }) {
+	_guiView({ WIDTH / 2.f, HEIGHT / 2.f }, { (float)WIDTH, (float)HEIGHT }),
+	_panelTest("panel") {
 
+	_panelTest.addLabel("test");
+	_panelTest.getLabel("test").setString("Lorem ipsum");
+	_panelTest.addLabel("test2");
+	_panelTest.getLabel("test2").setString("dolor sit amet");
 }
 
 
@@ -76,6 +81,8 @@ void StartScreen::renderGui(sf::RenderTarget& target) {
 		target.draw(weaponGuiSprite);
 	}
 		
+	_panelTest.render(target);
+
 	target.setView(oldView);
 }
 

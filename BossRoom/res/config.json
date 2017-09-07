@@ -87,6 +87,9 @@
 		},
 		"shop_screen": {
 			"sheet": "images/shop_screen.png"
+		},
+		"panel": {
+			"sheet": "images/panel.png"
 		}
 	},
 	"sounds":{

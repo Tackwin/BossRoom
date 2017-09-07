@@ -109,6 +109,10 @@ void LevelScreen::renderGui(sf::RenderTarget& target) {
 	auto& weaponGuiSprite = game->_player->_weapon->_uiSprite;
 	weaponGuiSprite.setPosition({ WIDTH - 50.f, HEIGHT - 50.f });
 	target.draw(weaponGuiSprite);
+
+	for (auto& panel : _panels) {
+		panel.render(target);
+	}
 }
 
 
