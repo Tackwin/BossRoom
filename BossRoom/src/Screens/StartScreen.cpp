@@ -15,10 +15,13 @@ StartScreen::StartScreen():
 	_guiView({ WIDTH / 2.f, HEIGHT / 2.f }, { (float)WIDTH, (float)HEIGHT }),
 	_panelTest("panel") {
 
+	_panelTest.addSeparator("sep", 10);
 	_panelTest.addLabel("test");
 	_panelTest.getLabel("test").setString("Lorem ipsum");
+	_panelTest.addSeparator("sep", 10);
 	_panelTest.addLabel("test2");
 	_panelTest.getLabel("test2").setString("dolor sit amet");
+	_panelTest.getLabel("test2").setFillColor(sf::Color(100, 255, 47));
 }
 
 
@@ -31,6 +34,7 @@ void StartScreen::onEnter() {
 	_player->_pos = {100, 100};
 }
 void StartScreen::onExit() {
+	_player->_weapon->unEquip();
 }
 void StartScreen::update(float dt) {
 	_projectiles.insert(_projectiles.end(), _player->_projectilesToShoot.begin(), _player->_projectilesToShoot.end());

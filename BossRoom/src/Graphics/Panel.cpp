@@ -14,12 +14,6 @@ void Panel::render(sf::RenderTarget& target) {
 	);
 	target.draw(_backgroundSprite);
 	for (const auto& [_, label] : _labels) { //gosh i love C++17
-		sf::CircleShape circle(5.f);
-		circle.setOrigin(5.f, 5.f);
-		circle.setPosition(label.getPosition());
-		target.draw(circle);
-		circle.setPosition(Vector2(label.getPosition()) + Vector2(label.getGlobalBounds().width, label.getGlobalBounds().height));
-		target.draw(circle);
 		target.draw(label);
 	}
 }
@@ -31,6 +25,11 @@ void Panel::addLabel(const std::string& key) {
 }
 sf::Text& Panel::getLabel(const std::string& key) {
 	return _labels[key];
+}
+
+void Panel::addSeparator(const std::string& key, float size) {
+	addLabel(key);
+	getLabel(key).setCharacterSize((uint32_t)size);
 }
 
 Vector2 Panel::getSize() {
@@ -53,7 +52,8 @@ std::map<std::string, sf::Text>& Panel::getLabels() {
 float Panel::getLabelsHeight() {
 	float sum = 0.f;
 	for (const auto& [_, label] : _labels) {
-		sum += label.getGlobalBounds().height;
+		//sum += label.getGlobalBounds().height;
+		sum += label.getCharacterSize();
 		sum += _padding.y;
 	}
 	if(sum > 0.f)

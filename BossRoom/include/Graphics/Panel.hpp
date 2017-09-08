@@ -14,6 +14,8 @@ public:
 	
 	void addLabel(const std::string& key);
 	sf::Text& getLabel(const std::string& key);
+	
+	void addSeparator(const std::string& key, float size);
 
 	Vector2 getSize();
 
@@ -21,7 +23,7 @@ public:
 private:
 	float getLabelsHeight();
 
-	Vector2 _padding = Vector2::ZERO;
+	Vector2 _padding = { 5.f, 5.f };
 
 	sf::Sprite _backgroundSprite;
 
