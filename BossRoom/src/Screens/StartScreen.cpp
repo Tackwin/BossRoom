@@ -10,18 +10,30 @@
 #include "Gameplay/Game.hpp"
 #include "Global/Const.hpp"
 
+struct A {
+
+};
+struct B : public A {
+
+};
+
 StartScreen::StartScreen():
 	_playerView({ WIDTH / 2.f, HEIGHT / 2.f }, { (float)WIDTH, (float)HEIGHT }),
-	_guiView({ WIDTH / 2.f, HEIGHT / 2.f }, { (float)WIDTH, (float)HEIGHT }),
-	_panelTest("panel") {
+	_guiView({ WIDTH / 2.f, HEIGHT / 2.f }, { (float)WIDTH, (float)HEIGHT })
+	{
+	//_widgetTest1 = std::make_shared<Widget>();
+	//_widgetTest2 = std::make_shared<Label>();
 
-	_panelTest.addSeparator("sep", 10);
-	_panelTest.addLabel("test");
-	_panelTest.getLabel("test").setString("Lorem ipsum");
-	_panelTest.addSeparator("sep", 10);
-	_panelTest.addLabel("test2");
-	_panelTest.getLabel("test2").setString("dolor sit amet");
-	_panelTest.getLabel("test2").setFillColor(sf::Color(100, 255, 47));
+	_widgetTest1 = std::make_shared<Widget>();
+	std::shared_ptr<Label> label = std::make_shared<Label>();
+
+	_widgetTest2 = std::dynamic_pointer_cast<Widget>(label);
+
+	label->setFont("consola");
+	label->setTextColor(sf::Color::Blue);
+	label->setString("<Lorem Ipsum>");
+	label->setOrigin({ .5f, .0f });
+	label->setParent(std::weak_ptr<Widget>(_widgetTest1));
 }
 
 
@@ -39,6 +51,8 @@ void StartScreen::onExit() {
 void StartScreen::update(float dt) {
 	_projectiles.insert(_projectiles.end(), _player->_projectilesToShoot.begin(), _player->_projectilesToShoot.end());
 	_player->_projectilesToShoot.clear();
+
+	_widgetTest1->setPosition(InputsManager::getMouseScreenPos());
 
 	_player->update(dt);
 	for (auto& p : _projectiles)
@@ -85,7 +99,8 @@ void StartScreen::renderGui(sf::RenderTarget& target) {
 		target.draw(weaponGuiSprite);
 	}
 		
-	_panelTest.render(target);
+	_widgetTest1->render(target);
+	_widgetTest2->render(target);
 
 	target.setView(oldView);
 }

@@ -107,6 +107,12 @@
     <ClCompile Include="src\Graphics\Panel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Graphics\GUI\Widget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\GUI\Label.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Managers\AssetsManager.hpp">
@@ -171,6 +177,8 @@
     <ClInclude Include="include\Graphics\AnimatedSprite.hpp" />
     <ClInclude Include="include\Screens\StartScreen.hpp" />
     <ClInclude Include="include\Graphics\Panel.hpp" />
+    <ClInclude Include="include\Graphics\GUI\Widget.hpp" />
+    <ClInclude Include="include\Graphics\GUI\Label.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\BossRoom\res\config.json">

@@ -155,6 +155,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Graphics\AnimatedSprite.cpp" />
+    <ClCompile Include="src\Graphics\GUI\Label.cpp" />
+    <ClCompile Include="src\Graphics\GUI\Widget.cpp" />
     <ClCompile Include="src\Graphics\Panel.cpp" />
     <ClCompile Include="src\Graphics\Particle.cpp" />
     <ClCompile Include="src\Graphics\ParticleGenerator.cpp" />
@@ -177,6 +179,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Graphics\AnimatedSprite.hpp" />
+    <ClInclude Include="include\Graphics\GUI\Label.hpp" />
+    <ClInclude Include="include\Graphics\GUI\Widget.hpp" />
     <ClInclude Include="include\Graphics\Panel.hpp" />
     <ClInclude Include="include\Graphics\Particle.hpp" />
     <ClInclude Include="include\Graphics\ParticleGenerator.hpp" />
