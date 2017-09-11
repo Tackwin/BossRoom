@@ -21,15 +21,17 @@ public:
 	Widget(Widget* const parent);
 	~Widget();
 
-	virtual Vector2 getSize() const;
+	Vector2 getSize() const;
 	const Vector2& getOrigin() const;
 	Vector2 getGlobalPosition() const;
 	const Vector2& getPosition() const;
+	bool isVisible() const;
 
-	virtual void setSize(const Vector2& size);
+	void setSize(const Vector2& size);
 	void setPosition(const Vector2& pos);
 	void setOrigin(const Vector2& origin);
 	void setOriginAbs(const Vector2& origin);
+	void setVisible(bool visible);
 
 	void addChild(Widget* const child);
 	bool haveChild(const Widget* const child);
@@ -41,7 +43,10 @@ public:
 protected:
 
 	Vector2 _pos;
+	Vector2 _size;
 	Vector2 _origin;
+
+	bool _visible = true;
 
 	Widget* _parent = nullptr; //like, why do i even bother raw pointer mean, I DON'T HAVE THE OWNERSHIP, it settles it
 	std::vector<Widget*> _childs;

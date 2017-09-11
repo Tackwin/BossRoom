@@ -5,6 +5,7 @@
 #include <Managers/AssetsManager.hpp>
 #include <Managers/InputsManager.hpp>
 #include <Gameplay/Projectile.hpp>
+#include <Graphics/GUI/Button.hpp>
 #include <Gameplay/Weapon.hpp>
 #include <Gameplay/Player.hpp>
 #include <Gameplay/Game.hpp>
@@ -82,8 +83,14 @@ void StartScreen::renderGui(sf::RenderTarget& target) {
 	Panel p1;
 	Panel ps[w * h];
 	GridLayout g(w, h);
+	Button button;
 	
-	p1.setPosition({ 100.f, 100.f });
+	button.setSprite(sf::Sprite(AssetsManager::getTexture("button_up")));
+	button.setHoldSprite(sf::Sprite(AssetsManager::getTexture("button_down")));
+	button.setPosition({ 110.f, 110.f });
+
+	//p1.setOrigin({ .5f, .5f }); don't know how i feel about this
+	p1.setPosition(InputsManager::getMouseScreenPos());
 	p1.setSprite(sf::Sprite(AssetsManager::getTexture("panel")));
 	p1.addChild(&g);
 
@@ -103,6 +110,7 @@ void StartScreen::renderGui(sf::RenderTarget& target) {
 	for (uint32_t i = 0u; i < w * h; ++i) {
 		ps[i].render(target);
 	}
+	button.render(target);
 		
 	target.setView(oldView);
 }

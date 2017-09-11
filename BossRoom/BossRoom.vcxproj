@@ -157,6 +157,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Graphics\AnimatedSprite.cpp" />
+    <ClCompile Include="src\Graphics\GUI\Button.cpp" />
     <ClCompile Include="src\Graphics\GUI\GridLayout.cpp" />
     <ClCompile Include="src\Graphics\GUI\Label.cpp" />
     <ClCompile Include="src\Graphics\GUI\Panel.cpp" />
@@ -182,6 +183,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Graphics\AnimatedSprite.hpp" />
+    <ClInclude Include="include\Graphics\GUI\Button.hpp" />
     <ClInclude Include="include\Graphics\GUI\GridLayout.hpp" />
     <ClInclude Include="include\Graphics\GUI\Label.hpp" />
     <ClInclude Include="include\Graphics\GUI\Panel.hpp" />

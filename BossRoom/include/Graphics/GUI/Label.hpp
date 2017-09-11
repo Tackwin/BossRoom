@@ -12,12 +12,12 @@ public:
 
 	Label();
 
-	virtual Vector2 getSize() const;
-
 	void setFont(const std::string& fontKey);
 	void setString(const std::string& message);
 	void setTextColor(const sf::Color& color);
 	void setCharSize(const uint32_t& size);
+
+	void computeSize();
 
 	virtual void render(sf::RenderTarget& target);
 

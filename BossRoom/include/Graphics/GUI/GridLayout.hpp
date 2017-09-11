@@ -13,7 +13,7 @@ public:
 	uint32_t getCol();
 
 	void updatePos();
-	Vector2 getSize();
+	void computeSize();
 
 	void setInternalPadding(const Vector2& padding);
 	Vector2 getInternalPadding();

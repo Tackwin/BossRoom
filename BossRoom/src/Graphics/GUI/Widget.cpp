@@ -39,7 +39,7 @@ Widget* const Widget::getParent() {
 
 
 Vector2 Widget::getSize() const {
-	return Vector2();
+	return _size;
 }
 const Vector2& Widget::getOrigin() const {
 	return _origin;
@@ -50,10 +50,14 @@ const Vector2& Widget::getPosition() const {
 Vector2 Widget::getGlobalPosition() const {
 	return _pos + (_parent ? _parent->getGlobalPosition() : Vector2::ZERO);
 }
+bool Widget::isVisible() const {
+	return _visible;
+}
 
 
-
-void Widget::setSize(const Vector2&) {}
+void Widget::setSize(const Vector2& size) {
+	_size = size;
+}
 void Widget::setPosition(const Vector2& pos) {
 	_pos = pos;
 }
@@ -64,6 +68,8 @@ void Widget::setOriginAbs(const Vector2& origin) {
 	_origin.x = origin.x / getSize().x;
 	_origin.y = origin.y / getSize().y;
 }
-
-void Widget::render(sf::RenderTarget&) {
+void Widget::setVisible(bool visible) {
+	_visible = visible;
 }
+
+void Widget::render(sf::RenderTarget&) { }

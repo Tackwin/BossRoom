@@ -26,7 +26,8 @@ uint32_t GridLayout::getCol() {
 }
 
 void GridLayout::updatePos(){
-	Vector2 size = getSize();
+	computeSize();
+	Vector2 size = _size;
 
 	for (uint32_t i = 0u; i < _childs.size(); ++i) {
 		Vector2 pos;
@@ -37,7 +38,7 @@ void GridLayout::updatePos(){
 	}
 }
 
-Vector2 GridLayout::getSize() {
+void GridLayout::computeSize() {
 	Vector2 maxSize;
 	
 	uint32_t n = 0u;
@@ -55,7 +56,7 @@ Vector2 GridLayout::getSize() {
 	}
 breakLoops:
 
-	return _externalPadding + Vector2((maxSize.x + _internalPadding.x) * _col, (maxSize.y + _internalPadding.y) * _row);
+	_size = _externalPadding + Vector2((maxSize.x + _internalPadding.x) * _col, (maxSize.y + _internalPadding.y) * _row);
 }
 
 

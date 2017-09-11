@@ -6,10 +6,12 @@
 class Panel : public Widget {
 public:
 
+	Panel();
+
 	void setSprite(const sf::Sprite& sprite);
 	sf::Sprite& getSprite();
 
-	Vector2 getSize() const;
+	void computeSize();
 
 	void render(sf::RenderTarget& target);
 
