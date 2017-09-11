@@ -1,6 +1,6 @@
-#include "../../include/Graphics/GUI/Label.hpp"
+#include <Graphics/GUI/Label.hpp>
 
-#include "../../include/Managers/AssetsManager.hpp"
+#include <Managers/AssetsManager.hpp>
 
 Label::Label() :
 Widget() {
@@ -33,9 +33,7 @@ void Label::render(sf::RenderTarget & target) {
 		_origin.y * getSize().y
 	});
 
-	_text.setPosition(
-		(_parent.expired() ? Vector2::ZERO : _parent.lock()->getPosition()) + _pos
-	);
+	_text.setPosition(getGlobalPosition());
 
 	target.draw(_text);
 }

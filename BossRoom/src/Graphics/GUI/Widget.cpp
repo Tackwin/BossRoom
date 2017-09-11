@@ -1,4 +1,4 @@
-#include "../../include/Graphics/GUI/Widget.hpp"
+#include <Graphics/GUI/Widget.hpp>
 
 Widget::Widget() {
 }
@@ -47,19 +47,22 @@ const Vector2& Widget::getOrigin() const {
 const Vector2& Widget::getPosition() const {
 	return _pos;
 }
+Vector2 Widget::getGlobalPosition() const {
+	return _pos + (_parent ? _parent->getGlobalPosition() : Vector2::ZERO);
+}
 
-const Vector2& Widget::setPosition(const Vector2& pos) {
+
+
+void Widget::setSize(const Vector2&) {}
+void Widget::setPosition(const Vector2& pos) {
 	_pos = pos;
-	return _pos;
 }
-const Vector2& Widget::setOrigin(const Vector2& origin) {
+void Widget::setOrigin(const Vector2& origin) {
 	_origin = origin;
-	return _origin;
 }
-const Vector2& Widget::setOriginAbs(const Vector2& origin) {
+void Widget::setOriginAbs(const Vector2& origin) {
 	_origin.x = origin.x / getSize().x;
 	_origin.y = origin.y / getSize().y;
-	return _origin;
 }
 
 void Widget::render(sf::RenderTarget&) {

@@ -4,8 +4,8 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "Widget.hpp"
 #include "../../include/Math/Vector2.hpp"
-#include "../../include/Graphics/GUI/Widget.hpp"
 
 class Label : public Widget {
 public:

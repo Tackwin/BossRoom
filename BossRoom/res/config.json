@@ -90,6 +90,9 @@
 		},
 		"panel": {
 			"sheet": "images/panel.png"
+		},
+		"panel2": {
+			"sheet": "images/panel2.png"
 		}
 	},
 	"sounds":{

@@ -104,13 +104,16 @@
     <ClCompile Include="src\Screens\StartScreen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Graphics\Panel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Graphics\GUI\Widget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Graphics\GUI\Label.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\GUI\Panel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\GUI\GridLayout.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -176,9 +179,10 @@
     <ClInclude Include="include\Graphics\ParticleGenerator.hpp" />
     <ClInclude Include="include\Graphics\AnimatedSprite.hpp" />
     <ClInclude Include="include\Screens\StartScreen.hpp" />
-    <ClInclude Include="include\Graphics\Panel.hpp" />
     <ClInclude Include="include\Graphics\GUI\Widget.hpp" />
     <ClInclude Include="include\Graphics\GUI\Label.hpp" />
+    <ClInclude Include="include\Graphics\GUI\Panel.hpp" />
+    <ClInclude Include="include\Graphics\GUI\GridLayout.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\BossRoom\res\config.json">

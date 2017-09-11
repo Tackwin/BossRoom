@@ -78,6 +78,7 @@
     <EnableCppCoreCheck>true</EnableCppCoreCheck>
     <CodeAnalysisRuleSet>D:\Program Files (x86)\Visual Studio 2017\Team Tools\Static Analysis Tools\Rule Sets\MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>false</RunCodeAnalysis>
+    <SourcePath>C:\Code\cpp\BossRoom\BossRoom\include;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>C:\Code\cpp\BossRoom\BossRoom\include;C:\SFML\include;C:\Code\cpp\enTT\src;C:\SFML\extlibs\headers;C:\glfw\include;D:\VulkanSDK\1.0.57.0\Include;$(IncludePath)</IncludePath>
@@ -85,6 +86,7 @@
     <CodeAnalysisRuleSet>D:\Program Files (x86)\Visual Studio 2017\Team Tools\Static Analysis Tools\Rule Sets\MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <EnableCppCoreCheck>true</EnableCppCoreCheck>
+    <SourcePath>C:\Code\cpp\BossRoom\BossRoom\include;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -155,9 +157,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Graphics\AnimatedSprite.cpp" />
+    <ClCompile Include="src\Graphics\GUI\GridLayout.cpp" />
     <ClCompile Include="src\Graphics\GUI\Label.cpp" />
+    <ClCompile Include="src\Graphics\GUI\Panel.cpp" />
     <ClCompile Include="src\Graphics\GUI\Widget.cpp" />
-    <ClCompile Include="src\Graphics\Panel.cpp" />
     <ClCompile Include="src\Graphics\Particle.cpp" />
     <ClCompile Include="src\Graphics\ParticleGenerator.cpp" />
     <ClCompile Include="src\Managers\AssetsManager.cpp" />
@@ -179,9 +182,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Graphics\AnimatedSprite.hpp" />
+    <ClInclude Include="include\Graphics\GUI\GridLayout.hpp" />
     <ClInclude Include="include\Graphics\GUI\Label.hpp" />
+    <ClInclude Include="include\Graphics\GUI\Panel.hpp" />
     <ClInclude Include="include\Graphics\GUI\Widget.hpp" />
-    <ClInclude Include="include\Graphics\Panel.hpp" />
     <ClInclude Include="include\Graphics\Particle.hpp" />
     <ClInclude Include="include\Graphics\ParticleGenerator.hpp" />
     <ClInclude Include="include\Managers\AssetsManager.hpp" />

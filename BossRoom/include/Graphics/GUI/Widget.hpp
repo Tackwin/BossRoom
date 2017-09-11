@@ -23,11 +23,13 @@ public:
 
 	virtual Vector2 getSize() const;
 	const Vector2& getOrigin() const;
+	Vector2 getGlobalPosition() const;
 	const Vector2& getPosition() const;
 
-	const Vector2& setPosition(const Vector2& pos);
-	const Vector2& setOrigin(const Vector2& origin);
-	const Vector2& setOriginAbs(const Vector2& origin);
+	virtual void setSize(const Vector2& size);
+	void setPosition(const Vector2& pos);
+	void setOrigin(const Vector2& origin);
+	void setOriginAbs(const Vector2& origin);
 
 	void addChild(Widget* const child);
 	bool haveChild(const Widget* const child);
@@ -41,7 +43,7 @@ protected:
 	Vector2 _pos;
 	Vector2 _origin;
 
-	Widget* _parent; //like, why do i even bother raw pointer mean, I DON'T HAVE THE OWNERSHIP, it settles it
+	Widget* _parent = nullptr; //like, why do i even bother raw pointer mean, I DON'T HAVE THE OWNERSHIP, it settles it
 	std::vector<Widget*> _childs;
 
 	Callback _onHover;

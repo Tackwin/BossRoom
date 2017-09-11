@@ -6,7 +6,7 @@
 #include "Global/Const.hpp"
 #include "Math/Vector2.hpp"
 #include "Screens/Screen.hpp"
-#include "../../include/Graphics/Panel.hpp"
+#include <Graphics/GUI/Panel.hpp>
 
 class Level;
 class Player;

@@ -2,38 +2,18 @@
 
 #include <algorithm>
 
-#include "Managers/AssetsManager.hpp"
-#include "Managers/InputsManager.hpp"
-#include "Gameplay/Projectile.hpp"
-#include "Gameplay/Weapon.hpp"
-#include "Gameplay/Player.hpp"
-#include "Gameplay/Game.hpp"
-#include "Global/Const.hpp"
-
-struct A {
-
-};
-struct B : public A {
-
-};
+#include <Managers/AssetsManager.hpp>
+#include <Managers/InputsManager.hpp>
+#include <Gameplay/Projectile.hpp>
+#include <Gameplay/Weapon.hpp>
+#include <Gameplay/Player.hpp>
+#include <Gameplay/Game.hpp>
+#include <Global/Const.hpp>
 
 StartScreen::StartScreen():
 	_playerView({ WIDTH / 2.f, HEIGHT / 2.f }, { (float)WIDTH, (float)HEIGHT }),
 	_guiView({ WIDTH / 2.f, HEIGHT / 2.f }, { (float)WIDTH, (float)HEIGHT })
 	{
-	//_widgetTest1 = std::make_shared<Widget>();
-	//_widgetTest2 = std::make_shared<Label>();
-
-	_widgetTest1 = std::make_shared<Widget>();
-	std::shared_ptr<Label> label = std::make_shared<Label>();
-
-	_widgetTest2 = std::dynamic_pointer_cast<Widget>(label);
-
-	label->setFont("consola");
-	label->setTextColor(sf::Color::Blue);
-	label->setString("<Lorem Ipsum>");
-	label->setOrigin({ .5f, .0f });
-	label->setParent(std::weak_ptr<Widget>(_widgetTest1));
 }
 
 
@@ -51,8 +31,6 @@ void StartScreen::onExit() {
 void StartScreen::update(float dt) {
 	_projectiles.insert(_projectiles.end(), _player->_projectilesToShoot.begin(), _player->_projectilesToShoot.end());
 	_player->_projectilesToShoot.clear();
-
-	_widgetTest1->setPosition(InputsManager::getMouseScreenPos());
 
 	_player->update(dt);
 	for (auto& p : _projectiles)
@@ -98,10 +76,34 @@ void StartScreen::renderGui(sf::RenderTarget& target) {
 		weaponGuiSprite.setPosition({ WIDTH - 50.f, HEIGHT - 50.f });
 		target.draw(weaponGuiSprite);
 	}
-		
-	_widgetTest1->render(target);
-	_widgetTest2->render(target);
+	constexpr uint32_t w = 4u;
+	constexpr uint32_t h = 4u;
 
+	Panel p1;
+	Panel ps[w * h];
+	GridLayout g(w, h);
+	
+	p1.setPosition({ 100.f, 100.f });
+	p1.setSprite(sf::Sprite(AssetsManager::getTexture("panel")));
+	p1.addChild(&g);
+
+	g.setExternalPadding({ 5.f, 5.f });
+	g.setInternalPadding({ 1.f, 1.f });
+
+	for (uint32_t i = 0u; i < h; ++i) {
+		for (uint32_t j = 0u; j < w; ++j) {
+			sf::Sprite spr(AssetsManager::getTexture("panel2"));
+			ps[i * w + j].setSprite(spr);
+			g.addChild(&ps[i * w + j]);
+		}
+	}
+	g.updatePos();
+
+	p1.render(target);
+	for (uint32_t i = 0u; i < w * h; ++i) {
+		ps[i].render(target);
+	}
+		
 	target.setView(oldView);
 }
 
