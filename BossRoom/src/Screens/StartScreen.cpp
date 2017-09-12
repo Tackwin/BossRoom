@@ -15,6 +15,21 @@ StartScreen::StartScreen():
 	_playerView({ WIDTH / 2.f, HEIGHT / 2.f }, { (float)WIDTH, (float)HEIGHT }),
 	_guiView({ WIDTH / 2.f, HEIGHT / 2.f }, { (float)WIDTH, (float)HEIGHT })
 	{
+
+	_guiRoot.setPosition({ 0.f, 0.f });
+
+	_weaponIcon.setOrigin({ 1.f, 1.f });
+	_weaponIcon.setPosition({ (float)WIDTH, (float)HEIGHT});
+	
+	_weaponLabel.setFont("consola");
+	_weaponLabel.setCharSize(15u);
+	_weaponLabel.setString("Weapon");
+	_weaponLabel.setOrigin({ 0.f, 1.f });
+	_weaponLabel.setPosition(_weaponIcon.getSize() * (-1.f));
+
+	_weaponIcon.addChild(&_weaponLabel);
+
+	_guiRoot.addChild(&_weaponIcon);
 }
 
 
@@ -72,48 +87,14 @@ void StartScreen::renderGui(sf::RenderTarget& target) {
 	const auto oldView = target.getView();
 	target.setView(_guiView);
 	
+	_weaponIcon.setVisible((bool)_player->_weapon);
 	if (_player->_weapon) {
-		auto& weaponGuiSprite = _player->_weapon->_uiSprite;
-		weaponGuiSprite.setPosition({ WIDTH - 50.f, HEIGHT - 50.f });
-		target.draw(weaponGuiSprite);
+		_weaponIcon.setSprite(_player->_weapon->_uiSprite);
+		_weaponLabel.setPosition(_weaponIcon.getSize() * (-1.f));
 	}
-	constexpr uint32_t w = 4u;
-	constexpr uint32_t h = 4u;
 
-	Widget root;
+	_guiRoot.propagateRender(target);
 
-	Panel p1;
-	Panel ps[w * h];
-	GridLayout g(w, h);
-	
-	button.setSprite(sf::Sprite(AssetsManager::getTexture("button_up")));
-	button.setHoldSprite(sf::Sprite(AssetsManager::getTexture("button_down")));
-	button.setPosition({ 110.f, 110.f });
-
-	//p1.setOrigin({ .5f, .5f }); don't know how i feel about this
-	p1.setPosition(InputsManager::getMouseScreenPos());
-	p1.setSprite(sf::Sprite(AssetsManager::getTexture("panel")));
-	p1.addChild(&g);
-
-
-	g.setExternalPadding({ 5.f, 5.f });
-	g.setInternalPadding({ 1.f, 1.f });
-
-	for (uint32_t i = 0u; i < h; ++i) {
-		for (uint32_t j = 0u; j < w; ++j) {
-			sf::Sprite spr(AssetsManager::getTexture("panel2"));
-			ps[i * w + j].setSprite(spr);
-			g.addChild(&ps[i * w + j]);
-		}
-	}
-	g.updatePos();
-
-	root.addChild(&p1);
-	root.addChild(&button);
-
-	root.propagateRender(target);
-	root.propagateInput();
-		
 	target.setView(oldView);
 }
 

@@ -49,6 +49,7 @@ private:
 
 	bool _isInShop = false;
 
-	Button button;
-
+	Widget _guiRoot;
+	Panel _weaponIcon;
+	Label _weaponLabel;
 };

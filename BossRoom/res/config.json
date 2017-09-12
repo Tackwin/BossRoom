@@ -99,6 +99,9 @@
 		},
 		"button_down": {
 			"sheet": "images/button_down.png"
+		},
+		"potion_feu": {
+			"sheet": "images/pot_feu.png"
 		}
 	},
 	"sounds":{
