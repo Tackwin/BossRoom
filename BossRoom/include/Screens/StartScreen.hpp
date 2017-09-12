@@ -11,6 +11,7 @@
 #include <Graphics/GUI/Widget.hpp>
 #include <Graphics/GUI/Label.hpp>
 #include <Graphics/GUI/Panel.hpp>
+#include <Graphics/GUI/Button.hpp>
 #include <Graphics/GUI/GridLayout.hpp>
 
 
@@ -47,4 +48,7 @@ private:
 	std::shared_ptr<Player> _player;
 
 	bool _isInShop = false;
+
+	Button button;
+
 };

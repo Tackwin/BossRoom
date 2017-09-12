@@ -2,7 +2,16 @@
 
 Button::Button() : 
 Widget() {
+	_onClick.began = [&]() mutable {
+		_normal.setVisible(false);
+		_hold.setVisible(true);
+	};
+	_onClick.ended = [&]() mutable {
+		_normal.setVisible(true);
+		_hold.setVisible(false);
+	};
 
+	_hold.setVisible(false);
 }
 
 sf::Sprite& Button::getSprite() {

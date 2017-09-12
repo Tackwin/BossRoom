@@ -47,7 +47,7 @@ int main(int, char**) {
 		C::game->update(dt > MIN_MS ? dt : MIN_MS);
 		return false;
 	});
-	const auto& renderKey = TimerManager::addFunction(0, "render", [&window](float)mutable->bool {
+	const auto& renderKey = TimerManager::addFunction(MAX_FPS == 0.f ? 0.f : 1.f / MAX_FPS, "render", [&window](float)mutable->bool {
 		static uint64_t i = 0;
 		Clock c;
 		if (window.isOpen()) {

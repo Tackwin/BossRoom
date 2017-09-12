@@ -37,16 +37,22 @@ public:
 	bool haveChild(const Widget* const child);
 	void setParent(Widget* const parent);
 	Widget* const getParent();
+	const std::vector<Widget*> getChilds();
 
 	virtual void render(sf::RenderTarget& target);
+	void propagateRender(sf::RenderTarget& target);
 
-protected:
+	void input();
+	void propagateInput();
+
+protected: //god this is growing into a god class... :(
 
 	Vector2 _pos;
 	Vector2 _size;
 	Vector2 _origin;
 
 	bool _visible = true;
+	bool _passThrough = false;
 
 	Widget* _parent = nullptr; //like, why do i even bother raw pointer mean, I DON'T HAVE THE OWNERSHIP, it settles it
 	std::vector<Widget*> _childs;

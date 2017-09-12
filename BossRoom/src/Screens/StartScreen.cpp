@@ -80,10 +80,11 @@ void StartScreen::renderGui(sf::RenderTarget& target) {
 	constexpr uint32_t w = 4u;
 	constexpr uint32_t h = 4u;
 
+	Widget root;
+
 	Panel p1;
 	Panel ps[w * h];
 	GridLayout g(w, h);
-	Button button;
 	
 	button.setSprite(sf::Sprite(AssetsManager::getTexture("button_up")));
 	button.setHoldSprite(sf::Sprite(AssetsManager::getTexture("button_down")));
@@ -93,6 +94,7 @@ void StartScreen::renderGui(sf::RenderTarget& target) {
 	p1.setPosition(InputsManager::getMouseScreenPos());
 	p1.setSprite(sf::Sprite(AssetsManager::getTexture("panel")));
 	p1.addChild(&g);
+
 
 	g.setExternalPadding({ 5.f, 5.f });
 	g.setInternalPadding({ 1.f, 1.f });
@@ -106,11 +108,11 @@ void StartScreen::renderGui(sf::RenderTarget& target) {
 	}
 	g.updatePos();
 
-	p1.render(target);
-	for (uint32_t i = 0u; i < w * h; ++i) {
-		ps[i].render(target);
-	}
-	button.render(target);
+	root.addChild(&p1);
+	root.addChild(&button);
+
+	root.propagateRender(target);
+	root.propagateInput();
 		
 	target.setView(oldView);
 }
