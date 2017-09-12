@@ -40,8 +40,12 @@ void Application::initializeWindow() {
 
 	glfwInit();
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-	glfwWindowHint(GLFW_RESIZABLE, false);
+	glfwWindowHint(GLFW_RESIZABLE, true);
+
 	_window = glfwCreateWindow(_width, _height, _title.c_str(), nullptr, nullptr);
+
+	glfwSetWindowUserPointer(_window, this);
+	glfwSetWindowSizeCallback(_window, Application::onWindowResized);
 }
 
 void Application::initializeVulkan() {
@@ -374,7 +378,12 @@ VkExtent2D Application::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabil
 	if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
 		return capabilities.currentExtent;
 	}
-	VkExtent2D extent = { _width, _height };
+
+	int32_t width = 0;
+	int32_t height = 0;
+	glfwGetWindowSize(_window, &width, &height);
+
+	VkExtent2D extent = { (uint32_t)width, (uint32_t)height };
 	extent.width = std::clamp(_width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
 	extent.height = std::clamp(_height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
 	return extent;
@@ -396,7 +405,7 @@ void Application::createImageViews() {
 		createInfo.subresourceRange.baseMipLevel = 0u;
 		createInfo.subresourceRange.levelCount = 1u;
 		createInfo.subresourceRange.baseArrayLayer = 0u;
-		createInfo.subresourceRange.layerCount = 0u;
+		createInfo.subresourceRange.layerCount = 1u;
 
 		if (vkCreateImageView(_device, &createInfo, nullptr, &_swapChainImageViews[i]) != VK_SUCCESS) {
 			throw std::runtime_error("Couldn't create an image viex :(");
@@ -662,6 +671,31 @@ void Application::createSemaphores() {
 	}
 }
 
+void Application::cleanupSwapChain() {
+	for (size_t i = 0u; i < _swapChainFrameBuffers.size(); ++i) {
+		vkDestroyFramebuffer(_device, _swapChainFrameBuffers[i], nullptr);
+	}
+	vkFreeCommandBuffers(_device, _commandPool, (uint32_t)_commandBuffers.size(), _commandBuffers.data());
+	vkDestroyPipeline(_device, _graphicsPipeline, nullptr);
+	vkDestroyPipelineLayout(_device, _pipelineLayout, nullptr);
+	vkDestroyRenderPass(_device, _renderPass, nullptr);
+	for (auto& view : _swapChainImageViews)
+		vkDestroyImageView(_device, view, nullptr);
+	vkDestroySwapchainKHR(_device, _swapChain, nullptr);
+}
+void Application::recreateSwapChain() {
+	vkDeviceWaitIdle(_device);
+
+	cleanupSwapChain();
+
+	createSwapChain();
+	createImageViews();
+	createRenderPass();
+	createGraphicsPipeline();
+	createFrameBuffers();
+	createCommandBuffer();
+}
+
 
 void Application::loop() {
 	while (!glfwWindowShouldClose(_window)) {
@@ -672,7 +706,16 @@ void Application::loop() {
 }
 void Application::render() {
 	uint32_t imageIndex = 0u;
-	vkAcquireNextImageKHR(_device, _swapChain, std::numeric_limits<uint32_t>::max(), _imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
+
+	
+	if (VkResult result = vkAcquireNextImageKHR(_device, _swapChain, std::numeric_limits<uint32_t>::max(), _imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
+		result == VK_ERROR_OUT_OF_DATE_KHR) {
+		recreateSwapChain();
+		return;
+	}
+	else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+		throw std::runtime_error("Couldn't acquire next image :(");
+	}
 
 	VkSubmitInfo submitInfo = {};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -702,10 +745,23 @@ void Application::render() {
 	presentInfo.pImageIndices = &imageIndex;
 	presentInfo.pResults = nullptr;
 
-	if (vkQueuePresentKHR(_presentQueue, &presentInfo) != VK_SUCCESS) {
+	if (VkResult result = vkQueuePresentKHR(_presentQueue, &presentInfo);
+		result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) {
+		recreateSwapChain();
+	}
+	else if (result != VK_SUCCESS) {
 		throw std::runtime_error("Couldn't submit image to swap chain :(");
 	}
+
 	vkQueueWaitIdle(_presentQueue);
+}
+
+void Application::onWindowResized(GLFWwindow* window, int32_t width, int32_t height) {
+	if (width == 0 || height == 0)
+		return;
+
+	Application* app = reinterpret_cast<Application*>(glfwGetWindowUserPointer(window));
+	app->recreateSwapChain();
 }
 
 std::vector<const char*> Application::getRequiredExtensions() {
@@ -735,16 +791,8 @@ VKAPI_ATTR VkBool32 VKAPI_CALL Application::debugCallback(
 void Application::cleanup() {
 	vkDestroySemaphore(_device, _imageAvailableSemaphore, nullptr);
 	vkDestroySemaphore(_device, _renderFinishedSemaphore, nullptr);
+	cleanupSwapChain();
 	vkDestroyCommandPool(_device, _commandPool, nullptr);
-	for (size_t i = 0u; i < _swapChainFrameBuffers.size(); ++i) {
-		vkDestroyFramebuffer(_device, _swapChainFrameBuffers[i], nullptr);
-	}
-	vkDestroyPipeline(_device, _graphicsPipeline, nullptr);
-	vkDestroyPipelineLayout(_device, _pipelineLayout, nullptr);
-	vkDestroyRenderPass(_device, _renderPass, nullptr);
-	for (auto& view : _swapChainImageViews)
-		vkDestroyImageView(_device, view, nullptr);
-	vkDestroySwapchainKHR(_device, _swapChain, nullptr);
 	vkDestroySurfaceKHR(_vulkanInstance, _surface, nullptr);
 	vkDestroyDevice(_device, nullptr);
 	DestroyDebugReportCallbackEXT(_vulkanInstance, _debugCallback, nullptr);

@@ -61,8 +61,16 @@ private:
 		void createCommandPool();
 		void createCommandBuffer();
 		void createSemaphores();
+
+	void cleanupSwapChain();
+	void recreateSwapChain();
+
+	static void onWindowResized(GLFWwindow* window, int32_t width, int32_t height);
+
 	void loop();
 		void render();
+	
+		
 	void cleanup();
 
 	std::vector<const char*> getRequiredExtensions();
