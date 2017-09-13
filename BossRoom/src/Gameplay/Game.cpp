@@ -21,7 +21,7 @@ Game::Game()
 	Boss::createBosses();
 	Level::createLevels();
 
-	auto weapon = std::make_shared<Weapon>(*Weapon::_weapons[0]);
+	auto weapon = std::make_shared<Weapon>(*Weapon::_weapons[3]);
 	_player->swapWeapon(weapon);
 
 	_debugText["ups"].setFont(AssetsManager::getFont("consola"));

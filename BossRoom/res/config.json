@@ -102,12 +102,16 @@
 		},
 		"potion_feu": {
 			"sheet": "images/pot_feu.png"
+		},
+		"sword": {
+			"sheet": "images/sword.png"
 		}
 	},
 	"sounds":{
 		"shoot": "sounds/shoot.wav",
 		"shoot2": "sounds/shoot2.wav",
-		"hit": "sounds/hit.wav"
+		"hit": "sounds/hit.wav",
+		"sword": "sounds/sword.wav"
 	},
 	"fonts":{
 		"consola": "fonts/consola.ttf"
@@ -358,7 +362,7 @@
 			"radius": 10,
 			"sprite": "weapon0",
 			"sounds": {
-				"active": [ "sounds/shoot1.wav" ]
+				"active": [ "sounds/shoot.wav" ]
 			},
 
 			"projectile": {
@@ -375,7 +379,7 @@
 			"radius": 10,
 			"sprite": "weapon1",
 			"sounds": {
-				"active": [ "sounds/shoot1.wav" ]
+				"active": [ "sounds/shoot.wav" ]
 			},
 
 			"projectile": {
@@ -393,7 +397,7 @@
 			"radius": 10,
 			"sprite": "weapon2",
 			"sounds": {
-				"active": [ "sounds/shoot1.wav" ]
+				"active": [ "sounds/shoot.wav" ]
 			},
 
 			"projectile": {
@@ -403,6 +407,18 @@
 				"lifespan": 3,
 				"destroyOthers": false,
 				"sprite": "projectiles-1"
+			}
+		},
+		{
+			"cooldowns": [0.7],
+			"sprite":  "sword",
+			"sound": "sword",
+			"radius": 10,
+			"damage": 10,
+			"remainTime":  0.2,
+			"collider": {
+				"type": "disk",
+				"r": 10
 			}
 		}
 	],

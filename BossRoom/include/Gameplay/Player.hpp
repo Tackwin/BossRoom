@@ -8,6 +8,7 @@
 #include "3rd/json.hpp"
 
 #include "Graphics/AnimatedSprite.hpp"
+#include <Physics/Collider.hpp>
 #include "Global/Const.hpp"
 #include "Math/Vector2.hpp"
 
@@ -57,6 +58,8 @@ public: //TODO: Make private
 	float _dashRange;
 	float _slowSpeed;
 	float _invincibilityTime;
+
+	Disk _disk;
 
 	std::string _projectilesKey;
 

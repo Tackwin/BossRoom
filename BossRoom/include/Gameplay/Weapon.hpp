@@ -10,6 +10,7 @@
 
 #include "Math/Vector2.hpp"
 #include "Global/Const.hpp"
+#include <Physics/Collider.hpp>
 
 
 class Player;
@@ -51,6 +52,8 @@ public: //TODO: Make this private
 
 	bool _loot = false;
 	bool _lootable = false;
+
+	Disk _disk;
 
 	std::vector<sf::Sound> _activeSounds;
 

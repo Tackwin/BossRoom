@@ -5,6 +5,7 @@
 #include "Managers/InputsManager.hpp"
 #include "Managers/TimerManager.hpp"
 #include "Gameplay/Projectile.hpp"
+#include <Physics/Collider.hpp>
 #include "Gameplay/Player.hpp"
 #include "Gameplay/Level.hpp"
 #include "Gameplay/Game.hpp"
@@ -140,6 +141,47 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 		AssetsManager::loadSound(sound1Str, ASSETS_PATH + sound1Str);
 		weapon->_activeSounds.push_back(sf::Sound(AssetsManager::getSound(sound1Str)));
 	}
+	{
+		_weapons.push_back(std::make_shared<Weapon>(player, AssetsManager::getJson(JSON_KEY)["weapons"][3]));
+		auto& weapon = _weapons[3];
+		weapon->_equip = [](Weapon& me)mutable->void {
+			me._loot = false;
+
+			me._keys.push_back(TimerManager::addFunction(me._json["cooldowns"][0], "1-cd", [&me](float)mutable->bool {
+				me._flags |= 1;
+				TimerManager::pauseFunction(me._keys[0]);
+				return false;
+			}));
+		};
+		weapon->_unEquip = [](Weapon& me)mutable->void {
+			for (auto& k : me._keys) {
+				if (TimerManager::functionsExist(k))
+					TimerManager::removeFunction(k);
+			}
+			me._keys.clear();
+		};
+
+		weapon->_active = [](Weapon& me, uint32)mutable->void {
+			if ((me._flags & 1) == 1) {
+				me._flags ^= 1;
+				TimerManager::resumeFunction(me._keys[0]);
+
+				auto level = me._player->_level;
+				Zone z;
+				z.disk.r = 50.f;
+				z.disk.pos = InputsManager::getMouseScreenPos();
+				z.entered = [](const Collider&) {
+					printf("player");
+				};
+				level->_zones.push_back(z);
+				TimerManager::addFunction(getJsonValue<float>(me._json, "remainTime"), "", [&z = level->_zones.back()](float)->bool {
+					z.toRemove = true;
+					return true;
+				});
+			}
+		};
+		weapon->_activeSounds.push_back(sf::Sound(AssetsManager::getSound(weapon->_json["sound"])));
+	}
 }
 void Weapon::destroyWeapons() {
 	_weapons.clear();
@@ -150,6 +192,8 @@ Weapon::Weapon(std::shared_ptr<Player> player, nlohmann::json json)
 	: _player(player),
 	_json(json),
 	_radius(json["radius"]){
+
+	_disk.r = _radius;
 
 	_lootedSprite = sf::Sprite(AssetsManager::getTexture(_json["sprite"]));
 	_uiSprite = sf::Sprite(AssetsManager::getTexture(_json["sprite"]));
@@ -178,6 +222,8 @@ Weapon::Weapon(const Weapon& other) :
 	
 	_activeSounds(other._activeSounds),
 	_lootedPos(other._lootedPos) {
+
+	_disk.r = _radius;
 
 	const std::string& str = _json["sprite"];
 
@@ -226,4 +272,5 @@ void Weapon::passive(uint32 id) {
 
 void Weapon::update(float dt) {
 	_update(*this, dt);
+	_disk.pos = _lootedSprite.getPosition();
 }

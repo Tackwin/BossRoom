@@ -21,6 +21,8 @@ Projectile::Projectile(nlohmann::json json, Vector2 pos, Vector2 dir, bool playe
 	_lifespan = getJsonValue<float>(json, "lifespan");
 	_destroyOthers = json["destroyOthers"];
 
+	_disk.r = _radius;
+
 	std::uniform_int_distribution<int32> dist(0, 2);
 
 	_sprite = sf::Sprite(AssetsManager::getTexture(json["sprite"]));
@@ -51,11 +53,14 @@ Projectile::~Projectile() {
 void Projectile::update(float dt) {
 	_pos += _dir * _speed * dt;
 	_update(*this, dt);
+
+	_disk.pos = _pos;
 }
 
 void Projectile::render(sf::RenderTarget &target) {
 	_sprite.setPosition(_pos);
 	target.draw(_sprite);
+	_disk.render(target);
 }
 
 void Projectile::changeLifespan(float) {

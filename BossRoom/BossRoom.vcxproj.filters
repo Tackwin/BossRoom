@@ -119,6 +119,15 @@
     <ClCompile Include="src\Graphics\GUI\Button.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Gameplay\Zone.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Physics\Collider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Physics\World.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Managers\AssetsManager.hpp">
@@ -187,6 +196,10 @@
     <ClInclude Include="include\Graphics\GUI\Panel.hpp" />
     <ClInclude Include="include\Graphics\GUI\GridLayout.hpp" />
     <ClInclude Include="include\Graphics\GUI\Button.hpp" />
+    <ClInclude Include="include\Math\Vec.hpp" />
+    <ClInclude Include="include\Gameplay\Zone.hpp" />
+    <ClInclude Include="include\Physics\Collider.hpp" />
+    <ClInclude Include="include\Physics\World.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\BossRoom\res\config.json">

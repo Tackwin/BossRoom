@@ -35,7 +35,7 @@ namespace C {
 	constexpr unsigned int WIDTH = 1280;
 	constexpr unsigned int HEIGHT = 720;
 
-	constexpr unsigned int MAX_FPS = 0;
+	constexpr unsigned int MAX_FPS = 60;
 
 	constexpr unsigned int N_LEVEL = 5;
 

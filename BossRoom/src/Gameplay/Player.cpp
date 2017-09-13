@@ -14,6 +14,7 @@ using namespace nlohmann;
 Player::Player(const nlohmann::json& json) :
 	_json(json),
 	_hitSound(AssetsManager::getSound("hit")){
+	_disk.userPtr = this;
 }
 
 Player::~Player() {
@@ -44,6 +45,8 @@ void Player::initializeJson() {
 
 	_sprite.getSprite().setOrigin(_sprite.getSprite().getGlobalBounds().width / 2.f, _sprite.getSprite().getGlobalBounds().height / 2.f);
 	_sprite.getSprite().setPosition(_pos);
+
+	_disk.r = _radius;
 }
 
 
@@ -88,11 +91,14 @@ void Player::update(float dt) {
 	if (tryingToShoot) {
 		_weapon->active(0);
 	}
+
+	_disk.pos = _pos;
 }
 
 void Player::render(sf::RenderTarget &target) {
 	_sprite.getSprite().setPosition(_pos);
 	_sprite.render(target);
+	_disk.render(target);
 }
 void Player::shoot() {
 	_sprite.pushAnim("action");

@@ -8,6 +8,7 @@
 #include "3rd/json.hpp"
 
 #include "Graphics/AnimatedSprite.hpp"
+#include <Physics/Collider.hpp>
 #include "Math/Rectangle.hpp"
 #include "Math/Vector2.hpp"
 
@@ -47,6 +48,8 @@ public: //TODO: make this private
 	Vector2 _pos;
 	float _radius;
 	sf::Color _color;
+
+	Disk _disk;
 
 	Level* _level;
 

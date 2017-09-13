@@ -7,6 +7,7 @@
 
 #include "Math/Vector2.hpp"
 #include "Global/Const.hpp"
+#include <Physics/Collider.hpp>
 
 class Projectile {
 public:
@@ -35,6 +36,8 @@ public:
 	bool _remove = false;
 	bool _damageable = true;
 	bool _destroyOthers = false;
+
+	Disk _disk;
 
 	sf::Sprite _sprite;
 

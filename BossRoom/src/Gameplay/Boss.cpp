@@ -189,6 +189,8 @@ void Boss::enterLevel(Level* level) {
 	_sprite.getSprite().setOrigin(_sprite.getSize() / 2);
 	_sprite.getSprite().setScale(-(4 * _radius) / _sprite.getSize().x, (4 * _radius) / _sprite.getSize().y);
 
+	_disk.r = _radius;
+
 	_init(*this);
 }
 void Boss::exitLevel() {
@@ -212,12 +214,15 @@ void Boss::die() {
 
 void Boss::update(float dt) {
 	_update(dt, *this);
+
+	_disk.pos = _pos;
 }
 
 void Boss::render(sf::RenderTarget &target) {
 	_sprite.getSprite().setPosition(_pos);
 	_sprite.getSprite().setColor(_color);
 	_sprite.render(target);
+	_disk.render(target);
 }
 
 void Boss::hit(unsigned int d) {
