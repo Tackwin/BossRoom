@@ -171,6 +171,7 @@
     <ClCompile Include="src\Gameplay\Game.cpp" />
     <ClCompile Include="src\Managers\InputsManager.cpp" />
     <ClCompile Include="src\Gameplay\Level.cpp" />
+    <ClCompile Include="src\Physics\Object.cpp" />
     <ClCompile Include="src\Physics\World.cpp" />
     <ClCompile Include="src\Screens\LevelScreen.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -204,6 +205,7 @@
     <ClInclude Include="include\3rd\json.hpp" />
     <ClInclude Include="include\Gameplay\Level.hpp" />
     <ClInclude Include="include\Math\Vec.hpp" />
+    <ClInclude Include="include\Physics\Object.hpp" />
     <ClInclude Include="include\Physics\World.hpp" />
     <ClInclude Include="include\Screens\LevelScreen.hpp" />
     <ClInclude Include="include\Gameplay\Patterns.hpp" />

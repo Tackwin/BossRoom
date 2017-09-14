@@ -13,6 +13,7 @@
 #include <Graphics/GUI/Panel.hpp>
 #include <Graphics/GUI/Button.hpp>
 #include <Graphics/GUI/GridLayout.hpp>
+#include <Physics/World.hpp>
 
 
 class Player;
@@ -48,6 +49,8 @@ private:
 	std::shared_ptr<Player> _player;
 
 	bool _isInShop = false;
+
+	World world;
 
 	Widget _guiRoot;
 	Panel _weaponIcon;

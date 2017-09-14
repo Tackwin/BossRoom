@@ -26,8 +26,8 @@ void Player::initializeJson() {
 	_speed = _json["speed"];
 	_radius = _json["radius"];
 	_dashRange = _json["dash"];
-	_pos.x = _json["startpos"]["x"];
-	_pos.y = _json["startpos"]["y"];
+	pos.x = _json["startpos"]["x"];
+	pos.y = _json["startpos"]["y"];
 	_slowSpeed = _json["specialSpeed"];
 
 	_AK = _json["actionButton"];
@@ -44,7 +44,7 @@ void Player::initializeJson() {
 	_sprite.pushAnim("idle");
 
 	_sprite.getSprite().setOrigin(_sprite.getSprite().getGlobalBounds().width / 2.f, _sprite.getSprite().getGlobalBounds().height / 2.f);
-	_sprite.getSprite().setPosition(_pos);
+	_sprite.getSprite().setPosition(pos);
 
 	_disk.r = _radius;
 }
@@ -60,7 +60,7 @@ void Player::exitLevel() {
 	_level = nullptr;
 }
 
-void Player::update(float dt) {
+void Player::update(float) {
 	bool tryingToShoot = game->_distance && InputsManager::isMousePressed(_AK);
 
 	if (!_freeze) {
@@ -83,20 +83,21 @@ void Player::update(float dt) {
 			_dir *= .2f;
 
 		if (InputsManager::isKeyJustPressed(_dashK)) {
-			_pos += getDirToFire() * _dashRange;
+			pos += getDirToFire() * _dashRange;
 		}
-		_pos += _dir * (float)(InputsManager::isKeyPressed(_slowK) ? _slowSpeed : _speed) * dt;
+		velocity = _dir * (float)(InputsManager::isKeyPressed(_slowK) ? _slowSpeed : _speed);
+		//pos += _dir * (float)(InputsManager::isKeyPressed(_slowK) ? _slowSpeed : _speed) * dt;
 	}
 
 	if (tryingToShoot) {
 		_weapon->active(0);
 	}
 
-	_disk.pos = _pos;
+	_disk.pos = pos;
 }
 
 void Player::render(sf::RenderTarget &target) {
-	_sprite.getSprite().setPosition(_pos);
+	_sprite.getSprite().setPosition(pos);
 	_sprite.render(target);
 	_disk.render(target);
 }
@@ -135,8 +136,16 @@ void Player::swapWeapon(std::shared_ptr<Weapon> weapon) {
 }
 
 Vector2 Player::getDirToFire() {
-	return (InputsManager::getMouseWorldPos() - _pos).normalize();
+	return (InputsManager::getMouseWorldPos() - pos).normalize();
 }
 void Player::addProjectile(const std::shared_ptr<Projectile>& projectile) {
 	_projectilesToShoot.push_back(projectile);
 }
+
+Vector2 Player::getPos() {
+	return pos;
+}
+void Player::setPos(const Vector2& v) {
+	pos = v;
+}
+

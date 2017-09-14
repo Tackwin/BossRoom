@@ -40,11 +40,11 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 				me._player->shoot();
 				//TimerManager::resumeFunction(me._keys[0]);
 
-				Vector2 dir = (InputsManager::getMouseWorldPos() - me._player->_pos).normalize();
+				Vector2 dir = (InputsManager::getMouseWorldPos() - me._player->getPos()).normalize();
 				float a = dir.angleX();
 				static bool evenShot = false;
 				a += static_cast<float>((evenShot ? -1 : 1) * PIf / 6);
-				Vector2 pos = me._player->_pos + Vector2(cos(a), sin(a)) * (me._player->_radius + 5);
+				Vector2 pos = me._player->getPos() + Vector2(cos(a), sin(a)) * (me._player->_radius + 5);
 
 				evenShot = !evenShot;
 			
@@ -83,11 +83,11 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 				me._flags ^= 1;
 				TimerManager::resumeFunction(me._keys[0]);
 
-				Vector2 dir = (InputsManager::getMouseWorldPos() - me._player->_pos).normalize();
+				Vector2 dir = (InputsManager::getMouseWorldPos() - me._player->getPos()).normalize();
 				float a = dir.angleX();
 				static bool evenShot = false;
 				a += static_cast<float>((evenShot ? -1 : 1) * PIf / 6);
-				Vector2 pos = me._player->_pos + Vector2(cos(a), sin(a)) * (me._player->_radius + 5);
+				Vector2 pos = me._player->getPos() + Vector2(cos(a), sin(a)) * (me._player->_radius + 5);
 
 				evenShot = !evenShot;
 				me._activeSounds[0].play();
@@ -129,7 +129,7 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 					float dtA = spray * (i / 2.f - 0.5f);
 					float a = A + dtA;
 					Vector2 dir = Vector2::createUnitVector(a);
-					Vector2 pos = me._player->_pos;
+					Vector2 pos = me._player->getPos();
 
 					auto projectile = me._json["projectile"];
 					projectile["speed"] = projectile["speed"].get<float>() * ((i == 1) ? 1 : tanf(dtA) / sinf(dtA));
@@ -173,11 +173,11 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 				z.entered = [](const Collider&) {
 					printf("player");
 				};
-				level->_zones.push_back(z);
-				TimerManager::addFunction(getJsonValue<float>(me._json, "remainTime"), "", [&z = level->_zones.back()](float)->bool {
-					z.toRemove = true;
-					return true;
-				});
+				if(level) level->_zones.push_back(z);
+				//TimerManager::addFunction(getJsonValue<float>(me._json, "remainTime"), "", [&z = level->_zones.back()](float)->bool {
+				//	z.toRemove = true;
+				//	return true;
+				//});
 			}
 		};
 		weapon->_activeSounds.push_back(sf::Sound(AssetsManager::getSound(weapon->_json["sound"])));

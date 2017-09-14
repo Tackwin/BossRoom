@@ -240,5 +240,5 @@ void Boss::addProjectile(const std::shared_ptr<Projectile>& projectile) {
 }
 
 Vector2 Boss::getDirToFire() {
-	return (game->_player->_pos - _pos).normalize();
+	return (game->_player->getPos() - _pos).normalize();
 }

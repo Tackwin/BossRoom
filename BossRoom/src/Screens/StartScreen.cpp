@@ -39,7 +39,9 @@ void StartScreen::onEnter() {
 	initializeSprite();
 	_player = game->_player;
 	_player->initializeJson();
-	_player->_pos = {100, 100};
+	_player->pos = {100, 100};
+
+	world._objects.push_back((Object*)_player.get());
 }
 void StartScreen::onExit() {
 	_player->_weapon->unEquip();
@@ -52,7 +54,10 @@ void StartScreen::update(float dt) {
 	for (auto& p : _projectiles)
 		p->update(dt);
 
-	if (_dungeonDoor.getGlobalBounds().contains(_player->_pos)) {
+	world.update(dt);
+
+
+	if (_dungeonDoor.getGlobalBounds().contains(_player->pos)) {
 		game->enterDungeon();
 	}
 }
@@ -66,8 +71,8 @@ void StartScreen::render(sf::RenderTarget& target) {
 	float maxY = _startBackground.getGlobalBounds().top + _startBackground.getGlobalBounds().height - _playerView.getSize().y / 2.f;
 
 	_playerView.setCenter({
-		std::clamp(_player->_pos.x, minX, maxX),
-		std::clamp(_player->_pos.y, minY, maxY)
+		std::clamp(_player->pos.x, minX, maxX),
+		std::clamp(_player->pos.y, minY, maxY)
 	});
 	target.setView(_playerView);
 

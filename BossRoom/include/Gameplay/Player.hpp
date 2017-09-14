@@ -8,14 +8,14 @@
 #include "3rd/json.hpp"
 
 #include "Graphics/AnimatedSprite.hpp"
-#include <Physics/Collider.hpp>
+#include <Physics/Object.hpp>
 #include "Global/Const.hpp"
 #include "Math/Vector2.hpp"
 
 class Level;
 class Weapon;
 class Projectile;
-class Player {
+class Player : public Object {
 public:
 	Player() {};
 	Player(const nlohmann::json& json);
@@ -38,6 +38,9 @@ public:
 	void swapWeapon(std::shared_ptr<Weapon> weapon);
 	void addProjectile(const std::shared_ptr<Projectile>& projectile);
 
+	Vector2 getPos();
+	void setPos(const Vector2& v);
+
 public: //TODO: Make private
 
 	int32 _AK;
@@ -50,7 +53,6 @@ public: //TODO: Make private
 
 	int _life;
 	int _maxLife;
-	Vector2 _pos;
 	Vector2 _dir;
 	float _speed;
 	float _radius;
@@ -71,7 +73,7 @@ public: //TODO: Make private
 	bool _invincible = false;
 	bool _freeze = false;
 
-	Level* _level;
+	Level* _level = nullptr;
 	std::shared_ptr<Weapon> _weapon;
 
 	AnimatedSprite _sprite;
