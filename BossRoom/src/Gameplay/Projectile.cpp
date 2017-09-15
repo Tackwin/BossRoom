@@ -7,20 +7,21 @@
 Projectile::Projectile() {
 }
 Projectile::Projectile(nlohmann::json json, Vector2 pos, Vector2 dir, bool player) :
-	_pos(pos),
 	_dir(dir),
 	_player(player),
 	_json(json),
 	_update([](Projectile&, float) {}) {
-	
-	_dir.normalize();
+
 
 	_speed = getJsonValue<float>(json, "speed");
 	_damage = getJsonValue<int>(json, "damage");
 	_radius = getJsonValue<float>(json, "radius");
 	_lifespan = getJsonValue<float>(json, "lifespan");
 	_destroyOthers = json["destroyOthers"];
-
+	_dir.normalize();
+	
+	this->pos = pos;
+	velocity = _dir * _speed;
 	_disk.r = _radius;
 
 	std::uniform_int_distribution<int32> dist(0, 2);
@@ -32,7 +33,7 @@ Projectile::Projectile(nlohmann::json json, Vector2 pos, Vector2 dir, bool playe
 		whole				,	whole
 	});
 	_sprite.setOrigin(_radius, _radius);
-	_sprite.setPosition(_pos);
+	_sprite.setPosition(pos);
 
 	_key = TimerManager::addFunction(_lifespan, "destroy", [&](float)->bool {
 		_remove = true;
@@ -51,14 +52,12 @@ Projectile::~Projectile() {
 }
 
 void Projectile::update(float dt) {
-	_pos += _dir * _speed * dt;
+	_disk.pos = pos;
 	_update(*this, dt);
-
-	_disk.pos = _pos;
 }
 
 void Projectile::render(sf::RenderTarget &target) {
-	_sprite.setPosition(_pos);
+	_sprite.setPosition(pos);
 	target.draw(_sprite);
 	_disk.render(target);
 }
@@ -68,4 +67,20 @@ void Projectile::changeLifespan(float) {
 
 bool Projectile::toRemove() {
 	return _remove;
+}
+
+Vector2 Projectile::getPos() const {
+	return pos;
+}
+
+void Projectile::setPos(const Vector2& p) {
+	pos = p;
+}
+
+Vector2 Projectile::getDir() const {
+	return _dir;
+}
+void Projectile::setDir(const Vector2& d) {
+	_dir = d;
+	velocity = _dir * _speed;
 }

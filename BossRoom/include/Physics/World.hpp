@@ -7,11 +7,13 @@ class World {
 public:
 	void update(float dt);
 
-	void addObject(const Object);
 
-	std::vector<Object*> _objects;
+	bool haveObject(const Object* obj) const;
+	void addObject(Object* obj);
+	void removeObject(const Object* obj);
+
 private:
 
-
+	std::vector<Object*> _objects;
 	Vector2 _gravity;
 };

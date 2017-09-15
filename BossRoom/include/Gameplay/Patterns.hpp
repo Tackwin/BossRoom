@@ -184,7 +184,8 @@ public:
 				cPos += me._dir * me._speed * dt;
 				a += fmodf(vA * dt * PIf * dirA, vA);
 
-				me._pos = cPos + Vector2::createUnitVector(a) * radius;
+				//TODO: sort this out for the new physic system !!!!
+				me.setDir(Vector2::createUnitVector(a) * radius);
 			}));
 			return --nOrbs == 0;
 		});
@@ -212,7 +213,7 @@ public:
 				boss.addProjectile(ptrProjectile);
 
 				TimerManager::addFunction(1, "", [ptrProjectile](float)->bool {
-					ptrProjectile->_dir = (game->_player->getPos() - ptrProjectile->_pos).normalize();
+					ptrProjectile->_dir = (game->_player->getPos() - ptrProjectile->getPos()).normalize();
 					return true;
 				});
 				return true;
@@ -243,11 +244,11 @@ public:
 		*lambda = [lambda, ptrProjectile, nBooms, waitTime, overShoot, speed = projectile["speed"].get<float>()]()mutable->bool {
 			ptrProjectile->_dir = Vector2::ZERO;
 			TimerManager::addFunction(waitTime, "", [ptrProjectile](float)mutable->bool {
-				ptrProjectile->_dir = (game->_player->getPos() - ptrProjectile->_pos).normalize();
+				ptrProjectile->_dir = (game->_player->getPos() - ptrProjectile->getPos()).normalize();
 				return true;
 			});
 			if (--nBooms != 0) {
-				float shootTime = ((game->_player->getPos() - ptrProjectile->_pos).length() + overShoot) / speed;
+				float shootTime = ((game->_player->getPos() - ptrProjectile->getPos()).length() + overShoot) / speed;
 				TimerManager::addFunction(shootTime + waitTime, "changeDir", [lambda](float)mutable->bool {
 					(*lambda)();
 					return true;

@@ -8,8 +8,9 @@
 #include "Math/Vector2.hpp"
 #include "Global/Const.hpp"
 #include <Physics/Collider.hpp>
+#include <Physics/Object.hpp>
 
-class Projectile {
+class Projectile : public Object {
 public:
 	Projectile();
 	Projectile(nlohmann::json json, Vector2 pos, Vector2 dir, bool player);
@@ -19,12 +20,16 @@ public:
 
 	std::function<void(Projectile&, float)> _update;
 
+	Vector2 getPos() const;
+	void setPos(const Vector2& p);
+
+	Vector2 getDir() const;
+	void setDir(const Vector2& d);
 public:
 	nlohmann::json _json;
 
 	std::string _key;
 
-	Vector2 _pos;
 	Vector2 _dir;
 
 	float _lifespan;
