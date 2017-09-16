@@ -50,7 +50,7 @@ private:
 
 	bool _isInShop = false;
 
-	World world;
+	World _world;
 
 	Widget _guiRoot;
 	Panel _weaponIcon;

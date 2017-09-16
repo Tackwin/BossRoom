@@ -236,9 +236,20 @@ void Boss::hit(unsigned int d) {
 }
 
 void Boss::addProjectile(const std::shared_ptr<Projectile>& projectile) {
-	if (_level && _life != 0) _level->addProjectile(projectile); //TODO: debug why the callbacks doesn't delete when the boss die
+	if (_level && _life != 0)
+		_projectilesToShoot.push_back(projectile);//TODO: debug why the callbacks doesn't delete when the boss die
 }
 
-Vector2 Boss::getDirToFire() {
+Vector2 Boss::getDirToFire() const {
 	return (game->_player->getPos() - _pos).normalize();
+}
+Vector2 Boss::getPos() const {
+	return _pos;
+}
+
+const std::vector<std::shared_ptr<Projectile>>& Boss::getProtectilesToShoot() const {
+	return _projectilesToShoot;
+}
+void Boss::clearProtectilesToShoot() {
+	_projectilesToShoot.clear();
 }

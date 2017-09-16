@@ -34,7 +34,11 @@ public:
 	void hit(unsigned int damage);
 	void addProjectile(const std::shared_ptr<Projectile>& projectile);
 
-	Vector2 getDirToFire();
+	Vector2 getDirToFire() const;
+	Vector2 getPos() const;
+
+	const std::vector<std::shared_ptr<Projectile>>& getProtectilesToShoot() const;
+	void clearProtectilesToShoot();
 
 	static std::vector<std::shared_ptr<Boss>> bosses;
 	static void createBosses();
@@ -52,6 +56,8 @@ public: //TODO: make this private
 	Disk _disk;
 
 	Level* _level;
+
+	std::vector<std::shared_ptr<Projectile>> _projectilesToShoot;
 
 	std::vector<std::string> _keyPatterns; // (key, running)
 

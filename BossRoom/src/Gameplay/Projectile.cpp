@@ -84,3 +84,13 @@ void Projectile::setDir(const Vector2& d) {
 	_dir = d;
 	velocity = _dir * _speed;
 }
+
+bool Projectile::toRemove() const {
+	return _remove;
+}
+void Projectile::remove() {
+	_remove = true;
+}
+int32_t Projectile::getDamage() const {
+	return _damage;
+}

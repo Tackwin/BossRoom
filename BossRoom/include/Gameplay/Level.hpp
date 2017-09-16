@@ -6,7 +6,7 @@
 
 #include <Global/Const.hpp>
 #include <Gameplay/Zone.hpp>
-#include <Physics/Collider.hpp>
+#include <Physics/World.hpp>
 
 class Boss;
 class Probe;
@@ -27,10 +27,7 @@ public:
 	void update(float dt);
 	void updateEnding(float dt);
 	void updateRunning(float dt);
-	void updateParticles(float dt);
 	void render(sf::RenderTarget& target);
-
-	void bossDied();
 
 	void startAim();
 	void stopAim();
@@ -41,29 +38,18 @@ public:
 	static void createLevels();
 	static void destroyLevels();
 
-	void addProjectile(const std::shared_ptr<Projectile>& projectile);
-
 	float getNormalizedBossLife() const;
 
 public: // TODO: Make this private
-	void updatePlayer(float dt);
-	void updateBoss(float dt);
-
 	void burstParticle(const Vector2& pos);
+
+	World _world;
 
 	uint32 _n;
 
 	std::shared_ptr<Boss> _boss;
 	std::shared_ptr<Player> _player;
 
-	std::vector<std::shared_ptr<Probe>> _probes;
-
-	std::vector<std::shared_ptr<Particle>> _particles;
-
-	std::vector<std::shared_ptr<Projectile>> _projectiles;
-	std::vector<std::weak_ptr<Projectile>> _projectilesBoss;
-	std::vector<std::weak_ptr<Projectile>> _projectilesPlayer;
-	
 	std::vector<std::shared_ptr<Weapon>> _loot;
 
 	LevelScreen* _screen = nullptr; //How the fuck i'm supposed to make LevelScreen pass this as a shared_ptr

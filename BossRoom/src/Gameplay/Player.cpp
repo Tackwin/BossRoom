@@ -148,3 +148,13 @@ void Player::setPos(const Vector2& v) {
 	pos = v;
 }
 
+const std::vector<std::shared_ptr<Projectile>>& Player::getProtectilesToShoot() const {
+	return _projectilesToShoot;
+}
+void Player::clearProtectilesToShoot() {
+	_projectilesToShoot.clear();
+}
+
+bool Player::isInvicible() const {
+	return _invincible;
+}

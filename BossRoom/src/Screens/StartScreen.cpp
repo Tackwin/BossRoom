@@ -41,26 +41,14 @@ void StartScreen::onEnter() {
 	_player->initializeJson();
 	_player->pos = {100, 100};
 
-	world.addObject((Object*)_player.get());
+	_world.setPlayer(_player, 0);
 }
 void StartScreen::onExit() {
 	_player->_weapon->unEquip();
-	world.removeObject((Object*)_player.get());
+	_world.delPlayer(0);
 }
 void StartScreen::update(float dt) {
-	_projectiles.insert(_projectiles.end(), _player->_projectilesToShoot.begin(), _player->_projectilesToShoot.end());
-	_player->_projectilesToShoot.clear();
-
-	_player->update(dt);
-	for (auto& p : _projectiles)
-		p->update(dt);
-
-
-	for (uint32_t i = _projectiles.size(); i > 0; --i) {
-		if (_projectiles[i - 1]->toRemove()) {
-			_projectiles.erase(_projectiles.begin() + i - 1);
-		}
-	}
+	_world.update(dt);
 
 	if (_dungeonDoor.getGlobalBounds().contains(_player->pos)) {
 		game->enterDungeon();
@@ -85,8 +73,8 @@ void StartScreen::render(sf::RenderTarget& target) {
 	target.draw(_dungeon);
 	target.draw(_merchantShop);
 	target.draw(_dungeonDoor);
-	for (auto& p : _projectiles)
-		p->render(target);
+
+	_world.render(target);
 	_player->render(target);
 
 	renderGui(target);

@@ -91,7 +91,7 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 
 				evenShot = !evenShot;
 				me._activeSounds[0].play();
-				me._player->_level->addProjectile(std::make_shared<Projectile>(me._json["projectile"], pos, dir, true));
+				me._player->addProjectile(std::make_shared<Projectile>(me._json["projectile"], pos, dir, true));
 			}
 		};
 		std::string sound1Str = _weapons[1]->_json["sounds"]["active"][0].get<std::string>();

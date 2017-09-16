@@ -25,6 +25,11 @@ public:
 
 	Vector2 getDir() const;
 	void setDir(const Vector2& d);
+
+	bool toRemove() const;
+	void remove();
+
+	int32_t getDamage() const;
 public:
 	nlohmann::json _json;
 
@@ -35,7 +40,7 @@ public:
 	float _lifespan;
 	float _speed;
 	float _radius;
-	int _damage;
+	int32_t _damage;
 
 	bool _player;
 	bool _remove = false;

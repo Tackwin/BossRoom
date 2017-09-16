@@ -41,6 +41,11 @@ public:
 	Vector2 getPos();
 	void setPos(const Vector2& v);
 
+	const std::vector<std::shared_ptr<Projectile>>& getProtectilesToShoot() const;
+	void clearProtectilesToShoot();
+
+	bool isInvicible() const;
+
 public: //TODO: Make private
 
 	int32 _AK;
