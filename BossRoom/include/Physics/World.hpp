@@ -1,5 +1,10 @@
 #pragma once
 
+//Everything here is juste shit, i'm coming back in the old way
+
+#include <array>
+#include <vector>
+
 #include <Math/Vector2.hpp>
 #include <Physics/Object.hpp>
 
@@ -15,5 +20,6 @@ public:
 private:
 
 	std::vector<Object*> _objects;
+	std::array<std::vector<Object*>, Object::BITSET_SIZE> _objectsPool;
 	Vector2 _gravity;
 };

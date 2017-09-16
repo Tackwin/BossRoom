@@ -60,7 +60,7 @@ void Player::exitLevel() {
 	_level = nullptr;
 }
 
-void Player::update(float) {
+void Player::update(float dt) {
 	bool tryingToShoot = game->_distance && InputsManager::isMousePressed(_AK);
 
 	if (!_freeze) {
@@ -85,8 +85,7 @@ void Player::update(float) {
 		if (InputsManager::isKeyJustPressed(_dashK)) {
 			pos += getDirToFire() * _dashRange;
 		}
-		velocity = _dir * (float)(InputsManager::isKeyPressed(_slowK) ? _slowSpeed : _speed);
-		//pos += _dir * (float)(InputsManager::isKeyPressed(_slowK) ? _slowSpeed : _speed) * dt;
+		pos += _dir * (float)(InputsManager::isKeyPressed(_slowK) ? _slowSpeed : _speed) * dt;
 	}
 
 	if (tryingToShoot) {

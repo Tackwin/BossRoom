@@ -48,21 +48,16 @@ void StartScreen::onExit() {
 	world.removeObject((Object*)_player.get());
 }
 void StartScreen::update(float dt) {
-	for (uint32_t i = 0u; i < _player->_projectilesToShoot.size(); ++i) {
-		_projectiles.push_back(_player->_projectilesToShoot[i]);
-		world.addObject((Object*)_projectiles.back().get());
-	}
+	_projectiles.insert(_projectiles.end(), _player->_projectilesToShoot.begin(), _player->_projectilesToShoot.end());
 	_player->_projectilesToShoot.clear();
 
 	_player->update(dt);
 	for (auto& p : _projectiles)
 		p->update(dt);
 
-	world.update(dt);
 
 	for (uint32_t i = _projectiles.size(); i > 0; --i) {
 		if (_projectiles[i - 1]->toRemove()) {
-			world.removeObject(_projectiles[i - 1].get());
 			_projectiles.erase(_projectiles.begin() + i - 1);
 		}
 	}

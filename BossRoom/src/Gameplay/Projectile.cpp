@@ -21,7 +21,6 @@ Projectile::Projectile(nlohmann::json json, Vector2 pos, Vector2 dir, bool playe
 	_dir.normalize();
 	
 	this->pos = pos;
-	velocity = _dir * _speed;
 	_disk.r = _radius;
 
 	std::uniform_int_distribution<int32> dist(0, 2);
@@ -52,6 +51,7 @@ Projectile::~Projectile() {
 }
 
 void Projectile::update(float dt) {
+	pos += _dir * _speed *dt;
 	_disk.pos = pos;
 	_update(*this, dt);
 }
