@@ -134,7 +134,7 @@ void World::updateProjectiles(float dt) {
 			for (auto& p : _players) {
 				const auto& player = p.lock();
 
-				if (player->isInvicible() && p0->_disk.collideWith(player->_disk)) {
+				if (!player->isInvicible() && p0->_disk.collideWith(player->_disk)) {
 					p0->remove();
 					player->hit(p0->getDamage());
 					//_screen->shakeScreen(1); Need to handle that

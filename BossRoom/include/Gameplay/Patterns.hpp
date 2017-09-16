@@ -34,6 +34,7 @@ public:
 	static std::string randomFire(Boss& boss, int nOrbs, float a, float dtA, float time, nlohmann::json projectile) {
 		std::uniform_real_distribution<float> rngA(a - dtA / 2.f, a + dtA / 2.f);
 		std::uniform_real_distribution<float> rngDt(0, 2 * time / nOrbs); //nOrbs * E(rngDt) = time
+		boss._sprite.getSprite().setScale(2, 2);
 		return TimerManager::addFunction(0, "random fire", [&, projectile, boss, rngA, rngDt, nOrbs, n = 0, sumS = .0f](float)mutable->bool {
 			float ca = rngA(RNG);
 
@@ -58,8 +59,7 @@ public:
 		);
 	}
 	static std::string directionalFire(Boss& boss, float fireRate, float time, nlohmann::json projectile) {
-		return TimerManager::addFunction(1 / fireRate, "directive fire", [boss, time, projectile, N = time * fireRate](float)mutable->bool {
-
+		return TimerManager::addFunction(1 / fireRate, "directive fire", [&boss, time, projectile, N = time * fireRate](float)mutable->bool {
 			float a = boss._pos.angleTo(boss._level->_player->getPos());
 
 			Vector2 dir = Vector2::createUnitVector(a);
