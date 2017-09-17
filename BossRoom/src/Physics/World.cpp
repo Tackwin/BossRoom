@@ -2,11 +2,12 @@
 
 #include <Managers/AssetsManager.hpp>
 
+#include <algorithm>
+
 void World::update(float dt) {
 	removeNeeded();
 	pullAllProjectiles();
 
-	updatePlayers(dt);
 	updateBosses(dt);
 	updateProjectiles(dt);
 	updateParticles(dt);
@@ -64,45 +65,6 @@ void World::pullAllProjectiles() {
 			b.lock()->clearProtectilesToShoot();
 	}
 }
-
-void World::updatePlayers(float dt) {
-	for (auto& p : _players) {
-		const auto& player = p.lock();
-
-		std::vector<bool> colliding(_zones.size());
-		for (uint32_t i = 0U; i < _zones.size(); ++i) {
-			colliding[i] = _zones[i]->collider->collideWith(&player->_disk);
-		}
-
-		player->update(dt);
-		auto pos = player->getNewPos(dt);
-		pos.y += 128 * dt;
-
-		for (auto& f : _floors) {
-			if (f.y < pos.y + player->_disk.r) {
-				pos.y = f.y - player->_disk.r;
-				break;
-			}
-		}
-
-		player->setPos(pos);
-
-		for (uint32_t i = 0U; i < _zones.size(); ++i) {
-			const auto& zone = _zones[i];
-
-			if (zone->collider->collideWith(&player->_disk)) {
-				if (!colliding[i])
-					zone->entered(player->_disk);
-
-				zone->inside(player->_disk);
-			}
-			else if (colliding[i]) {
-				zone->exited(player->_disk);
-			}
-		}
-	}
-}
-
 void World::updateBosses(float dt) {
 	for (auto& b : _bosses) {
 		const auto& boss = b.lock();
@@ -242,37 +204,103 @@ void World::addFloor(Vector2 vec) {
 }
 
 void WorldExp::update(float dt) {
-	for (auto& obj : _objects) {
+	for (uint32_t i = _objects.size(); i > 0u; --i) {
+		if (!_objects[i - 1].expired()) continue;
+		
+		for (uint32_t j = 0u; j < Object::BITSET_SIZE; ++j) {
+			for (uint32_t k = _objectsPool[i - 1].size(); k > 0u; ++k) {
+				_objectsPool[i - 1].erase(_objectsPool[i - 1].begin() + k - 1);
+			}
+		}
+
+		_objects.erase(_objects.begin() + i - 1);
+	}
+
+	for (auto& objWPtr : _objects) {
+		auto obj = objWPtr.lock();
+
+		Vector2 flatForces = std::accumulate(obj->flatForces.begin(), obj->flatForces.end(), Vector2::ZERO);
+		Vector2 flatVelocities = std::accumulate(obj->flatVelocities.begin(), obj->flatVelocities.end(), Vector2::ZERO);
 
 		Vector2 pos = obj->pos;
 
-		Vector2 nVel = obj->velocity + obj->force * dt;
-		Vector2 nPos = obj->pos + obj->velocity * dt;
+		Vector2 nVel = obj->velocity + (obj->force + flatForces) * dt;
+		Vector2 nPos = obj->pos + (obj->velocity + flatVelocities) * dt;
 
-		obj->pos.x = nPos.x;
+		for (uint32_t i = 0u; i < Object::BITSET_SIZE; ++i) {
+			if (!obj->collisionMask[i]) continue;
 
-		for (auto& obj2 : _objects) {
-			if (obj == obj2) continue;
+			for (auto& obj2WPtr : _objectsPool[i]) {
+				auto obj2 = obj2WPtr.lock();
 
-			if (obj->collider->collideWith(obj2->collider)) {
-				nVel.x = 0.f;
-				obj->pos.x = pos.x;
-				break;
+				if (obj == obj2) continue;
+				obj->pos = pos;
+
+				bool state = _collisionStates[{obj->id, obj2->id}];
+				bool colliding = false;
+
+				obj->pos.x = nPos.x;
+				if (nPos.x != pos.x && obj->collider->collideWith(obj2->collider)) {
+					nVel.x = 0.f;
+					nPos.x = pos.x;
+
+					colliding = true;
+				}
+
+				obj->pos.y = nPos.y;
+				if (nPos.y != pos.y && obj->collider->collideWith(obj2->collider)) {
+					nVel.y = 0.f;
+					nPos.y = pos.y;
+
+					colliding = true;
+				}
+
+				if (colliding && !state) {
+					_collisionStates[{obj->id, obj2->id}] = true;
+					obj->collider->onEnter();
+				}
+				else if (!colliding && state) {
+					_collisionStates[{obj->id, obj2->id}] = false;
+					obj->collider->onExit();
+				}
 			}
 		}
 
-		obj->pos.y = nPos.y;
-		for (auto& obj2 : _objects) {
-			if (obj == obj2) continue;
-
-			if (obj->collider->collideWith(obj2->collider)) {
-				nVel.y = 0.f;
-				obj->pos.y = pos.y;
-				break;
-			}
-		}
-
+		obj->pos = nPos;
 		obj->velocity = nVel;
 		obj->force = Vector2::ZERO;
+
+		obj->flatVelocities.clear();
+		obj->flatForces.clear();
+	}
+}
+
+void WorldExp::addObject(std::weak_ptr<Object> obj) {
+	_objects.push_back(obj);
+
+	for (uint32_t i = 0u; i < Object::BITSET_SIZE; ++i) {
+		if (!obj.lock()->idMask[i]) continue;
+
+		_objectsPool[i].push_back(obj);
+	}
+}
+
+void WorldExp::delObject(std::weak_ptr<Object> obj) {
+	for (uint32_t i = _objects.size(); i > 0u; --i) {
+		if (_objects[i - 1].lock() == obj.lock()) {
+			_objects.erase(_objects.begin() + i - 1);
+			break;
+		}
+	}
+
+	for (uint32_t i = 0u; i < Object::BITSET_SIZE; ++i) {
+		if (!obj.lock()->idMask[i]) continue;
+
+		for (uint32_t j = _objectsPool[i].size(); j > 0u; --j) {
+			if (_objectsPool[i][j - 1].lock() == obj.lock()) {
+				_objectsPool[i].erase(_objectsPool[i].begin() + j - 1);
+				break;
+			}
+		}
 	}
 }

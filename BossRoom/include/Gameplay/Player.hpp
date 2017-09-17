@@ -27,7 +27,6 @@ public:
 	void exitLevel();
 
 	void update(float dt);
-	Vector2 getNewPos(float dt);
 	void render(sf::RenderTarget& target);
 
 	void shoot();

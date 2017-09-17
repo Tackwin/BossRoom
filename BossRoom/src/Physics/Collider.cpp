@@ -8,6 +8,16 @@ void Disk::render(sf::RenderTarget& target) {
 	target.draw(shape);
 }
 
+bool Disk::collideWith(const Collider* collider) const {
+	if (auto ptr = dynamic_cast<const Disk*>(collider); ptr) {
+		return (pos - ptr->pos).length2() < (r + ptr->r) * (r + ptr->r);
+	}
+	else if (auto ptr = dynamic_cast<const Box*>(collider); ptr) {
+		return ptr->isIn(pos);
+	}
+	return false;
+}
+
 void Box::render(sf::RenderTarget& target) {
 	sf::RectangleShape shape(size);
 	shape.setPosition(pos);

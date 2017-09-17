@@ -42,6 +42,7 @@ void StartScreen::onEnter() {
 	_player->pos = {100, 100};
 
 	_world.setPlayer(_player, 0);
+	_worldExp.addObject(_player);
 
 	_world.addFloor({ 3000, 600 });
 
@@ -51,7 +52,10 @@ void StartScreen::onExit() {
 	_world.delPlayer(0);
 }
 void StartScreen::update(float dt) {
+	_player->update(dt);
+
 	_world.update(dt);
+	_worldExp.update(dt);
 
 	if (_dungeonDoor.getGlobalBounds().contains(_player->pos)) {
 		game->enterDungeon();

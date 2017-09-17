@@ -1,15 +1,19 @@
 #pragma once
+#include <functional>
 #include <Math/Vector2.hpp>
 #include <Math/Rectangle.hpp>
 
-struct Disk;
-
 struct Collider {
+	using Callback = std::function<void(void)>;
+
+	Callback onExit = []() {};
+	Callback onEnter = []() {};
+
 	Vector2 pos = Vector2::ZERO;
 	void* userPtr = nullptr;
 
-	virtual bool isIn(const Vector2& p) = 0;
-	virtual bool collideWith(const Collider* collider) = 0;
+	virtual bool isIn(const Vector2& p) const = 0;
+	virtual bool collideWith(const Collider* collider) const = 0;
 
 	virtual void render(sf::RenderTarget& target) = 0;
 };
@@ -17,15 +21,10 @@ struct Collider {
 struct Disk : Collider {
 	float r = 0.f;
 
-	virtual bool isIn(const Vector2& p) override {
+	virtual bool isIn(const Vector2& p) const override {
 		return (p - pos).length2() < r * r;
 	}
-	virtual bool collideWith(const Collider* collider) override {
-		if (auto ptr = dynamic_cast<const Disk*>(collider); ptr) {
-			return (pos - ptr->pos).length2() < (r + ptr->r) * (r + ptr->r);
-		}
-		return false;
-	}
+	virtual bool collideWith(const Collider* collider) const override;
 
 	virtual void render(sf::RenderTarget& target) override;
 };
@@ -33,10 +32,10 @@ struct Disk : Collider {
 struct Box : Collider {
 	Vector2 size;
 
-	virtual bool isIn(const Vector2& p) override {
+	virtual bool isIn(const Vector2& p) const override {
 		return Rectangle(pos, size).isInside(p);
 	};
-	virtual bool collideWith(const Collider* collider) override {
+	virtual bool collideWith(const Collider* collider) const override {
 		if (auto ptr = dynamic_cast<const Box*>(collider); ptr) {
 			return Rectangle(pos, size).intersect(Rectangle(ptr->pos, ptr->size));
 		}

@@ -51,6 +51,7 @@ private:
 	bool _isInShop = false;
 
 	World _world;
+	WorldExp _worldExp;
 
 	Widget _guiRoot;
 	Panel _weaponIcon;

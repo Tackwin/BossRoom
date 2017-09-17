@@ -2,7 +2,7 @@
 
 //Everything here is juste shit, i'm coming back in the old way
 
-#include <array>
+#include <map>
 #include <vector>
 
 #include <SFML/Graphics.hpp>
@@ -39,7 +39,6 @@ private:
 
 	void removeNeeded();
 	void pullAllProjectiles();
-	void updatePlayers(float dt);
 	void updateBosses(float dt);
 	void updateProjectiles(float dt);
 	void updateParticles(float dt);
@@ -56,7 +55,13 @@ class WorldExp {
 public:
 	void update(float dt);
 
+	void addObject(std::weak_ptr<Object> obj);
+	void delObject(std::weak_ptr<Object> obj);
+private:
 	uint32_t _iterationLevel = 5;
 
-	std::vector<Object*> _objects;
+	std::map<std::pair<uint64_t, uint64_t>, bool> _collisionStates;
+
+	std::vector<std::weak_ptr<Object>> _objects;
+	std::vector<std::weak_ptr<Object>> _objectsPool[Object::BITSET_SIZE];
 };
