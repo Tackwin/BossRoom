@@ -28,7 +28,11 @@ public:
 	void setBoss(const std::shared_ptr<Boss>& boss, uint32_t idx);
 	void delBoss(uint32_t idx);
 
+	void addZone(const std::shared_ptr<Zone>& zone);
+
 	void addProjectile(const std::shared_ptr<Projectile>& projectile);
+
+	void addFloor(Vector2 vec);
 private:
 
 	void burstParticle(const std::shared_ptr<const Boss>& boss, const Vector2& pos);
@@ -40,9 +44,19 @@ private:
 	void updateProjectiles(float dt);
 	void updateParticles(float dt);
 
+	std::vector<Vector2> _floors;
 	std::vector<std::weak_ptr<Boss>> _bosses;
 	std::vector<std::shared_ptr<Zone>> _zones;
 	std::vector<std::weak_ptr<Player>> _players;
 	std::vector<std::shared_ptr<Particle>> _particles;
 	std::vector<std::shared_ptr<Projectile>>  _projectiles;
+};
+
+class WorldExp {
+public:
+	void update(float dt);
+
+	uint32_t _iterationLevel = 5;
+
+	std::vector<Object*> _objects;
 };

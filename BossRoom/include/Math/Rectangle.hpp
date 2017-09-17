@@ -28,6 +28,7 @@ public:
 	~Rectangle();
 
 	bool isInside(const Vector2 &P);
+	bool intersect(const Rectangle& rect);
 
 	Vector2 getSize() const;
 	void setSize(const Vector2& size);

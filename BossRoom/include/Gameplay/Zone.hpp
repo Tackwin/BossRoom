@@ -6,11 +6,12 @@
 struct Zone {
 	using Callback = std::function<void(const Collider&)>;
 
-	Disk disk;
+	std::shared_ptr<Collider> collider;
 
 	Callback entered = [](const Collider&) {};
 	Callback exited = [](const Collider&) {};
 	Callback inside = [](const Collider&) {};
 
 	bool toRemove = false;
+	bool sensor = true;
 };

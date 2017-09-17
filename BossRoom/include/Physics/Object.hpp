@@ -15,6 +15,4 @@ struct Object {
 	std::bitset<BITSET_SIZE> idMask;
 
 	Collider* collider = nullptr;
-
-	virtual bool collideWith(const Object*) { return false; }
 };

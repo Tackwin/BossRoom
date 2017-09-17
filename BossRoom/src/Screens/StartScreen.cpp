@@ -42,6 +42,9 @@ void StartScreen::onEnter() {
 	_player->pos = {100, 100};
 
 	_world.setPlayer(_player, 0);
+
+	_world.addFloor({ 3000, 600 });
+
 }
 void StartScreen::onExit() {
 	_player->_weapon->unEquip();

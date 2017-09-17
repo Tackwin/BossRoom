@@ -69,3 +69,13 @@ Rectangle& Rectangle::operator=(const Rectangle& other) {
 	size = other.size;
 	return *this;
 }
+
+bool Rectangle::intersect(const Rectangle& rect) {
+	if (a == 0.f && rect.a == 0.f) {
+		return	  !(pos.x > rect.pos.x + rect.size.x ||
+					pos.x + size.x < rect.pos.x ||
+					pos.y > rect.pos.y + rect.size.y ||
+					pos.y + size.y > rect.pos.y);
+	}
+	return false;
+}

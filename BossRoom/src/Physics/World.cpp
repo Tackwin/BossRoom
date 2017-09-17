@@ -71,19 +71,29 @@ void World::updatePlayers(float dt) {
 
 		std::vector<bool> colliding(_zones.size());
 		for (uint32_t i = 0U; i < _zones.size(); ++i) {
-			const auto& zone = _zones[i];
-
-			colliding[i] = zone->disk.collideWith(player->_disk);
+			colliding[i] = _zones[i]->collider->collideWith(&player->_disk);
 		}
 
-		p.lock()->update(dt);
+		player->update(dt);
+		auto pos = player->getNewPos(dt);
+		pos.y += 128 * dt;
+
+		for (auto& f : _floors) {
+			if (f.y < pos.y + player->_disk.r) {
+				pos.y = f.y - player->_disk.r;
+				break;
+			}
+		}
+
+		player->setPos(pos);
 
 		for (uint32_t i = 0U; i < _zones.size(); ++i) {
 			const auto& zone = _zones[i];
 
-			if (zone->disk.collideWith(player->_disk)) {
+			if (zone->collider->collideWith(&player->_disk)) {
 				if (!colliding[i])
 					zone->entered(player->_disk);
+
 				zone->inside(player->_disk);
 			}
 			else if (colliding[i]) {
@@ -101,7 +111,7 @@ void World::updateBosses(float dt) {
 		for (uint32_t i = 0U; i < _zones.size(); ++i) {
 			const auto& zone = _zones[i];
 
-			colliding[i] = zone->disk.collideWith(boss->_disk);
+			colliding[i] = zone->collider->collideWith(&boss->_disk);
 		}
 
 		boss->update(dt);
@@ -109,7 +119,7 @@ void World::updateBosses(float dt) {
 		for (uint32_t i = 0U; i < _zones.size(); ++i) {
 			const auto& zone = _zones[i];
 
-			if (zone->disk.collideWith(boss->_disk)) {
+			if (zone->collider->collideWith(&boss->_disk)) {
 				if (!colliding[i])
 					zone->entered(boss->_disk);
 				zone->inside(boss->_disk);
@@ -134,7 +144,7 @@ void World::updateProjectiles(float dt) {
 			for (auto& p : _players) {
 				const auto& player = p.lock();
 
-				if (!player->isInvicible() && p0->_disk.collideWith(player->_disk)) {
+				if (!player->isInvicible() && p0->_disk.collideWith(&player->_disk)) {
 					p0->remove();
 					player->hit(p0->getDamage());
 					//_screen->shakeScreen(1); Need to handle that
@@ -145,7 +155,7 @@ void World::updateProjectiles(float dt) {
 			for (auto& b : _bosses) {
 				const auto& boss = b.lock();
 
-				if (p0->_disk.collideWith(boss->_disk)) {
+				if (p0->_disk.collideWith(&boss->_disk)) {
 					p0->remove();
 					boss->hit(p0->getDamage());
 					burstParticle(boss, p0->getPos());
@@ -200,7 +210,14 @@ void World::render(sf::RenderTarget& target) {
 	}
 
 	for (auto& z : _zones) {
-		z->disk.render(target);
+		z->collider->render(target);
+	}
+
+	for (auto& f : _floors) {
+		sf::RectangleShape shape({ f.x, WIDTH - f.y });
+		shape.setFillColor(sf::Color(200, 200, 200, 200));
+		shape.setPosition(0, f.y);
+		target.draw(shape);
 	}
 }
 
@@ -214,4 +231,48 @@ void World::burstParticle(const std::shared_ptr<const Boss>& boss, const Vector2
 
 	const auto& newParticles = Particle::burst(jsonBurst, pos);
 	_particles.insert(_particles.end(), newParticles.begin(), newParticles.end());
+}
+
+void World::addZone(const std::shared_ptr<Zone>& zone) {
+	_zones.push_back(zone);
+}
+
+void World::addFloor(Vector2 vec) {
+	_floors.push_back(vec);
+}
+
+void WorldExp::update(float dt) {
+	for (auto& obj : _objects) {
+
+		Vector2 pos = obj->pos;
+
+		Vector2 nVel = obj->velocity + obj->force * dt;
+		Vector2 nPos = obj->pos + obj->velocity * dt;
+
+		obj->pos.x = nPos.x;
+
+		for (auto& obj2 : _objects) {
+			if (obj == obj2) continue;
+
+			if (obj->collider->collideWith(obj2->collider)) {
+				nVel.x = 0.f;
+				obj->pos.x = pos.x;
+				break;
+			}
+		}
+
+		obj->pos.y = nPos.y;
+		for (auto& obj2 : _objects) {
+			if (obj == obj2) continue;
+
+			if (obj->collider->collideWith(obj2->collider)) {
+				nVel.y = 0.f;
+				obj->pos.y = pos.y;
+				break;
+			}
+		}
+
+		obj->velocity = nVel;
+		obj->force = Vector2::ZERO;
+	}
 }

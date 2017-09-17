@@ -168,8 +168,13 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 
 				auto level = me._player->_level;
 				Zone z;
-				z.disk.r = 50.f;
-				z.disk.pos = InputsManager::getMouseScreenPos();
+				std::shared_ptr<Disk> disk = std::make_shared<Disk>();
+				
+				disk->r = 50.f;
+				disk->pos = InputsManager::getMouseScreenPos();
+
+				z.collider = std::dynamic_pointer_cast<Collider>(disk);
+
 				z.entered = [](const Collider&) {
 					printf("player");
 				};

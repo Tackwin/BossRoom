@@ -60,9 +60,18 @@ void Player::exitLevel() {
 	_level = nullptr;
 }
 
-void Player::update(float dt) {
+void Player::update(float) {
 	bool tryingToShoot = game->_distance && InputsManager::isMousePressed(_AK);
+	if (tryingToShoot) {
+		_weapon->active(0);
+	}
 
+	_disk.pos = pos;
+}
+Vector2 Player::getNewPos(float dt) {
+	Vector2 result;
+
+	bool tryingToShoot = game->_distance && InputsManager::isMousePressed(_AK);
 	if (!_freeze) {
 		_dir = Vector2::ZERO;
 		if (InputsManager::isKeyPressed(_upK)) {
@@ -83,16 +92,12 @@ void Player::update(float dt) {
 			_dir *= .2f;
 
 		if (InputsManager::isKeyJustPressed(_dashK)) {
-			pos += getDirToFire() * _dashRange;
+			result = pos + getDirToFire() * _dashRange;
 		}
-		pos += _dir * (float)(InputsManager::isKeyPressed(_slowK) ? _slowSpeed : _speed) * dt;
+		result = pos + _dir * (float)(InputsManager::isKeyPressed(_slowK) ? _slowSpeed : _speed) * dt;
 	}
 
-	if (tryingToShoot) {
-		_weapon->active(0);
-	}
-
-	_disk.pos = pos;
+	return result;
 }
 
 void Player::render(sf::RenderTarget &target) {
