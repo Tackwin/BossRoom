@@ -40,9 +40,20 @@ void StartScreen::onEnter() {
 	_player = game->_player;
 	_player->initializeJson();
 	_player->pos = {100, 100};
+	_player->idMask |= Object::PLAYER;
+	_player->collisionMask |= Object::FLOOR;
 
 	_world.setPlayer(_player, 0);
 	_worldExp.addObject(_player);
+
+	_floor = std::make_shared<Object>();
+	_floor->idMask |= Object::FLOOR;
+	_floor->pos = { 0, 600 };
+	Box* box = new Box();
+	box->pos = { 0, 600 };
+	box->size = { 3000, 120 };
+	_floor->collider = box;
+	_worldExp.addObject(_floor);
 
 	_world.addFloor({ 3000, 600 });
 
@@ -81,7 +92,7 @@ void StartScreen::render(sf::RenderTarget& target) {
 	target.draw(_merchantShop);
 	target.draw(_dungeonDoor);
 
-	_world.render(target);
+	_worldExp.render(target);
 	_player->render(target);
 
 	renderGui(target);

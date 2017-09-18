@@ -7,8 +7,14 @@
 #include <Physics/Collider.hpp>
 
 struct Object {
+	enum BIT_TAGS {
+		PLAYER = 1,
+		FLOOR = PLAYER << 1
+	};
+
 	static uint64_t N;
-	static constexpr size_t BITSET_SIZE = 32u;
+
+	static constexpr size_t BITSET_SIZE = 8u;
 
 	Object();
 

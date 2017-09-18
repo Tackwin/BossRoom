@@ -9,10 +9,12 @@ void Disk::render(sf::RenderTarget& target) {
 }
 
 bool Disk::collideWith(const Collider* collider) const {
+
+
 	if (auto ptr = dynamic_cast<const Disk*>(collider); ptr) {
 		return (pos - ptr->pos).length2() < (r + ptr->r) * (r + ptr->r);
 	}
-	else if (auto ptr = dynamic_cast<const Box*>(collider); ptr) {
+	if (auto ptr = dynamic_cast<const Box*>(collider); ptr) {
 		return ptr->isIn(pos);
 	}
 	return false;

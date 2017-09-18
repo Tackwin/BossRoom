@@ -15,6 +15,7 @@ Player::Player(const nlohmann::json& json) :
 	_json(json),
 	_hitSound(AssetsManager::getSound("hit")){
 	_disk.userPtr = this;
+	collider = &_disk;
 }
 
 Player::~Player() {
@@ -93,7 +94,6 @@ void Player::update(float) {
 void Player::render(sf::RenderTarget &target) {
 	_sprite.getSprite().setPosition(pos);
 	_sprite.render(target);
-	_disk.render(target);
 }
 void Player::shoot() {
 	_sprite.pushAnim("action");

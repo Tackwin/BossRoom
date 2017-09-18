@@ -208,8 +208,8 @@ void WorldExp::update(float dt) {
 		if (!_objects[i - 1].expired()) continue;
 		
 		for (uint32_t j = 0u; j < Object::BITSET_SIZE; ++j) {
-			for (uint32_t k = _objectsPool[i - 1].size(); k > 0u; ++k) {
-				_objectsPool[i - 1].erase(_objectsPool[i - 1].begin() + k - 1);
+			for (uint32_t k = _objectsPool[j].size(); k > 0u; --k) {
+				_objectsPool[j].erase(_objectsPool[j].begin() + k - 1);
 			}
 		}
 
@@ -227,6 +227,9 @@ void WorldExp::update(float dt) {
 		Vector2 nVel = obj->velocity + (obj->force + flatForces) * dt;
 		Vector2 nPos = obj->pos + (obj->velocity + flatVelocities) * dt;
 
+		bool xCollide = false;
+		bool yCollide = false;
+
 		for (uint32_t i = 0u; i < Object::BITSET_SIZE; ++i) {
 			if (!obj->collisionMask[i]) continue;
 
@@ -240,18 +243,20 @@ void WorldExp::update(float dt) {
 				bool colliding = false;
 
 				obj->pos.x = nPos.x;
-				if (nPos.x != pos.x && obj->collider->collideWith(obj2->collider)) {
+				if (!xCollide && obj->collider->collideWith(obj2->collider)) {
 					nVel.x = 0.f;
 					nPos.x = pos.x;
 
+					xCollide = true;
 					colliding = true;
 				}
 
 				obj->pos.y = nPos.y;
-				if (nPos.y != pos.y && obj->collider->collideWith(obj2->collider)) {
+				if (!yCollide && obj->collider->collideWith(obj2->collider)) {
 					nVel.y = 0.f;
 					nPos.y = pos.y;
 
+					yCollide = true;
 					colliding = true;
 				}
 
@@ -263,8 +268,13 @@ void WorldExp::update(float dt) {
 					_collisionStates[{obj->id, obj2->id}] = false;
 					obj->collider->onExit();
 				}
+
+				if (xCollide && yCollide) {
+					goto endLoop;
+				}
 			}
 		}
+endLoop:
 
 		obj->pos = nPos;
 		obj->velocity = nVel;
@@ -274,6 +284,15 @@ void WorldExp::update(float dt) {
 		obj->flatForces.clear();
 	}
 }
+
+void WorldExp::render(sf::RenderTarget& target) {
+	for (auto& obj : _objects) {
+		if (obj.expired()) continue;
+
+		obj.lock()->collider->render(target);
+	}
+}
+
 
 void WorldExp::addObject(std::weak_ptr<Object> obj) {
 	_objects.push_back(obj);

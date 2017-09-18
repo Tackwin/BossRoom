@@ -23,26 +23,11 @@ Rectangle::~Rectangle() {
 }
 
 bool Rectangle::isInside(const Vector2 &P) {
-	Vector2 A = pos;
-	Vector2 B = { pos.x + size.x, pos.y };
-	Vector2 D = { pos.x, pos.y + size.y };
-
-	if(A.x == D.x && A.y == B.y)
-		if(A.x < B.x && A.y < D.y)
-			return A.x < P.x && P.x < B.x && A.y < P.y && P.y < D.y;
-		else if(A.x > B.x && A.y < D.y)
-			return A.x > P.x && P.x > B.x && A.y < P.y && P.y < D.y;
-		else if(A.x < B.x && A.y > D.y)
-			return A.x < P.x && P.x < B.x && A.y > P.y && P.y > D.y;
-		else 
-			return A.x > P.x && P.x > B.x && A.y > P.y && P.y > D.y;
-
-
-	Vector2 AP = P - A;
-	Vector2 AB = B - A;
-	Vector2 AD = D - A;
-
-	return (0 < AP * AB && AP * AB < AB * AB) && (0 < AP * AD && AP * AD < AD * AD);
+	if (a == 0.f) {
+		return	pos.x < P.x && P.x < pos.x + size.x &&
+				pos.y < P.y && P.y < pos.y + size.y;
+	}
+	return false;
 }
 
 Vector2 Rectangle::getSize() const {

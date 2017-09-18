@@ -53,6 +53,8 @@ private:
 	World _world;
 	WorldExp _worldExp;
 
+	std::shared_ptr<Object> _floor;
+
 	Widget _guiRoot;
 	Panel _weaponIcon;
 	Label _weaponLabel;
