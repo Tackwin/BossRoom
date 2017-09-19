@@ -203,6 +203,19 @@ void World::addFloor(Vector2 vec) {
 	_floors.push_back(vec);
 }
 
+void WorldExp::updateInc(float dt, uint32_t itLevel) {
+	for (uint32_t i = 0u; i < itLevel; ++i) {
+		update(dt / itLevel);
+	}
+
+	for (auto wobj1 : _objects) {
+		auto obj1 = wobj1.lock();
+
+		obj1->flatVelocities.clear();
+		obj1->flatForces.clear();
+	}
+}
+
 void WorldExp::update(float dt) {
 	for (uint32_t i = _objects.size(); i > 0u; --i) {
 		if (!_objects[i - 1].expired()) continue;
@@ -216,72 +229,58 @@ void WorldExp::update(float dt) {
 		_objects.erase(_objects.begin() + i - 1);
 	}
 
-	for (auto& objWPtr : _objects) {
-		auto obj = objWPtr.lock();
+	for (auto& obj1w : _objects) {
+		auto obj1 = obj1w.lock();
 
-		Vector2 flatForces = std::accumulate(obj->flatForces.begin(), obj->flatForces.end(), Vector2::ZERO);
-		Vector2 flatVelocities = std::accumulate(obj->flatVelocities.begin(), obj->flatVelocities.end(), Vector2::ZERO);
+		Vector2 flatForces = std::accumulate(obj1->flatForces.begin(), obj1->flatForces.end(), Vector2::ZERO);
+		Vector2 flatVelocities = std::accumulate(obj1->flatVelocities.begin(), obj1->flatVelocities.end(), Vector2::ZERO);
 
-		Vector2 pos = obj->pos;
+		Vector2 pos = obj1->pos;
 
-		Vector2 nVel = obj->velocity + (obj->force + flatForces) * dt;
-		Vector2 nPos = obj->pos + (obj->velocity + flatVelocities) * dt;
+		Vector2 nVel = obj1->velocity + (obj1->force + flatForces) * dt;
+		Vector2 nPos = obj1->pos + (obj1->velocity + flatVelocities) * dt;
 
-		bool xCollide = false;
-		bool yCollide = false;
+		bool xCollider = false;
+		bool yCollider = false;
 
 		for (uint32_t i = 0u; i < Object::BITSET_SIZE; ++i) {
-			if (!obj->collisionMask[i]) continue;
+			if (!obj1->collisionMask[i]) continue;
+			
+			for (auto& obj2w : _objectsPool[i]) {
+				auto obj2 = obj2w.lock();
 
-			for (auto& obj2WPtr : _objects) {
-				auto obj2 = obj2WPtr.lock();
+				if (obj1.get() == obj2.get()) continue;
 
-				if (obj == obj2) continue;
-				obj->pos = pos;
-
-				bool state = _collisionStates[{obj->id, obj2->id}];
-				bool colliding = false;
-
-				obj->pos.x = nPos.x;
-				if (!xCollide && obj->collider->collideWith(obj2->collider)) {
-					nVel.x = 0.f;
+				obj1->pos.x = nPos.x;
+				obj1->collider->setPos({ nPos.x, pos.y });
+				if (!xCollider && obj1->collider->collideWith(obj2->collider)) {
+					nVel.x = 0;
+					obj1->pos.x = pos.x;
 					nPos.x = pos.x;
-
-					xCollide = true;
-					colliding = true;
+					xCollider = true;
 				}
 
-				obj->pos.y = nPos.y;
-				if (!yCollide && obj->collider->collideWith(obj2->collider)) {
-					nVel.y = 0.f;
+				obj1->pos = nPos;
+				obj1->collider->setPos(nPos);
+				if (!yCollider && obj1->collider->collideWith(obj2->collider)) {
+					nVel.y = 0;
+					obj1->pos.y = pos.y;
 					nPos.y = pos.y;
-
-					yCollide = true;
-					colliding = true;
+					yCollider = true;
 				}
 
-				if (colliding && !state) {
-					_collisionStates[{obj->id, obj2->id}] = true;
-					obj->collider->onEnter();
-				}
-				else if (!colliding && state) {
-					_collisionStates[{obj->id, obj2->id}] = false;
-					obj->collider->onExit();
-				}
-
-				if (xCollide && yCollide) {
-					goto endLoop;
+				if (xCollider && yCollider) {
+					break;
 				}
 			}
 		}
-endLoop:
 
-		obj->pos = nPos;
-		obj->velocity = nVel;
-		obj->force = Vector2::ZERO;
 
-		obj->flatVelocities.clear();
-		obj->flatForces.clear();
+		obj1->force = Vector2::ZERO;
+		obj1->velocity = nVel;
+		obj1->pos = nPos;
+
+		obj1->collider->setPos(nPos);
 	}
 }
 

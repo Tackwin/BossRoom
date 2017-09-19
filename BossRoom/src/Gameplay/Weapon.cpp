@@ -171,7 +171,6 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 				std::shared_ptr<Disk> disk = std::make_shared<Disk>();
 				
 				disk->r = 50.f;
-				disk->pos = InputsManager::getMouseScreenPos();
 
 				z.collider = std::dynamic_pointer_cast<Collider>(disk);
 
@@ -277,5 +276,4 @@ void Weapon::passive(uint32 id) {
 
 void Weapon::update(float dt) {
 	_update(*this, dt);
-	_disk.pos = _lootedSprite.getPosition();
 }

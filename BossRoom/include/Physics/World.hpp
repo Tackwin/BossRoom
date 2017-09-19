@@ -54,6 +54,7 @@ private:
 class WorldExp {
 public:
 	void update(float dt);
+	void updateInc(float dt, uint32_t itLevel);
 	void render(sf::RenderTarget& target);
 
 	void addObject(std::weak_ptr<Object> obj);

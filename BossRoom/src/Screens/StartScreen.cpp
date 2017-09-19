@@ -50,7 +50,6 @@ void StartScreen::onEnter() {
 	_floor->idMask |= Object::FLOOR;
 	_floor->pos = { 0, 600 };
 	Box* box = new Box();
-	box->pos = { 0, 600 };
 	box->size = { 3000, 120 };
 	_floor->collider = box;
 	_worldExp.addObject(_floor);
@@ -65,7 +64,7 @@ void StartScreen::onExit() {
 void StartScreen::update(float dt) {
 	
 	//_world.update(dt);
-	_worldExp.update(dt);
+	_worldExp.updateInc(dt, 10);
 	_player->update(dt);
 
 

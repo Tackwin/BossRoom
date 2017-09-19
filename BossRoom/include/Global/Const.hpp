@@ -40,7 +40,7 @@ namespace C {
 	constexpr unsigned int N_LEVEL = 5;
 
 	constexpr float MIN_DELTA = 1 / 30.f;
-	constexpr float MIN_MS = 0.05f;
+	constexpr float MIN_MS = 0.0f;
 
 	constexpr double PId = 3.1415926535897923846;
 	constexpr float PIf = 3.1415926f;

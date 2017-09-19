@@ -48,6 +48,7 @@ void Player::initializeJson() {
 	_sprite.getSprite().setPosition(pos);
 
 	_hitBox.size = _sprite.getSize();
+	_hitBox.dtPos = _hitBox.size * -0.5f;
 }
 
 
@@ -85,10 +86,10 @@ void Player::update(float) {
 		//force.y += 100;
 	
 		if (tryingToShoot) _dir *= 0.2f;
+
+		flatForces.push_back({ 0, 100 });
 		flatVelocities.push_back(_dir * (float)(InputsManager::isKeyPressed(_slowK) ? _slowSpeed : _speed));
 	}
-
-	_hitBox.pos = pos;
 }
 
 void Player::render(sf::RenderTarget &target) {

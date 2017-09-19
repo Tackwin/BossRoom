@@ -52,7 +52,6 @@ Projectile::~Projectile() {
 
 void Projectile::update(float dt) {
 	pos += _dir * _speed *dt;
-	_disk.pos = pos;
 	_update(*this, dt);
 }
 

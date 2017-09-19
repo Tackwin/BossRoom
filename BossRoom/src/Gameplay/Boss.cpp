@@ -214,8 +214,6 @@ void Boss::die() {
 
 void Boss::update(float dt) {
 	_update(dt, *this);
-
-	_disk.pos = _pos;
 }
 
 void Boss::render(sf::RenderTarget &target) {
