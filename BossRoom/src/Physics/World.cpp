@@ -106,7 +106,7 @@ void World::updateProjectiles(float dt) {
 			for (auto& p : _players) {
 				const auto& player = p.lock();
 
-				if (!player->isInvicible() && p0->_disk.collideWith(&player->_disk)) {
+				if (!player->isInvicible() && p0->_disk.collideWith(&player->_hitBox)) {
 					p0->remove();
 					player->hit(p0->getDamage());
 					//_screen->shakeScreen(1); Need to handle that
@@ -233,7 +233,7 @@ void WorldExp::update(float dt) {
 		for (uint32_t i = 0u; i < Object::BITSET_SIZE; ++i) {
 			if (!obj->collisionMask[i]) continue;
 
-			for (auto& obj2WPtr : _objectsPool[i]) {
+			for (auto& obj2WPtr : _objects) {
 				auto obj2 = obj2WPtr.lock();
 
 				if (obj == obj2) continue;

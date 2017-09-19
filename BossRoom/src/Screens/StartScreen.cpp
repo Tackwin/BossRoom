@@ -63,10 +63,11 @@ void StartScreen::onExit() {
 	_world.delPlayer(0);
 }
 void StartScreen::update(float dt) {
+	
+	//_world.update(dt);
+	_worldExp.update(dt);
 	_player->update(dt);
 
-	_world.update(dt);
-	_worldExp.update(dt);
 
 	if (_dungeonDoor.getGlobalBounds().contains(_player->pos)) {
 		game->enterDungeon();

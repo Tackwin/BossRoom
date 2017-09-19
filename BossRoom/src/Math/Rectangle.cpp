@@ -60,7 +60,7 @@ bool Rectangle::intersect(const Rectangle& rect) {
 		return	  !(pos.x > rect.pos.x + rect.size.x ||
 					pos.x + size.x < rect.pos.x ||
 					pos.y > rect.pos.y + rect.size.y ||
-					pos.y + size.y > rect.pos.y);
+					pos.y + size.y < rect.pos.y);
 	}
 	return false;
 }
