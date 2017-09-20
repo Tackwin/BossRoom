@@ -48,16 +48,17 @@ public:
 
 public: //TODO: Make private
 
-	int32 _AK;
-	int _upK;
-	int _leftK;
-	int _downK;
-	int _rightK;
-	int32 _slowK;
-	int32 _dashK;
+	int32_t _AK;
+	int32_t _upK;
+	int32_t _leftK;
+	int32_t _downK;
+	int32_t _rightK;
+	int32_t _slowK;
+	int32_t _dashK;
+	int32_t _jumpK;
 
-	int _life;
-	int _maxLife;
+	int32_t _life;
+	int32_t _maxLife;
 	Vector2 _dir;
 	float _speed;
 	float _radius;

@@ -39,9 +39,6 @@ void StartScreen::onEnter() {
 	initializeSprite();
 	_player = game->_player;
 	_player->initializeJson();
-	_player->pos = {100, 100};
-	_player->idMask |= Object::PLAYER;
-	_player->collisionMask |= Object::FLOOR;
 
 	_world.setPlayer(_player, 0);
 	_worldExp.addObject(_player);
@@ -60,6 +57,7 @@ void StartScreen::onEnter() {
 void StartScreen::onExit() {
 	_player->_weapon->unEquip();
 	_world.delPlayer(0);
+	_worldExp.purge();
 }
 void StartScreen::update(float dt) {
 	

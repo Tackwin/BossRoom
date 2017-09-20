@@ -59,6 +59,8 @@ public:
 
 	void addObject(std::weak_ptr<Object> obj);
 	void delObject(std::weak_ptr<Object> obj);
+
+	void purge();
 private:
 	uint32_t _iterationLevel = 5;
 

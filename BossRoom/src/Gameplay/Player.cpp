@@ -13,9 +13,14 @@ using namespace nlohmann;
 
 Player::Player(const nlohmann::json& json) :
 	_json(json),
-	_hitSound(AssetsManager::getSound("hit")){
+	_hitSound(AssetsManager::getSound("hit"))
+{
 	_hitBox.userPtr = this;
 	collider = &_hitBox;
+
+	pos = { 100, 100 };
+	idMask |= Object::PLAYER;
+	collisionMask |= Object::FLOOR;
 }
 
 Player::~Player() {
@@ -38,6 +43,7 @@ void Player::initializeJson() {
 	_rightK = _json["rightKey"];
 	_slowK = _json["slowKey"];
 	_dashK = _json["dashKey"];
+	_jumpK = _json["jumpKey"];
 
 	_invincibilityTime = _json["invincibilityTime"].get<float>();
 	
@@ -62,7 +68,7 @@ void Player::exitLevel() {
 	_level = nullptr;
 }
 
-void Player::update(float) {
+void Player::update(float dt) {
 	bool tryingToShoot = game->_distance && InputsManager::isMousePressed(_AK);
 	if (tryingToShoot) {
 		_weapon->active(0);
@@ -81,6 +87,10 @@ void Player::update(float) {
 		}
 		else if (InputsManager::isKeyPressed(_rightK)) {
 			_dir.x = 1;
+		}
+
+		if (InputsManager::isKeyJustPressed(_jumpK)) {
+			flatForces.push_back({ 0, -200.f / dt });
 		}
 		_dir.normalize();
 		//force.y += 100;

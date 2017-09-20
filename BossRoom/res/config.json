@@ -183,8 +183,9 @@
 		"leftKey": 16,
 		"downKey": 18,
 		"rightKey": 3,
-		"dashKey": 57,
+		"dashKey": -1,
 		"slowKey": 38,
+		"jumpKey": 57,
 		"actionButton": 0,
 
 		"life": 3,

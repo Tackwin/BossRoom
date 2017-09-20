@@ -44,6 +44,7 @@ public: // TODO: Make this private
 	void burstParticle(const Vector2& pos);
 
 	World _world;
+	WorldExp _worldExp;
 
 	uint32 _n;
 
@@ -60,6 +61,8 @@ public: // TODO: Make this private
 	
 	sf::Sprite _aimSprite;
 	uint8 _aimSpriteOpacity;
+
+	std::shared_ptr<Object>  _floor;
 
 	bool _ended = false;
 	bool _aiming = false;

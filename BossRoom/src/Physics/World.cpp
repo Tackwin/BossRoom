@@ -322,3 +322,9 @@ void WorldExp::delObject(std::weak_ptr<Object> obj) {
 		}
 	}
 }
+
+void WorldExp::purge() {
+	_objects.clear();
+	for (uint32_t i = 0u; i < Object::BITSET_SIZE; ++i) 
+		_objectsPool[i].clear();
+}
