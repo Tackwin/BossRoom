@@ -9,7 +9,7 @@ void World::update(float dt) {
 	pullAllProjectiles();
 
 	updateBosses(dt);
-	updateProjectiles(dt);
+	//updateProjectiles(dt);
 	updateParticles(dt);
 }
 
@@ -92,7 +92,7 @@ void World::updateBosses(float dt) {
 		}
 	}
 }
-
+/*
 void World::updateProjectiles(float dt) {
 	for (auto it = _projectiles.begin(); it != _projectiles.end(); ++it) {
 		const auto& p0 = *it;
@@ -126,7 +126,7 @@ void World::updateProjectiles(float dt) {
 
 		}
 	}
-}
+}*/
 
 void World::updateParticles(float dt) {
 	for (auto& p : _particles) {

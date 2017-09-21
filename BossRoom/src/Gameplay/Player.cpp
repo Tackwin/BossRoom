@@ -68,7 +68,7 @@ void Player::exitLevel() {
 	_level = nullptr;
 }
 
-void Player::update(float dt) {
+void Player::update(float) {
 	bool tryingToShoot = game->_distance && InputsManager::isMousePressed(_AK);
 	if (tryingToShoot) {
 		_weapon->active(0);
@@ -90,14 +90,13 @@ void Player::update(float dt) {
 		}
 
 		if (InputsManager::isKeyJustPressed(_jumpK)) {
-			flatForces.push_back({ 0, -200.f / dt });
+			force.y -= 250'000.f;
 		}
 		_dir.normalize();
-		//force.y += 100;
 	
 		if (tryingToShoot) _dir *= 0.2f;
 
-		flatForces.push_back({ 0, 100 });
+		force.y += 1'000.f;
 		flatVelocities.push_back(_dir * (float)(InputsManager::isKeyPressed(_slowK) ? _slowSpeed : _speed));
 	}
 }

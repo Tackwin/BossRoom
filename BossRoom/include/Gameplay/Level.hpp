@@ -63,7 +63,8 @@ public: // TODO: Make this private
 	uint8 _aimSpriteOpacity;
 
 	std::shared_ptr<Object>  _floor;
-
+	std::vector<std::shared_ptr<Projectile>> _projectiles;
+	
 	bool _ended = false;
 	bool _aiming = false;
 	bool _running = false;

@@ -12,7 +12,6 @@ Projectile::Projectile(nlohmann::json json, Vector2 pos, Vector2 dir, bool playe
 	_json(json),
 	_update([](Projectile&, float) {}) {
 
-
 	_speed = getJsonValue<float>(json, "speed");
 	_damage = getJsonValue<int>(json, "damage");
 	_radius = getJsonValue<float>(json, "radius");
@@ -21,7 +20,14 @@ Projectile::Projectile(nlohmann::json json, Vector2 pos, Vector2 dir, bool playe
 	_dir.normalize();
 	
 	this->pos = pos;
-	_disk.r = _radius;
+
+	collider = new Disk();
+	((Disk*)collider)->r = _radius;
+
+	idMask |= PROJECTILE;
+	collisionMask |= player ? BOSS : PLAYER;
+
+	velocity = _dir * _speed;
 
 	std::uniform_int_distribution<int32> dist(0, 2);
 
@@ -48,17 +54,17 @@ Projectile::Projectile(nlohmann::json json, Vector2 pos, Vector2 dir, bool playe
 Projectile::~Projectile() {
 	if (TimerManager::functionsExist(_key))
 		TimerManager::removeFunction(_key);
+
+	delete collider;
 }
 
 void Projectile::update(float dt) {
-	pos += _dir * _speed *dt;
 	_update(*this, dt);
 }
 
 void Projectile::render(sf::RenderTarget &target) {
 	_sprite.setPosition(pos);
 	target.draw(_sprite);
-	_disk.render(target);
 }
 
 void Projectile::changeLifespan(float) {

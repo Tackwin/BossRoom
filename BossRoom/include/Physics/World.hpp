@@ -40,7 +40,7 @@ private:
 	void removeNeeded();
 	void pullAllProjectiles();
 	void updateBosses(float dt);
-	void updateProjectiles(float dt);
+	//void updateProjectiles(float dt);
 	void updateParticles(float dt);
 
 	std::vector<Vector2> _floors;

@@ -9,7 +9,9 @@
 struct Object {
 	enum BIT_TAGS {
 		PLAYER = 1,
-		FLOOR = PLAYER << 1
+		FLOOR = PLAYER << 1,
+		PROJECTILE = FLOOR << 1,
+		BOSS = PROJECTILE << 1
 	};
 
 	static uint64_t N;

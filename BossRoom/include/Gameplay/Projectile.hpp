@@ -47,8 +47,6 @@ public:
 	bool _damageable = true;
 	bool _destroyOthers = false;
 
-	Disk _disk;
-
 	sf::Sprite _sprite;
 
 	void update(float dt);
