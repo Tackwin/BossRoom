@@ -190,10 +190,11 @@
 
 		"life": 3,
 		"dash": 150,
-		"speed": 200,
+		"speed": 500,
 		"radius": 25,
-		"specialSpeed": 400,
+		"specialSpeed": 800,
 		"invincibilityTime": 0.2,
+		"jumpHeight": 100,
 
 		"sprite": "player",
 		"startpos": {

@@ -66,6 +66,7 @@ public: //TODO: Make private
 	float _dashRange;
 	float _slowSpeed;
 	float _invincibilityTime;
+	float _jumpHeight;
 
 	Box _hitBox;
 

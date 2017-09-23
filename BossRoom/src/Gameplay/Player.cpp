@@ -43,6 +43,7 @@ void Player::initializeJson() {
 	_slowK = _json["slowKey"];
 	_dashK = _json["dashKey"];
 	_jumpK = _json["jumpKey"];
+	_jumpHeight = getJsonValue<float>(_json, "jumpHeight");
 
 	_invincibilityTime = _json["invincibilityTime"].get<float>();
 	
@@ -89,13 +90,13 @@ void Player::update(float) {
 		}
 
 		if (InputsManager::isKeyJustPressed(_jumpK)) {
-			flatForces.push_back({ 0, -1'000'000.f });
+			velocity.y -= sqrtf(G * 2.f * _jumpHeight); // derived from equation of motion, thanks Newton
 		}
 		_dir.normalize();
 	
 		if (tryingToShoot) _dir *= 0.2f;
 
-		flatForces.push_back({ 0, 1'000.f });
+		flatForces.push_back({ 0, G });
 		flatVelocities.push_back(_dir * (float)(InputsManager::isKeyPressed(_slowK) ? _slowSpeed : _speed));
 	}
 }

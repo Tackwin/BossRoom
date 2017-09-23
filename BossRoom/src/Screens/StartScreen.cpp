@@ -40,7 +40,6 @@ void StartScreen::onEnter() {
 	_player = game->_player;
 	_player->initializeJson();
 
-	_world.setPlayer(_player, 0);
 	_worldExp.addObject(_player);
 
 	_floor = std::make_shared<Object>();
@@ -48,16 +47,17 @@ void StartScreen::onEnter() {
 	_floor->pos = { 0, 600 };
 	Box* box = new Box();
 	box->size = { 3000, 120 };
+	box->onEnter = []() {printf("floor touched\n"); };
+	box->onExit = []() {printf("floor leaved\n"); };
 	_floor->collider = box;
-	_worldExp.addObject(_floor);
 
-	_world.addFloor({ 3000, 600 });
+
+	_worldExp.addObject(_floor);
 
 }
 void StartScreen::onExit() {
 	_player->_weapon->unEquip();
 	_projectiles.clear();
-	_world.delPlayer(0);
 	_worldExp.purge();
 }
 void StartScreen::update(float dt) {
@@ -73,7 +73,7 @@ void StartScreen::update(float dt) {
 		p->update(dt);
 	}
 
-	_worldExp.updateInc(dt, 10);
+	_worldExp.updateInc(dt, 1u);
 
 	if (_dungeonDoor.getGlobalBounds().contains(_player->pos)) {
 		game->enterDungeon();
