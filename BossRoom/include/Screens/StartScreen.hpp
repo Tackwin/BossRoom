@@ -35,6 +35,8 @@ private:
 
 	void initializeSprite();
 
+	void removeNeeded();
+
 	sf::Sprite _startBackground;
 	sf::Sprite _dungeon;
 	sf::Sprite _dungeonDoor;

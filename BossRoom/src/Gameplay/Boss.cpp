@@ -177,8 +177,8 @@ void Boss::enterLevel(Level* level) {
 
 	_life = _json["life"];
 	_maxLife = _life;
-	_pos.x = _json["startpos"]["x"];
-	_pos.y = _json["startpos"]["y"];
+	pos.x = _json["startpos"]["x"];
+	pos.y = _json["startpos"]["y"];
 	_radius = _json["radius"];
 	_color = sf::Color::hexToColor(_json["color"]);
 
@@ -189,7 +189,10 @@ void Boss::enterLevel(Level* level) {
 	_sprite.getSprite().setOrigin(_sprite.getSize() / 2);
 	_sprite.getSprite().setScale(-(4 * _radius) / _sprite.getSize().x, (4 * _radius) / _sprite.getSize().y);
 
+	collider = &_disk;
+	_disk.userPtr = this;
 	_disk.r = _radius;
+	idMask |= BOSS;
 
 	_init(*this);
 }
@@ -217,10 +220,9 @@ void Boss::update(float dt) {
 }
 
 void Boss::render(sf::RenderTarget &target) {
-	_sprite.getSprite().setPosition(_pos);
+	_sprite.getSprite().setPosition(getPos());
 	_sprite.getSprite().setColor(_color);
 	_sprite.render(target);
-	_disk.render(target);
 }
 
 void Boss::hit(unsigned int d) {
@@ -239,10 +241,10 @@ void Boss::addProjectile(const std::shared_ptr<Projectile>& projectile) {
 }
 
 Vector2 Boss::getDirToFire() const {
-	return (game->_player->getPos() - _pos).normalize();
+	return (game->_player->getPos() - getPos()).normalize();
 }
 Vector2 Boss::getPos() const {
-	return _pos;
+	return pos;
 }
 
 const std::vector<std::shared_ptr<Projectile>>& Boss::getProtectilesToShoot() const {

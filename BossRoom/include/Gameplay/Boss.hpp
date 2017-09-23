@@ -8,13 +8,13 @@
 #include "3rd/json.hpp"
 
 #include "Graphics/AnimatedSprite.hpp"
-#include <Physics/Collider.hpp>
+#include <Physics/Object.hpp>
 #include "Math/Rectangle.hpp"
 #include "Math/Vector2.hpp"
 
 class Level;
 class Projectile;
-class Boss {
+class Boss : public Object {
 public:
 	Boss() {};
 	Boss(const nlohmann::basic_json<>& json,
@@ -49,13 +49,12 @@ public: //TODO: make this private
 
 	int _life;
 	int _maxLife;
-	Vector2 _pos;
 	float _radius;
 	sf::Color _color;
 
-	Disk _disk;
-
 	Level* _level;
+
+	Disk _disk;
 
 	std::vector<std::shared_ptr<Projectile>> _projectilesToShoot;
 

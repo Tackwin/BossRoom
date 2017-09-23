@@ -21,11 +21,13 @@ Projectile::Projectile(nlohmann::json json, Vector2 pos, Vector2 dir, bool playe
 	
 	this->pos = pos;
 
-	collider = new Disk();
-	((Disk*)collider)->r = _radius;
+	collider = &_disk;
+	_disk.userPtr = this;
+	_disk.r = _radius;
 
 	idMask |= PROJECTILE;
-	collisionMask |= player ? BOSS : PLAYER;
+	collisionMask |= (player ? BOSS : PLAYER);
+	collisionMask |= FLOOR;
 
 	velocity = _dir * _speed;
 
@@ -37,7 +39,7 @@ Projectile::Projectile(nlohmann::json json, Vector2 pos, Vector2 dir, bool playe
 		dist(RNG) * whole	, dist(RNG) * whole, 
 		whole				,	whole
 	});
-	_sprite.setOrigin(_radius, _radius);
+	_sprite.setOrigin(_radius * 2, _radius * 2); // i don't know why i need to double it, maybe because i do shit with texture rect just above...
 	_sprite.setPosition(pos);
 
 	_key = TimerManager::addFunction(_lifespan, "destroy", [&](float)->bool {
@@ -54,8 +56,6 @@ Projectile::Projectile(nlohmann::json json, Vector2 pos, Vector2 dir, bool playe
 Projectile::~Projectile() {
 	if (TimerManager::functionsExist(_key))
 		TimerManager::removeFunction(_key);
-
-	delete collider;
 }
 
 void Projectile::update(float dt) {

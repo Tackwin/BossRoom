@@ -39,7 +39,7 @@ public:
 			float ca = rngA(RNG);
 
 			Vector2 dir = Vector2::createUnitVector(ca);
-			Vector2 pos = boss._pos + dir * (boss._radius + 10);
+			Vector2 pos = boss.getPos() + dir * (boss._radius + 10);
 			const auto& ptr = std::make_shared<Projectile>(projectile, pos, dir, false);
 			TimerManager::addFunction(sumS, "random fire_", [&, boss, ptr](float)mutable->bool {
 				boss.addProjectile(ptr);
@@ -60,14 +60,14 @@ public:
 	}
 	static std::string directionalFire(Boss& boss, float fireRate, float time, nlohmann::json projectile) {
 		return TimerManager::addFunction(1 / fireRate, "directive fire", [&boss, time, projectile, N = time * fireRate](float)mutable->bool {
-			float a = boss._pos.angleTo(boss._level->_player->getPos());
+			float a = boss.getPos().angleTo(boss._level->_player->getPos());
 
 			Vector2 dir = Vector2::createUnitVector(a);
 
-			Vector2 pos = boss._pos + Vector2::createUnitVector(a + PIf / 9) * (boss._radius + 10);
+			Vector2 pos = boss.getPos() + Vector2::createUnitVector(a + PIf / 9) * (boss._radius + 10);
 			boss.addProjectile(std::make_shared<Projectile>(projectile, pos, dir, false));
 
-			pos = boss._pos + Vector2::createUnitVector(a - PIf / 9) * (boss._radius + 10);
+			pos = boss.getPos() + Vector2::createUnitVector(a - PIf / 9) * (boss._radius + 10);
 			boss.addProjectile(std::make_shared<Projectile>(projectile, pos, dir, false));
 
 			return --N <= 0;
@@ -112,7 +112,7 @@ public:
 			TimerManager::addFunction(aimTime, "delay", [&boss, projectile, nShots, iTime, lambda](float)mutable->bool {
 				boss._level->stopAim();
 
-				Vector2 pos = boss._pos;
+				Vector2 pos = boss.getPos();
 				Vector2 dir = Vector2::createUnitVector(pos.angleTo(game->_player->getPos()));
 				pos = pos + dir * (boss._radius + projectile["radius"].get<float>() + 1);
 
@@ -234,8 +234,8 @@ public:
 		);
 	}
 	static std::string boomerang(Boss& boss, uint32 nBooms, float overShoot, float waitTime, nlohmann::json projectile) {
-		Vector2 pos = boss._pos;
-		Vector2 dir = (game->_player->getPos() - boss._pos).normalize();
+		Vector2 pos = boss.getPos();
+		Vector2 dir = (game->_player->getPos() - boss.getPos()).normalize();
 
 		auto ptrProjectile = std::make_shared<Projectile>(projectile, pos, dir, false);
 		boss.addProjectile(ptrProjectile);

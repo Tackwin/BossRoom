@@ -8,11 +8,10 @@ void World::update(float dt) {
 	removeNeeded();
 	pullAllProjectiles();
 
-	updateBosses(dt);
+	//updateBosses(dt);
 	//updateProjectiles(dt);
 	updateParticles(dt);
 }
-
 void World::removeNeeded() {
 	for (size_t i = _zones.size(); i > 0u; --i) {
 		if (!_zones[i - 1] || _zones[i - 1]->toRemove) {
@@ -44,7 +43,6 @@ void World::removeNeeded() {
 		}
 	}
 }
-
 void World::pullAllProjectiles() {
 	for (auto& p : _players) {
 		auto &projectiles = p.lock()->getProtectilesToShoot();
@@ -65,6 +63,7 @@ void World::pullAllProjectiles() {
 			b.lock()->clearProtectilesToShoot();
 	}
 }
+/*
 void World::updateBosses(float dt) {
 	for (auto& b : _bosses) {
 		const auto& boss = b.lock();
@@ -92,7 +91,6 @@ void World::updateBosses(float dt) {
 		}
 	}
 }
-/*
 void World::updateProjectiles(float dt) {
 	for (auto it = _projectiles.begin(); it != _projectiles.end(); ++it) {
 		const auto& p0 = *it;
@@ -127,17 +125,14 @@ void World::updateProjectiles(float dt) {
 		}
 	}
 }*/
-
 void World::updateParticles(float dt) {
 	for (auto& p : _particles) {
 		p->update(dt);
 	}
 }
-
 void World::addProjectile(const std::shared_ptr<Projectile>& projectile) {
 	_projectiles.push_back(projectile);
 }
-
 void World::setPlayer(const std::shared_ptr<Player>& player, uint32_t idx) {
 	if (idx >= _players.size())
 		_players.resize(idx + 1);
@@ -149,7 +144,6 @@ void World::delPlayer(uint32_t idx) {
 		_players.erase(_players.begin() + idx);
 	}
 }
-
 void World::setBoss(const std::shared_ptr<Boss>& boss, uint32_t idx) {
 	if (idx >= _bosses.size())
 		_bosses.resize(idx + 1);
@@ -161,7 +155,6 @@ void World::delBoss(uint32_t idx) {
 		_bosses.erase(_bosses.begin() + idx);
 	}
 }
-
 void World::render(sf::RenderTarget& target) {
 	for (auto& p : _projectiles) {
 		p->render(target);
@@ -182,8 +175,6 @@ void World::render(sf::RenderTarget& target) {
 		target.draw(shape);
 	}
 }
-
-
 void World::burstParticle(const std::shared_ptr<const Boss>& boss, const Vector2& pos) {
 	const auto& jsonParticles = AssetsManager::getJson(JSON_KEY)["particlesGenerator"]["particleBurstFeather"];
 	auto jsonBurst = jsonParticles;
@@ -220,13 +211,15 @@ void WorldExp::update(float dt) {
 	for (uint32_t i = _objects.size(); i > 0u; --i) {
 		if (!_objects[i - 1].expired()) continue;
 		
-		for (uint32_t j = 0u; j < Object::BITSET_SIZE; ++j) {
-			for (uint32_t k = _objectsPool[j].size(); k > 0u; --k) {
-				_objectsPool[j].erase(_objectsPool[j].begin() + k - 1);
-			}
-		}
-
 		_objects.erase(_objects.begin() + i - 1);
+	}
+
+	for (uint32_t j = 0u; j < Object::BITSET_SIZE; ++j) {
+		for (uint32_t k = _objectsPool[j].size(); k > 0u; --k) {
+			if (!_objectsPool[j][k - 1].expired()) continue;
+			
+			_objectsPool[j].erase(_objectsPool[j].begin() + k - 1);
+		}
 	}
 
 	for (auto& obj1w : _objects) {

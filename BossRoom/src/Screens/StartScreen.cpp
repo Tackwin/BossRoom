@@ -56,19 +56,30 @@ void StartScreen::onEnter() {
 }
 void StartScreen::onExit() {
 	_player->_weapon->unEquip();
+	_projectiles.clear();
 	_world.delPlayer(0);
 	_worldExp.purge();
 }
 void StartScreen::update(float dt) {
-	
-	//_world.update(dt);
-	_worldExp.updateInc(dt, 10);
-	_player->update(dt);
+	for (auto& p : _player->getProtectilesToShoot()) {
+		_projectiles.push_back(p);
+		_worldExp.addObject(p);
+	}
+	_player->clearProtectilesToShoot();
 
+	//_world.update(dt);
+	_player->update(dt);
+	for (auto& p : _projectiles) {
+		p->update(dt);
+	}
+
+	_worldExp.updateInc(dt, 10);
 
 	if (_dungeonDoor.getGlobalBounds().contains(_player->pos)) {
 		game->enterDungeon();
 	}
+
+	removeNeeded();
 }
 void StartScreen::render(sf::RenderTarget& target) {
 	const auto oldView = target.getView();
@@ -91,6 +102,9 @@ void StartScreen::render(sf::RenderTarget& target) {
 	target.draw(_dungeonDoor);
 
 	_worldExp.render(target);
+	for (auto& p : _projectiles) {
+		p->render(target);
+	}
 	_player->render(target);
 
 	renderGui(target);
@@ -165,4 +179,11 @@ void StartScreen::enterShop() {
 }
 void StartScreen::leaveShop() {
 	_isInShop = false;
+}
+
+void StartScreen::removeNeeded() {
+	for (size_t i = _projectiles.size(); i > 0; --i) {
+		if (_projectiles[i - 1]->toRemove())
+			_projectiles.erase(_projectiles.begin() + i - 1);
+	}
 }

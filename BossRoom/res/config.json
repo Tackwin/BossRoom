@@ -369,7 +369,7 @@
 			"projectile": {
 				"damage": 1,
 				"speed": 700,
-				"radius": 5,
+				"radius": 7,
 				"lifespan": 3,
 				"destroyOthers": false,
 				"sprite": "projectiles-1"

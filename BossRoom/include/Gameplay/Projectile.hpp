@@ -42,6 +42,8 @@ public:
 	float _radius;
 	int32_t _damage;
 
+	Disk _disk;
+
 	bool _player;
 	bool _remove = false;
 	bool _damageable = true;

@@ -35,7 +35,6 @@ void Player::initializeJson() {
 	pos.x = _json["startpos"]["x"];
 	pos.y = _json["startpos"]["y"];
 	_slowSpeed = _json["specialSpeed"];
-
 	_AK = _json["actionButton"];
 	_upK = _json["upKey"];
 	_leftK = _json["leftKey"];
@@ -90,13 +89,13 @@ void Player::update(float) {
 		}
 
 		if (InputsManager::isKeyJustPressed(_jumpK)) {
-			force.y -= 250'000.f;
+			flatForces.push_back({ 0, -1'000'000.f });
 		}
 		_dir.normalize();
 	
 		if (tryingToShoot) _dir *= 0.2f;
 
-		force.y += 1'000.f;
+		flatForces.push_back({ 0, 1'000.f });
 		flatVelocities.push_back(_dir * (float)(InputsManager::isKeyPressed(_slowK) ? _slowSpeed : _speed));
 	}
 }

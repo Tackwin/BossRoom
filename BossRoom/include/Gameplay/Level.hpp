@@ -41,7 +41,8 @@ public:
 	float getNormalizedBossLife() const;
 
 public: // TODO: Make this private
-	void burstParticle(const Vector2& pos);
+	void removeNeeded();
+
 
 	World _world;
 	WorldExp _worldExp;
