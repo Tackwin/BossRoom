@@ -99,3 +99,6 @@ void Projectile::remove() {
 int32_t Projectile::getDamage() const {
 	return _damage;
 }
+bool Projectile::isFromPlayer() const {
+	return _player;
+}

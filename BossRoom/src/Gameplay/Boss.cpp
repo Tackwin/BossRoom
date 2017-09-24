@@ -36,7 +36,7 @@ void Boss::createBosses() {
 			boss._sounds.push_back(sf::Sound(AssetsManager::getSound("shoot2")));
 
 			boss._keyPatterns.push_back(TimerManager::addFunction(3, "P1", [&boss](float)mutable->bool {
-				//Patterns::directionalFire(boss, Patterns::_json["directionalFire"]);
+				Patterns::directionalFire(boss, Patterns::_json["directionalFire"]);
 				boss._sprite.pushAnim("action");
 				boss._sounds[0].play();
 				return false;
@@ -192,6 +192,7 @@ void Boss::enterLevel(Level* level) {
 	collider = &_disk;
 	_disk.userPtr = this;
 	_disk.r = _radius;
+	_disk.onEnter = [&](auto obj) {collision(obj); };
 	idMask |= BOSS;
 
 	_init(*this);
@@ -252,4 +253,10 @@ const std::vector<std::shared_ptr<Projectile>>& Boss::getProtectilesToShoot() co
 }
 void Boss::clearProtectilesToShoot() {
 	_projectilesToShoot.clear();
+}
+void Boss::collision(Object* obj) {
+	if (auto ptr = dynamic_cast<Projectile*>(obj); ptr && ptr->isFromPlayer()) {
+		hit(ptr->getDamage());
+		ptr->remove();
+	}
 }

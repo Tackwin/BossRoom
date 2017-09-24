@@ -14,7 +14,7 @@ bool Disk::collideWith(const Collider* collider) const {
 	if (auto ptr = dynamic_cast<const Disk*>(collider); ptr) {
 		return (getGlobalPos() - ptr->getGlobalPos()).length2() < (r + ptr->r) * (r + ptr->r);
 	}
-	if (auto ptr = dynamic_cast<const Box*>(collider); ptr) {
+	else if (auto ptr = dynamic_cast<const Box*>(collider); ptr) {
 		return ptr->isIn(getGlobalPos());
 	}
 	return false;

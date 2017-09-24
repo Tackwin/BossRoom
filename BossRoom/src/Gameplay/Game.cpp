@@ -25,12 +25,13 @@ Game::Game()
 	_player->swapWeapon(weapon);
 
 	_debugText["ups"].setFont(AssetsManager::getFont("consola"));
-	_debugText["ups"].setCharacterSize(15);
+	_debugText["ups"].setCharacterSize(20);
 	_debugText["ups"].setPosition(5, 5);
+	_debugText["ups"].setFillColor(sf::Color(100, 100, 100));
 
 	_debugText["#Entity"].setFont(AssetsManager::getFont("consola"));
-	_debugText["#Entity"].setCharacterSize(15);
-	_debugText["#Entity"].setPosition(5, 20);
+	_debugText["#Entity"].setCharacterSize(20);
+	_debugText["#Entity"].setPosition(5, 50);
 }
 
 Game::~Game() {

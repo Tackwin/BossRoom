@@ -43,7 +43,7 @@ public:
 public: // TODO: Make this private
 	void removeNeeded();
 
-	World _worldExp;
+	World _world;
 
 	uint32 _n;
 

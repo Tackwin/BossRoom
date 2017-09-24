@@ -62,6 +62,8 @@ void Player::enterLevel(Level* level) {
 	_weapon->equip();
 
  	_level = level;
+
+	_hitBox.onEnter = [&](auto obj) {collision(obj); };
 }
 void Player::exitLevel() {
 	_weapon->unEquip();
@@ -162,4 +164,13 @@ void Player::clearProtectilesToShoot() {
 
 bool Player::isInvicible() const {
 	return _invincible;
+}
+
+void Player::collision(Object* obj) {
+	if (auto ptr = dynamic_cast<Projectile*>(obj); ptr && !ptr->isFromPlayer()) {
+		if (!_invincible) {
+			hit(ptr->getDamage());
+		}
+		ptr->remove();
+	}
 }

@@ -3,11 +3,11 @@
 #include <Math/Vector2.hpp>
 #include <Math/Rectangle.hpp>
 
+struct Object;
 struct Collider {
-	using Callback = std::function<void(void)>;
+	using Callback = std::function<void(Object*)>;
 
-	Callback onExit = []() {};
-	Callback onEnter = []() {};
+	Callback onEnter = [](Object*) {};
 
 	Vector2 dtPos = Vector2::ZERO;
 
@@ -18,11 +18,15 @@ struct Collider {
 
 	virtual void render(sf::RenderTarget& target) = 0;
 
+
 	Vector2 getGlobalPos() const { return __pos + dtPos; }
 	void setPos(const Vector2& pos) { __pos = pos; }
 
 protected:
 	Vector2 __pos;
+
+private:
+	bool _colliding = false;
 };
 
 struct Disk : Collider {

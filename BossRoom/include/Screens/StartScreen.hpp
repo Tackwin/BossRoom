@@ -52,7 +52,7 @@ private:
 
 	bool _isInShop = false;
 
-	World _worldExp;
+	World _world;
 
 	std::shared_ptr<Object> _floor;
 

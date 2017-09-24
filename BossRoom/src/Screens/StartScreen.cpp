@@ -40,40 +40,35 @@ void StartScreen::onEnter() {
 	_player = game->_player;
 	_player->initializeJson();
 
-	_worldExp.addObject(_player);
+	_world.addObject(_player);
 
 	_floor = std::make_shared<Object>();
 	_floor->idMask |= Object::FLOOR;
 	_floor->pos = { 0, 600 };
 	Box* box = new Box();
 	box->size = { 3000, 120 };
-	box->onEnter = []() {printf("floor touched\n"); };
-	box->onExit = []() {printf("floor leaved\n"); };
 	_floor->collider = box;
 
-
-	_worldExp.addObject(_floor);
-
+	_world.addObject(_floor);
 }
 void StartScreen::onExit() {
 	_player->_weapon->unEquip();
 	_projectiles.clear();
-	_worldExp.purge();
+	_world.purge();
 }
 void StartScreen::update(float dt) {
 	for (auto& p : _player->getProtectilesToShoot()) {
 		_projectiles.push_back(p);
-		_worldExp.addObject(p);
+		_world.addObject(p);
 	}
 	_player->clearProtectilesToShoot();
 
-	//_world.update(dt);
 	_player->update(dt);
 	for (auto& p : _projectiles) {
 		p->update(dt);
 	}
 
-	_worldExp.updateInc(dt, 1u);
+	_world.updateInc(dt, 1u);
 
 	if (_dungeonDoor.getGlobalBounds().contains(_player->pos)) {
 		game->enterDungeon();
@@ -101,7 +96,7 @@ void StartScreen::render(sf::RenderTarget& target) {
 	target.draw(_merchantShop);
 	target.draw(_dungeonDoor);
 
-	_worldExp.render(target);
+	_world.render(target);
 	for (auto& p : _projectiles) {
 		p->render(target);
 	}

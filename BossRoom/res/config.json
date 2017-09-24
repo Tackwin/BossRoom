@@ -360,7 +360,7 @@
 	},
 	"weapons": [
 		{
-			"cooldowns": [ 0.15 ],
+			"cooldowns": [ 0.0015 ],
 			"radius": 10,
 			"sprite": "weapon0",
 			"sounds": {

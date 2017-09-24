@@ -67,4 +67,7 @@ public: //TODO: make this private
 	AnimatedSprite _sprite;
 
 	std::vector<sf::Sound> _sounds;
+
+private:
+	void collision(Object* obj);
 };

@@ -76,27 +76,21 @@ void World::update(float dt) {
 
 				if ((xCollider || yCollider) && !collisionCalback) {
 					if (!_collisionStates[{obj1->id, obj2->id}]) {
-						obj1->collider->onEnter();
-						obj2->collider->onEnter();
+						obj1->collider->onEnter(obj2.get());
+						obj2->collider->onEnter(obj1.get());
 					}
 
 					_collisionStates[{obj1->id, obj2->id}] = true;
 					collisionCalback = true;
+				}
+				else {
+					_collisionStates[{obj1->id, obj2->id}] = false;
 				}
 
 				if (xCollider && yCollider) {
 					break;
 				}
 			}
-		}
-
-		if (!xCollider && !yCollider) {
-			const auto& it = std::find_if(_collisionStates.begin(), _collisionStates.end(), [id = obj1->id](const std::pair<ordered_pair<uint64_t>, bool>& A) {
-				return A.first.first == id && A.second;
-			});
-	
-			if (it != _collisionStates.end())
-				obj1->collider->onExit();
 		}
 
 		obj1->force = Vector2::ZERO;

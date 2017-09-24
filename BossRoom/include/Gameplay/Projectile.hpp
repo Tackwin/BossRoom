@@ -30,6 +30,8 @@ public:
 	void remove();
 
 	int32_t getDamage() const;
+
+	bool isFromPlayer() const;
 public:
 	nlohmann::json _json;
 

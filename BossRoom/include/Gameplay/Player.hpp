@@ -46,6 +46,8 @@ public:
 
 	bool isInvicible() const;
 
+	void collision(Object* obj);
+
 public: //TODO: Make private
 
 	int32_t _AK;

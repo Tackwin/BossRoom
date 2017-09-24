@@ -19,6 +19,7 @@ struct Object {
 	static constexpr size_t BITSET_SIZE = 8u;
 
 	Object();
+	virtual ~Object();
 
 	Vector2 pos = Vector2::ZERO;
 
