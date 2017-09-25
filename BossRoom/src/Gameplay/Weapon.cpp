@@ -161,28 +161,7 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 			me._keys.clear();
 		};
 
-		weapon->_active = [](Weapon& me, uint32)mutable->void {
-			if ((me._flags & 1) == 1) {
-				me._flags ^= 1;
-				TimerManager::resumeFunction(me._keys[0]);
-
-				auto level = me._player->_level;
-				Zone z;
-				std::shared_ptr<Disk> disk = std::make_shared<Disk>();
-				
-				disk->r = 50.f;
-
-				z.collider = std::dynamic_pointer_cast<Collider>(disk);
-
-				z.entered = [](const Collider&) {
-					printf("player");
-				};
-				if(level) level->_zones.push_back(z);
-				//TimerManager::addFunction(getJsonValue<float>(me._json, "remainTime"), "", [&z = level->_zones.back()](float)->bool {
-				//	z.toRemove = true;
-				//	return true;
-				//});
-			}
+		weapon->_active = [](Weapon&, uint32)mutable->void {
 		};
 		weapon->_activeSounds.push_back(sf::Sound(AssetsManager::getSound(weapon->_json["sound"])));
 	}

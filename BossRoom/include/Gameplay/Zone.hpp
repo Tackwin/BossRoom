@@ -1,17 +1,23 @@
 #pragma once
 #include <functional>
 
-#include <Physics/Collider.hpp>
+#include <Physics/Object.hpp>
 
-struct Zone {
-	using Callback = std::function<void(const Collider&)>;
+struct Zone : public Object{
+	using Callback = std::function<void(Object*)>;
 
-	std::shared_ptr<Collider> collider;
-
-	Callback entered = [](const Collider&) {};
-	Callback exited = [](const Collider&) {};
-	Callback inside = [](const Collider&) {};
+	Callback entered = [](Object*) {};
+	Callback exited = [](Object*) {};
+	Callback inside = [](Object*) {};
 
 	bool toRemove = false;
 	bool sensor = true;
+
+	Zone(float r = 0.f);
+	virtual ~Zone() override;
+
+private:
+	std::vector<Object*> _objectsColliding;
+
+	void collision(Object* obj);
 };

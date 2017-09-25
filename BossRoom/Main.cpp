@@ -25,9 +25,8 @@ void loadFontsFromJson(const nlohmann::json& json);
 
 int main(int, char**) {
 	printf("Loading jsons...\n");
-	bool loaded = AssetsManager::loadJson(JSON_KEY, JSON_PATH); 
-	assert(loaded);
 
+	AssetsManager::loadJson(JSON_KEY, JSON_PATH); 
 	loadSpriteFromJson(AssetsManager::getJson(JSON_KEY));
 	loadSoundsFromJson(AssetsManager::getJson(JSON_KEY));
 	loadFontsFromJson(AssetsManager::getJson(JSON_KEY));

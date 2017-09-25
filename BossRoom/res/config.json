@@ -107,13 +107,13 @@
 			"sheet": "images/sword.png"
 		}
 	},
-	"sounds":{
+	"sounds": {
 		"shoot": "sounds/shoot.wav",
 		"shoot2": "sounds/shoot2.wav",
 		"hit": "sounds/hit.wav",
 		"sword": "sounds/sword.wav"
 	},
-	"fonts":{
+	"fonts": {
 		"consola": "fonts/consola.ttf"
 	},
 	"bosses": [
@@ -194,7 +194,7 @@
 		"radius": 25,
 		"specialSpeed": 800,
 		"invincibilityTime": 0.2,
-		"jumpHeight": 100,
+		"jumpHeight": 200,
 
 		"sprite": "player",
 		"startpos": {
@@ -221,7 +221,7 @@
 		},
 		"directionalFire": {
 			"fireRate": 30,
-			"time": 1,
+			"time": 0.7,
 
 			"projectile": {
 				"damage": 1,
@@ -412,12 +412,12 @@
 			}
 		},
 		{
-			"cooldowns": [0.7],
-			"sprite":  "sword",
+			"cooldowns": [ 0.7 ],
+			"sprite": "sword",
 			"sound": "sword",
 			"radius": 10,
 			"damage": 10,
-			"remainTime":  0.2,
+			"remainTime": 0.2,
 			"collider": {
 				"type": "disk",
 				"r": 10
@@ -499,23 +499,23 @@
 	"startZone": {
 		"startBackground": {
 			"sprite": "start_background",
-			"size": [3000, 720],
-			"pos": [0, 0]
+			"size": [ 3000, 720 ],
+			"pos": [ 0, 0 ]
 		},
 		"dungeon": {
 			"sprite": "dungeon",
-			"size": [975, 633],
-			"pos": [2555, 52]
+			"size": [ 975, 633 ],
+			"pos": [ 2555, 52 ]
 		},
 		"dungeonDoor": {
 			"sprite": "dungeon_door",
-			"size": [300, 500],
-			"pos": [2615, 147]
+			"size": [ 300, 500 ],
+			"pos": [ 2615, 147 ]
 		},
 		"merchantShop": {
 			"sprite": "merchant_shop",
-			"size": [530, 231],
-			"pos": [1001, 343]
+			"size": [ 530, 231 ],
+			"pos": [ 1001, 343 ]
 		}
 	}
 }

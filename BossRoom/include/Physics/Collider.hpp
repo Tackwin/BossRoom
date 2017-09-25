@@ -46,12 +46,7 @@ struct Box : Collider {
 	virtual bool isIn(const Vector2& p) const override {
 		return Rectangle(getGlobalPos(), size).isInside(p);
 	};
-	virtual bool collideWith(const Collider* collider) const override {
-		if (auto ptr = dynamic_cast<const Box*>(collider); ptr) {
-			return Rectangle(getGlobalPos(), size).intersect(Rectangle(ptr->getGlobalPos(), ptr->size));
-		}
-		return false;
-	};
+	virtual bool collideWith(const Collider* collider) const override;
 
 	virtual void render(sf::RenderTarget& target) override;
 };

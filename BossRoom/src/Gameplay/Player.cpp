@@ -12,6 +12,7 @@
 using namespace nlohmann;
 
 Player::Player(const nlohmann::json& json) :
+	Object(),
 	_json(json),
 	_hitSound(AssetsManager::getSound("hit"))
 {

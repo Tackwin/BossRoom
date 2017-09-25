@@ -4,9 +4,12 @@
 #include "Managers/AssetsManager.hpp"
 #include "Managers/TimerManager.hpp"
 
-Projectile::Projectile() {
+Projectile::Projectile() : 
+	Object()
+{
 }
 Projectile::Projectile(nlohmann::json json, Vector2 pos, Vector2 dir, bool player) :
+	Object(),
 	_dir(dir),
 	_player(player),
 	_json(json),

@@ -162,8 +162,9 @@ void Boss::destroyBosses() {
 }
 
 Boss::Boss(const basic_json<>& json, std::function<void(float, Boss&)> updateFunction, std::function<void(Boss&)> init, 
-		   std::function<void(Boss&)> unInit)
-:	_json(json),
+		   std::function<void(Boss&)> unInit):
+	Object(),
+	_json(json),
 	_update(updateFunction),
 	_init(init),
 	_unInit(unInit) {
