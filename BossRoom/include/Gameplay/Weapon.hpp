@@ -10,11 +10,12 @@
 
 #include "Math/Vector2.hpp"
 #include "Global/Const.hpp"
-#include <Physics/Collider.hpp>
+#include <Gameplay/Zone.hpp>
+#include <Physics/Object.hpp>
 
 
 class Player;
-class Weapon {
+class Weapon : public Object {
 public:
 	Weapon(const Weapon& other);
 	Weapon(std::shared_ptr<Player> player, nlohmann::json json);
@@ -32,6 +33,8 @@ public:
 	void renderGui(sf::RenderTarget& target);
 
 	void loot(Vector2 pos);
+
+	std::shared_ptr<Zone>& getLootZone();
 
 	static std::vector<std::shared_ptr<Weapon>> _weapons;
 	static void createWeapons(std::shared_ptr<Player> player);
@@ -53,7 +56,7 @@ public: //TODO: Make this private
 	bool _loot = false;
 	bool _lootable = false;
 
-	Disk _disk;
+	std::shared_ptr<Zone> _lootZone;
 
 	std::vector<sf::Sound> _activeSounds;
 

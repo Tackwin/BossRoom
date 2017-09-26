@@ -1,18 +1,26 @@
 #include <Gameplay/Zone.hpp>
 
 Zone::Zone(float r) : Object() {
-	collider = new Disk();
+	_disk = std::make_shared<Disk>();
+	_disk->r = r;
+
+	collider = _disk.get();
+	collider->onEnter = [&](Object* obj) {collision(obj); };
 	idMask |= ZONE;
 	collisionMask |= PLAYER;
-	collider->onEnter = [&](Object* obj) {collision(obj); };
-	reinterpret_cast<Disk*>(collider)->r = r;
 }
 Zone::~Zone() {
 	Object::~Object();
-
-	delete collider;
 }
 
 void Zone::collision(Object* obj) {
 	inside(obj);
+}
+
+void Zone::setRadius(float r) {
+	reinterpret_cast<Disk*>(collider)->r = r;
+}
+
+float Zone::getRadius() const {
+	return reinterpret_cast<Disk*>(collider)->r;
 }

@@ -174,9 +174,8 @@ void Weapon::destroyWeapons() {
 Weapon::Weapon(std::shared_ptr<Player> player, nlohmann::json json)
 	: _player(player),
 	_json(json),
-	_radius(json["radius"]){
-
-	_disk.r = _radius;
+	_radius(json["radius"]),
+	_lootZone(std::make_shared<Zone>(_radius)){
 
 	_lootedSprite = sf::Sprite(AssetsManager::getTexture(_json["sprite"]));
 	_uiSprite = sf::Sprite(AssetsManager::getTexture(_json["sprite"]));
@@ -206,7 +205,8 @@ Weapon::Weapon(const Weapon& other) :
 	_activeSounds(other._activeSounds),
 	_lootedPos(other._lootedPos) {
 
-	_disk.r = _radius;
+	_lootZone = other._lootZone;
+	_lootZone->setRadius(_radius);
 
 	const std::string& str = _json["sprite"];
 
@@ -232,11 +232,14 @@ void Weapon::render(sf::RenderTarget& target) {
 void Weapon::renderGui(sf::RenderTarget& target) {
 	target.draw(_uiSprite);
 }
-void Weapon::loot(Vector2 pos) {
+void Weapon::loot(Vector2 pos_) {
 	_loot = true;
-	_lootedPos = pos;
+	_lootedPos = pos_;
 	_lootable = true;
-	_lootedSprite.setPosition(pos);
+	_lootedSprite.setPosition(pos_);
+	_lootZone->pos = _lootedPos;
+	_lootZone->setRadius(_radius);
+	_lootZone->inside = [](auto) {printf("in\n"); };
 }
 
 void Weapon::equip() {
@@ -246,13 +249,17 @@ void Weapon::unEquip() {
 	_unEquip(*this);
 }
 
-void Weapon::active(uint32 id) {
-	_active(*this, id);
+void Weapon::active(uint32 id_) {
+	_active(*this, id_);
 }
-void Weapon::passive(uint32 id) {
-	_passive(*this, id);
+void Weapon::passive(uint32 id_) {
+	_passive(*this, id_);
 }
 
 void Weapon::update(float dt) {
 	_update(*this, dt);
+}
+
+std::shared_ptr<Zone>& Weapon::getLootZone() {
+	return _lootZone;
 }
