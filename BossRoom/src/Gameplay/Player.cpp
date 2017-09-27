@@ -175,3 +175,20 @@ void Player::collision(Object* obj) {
 		ptr->remove();
 	}
 }
+
+void Player::dropWeapon() {
+	_weapon->loot(getPos());
+	_weapon->setLootable(false);
+
+	TimerManager::addFunction(0.5f, "ActivateLoot", [&](float)mutable->bool {
+		if (_weapon) {
+			_weapon->setLootable(true);
+		}
+
+		return true;
+	});
+}
+
+std::shared_ptr<Weapon> Player::getWeapon() const {
+	return _weapon;
+}

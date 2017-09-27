@@ -121,5 +121,6 @@ void Game::enterDungeon() {
 }
 
 void Game::start() {
-	enterScreen(std::make_shared<StartScreen>());
+	//enterScreen(std::make_shared<StartScreen>());
+	enterRoom(0u);
 }

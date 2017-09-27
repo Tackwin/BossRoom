@@ -239,7 +239,10 @@ void Weapon::loot(Vector2 pos_) {
 	_lootedSprite.setPosition(pos_);
 	_lootZone->pos = _lootedPos;
 	_lootZone->setRadius(_radius);
-	_lootZone->inside = [](auto) {printf("in\n"); };
+	_lootZone->inside = [&](auto) mutable -> void { 
+		if (_lootable)
+			_looted = true; 
+	};
 }
 
 void Weapon::equip() {
@@ -262,4 +265,15 @@ void Weapon::update(float dt) {
 
 std::shared_ptr<Zone>& Weapon::getLootZone() {
 	return _lootZone;
+}
+
+bool Weapon::isLooted() const {
+	return _looted;
+}
+
+bool Weapon::isLootable() const {
+	return _lootable;
+}
+void Weapon::setLootable(bool lootable) {
+	_lootable = lootable;
 }

@@ -34,6 +34,11 @@ public:
 
 	void loot(Vector2 pos);
 
+	bool isLooted() const;
+
+	void setLootable(bool lootable);
+	bool isLootable() const;
+
 	std::shared_ptr<Zone>& getLootZone();
 
 	static std::vector<std::shared_ptr<Weapon>> _weapons;
@@ -54,6 +59,7 @@ public: //TODO: Make this private
 	nlohmann::json _json;
 
 	bool _loot = false;
+	bool _looted = false;
 	bool _lootable = false;
 
 	std::shared_ptr<Zone> _lootZone;

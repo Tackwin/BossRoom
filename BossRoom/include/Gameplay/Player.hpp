@@ -35,7 +35,9 @@ public:
 
 	Vector2 getDirToFire();
 
+	std::shared_ptr<Weapon> getWeapon() const;
 	void swapWeapon(std::shared_ptr<Weapon> weapon);
+	
 	void addProjectile(const std::shared_ptr<Projectile>& projectile);
 
 	Vector2 getPos();
@@ -47,6 +49,8 @@ public:
 	bool isInvicible() const;
 
 	void collision(Object* obj); 
+
+	void dropWeapon();
 
 public: //TODO: Make private
 

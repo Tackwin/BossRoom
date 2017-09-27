@@ -36,6 +36,7 @@ void LevelScreen::onEnter() {
 	_level->start(this); // :(
 	
 	auto player = _level->_player;
+	player->initializeJson();
 	for (int i = 0; i < player->_maxLife; i++) {
 		_playerLife.push_back(sf::RectangleShape());
 		_playerLife[i].setOutlineColor(sf::Color(10, 10, 30));

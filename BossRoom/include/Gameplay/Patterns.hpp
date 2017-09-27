@@ -59,19 +59,21 @@ public:
 		);
 	}
 	static std::string directionalFire(Boss& boss, float fireRate, float time, nlohmann::json projectile) {
-		return TimerManager::addFunction(1 / fireRate, "directive fire", [&boss, time, projectile, N = time * fireRate](float)mutable->bool {
-			float a = boss.getPos().angleTo(boss._level->_player->getPos());
+		return TimerManager::addFunction(1 / fireRate, "directive fire", 
+			[&boss, time, projectile, N = time * fireRate](float)mutable->bool {
+				float a = boss.getPos().angleTo(boss._level->_player->getPos());
 
-			Vector2 dir = Vector2::createUnitVector(a);
+				Vector2 dir = Vector2::createUnitVector(a);
 
-			Vector2 pos = boss.getPos() + Vector2::createUnitVector(a + PIf / 9) * (boss._radius + 10);
-			boss.addProjectile(std::make_shared<Projectile>(projectile, pos, dir, false));
+				Vector2 pos = boss.getPos() + Vector2::createUnitVector(a + PIf / 9) * (boss._radius + 10);
+				boss.addProjectile(std::make_shared<Projectile>(projectile, pos, dir, false));
 
-			pos = boss.getPos() + Vector2::createUnitVector(a - PIf / 9) * (boss._radius + 10);
-			boss.addProjectile(std::make_shared<Projectile>(projectile, pos, dir, false));
+				pos = boss.getPos() + Vector2::createUnitVector(a - PIf / 9) * (boss._radius + 10);
+				boss.addProjectile(std::make_shared<Projectile>(projectile, pos, dir, false));
 
-			return --N <= 0;
-		});
+				return --N <= 0;
+			}
+		);
 	}
 
 	static std::string barage(Boss& boss, nlohmann::json json) {
