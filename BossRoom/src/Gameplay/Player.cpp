@@ -180,9 +180,9 @@ void Player::dropWeapon() {
 	_weapon->loot(getPos());
 	_weapon->setLootable(false);
 
-	TimerManager::addFunction(0.5f, "ActivateLoot", [&](float)mutable->bool {
-		if (_weapon) {
-			_weapon->setLootable(true);
+	TimerManager::addFunction(0.5f, "ActivateLoot", [w = _weapon](float)mutable->bool {
+		if (w) {
+			w->setLootable(true);
 		}
 
 		return true;

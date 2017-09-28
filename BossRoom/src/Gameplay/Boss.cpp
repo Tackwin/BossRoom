@@ -11,8 +11,8 @@ std::vector<std::shared_ptr<Boss>> Boss::bosses(C::N_LEVEL);
 
 void Boss::createBosses() {
 	bosses[0] = std::make_shared<Boss>(AssetsManager::getJson(JSON_KEY)["bosses"][0],
-		[](float, Boss& boss) { /*Update function*/
-			static bool goodToGo = false;
+		[](float, Boss&) { /*Update function*/
+			/*static bool goodToGo = false;
 			if (!goodToGo) {
 				goodToGo = boss._life < 0.33f * boss._maxLife;
 				if (goodToGo) {
@@ -30,7 +30,7 @@ void Boss::createBosses() {
 						return false;
 					}));
 				}
-			}
+			}*/
 		},
 		[](Boss& boss) { // Init function
 			boss._sounds.push_back(sf::Sound(AssetsManager::getSound("shoot2")));

@@ -48,7 +48,7 @@ void World::update(float dt) {
 
 		bool collisionCalback = false;
 
-		for (uint32_t i = 0u; i < Object::BITSET_SIZE; ++i) {
+		for (uint32_t i = 0u; i < Object::BITSET_SIZE && obj1->collider; ++i) {
 			if (!obj1->collisionMask[i]) continue;
 			
 			for (auto& obj2w : _objectsPool[i]) {
@@ -97,7 +97,8 @@ void World::update(float dt) {
 		obj1->velocity = nVel;
 		obj1->pos = nPos;
 
-		obj1->collider->setPos(nPos);
+		if (obj1->collider)
+			obj1->collider->setPos(nPos);
 	}
 }
 

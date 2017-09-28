@@ -109,7 +109,7 @@
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>false</EnableCOMDATFolding>
-      <OptimizeReferences>false</OptimizeReferences>
+      <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-audio.lib;sfml-system.lib;</AdditionalDependencies>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <Profile>true</Profile>

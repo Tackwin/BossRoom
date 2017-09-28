@@ -141,7 +141,7 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 		AssetsManager::loadSound(sound1Str, ASSETS_PATH + sound1Str);
 		weapon->_activeSounds.push_back(sf::Sound(AssetsManager::getSound(sound1Str)));
 	}
-	{
+	/*{
 		_weapons.push_back(std::make_shared<Weapon>(player, AssetsManager::getJson(JSON_KEY)["weapons"][3]));
 		auto& weapon = _weapons[3];
 		weapon->_equip = [](Weapon& me)mutable->void {
@@ -164,7 +164,7 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 		weapon->_active = [](Weapon&, uint32)mutable->void {
 		};
 		weapon->_activeSounds.push_back(sf::Sound(AssetsManager::getSound(weapon->_json["sound"])));
-	}
+	}*/
 }
 void Weapon::destroyWeapons() {
 	_weapons.clear();
@@ -203,10 +203,11 @@ Weapon::Weapon(const Weapon& other) :
 	_update(other._update),
 	
 	_activeSounds(other._activeSounds),
-	_lootedPos(other._lootedPos) {
+	_lootedPos(other._lootedPos) 
 
-	_lootZone = other._lootZone;
-	_lootZone->setRadius(_radius);
+{
+
+	_lootZone = std::make_shared<Zone>(_radius);
 
 	const std::string& str = _json["sprite"];
 
@@ -234,6 +235,7 @@ void Weapon::renderGui(sf::RenderTarget& target) {
 }
 void Weapon::loot(Vector2 pos_) {
 	_loot = true;
+	_looted = false;
 	_lootedPos = pos_;
 	_lootable = true;
 	_lootedSprite.setPosition(pos_);
