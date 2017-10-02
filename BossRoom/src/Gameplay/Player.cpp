@@ -16,6 +16,8 @@ Player::Player(const nlohmann::json& json) :
 	_json(json),
 	_hitSound(AssetsManager::getSound("hit"))
 {
+	_hitSound.setVolume(SOUND_LEVEL);
+
 	_hitBox.userPtr = this;
 	collider = &_hitBox;
 

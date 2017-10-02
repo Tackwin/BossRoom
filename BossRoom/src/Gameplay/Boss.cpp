@@ -33,7 +33,9 @@ void Boss::createBosses() {
 			}*/
 		},
 		[](Boss& boss) { // Init function
-			boss._sounds.push_back(sf::Sound(AssetsManager::getSound("shoot2")));
+			auto sound = sf::Sound(AssetsManager::getSound("shoot2"));
+			sound.setVolume(SOUND_LEVEL);
+			boss._sounds.push_back(sound);
 
 			boss._keyPatterns.push_back(TimerManager::addFunction(3, "P1", [&boss](float)mutable->bool {
 				Patterns::directionalFire(boss, Patterns::_json["directionalFire"]);

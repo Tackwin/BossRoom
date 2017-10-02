@@ -56,7 +56,9 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 		};
 		std::string sound1Str = _weapons[0]->_json["sounds"]["active"][0];
 		AssetsManager::loadSound(sound1Str, ASSETS_PATH + sound1Str);
-		_weapons[0]->_activeSounds.push_back(sf::Sound(AssetsManager::getSound(sound1Str)));
+		auto sound = sf::Sound(AssetsManager::getSound(sound1Str));
+		sound.setVolume(SOUND_LEVEL);
+		_weapons[0]->_activeSounds.push_back(sound);
 	}
 	{
 		_weapons.push_back(std::make_shared<Weapon>(player, AssetsManager::getJson(JSON_KEY)["weapons"][1]));
@@ -96,7 +98,9 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 		};
 		std::string sound1Str = _weapons[1]->_json["sounds"]["active"][0].get<std::string>();
 		AssetsManager::loadSound(sound1Str, ASSETS_PATH + sound1Str);
-		_weapons[1]->_activeSounds.push_back(sf::Sound(AssetsManager::getSound(sound1Str)));
+		auto sound = sf::Sound(AssetsManager::getSound(sound1Str));
+		sound.setVolume(SOUND_LEVEL);
+		_weapons[1]->_activeSounds.push_back(sound);
 	}
 	{
 		_weapons.push_back(std::make_shared<Weapon>(player, AssetsManager::getJson(JSON_KEY)["weapons"][2]));
