@@ -15,10 +15,9 @@ public:
 	Projectile();
 	Projectile(nlohmann::json json, Vector2 pos, Vector2 dir, bool player);
 	Projectile(nlohmann::json json, Vector2 pos, Vector2 dir, bool player, 
-			   std::function<void(Projectile&, float)> update);
+			   std::function<void(Projectile&, double)> update);
 	~Projectile();
 
-	std::function<void(Projectile&, float)> _update;
 
 	Vector2 getPos() const;
 	void setPos(const Vector2& p);
@@ -39,6 +38,8 @@ public:
 
 	Vector2 _dir;
 
+	std::function<void(Projectile&, double)> _update;
+	
 	float _lifespan;
 	float _speed;
 	float _radius;

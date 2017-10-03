@@ -14,9 +14,10 @@
 
 using namespace nlohmann;
 
-Game::Game()
-	: _player(std::make_shared<Player>(AssetsManager::getJson(JSON_KEY)["player"])) {
-	
+Game::Game() :
+	_player(std::make_shared<Player>(AssetsManager::getJson(JSON_KEY)["player"])),
+	_debugTimeClockShape(50.f)
+{
 	Weapon::createWeapons(_player);
 	Boss::createBosses();
 	Level::createLevels();
@@ -32,6 +33,17 @@ Game::Game()
 	_debugText["#Entity"].setFont(AssetsManager::getFont("consola"));
 	_debugText["#Entity"].setCharacterSize(20);
 	_debugText["#Entity"].setPosition(5, 50);
+
+	TimerManager::addFunction(1.f / 255.f, "debugTimeClock", [&](auto)mutable->bool {
+		_debugTimeClockColor++;
+		return false;
+	});
+	TimerManager::addFunction(1.f, "tickSecond", [](auto)->bool {
+		printf("Second\n");
+		return false;
+	});
+	_debugTimeClockShape.setOrigin(50.f, 50.f);
+	_debugTimeClockShape.setPosition(50.f, 50.f);
 }
 
 Game::~Game() {
@@ -108,6 +120,9 @@ void Game::render(sf::RenderTarget& target) {
 	}
 
 	target.setView(initView);
+
+	_debugTimeClockShape.setFillColor(sf::Color(_debugTimeClockColor, _debugTimeClockColor, _debugTimeClockColor));
+	target.draw(_debugTimeClockShape);
 }
 
 void Game::nextRoom() {

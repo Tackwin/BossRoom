@@ -35,13 +35,13 @@ public:
 		std::uniform_real_distribution<float> rngA(a - dtA / 2.f, a + dtA / 2.f);
 		std::uniform_real_distribution<float> rngDt(0, 2 * time / nOrbs); //nOrbs * E(rngDt) = time
 		boss._sprite.getSprite().setScale(2, 2);
-		return TimerManager::addFunction(0, "random fire", [&, projectile, boss, rngA, rngDt, nOrbs, n = 0, sumS = .0f](float)mutable->bool {
+		return TimerManager::addFunction(0, "random fire", [&, projectile, boss, rngA, rngDt, nOrbs, n = 0, sumS = .0f](auto)mutable->bool {
 			float ca = rngA(RNG);
 
 			Vector2 dir = Vector2::createUnitVector(ca);
 			Vector2 pos = boss.getPos() + dir * (boss._radius + 10);
 			const auto& ptr = std::make_shared<Projectile>(projectile, pos, dir, false);
-			TimerManager::addFunction(sumS, "random fire_", [&, boss, ptr](float)mutable->bool {
+			TimerManager::addFunction(sumS, "random fire_", [&, boss, ptr](auto)mutable->bool {
 				boss.addProjectile(ptr);
 				return true;
 			});
@@ -60,7 +60,7 @@ public:
 	}
 	static std::string directionalFire(Boss& boss, float fireRate, float time, nlohmann::json projectile) {
 		return TimerManager::addFunction(1 / fireRate, "directive fire", 
-			[&boss, time, projectile, N = time * fireRate](float)mutable->bool {
+			[&boss, time, projectile, N = time * fireRate](auto)mutable->bool {
 				float a = boss.getPos().angleTo(boss._level->_player->getPos());
 
 				Vector2 dir = Vector2::createUnitVector(a);
@@ -86,11 +86,11 @@ public:
 		);
 	}
 	static std::string barage(Boss& boss, uint32 nOrbs, uint32 nWaves, float iTime, nlohmann::json projectile) {
-		return TimerManager::addFunction(iTime, "barage", [boss, nWaves, nOrbs, projectile](float)mutable->bool {
+		return TimerManager::addFunction(iTime, "barage", 
+		[&boss, nWaves, nOrbs, projectile](auto)mutable->bool {
 			for (uint32 i = 0; i < nOrbs; ++i) {
 				Vector2 pos((float)WIDTH, (float)HEIGHT * i / nOrbs);
 				Vector2 dir = Vector2::createUnitVector(PIf);
-
 				boss.addProjectile(std::make_shared<Projectile>(projectile, pos, dir, false));
 			}
 
@@ -111,7 +111,7 @@ public:
 		auto lambda = std::shared_ptr<std::function<void()>>(new std::function<void()>);
 		*lambda = [&boss, aimTime, projectile, nShots, iTime, lambda]()mutable->void {
 			boss._level->startAim();
-			TimerManager::addFunction(aimTime, "delay", [&boss, projectile, nShots, iTime, lambda](float)mutable->bool {
+			TimerManager::addFunction(aimTime, "delay", [&boss, projectile, nShots, iTime, lambda](auto)mutable->bool {
 				boss._level->stopAim();
 
 				Vector2 pos = boss.getPos();
@@ -121,7 +121,7 @@ public:
 				boss.addProjectile(std::make_shared<Projectile>(projectile, pos, dir, false));
 
 				if (--nShots != 0) {
-					TimerManager::addFunction(iTime, "snipe", [lambda](float)mutable->bool {
+					TimerManager::addFunction(iTime, "snipe", [lambda](auto)mutable->bool {
 						(*lambda)();
 						return true;
 					});
@@ -142,7 +142,7 @@ public:
 		);
 	}
 	static std::string broyeur(Boss& boss, uint32 nOrbs, nlohmann::json projectile) {
-		return TimerManager::addFunction(0, "broyeur", [boss, nOrbs, projectile](float)mutable->bool {
+		return TimerManager::addFunction(0, "broyeur", [boss, nOrbs, projectile](auto)mutable->bool {
 			for (uint32 i = 0; i < nOrbs; ++i) {
 				Vector2 pos(
 					(float)WIDTH * i / (nOrbs - 1) + WIDTH / (2 * nOrbs),
@@ -170,7 +170,8 @@ public:
 	}
 	static std::string cerclique(Boss& boss, float radius, float vA, float height, float dtHeight,
 		uint32 nOrbs, float iTime, nlohmann::json projectile) {
-		return TimerManager::addFunction(iTime, "cerclique", [boss, radius, vA, height, dtHeight, projectile, nOrbs](float)mutable->bool {
+		return TimerManager::addFunction(iTime, "cerclique", 
+		[boss, radius, vA, height, dtHeight, projectile, nOrbs](auto)mutable->bool {
 			float h = height * HEIGHT;
 			float dtH = dtHeight * HEIGHT;
 
@@ -180,11 +181,11 @@ public:
 
 			float a = 0;
 			int dirA = unitaryRng(RNG) > 0.5f ? 1 : -1;
-
+			
 			boss.addProjectile(std::make_shared<Projectile>(projectile, pos, dir, false,
-				[cPos, a, radius, vA, dirA](Projectile& me, float dt) mutable {
+			[cPos, a, radius, vA, dirA](Projectile& me, auto dt) mutable {
 				cPos += me._dir * me._speed * dt;
-				a += fmodf(vA * dt * PIf * dirA, vA);
+				a += (float)fmod(vA * dt * PIf * dirA, vA);
 
 				//TODO: sort this out for the new physic system !!!!
 				me.setDir(Vector2::createUnitVector(a) * radius);
@@ -207,14 +208,16 @@ public:
 		nlohmann::json projectile) {
 		float sumS = 0;
 		for (uint32 i = 0; i < nOrbs; ++i) {
-			TimerManager::addFunction(sumS, "rapprochement", [boss, nOrbs, eTime, inSpawnRadius, outSpawnRadius, projectile](float)mutable->bool {
+			TimerManager::addFunction(sumS, "rapprochement", 
+			[boss, nOrbs, eTime, inSpawnRadius, outSpawnRadius, projectile](auto)mutable->bool {
 				Vector2 pos = game->_player->getPos() + Vector2::createUnitVector(unitaryRng(RNG) * 2 * PIf) *
 					(unitaryRng(RNG) * (outSpawnRadius - inSpawnRadius) + inSpawnRadius);
 
 				auto ptrProjectile = std::make_shared<Projectile>(projectile, pos, Vector2::ZERO, false);
 				boss.addProjectile(ptrProjectile);
 
-				TimerManager::addFunction(1, "", [ptrProjectile](float)->bool {
+				TimerManager::addFunction(1, "", 
+				[ptrProjectile](auto)->bool {
 					ptrProjectile->_dir = (game->_player->getPos() - ptrProjectile->getPos()).normalize();
 					return true;
 				});
@@ -245,13 +248,15 @@ public:
 		std::shared_ptr<std::function<bool()>> lambda(new std::function<bool()>);
 		*lambda = [lambda, ptrProjectile, nBooms, waitTime, overShoot, speed = projectile["speed"].get<float>()]()mutable->bool {
 			ptrProjectile->_dir = Vector2::ZERO;
-			TimerManager::addFunction(waitTime, "", [ptrProjectile](float)mutable->bool {
+			TimerManager::addFunction(waitTime, "", 
+			[ptrProjectile](auto)mutable->bool {
 				ptrProjectile->_dir = (game->_player->getPos() - ptrProjectile->getPos()).normalize();
 				return true;
 			});
 			if (--nBooms != 0) {
 				float shootTime = ((game->_player->getPos() - ptrProjectile->getPos()).length() + overShoot) / speed;
-				TimerManager::addFunction(shootTime + waitTime, "changeDir", [lambda](float)mutable->bool {
+				TimerManager::addFunction(shootTime + waitTime, "changeDir", 
+				[lambda](auto)mutable->bool {
 					(*lambda)();
 					return true;
 				});
@@ -260,7 +265,8 @@ public:
 		};
 
 		float shootTime = ((game->_player->getPos() - pos).length() + overShoot) / projectile["speed"].get<float>();
-		return TimerManager::addFunction(shootTime, "changeDir", [lambda](float)mutable->bool {
+		return TimerManager::addFunction(shootTime, "changeDir", 
+		[lambda](auto)mutable->bool {
 			(*lambda)();
 			return true;
 		});
@@ -297,7 +303,7 @@ public:
 	}
 	static std::string blastCosmopolitain(Boss& boss, uint32 nBlasts, uint32 nOrbs, float r, float iTime, float waitTime, const nlohmann::json& projectile) {
 		return TimerManager::addFunction(iTime, "blastCosomoplitain", 
-		[projectile, boss, nBlasts, nOrbs, r, waitTime](float)mutable->bool {
+		[projectile, boss, nBlasts, nOrbs, r, waitTime](auto)mutable->bool {
 			float x = unitaryRng(RNG) * WIDTH;
 			float y = unitaryRng(RNG) * HEIGHT;
 			float a = unitaryRng(RNG) * 2 * PIf;
@@ -309,7 +315,8 @@ public:
 				auto ptrProjectile = std::make_shared<Projectile>(projectile, pos, Vector2::ZERO, false);
 				ptrProjectile->_damageable = false;
 				boss.addProjectile(ptrProjectile);
-				TimerManager::addFunction(waitTime, "", [ptrProjectile, A = a + dtA](float)mutable->bool {
+				TimerManager::addFunction(waitTime, "", 
+				[ptrProjectile, A = a + dtA](auto)mutable->bool {
 					ptrProjectile->_dir = Vector2::createUnitVector(A);
 					ptrProjectile->_damageable = true;
 					return true;

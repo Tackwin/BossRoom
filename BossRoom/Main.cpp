@@ -37,12 +37,12 @@ int main(int, char**) {
 
 	sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT, 24), "Boss room");
 
-	const auto& updateKey = TimerManager::addFunction(MIN_MS, "updaye", [&window](float dt)mutable->bool {
+	const auto& updateKey = TimerManager::addFunction(MIN_MS, "updaye", [&window](auto dt)mutable->bool {
 		InputsManager::update(window);
-		C::game->update(dt > MIN_MS ? dt : MIN_MS);
+		C::game->update((float)(dt > MIN_MS ? dt : MIN_MS));
 		return false;
 	});
-	const auto& renderKey = TimerManager::addFunction(MAX_FPS == 0.f ? 0.f : 1.f / MAX_FPS, "render", [&window](float)mutable->bool {
+	const auto& renderKey = TimerManager::addFunction(MAX_FPS == 0.f ? 0.f : 1.f / MAX_FPS, "render", [&window](auto)mutable->bool {
 		static uint64_t i = 0;
 		Clock c;
 		if (window.isOpen()) {
@@ -51,8 +51,8 @@ int main(int, char**) {
 			window.display();
 		}
 		if (i++ >= ((MAX_FPS == 0) ? 1'000 : MAX_FPS)) {
-			const auto& dt = c.elapsed() * 1'000'000.0;
-			printf("Rendered in %u us.\n", static_cast<uint32_t>(dt));
+			//const auto& dt = c.elapsed() * 1'000'000.0;
+			//printf("Rendered in %u us.\n", static_cast<uint32_t>(dt));
 			i = 0;
 		}
 		return false;

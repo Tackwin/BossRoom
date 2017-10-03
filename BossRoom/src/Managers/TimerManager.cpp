@@ -4,30 +4,12 @@
 #include "Managers/TimerManager.hpp"
 #include "Global/Clock.hpp"
 
-struct Function {
-	Clock clock;
-
-	bool toRemove = false;
-	bool paused = false;
-
-	float timer;
-	float time;
-	
-	std::function<bool(float)> f;
-
-	Function() {};
-	Function(float timer, const std::function<bool(float)> &f)
-		: clock(timer), timer(timer), time(timer), f(f) {
-
-	};
-};
-
 bool TimerManager::INCREMENTAL = false;
 
 TimerManager::TimerManager() {}
 TimerManager::~TimerManager() {}
 
-std::string TimerManager::addFunction(float timer, const std::string &key, const std::function<bool(float)> &f) {
+std::string TimerManager::addFunction(double timer, const std::string &key, const Function::Callback &f) {
 	uint8_t i = (uint8_t)rand();
 	std::string candidate = key + std::to_string(i);
 	while(_functions.find(candidate) != _functions.end()) {
@@ -86,7 +68,7 @@ std::string TimerManager::cloneFunction(const std::string &key) {
 	return candidate;
 }
 
-void TimerManager::update(float dt) {
+void TimerManager::update(double dt) {
 	for(auto it = std::begin(_functions); it != std::end(_functions);){
 		if(!it->second->paused)
 			it->second->time -= dt;
@@ -102,7 +84,11 @@ void TimerManager::update(float dt) {
 		}
 		if((!INCREMENTAL && f->clock.isOver()) || (INCREMENTAL && it->second->time <= 0)) {
 			it->second->time = it->second->timer;
-			f->toRemove = f->f(dt);
+			
+			for (f->error += f->clock.elapsed(); !f->toRemove && f->clock.timer < f->error; f->error -= f->clock.timer) {
+				f->toRemove = f->f(fmin(dt, f->clock.timer));
+			}
+
 			f->clock.restart();
 		}
 		++it;

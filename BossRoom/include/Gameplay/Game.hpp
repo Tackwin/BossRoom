@@ -30,6 +30,9 @@ public:
 
 	void enterDungeon();
 public: //TODO: Make this private
+	uint8_t _debugTimeClockColor;
+	sf::CircleShape _debugTimeClockShape;
+
 	std::shared_ptr<Player> _player;
 
 	std::stack<std::shared_ptr<Screen>> _screens;

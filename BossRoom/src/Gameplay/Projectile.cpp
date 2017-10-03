@@ -13,7 +13,7 @@ Projectile::Projectile(nlohmann::json json, Vector2 pos, Vector2 dir, bool playe
 	_dir(dir),
 	_player(player),
 	_json(json),
-	_update([](Projectile&, float) {}) {
+	_update([](Projectile&, double) {}) {
 
 	_speed = getJsonValue<float>(json, "speed");
 	_damage = getJsonValue<int>(json, "damage");
@@ -45,13 +45,13 @@ Projectile::Projectile(nlohmann::json json, Vector2 pos, Vector2 dir, bool playe
 	_sprite.setOrigin(_radius * 2, _radius * 2); // i don't know why i need to double it, maybe because i do shit with texture rect just above...
 	_sprite.setPosition(pos);
 
-	_key = TimerManager::addFunction(_lifespan, "destroy", [&](float)->bool {
+	_key = TimerManager::addFunction(_lifespan, "destroy", [&](double)->bool {
 		_remove = true;
 		return true;
 	});
 }
 Projectile::Projectile(nlohmann::json json, Vector2 pos, Vector2 dir, bool player, 
-					   std::function<void(Projectile&, float)> update):
+					   std::function<void(Projectile&, double)> update):
 	Projectile(json, pos, dir, player) {
 	_update = update;
 }

@@ -29,7 +29,7 @@ private:
 	Vector2 _pos;
 
 	std::vector<std::string> _keys;
-	std::function<bool(float)> _lambda;
+	std::function<bool(double)> _lambda;
 
 	std::vector<std::shared_ptr<Particle>> _particles;
 };

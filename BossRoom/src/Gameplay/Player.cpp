@@ -122,7 +122,7 @@ void Player::hit(unsigned int d) {
 
 	_life -= d;
 	_sprite.getSprite().setColor(sf::Color(230, 230, 230));
-	TimerManager::addFunction(0.33f, "blinkDown", [&, n = 0](float) mutable -> bool {
+	TimerManager::addFunction(0.33f, "blinkDown", [&, n = 0](auto) mutable -> bool {
 		_sprite.getSprite().setColor((n++ % 2 == 0) ? sf::Color::White : sf::Color(230, 230, 230));
 		if (n >= 3) {
 			_invincible = false;
@@ -182,7 +182,7 @@ void Player::dropWeapon() {
 	_weapon->loot(getPos());
 	_weapon->setLootable(false);
 
-	TimerManager::addFunction(0.5f, "ActivateLoot", [w = _weapon](float)mutable->bool {
+	TimerManager::addFunction(0.5f, "ActivateLoot", [w = _weapon](auto)mutable->bool {
 		if (w) {
 			w->setLootable(true);
 		}

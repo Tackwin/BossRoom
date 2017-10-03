@@ -13,7 +13,7 @@ Particle::Particle(nlohmann::json json_, Vector2 pos_, Vector2 dir_, Function up
 	std::string strSprite = _json["sprite"];
 	_sprite.setTexture(AssetsManager::getTexture(strSprite));
 	_sprite.setOrigin(_sprite.getTextureRect().width / 2.f, _sprite.getTextureRect().height / 2.f);
-	_keys["destroy"] = TimerManager::addFunction(getJsonValue<float>(_json, "lifetime"), "destroy", [&](float)mutable->bool {
+	_keys["destroy"] = TimerManager::addFunction(getJsonValue<float>(_json, "lifetime"), "destroy", [&](auto)mutable->bool {
 		_remove = true;
 		return true;
 	});
