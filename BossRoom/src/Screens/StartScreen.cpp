@@ -47,6 +47,7 @@ void StartScreen::onEnter() {
 	_floor->pos = { 0, 600 };
 	Box* box = new Box();
 	box->size = { 3000, 120 };
+	box->onEnter = [p = _player](auto) { if (!p->isFloored()) p->floored(); };
 	_floor->collider = box;
 
 	_world.addObject(_floor);

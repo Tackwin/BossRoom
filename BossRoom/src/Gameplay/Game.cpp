@@ -30,16 +30,8 @@ Game::Game() :
 	_debugText["ups"].setPosition(5, 5);
 	_debugText["ups"].setFillColor(sf::Color(100, 100, 100));
 
-	_debugText["#Entity"].setFont(AssetsManager::getFont("consola"));
-	_debugText["#Entity"].setCharacterSize(20);
-	_debugText["#Entity"].setPosition(5, 50);
-
 	TimerManager::addFunction(1.f / 255.f, "debugTimeClock", [&](auto)mutable->bool {
 		_debugTimeClockColor++;
-		return false;
-	});
-	TimerManager::addFunction(1.f, "tickSecond", [](auto)->bool {
-		printf("Second\n");
 		return false;
 	});
 	_debugTimeClockShape.setOrigin(50.f, 50.f);
@@ -78,19 +70,6 @@ void Game::exitScreen() {
 void Game::update(float dt) {
 	updateDebugText(dt);
 	_screens.top()->update(dt);
-	/*
-	//On switch le mode, soit au cac, soit a distance
-	if (_distance && (_player->_pos - _level->_boss->_pos).length2() < (150 + _player->_radius + _level->_boss->_radius) * (150 + _player->_radius + _level->_boss->_radius)) {
-		TimerManager::addSquaredIOEase<Vector2>(0.5f, "cameraTranslate", &_gameViewPos, _gameView.getCenter(), _level->_boss->_pos);
-		TimerManager::addSquaredIOEase<Vector2>(0.5f, "cameraZoom", &_gameViewSize, _gameView.getSize(), { C::WIDTH / 1.5f, C::HEIGHT / 1.5f });
-		_distance = false;
-	}
-	else if (!_distance && (_player->_pos - _level->_boss->_pos).length2() > (250 + _player->_radius + _level->_boss->_radius) * (250 + _player->_radius + _level->_boss->_radius)) {
-		TimerManager::addSquaredIOEase<Vector2>(0.5f, "cameraTranslate", &_gameViewPos, _level->_boss->_pos, { C::WIDTH / 2.f, C::HEIGHT / 2.f });
-		TimerManager::addSquaredIOEase<Vector2>(0.5f, "cameraZoom", &_gameViewSize, _gameView.getSize(), { C::WIDTH / 1.f, C::HEIGHT / 1.f });
-		_distance = true;
-	}
-	*/
 }
 
 void Game::updateDebugText(float dt) {
@@ -103,7 +82,6 @@ void Game::updateDebugText(float dt) {
 		uint32_t fps = (uint32_t)(avgRange / (avgMs == .0f ? 1 : avgMs));
 		uint32_t µs = (uint32_t)(1000'000 * avgMs / avgRange); // :)
 		_debugText["ups"].setString("Fps: " + std::to_string(fps) + "\tµs: " + std::to_string(µs));
-		//_debugText["#Entity"].setString("#Entity: " + std::to_string(ecs.size()));
 		
 		avgN = 0;
 		avgMs = 0;
@@ -136,6 +114,5 @@ void Game::enterDungeon() {
 }
 
 void Game::start() {
-	//enterScreen(std::make_shared<StartScreen>());
-	enterRoom(0u);
+	enterScreen(std::make_shared<StartScreen>());
 }

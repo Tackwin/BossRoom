@@ -52,7 +52,11 @@ public:
 
 	void dropWeapon();
 
+	void floored();
+	bool isFloored() const;
 public: //TODO: Make private
+
+	uint32_t _nJumpsLeft = 2;
 
 	int32_t _AK;
 	int32_t _upK;
@@ -83,6 +87,7 @@ public: //TODO: Make private
 	std::string _keyCdAction;
 	std::string _keyCdActionCaC;
 
+	bool _floored = false;
 	bool _invincible = false;
 	bool _freeze = false;
 

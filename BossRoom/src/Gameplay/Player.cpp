@@ -94,8 +94,13 @@ void Player::update(float) {
 			_dir.x = 1;
 		}
 
-		if (InputsManager::isKeyJustPressed(_jumpK)) {
+		if (InputsManager::isKeyJustPressed(_jumpK) && _nJumpsLeft > 0u) {
+			if (_floored)
+				_floored = false;
+
+			if (velocity.y > 0.f) velocity.y = 0.f;
 			velocity.y -= sqrtf(G * 2.f * _jumpHeight); // derived from equation of motion, thanks Newton
+			_nJumpsLeft--;
 		}
 		_dir.normalize();
 	
@@ -193,4 +198,12 @@ void Player::dropWeapon() {
 
 std::shared_ptr<Weapon> Player::getWeapon() const {
 	return _weapon;
+}
+
+void Player::floored() {
+	_nJumpsLeft = 2u;
+	_floored = true;
+}
+bool Player::isFloored() const {
+	return _floored;
 }
