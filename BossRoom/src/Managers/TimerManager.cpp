@@ -85,9 +85,15 @@ void TimerManager::update(double dt) {
 		if((!INCREMENTAL && f->clock.isOver()) || (INCREMENTAL && it->second->time <= 0)) {
 			it->second->time = it->second->timer;
 			
-			for (f->error += f->clock.elapsed(); !f->toRemove && f->clock.timer < f->error; f->error -= f->clock.timer) {
-				f->toRemove = f->f(fmin(dt, f->clock.timer));
+			if (f->clock.timer == 0.) {
+				f->toRemove = f->f(dt);
 			}
+			else { // i should get rid of all these branching in the *MAIN* loop
+				for (f->error += f->clock.elapsed(); !f->toRemove && f->clock.timer < f->error; f->error -= f->clock.timer) {
+					f->toRemove = f->f(fmin(dt, f->clock.timer));
+				}
+			}
+
 
 			f->clock.restart();
 		}
