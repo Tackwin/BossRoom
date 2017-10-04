@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <vector>
+#include <unordered_map>
 
 #include <SFML/Graphics.hpp>
 
@@ -33,6 +34,8 @@ public:
 	void leaveShop();
 private:
 
+	void initializeWorld();
+	void initializeGui();
 	void initializeSprite();
 
 	void removeNeeded();
@@ -54,9 +57,13 @@ private:
 
 	World _world;
 
+	std::map<std::string, Zone> _zones;
+
 	std::shared_ptr<Object> _floor;
 
 	Widget _guiRoot;
 	Panel _weaponIcon;
 	Label _weaponLabel;
+
+	Panel _merchantGuiPanel;
 };

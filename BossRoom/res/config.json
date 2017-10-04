@@ -105,6 +105,12 @@
 		},
 		"sword": {
 			"sheet": "images/sword.png"
+		},
+		"panel_a": {
+			"sheet": "images/panel_a.png"
+		},
+		"panel_b": {
+			"sheet": "images/panel_b.png"
 		}
 	},
 	"sounds": {

@@ -11,11 +11,15 @@
 #include <Gameplay/Game.hpp>
 #include <Global/Const.hpp>
 
-StartScreen::StartScreen():
+StartScreen::StartScreen() :
 	_playerView({ WIDTH / 2.f, HEIGHT / 2.f }, { (float)WIDTH, (float)HEIGHT }),
 	_guiView({ WIDTH / 2.f, HEIGHT / 2.f }, { (float)WIDTH, (float)HEIGHT })
 	{
 
+	initializeGui();
+}
+
+void StartScreen::initializeGui() {
 	_guiRoot.setPosition({ 0.f, 0.f });
 
 	_weaponIcon.setOrigin({ 1.f, 1.f });
@@ -30,16 +34,30 @@ StartScreen::StartScreen():
 	_weaponIcon.addChild(&_weaponLabel);
 
 	_guiRoot.addChild(&_weaponIcon);
-}
 
+	_merchantGuiPanel.setSprite(sf::Sprite(AssetsManager::getTexture("panel_a")));
+	_merchantGuiPanel.setOrigin(Vector2::ZERO);
+	_merchantGuiPanel.setSize({ WIDTH * 0.8f, HEIGHT * 0.7f });
+	_merchantGuiPanel.setVisible(false);
+
+	_guiRoot.addChild(&_merchantGuiPanel);
+}
 
 void StartScreen::onEnter() {
 	_json = AssetsManager::getJson(JSON_KEY)["startZone"];
-
-	initializeSprite();
 	_player = game->_player;
 	_player->initializeJson();
 
+	initializeSprite();
+	initializeWorld();
+}
+void StartScreen::onExit() {
+	_player->_weapon->unEquip();
+	_projectiles.clear();
+	_world.purge();
+}
+
+void StartScreen::initializeWorld(){
 	_world.addObject(_player);
 
 	_floor = std::make_shared<Object>();
@@ -51,12 +69,11 @@ void StartScreen::onEnter() {
 	_floor->collider = box;
 
 	_world.addObject(_floor);
+
+	_zones["merchant"].setRadius(100.f);
+	_zones["merchant"].pos = 
 }
-void StartScreen::onExit() {
-	_player->_weapon->unEquip();
-	_projectiles.clear();
-	_world.purge();
-}
+
 void StartScreen::update(float dt) {
 	for (auto& p : _player->getProtectilesToShoot()) {
 		_projectiles.push_back(p);
