@@ -4,6 +4,8 @@
 
 #include <Managers/InputsManager.hpp>
 
+const Widget::Callback::type Widget::Callback::ZERO = []() {};
+
 Widget::Widget() {
 }
 
@@ -92,8 +94,9 @@ void Widget::propagateRender(sf::RenderTarget& target) {
 		w->render(target);
 
 		auto child = w->getChilds();
+		if (!w->isVisible()) continue;
 		for (auto& c : child) {
-			if (std::find(close.begin(), close.end(), c) != close.end()) { // i find i can get rid of this given that my graph is a tree
+			if (std::find(close.begin(), close.end(), c) != close.end()) { // i think i can get rid of this given that my graph is a tree
 				continue;
 			}
 
@@ -104,6 +107,8 @@ void Widget::propagateRender(sf::RenderTarget& target) {
 }
 
 void Widget::input() {
+	if (!_visible) return;
+
 	if (InputsManager::getMouseScreenPos().isInRec(getGlobalPosition() - Vector2(_origin.x * _size.x, _origin.y * _size.y), _size)) {
 		if (InputsManager::isMouseJustPressed(sf::Mouse::Left)) {
 			if (_onClick.began) 
@@ -140,4 +145,14 @@ void Widget::propagateInput() {
 			close.push_back(c);
 		}
 	}
+}
+
+void Widget::setOnHover(const Callback& onHover) {
+	_onHover = onHover;
+}
+void Widget::setOnClick(const Callback& onClick) {
+	_onClick = onClick;
+}
+void Widget::setOnKey(const Callback& onKey) {
+	_onKey = onKey;
 }

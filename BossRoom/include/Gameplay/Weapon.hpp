@@ -39,6 +39,8 @@ public:
 	void setLootable(bool lootable);
 	bool isLootable() const;
 
+	const sf::Sprite& getUiSprite() const;
+
 	std::shared_ptr<Zone>& getLootZone();
 
 	static std::vector<std::shared_ptr<Weapon>> _weapons;

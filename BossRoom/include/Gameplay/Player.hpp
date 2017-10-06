@@ -78,7 +78,7 @@ public: //TODO: Make private
 	float _invincibilityTime;
 	float _jumpHeight;
 
-	Box _hitBox;
+	Disk _hitBox;
 
 	std::string _projectilesKey;
 

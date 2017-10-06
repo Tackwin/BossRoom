@@ -65,7 +65,6 @@ void InputsManager::update(sf::RenderWindow &window) {
 			if (event.key.code == sf::Keyboard::Unknown)
 				continue;
 
-			//printf("Key: %d\n", event.key.code);
 			keyJustPressed[event.key.code] = true;
 			keyPressed[event.key.code] = true;
 		}

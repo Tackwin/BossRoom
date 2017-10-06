@@ -64,3 +64,10 @@ bool Rectangle::intersect(const Rectangle& rect) {
 	}
 	return false;
 }
+
+void Rectangle::print(const std::string pre, const std::string sui) const {
+	printf(pre.c_str());
+	pos.print("Pos:  ");
+	size.print("Size: ");
+	printf("\n");
+}

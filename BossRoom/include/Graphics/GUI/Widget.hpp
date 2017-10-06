@@ -7,16 +7,19 @@
 #include "../../include/Math/Vector2.hpp"
 
 
-struct Callback {
-	using type = std::function<void(void)>;
-
-	type began;
-	type ended;
-	type going;
-};
 
 class Widget {
 public:
+	struct Callback {
+		using type = std::function<void(void)>;
+
+		static const type ZERO;
+
+		type began;
+		type ended;
+		type going;
+	};
+
 	Widget();
 	Widget(Widget* const parent);
 	~Widget();
@@ -26,6 +29,10 @@ public:
 	Vector2 getGlobalPosition() const;
 	const Vector2& getPosition() const;
 	bool isVisible() const;
+
+	void setOnHover(const Callback& onHover);
+	void setOnClick(const Callback& onClick);
+	void setOnKey(const Callback& onKey);
 
 	void setSize(const Vector2& size);
 	void setPosition(const Vector2& pos);

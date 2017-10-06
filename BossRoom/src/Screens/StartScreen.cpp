@@ -34,13 +34,8 @@ void StartScreen::initializeGui() {
 	_weaponIcon.addChild(&_weaponLabel);
 
 	_guiRoot.addChild(&_weaponIcon);
-
-	_merchantGuiPanel.setSprite(sf::Sprite(AssetsManager::getTexture("panel_a")));
-	_merchantGuiPanel.setOrigin(Vector2::ZERO);
-	_merchantGuiPanel.setSize({ WIDTH * 0.8f, HEIGHT * 0.7f });
-	_merchantGuiPanel.setVisible(false);
-
-	_guiRoot.addChild(&_merchantGuiPanel);
+	_guiRoot.addChild(&_shop);
+	_shop.addWeapon(Weapon::_weapons[0]);
 }
 
 void StartScreen::onEnter() {
@@ -70,8 +65,15 @@ void StartScreen::initializeWorld(){
 
 	_world.addObject(_floor);
 
-	_zones["merchant"].setRadius(100.f);
-	_zones["merchant"].pos = 
+	_zones["merchant"] = std::make_shared<Zone>();
+	_zones["merchant"]->setRadius(150.f);
+	_zones["merchant"]->pos.x = _merchantShop.getPosition().x + _merchantShop.getGlobalBounds().width * 0.5f;
+	_zones["merchant"]->pos.y = _merchantShop.getPosition().y + _merchantShop.getGlobalBounds().height * 0.5f;
+	_zones["merchant"]->sensor = true;
+	_zones["merchant"]->collisionMask |= Object::PLAYER;
+	_zones["merchant"]->collider->onEnter = [&](auto) mutable { enterShop(); };
+
+	_world.addObject(_zones["merchant"]);
 }
 
 void StartScreen::update(float dt) {
@@ -88,11 +90,21 @@ void StartScreen::update(float dt) {
 
 	_world.updateInc(dt, 1u);
 
+	if (_enteredShop && InputsManager::isKeyJustPressed(sf::Keyboard::E)) {
+		unActivateShop();
+		leaveShop();
+	}
+	if (_isInShop && InputsManager::isKeyJustPressed(sf::Keyboard::E)) {
+		activateShop();
+	}
+
 	if (_dungeonDoor.getGlobalBounds().contains(_player->pos)) {
 		game->enterDungeon();
 	}
 
 	removeNeeded();
+
+	_guiRoot.propagateInput();
 }
 void StartScreen::render(sf::RenderTarget& target) {
 	const auto oldView = target.getView();
@@ -114,13 +126,14 @@ void StartScreen::render(sf::RenderTarget& target) {
 	target.draw(_merchantShop);
 	target.draw(_dungeonDoor);
 
-	_world.render(target);
 	for (auto& p : _projectiles) {
 		p->render(target);
 	}
 	_player->render(target);
 
 	renderGui(target);
+
+	_world.render(target);
 
 	target.setView(oldView);
 }
@@ -151,7 +164,8 @@ void StartScreen::initializeSprite() {
 			json["pos"][0].get<float>(),
 			json["pos"][1].get<float>()
 		);
-	} {
+	} 
+	{
 		const auto& json = _json["dungeon"];
 		_dungeon = sf::Sprite(AssetsManager::getTexture(json["sprite"]));
 		_dungeon.setScale(
@@ -162,7 +176,8 @@ void StartScreen::initializeSprite() {
 			json["pos"][0].get<float>(),
 			json["pos"][1].get<float>()
 		);
-	} {
+	} 
+	{
 		const auto& json = _json["dungeonDoor"];
 		_dungeonDoor = sf::Sprite(AssetsManager::getTexture(json["sprite"]));
 		_dungeonDoor.setScale(
@@ -173,7 +188,8 @@ void StartScreen::initializeSprite() {
 			json["pos"][0].get<float>(),
 			json["pos"][1].get<float>()
 		);
-	} {
+	} 
+	{
 		const auto& json = _json["merchantShop"];
 		_merchantShop = sf::Sprite(AssetsManager::getTexture(json["sprite"]));
 		_merchantShop.setScale(
@@ -184,7 +200,7 @@ void StartScreen::initializeSprite() {
 			json["pos"][0].get<float>(),
 			json["pos"][1].get<float>()
 		);
-	}
+	} 
 }
 
 void StartScreen::enterShop() {
@@ -199,4 +215,14 @@ void StartScreen::removeNeeded() {
 		if (_projectiles[i - 1]->toRemove())
 			_projectiles.erase(_projectiles.begin() + i - 1);
 	}
+}
+
+void StartScreen::activateShop() {
+	_enteredShop = true;
+	_shop.leave();
+}
+
+void StartScreen::unActivateShop() {
+	_enteredShop = false;
+	_shop.enter();
 }

@@ -161,6 +161,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\GUI\Shop.cpp" />
     <ClCompile Include="src\Physics\Collider.cpp" />
     <ClCompile Include="src\Gameplay\Zone.cpp" />
     <ClCompile Include="src\Graphics\AnimatedSprite.cpp" />
@@ -191,6 +192,7 @@
     <ClCompile Include="src\Screens\StartScreen.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\GUI\Shop.hpp" />
     <ClInclude Include="include\Physics\Collider.hpp" />
     <ClInclude Include="include\Gameplay\Zone.hpp" />
     <ClInclude Include="include\Graphics\AnimatedSprite.hpp" />

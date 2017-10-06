@@ -15,6 +15,7 @@
 #include <Graphics/GUI/Button.hpp>
 #include <Graphics/GUI/GridLayout.hpp>
 #include <Physics/World.hpp>
+#include <GUI/Shop.hpp>
 
 
 class Player;
@@ -40,6 +41,9 @@ private:
 
 	void removeNeeded();
 
+	void activateShop();
+	void unActivateShop();
+
 	sf::Sprite _startBackground;
 	sf::Sprite _dungeon;
 	sf::Sprite _dungeonDoor;
@@ -54,10 +58,11 @@ private:
 	std::shared_ptr<Player> _player;
 
 	bool _isInShop = false;
+	bool _enteredShop = false;
 
 	World _world;
 
-	std::map<std::string, Zone> _zones;
+	std::map<std::string, std::shared_ptr<Zone>> _zones;
 
 	std::shared_ptr<Object> _floor;
 
@@ -65,5 +70,5 @@ private:
 	Panel _weaponIcon;
 	Label _weaponLabel;
 
-	Panel _merchantGuiPanel;
+	Shop _shop;
 };

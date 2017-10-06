@@ -200,7 +200,7 @@
 		"radius": 25,
 		"specialSpeed": 800,
 		"invincibilityTime": 0.2,
-		"jumpHeight": 200,
+		"jumpHeight": 400,
 
 		"sprite": "player",
 		"startpos": {

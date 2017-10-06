@@ -37,7 +37,7 @@ int main(int, char**) {
 
 	sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT, 24), "Boss room");
 
-	const auto& updateKey = TimerManager::addFunction(MIN_MS, "updaye", [&window](auto dt)mutable->bool {
+	const auto& updateKey = TimerManager::addFunction(MIN_MS, "update", [&window](auto dt)mutable->bool {
 		InputsManager::update(window);
 		C::game->update((float)(dt > MIN_MS ? dt : MIN_MS));
 		return false;
@@ -81,7 +81,7 @@ void loadSpriteFromJson(const nlohmann::json& json) {
 
 	printf("Loading %u textures from json...\n", n);
 
-	uint32_t i = 0;
+	uint32_t i = 1u;
 	for (auto it = j.begin(); it != j.end(); ++it, ++i) {
 		printf("\t%u/%u ", i, n);
 
@@ -100,7 +100,7 @@ void loadSoundsFromJson(const nlohmann::json& json) {
 
 	printf("Loading %u sounds from json...\n", n);
 
-	uint32_t i = 0;
+	uint32_t i = 1u;
 	for (auto it = j.begin(); it != j.end(); ++it, ++i) {
 		printf("\t%u/%u ", i, n);
 
@@ -117,7 +117,7 @@ void loadFontsFromJson(const nlohmann::json& json) {
 
 	printf("Loading %u fonts from json...\n", n);
 
-	uint32_t i = 0;
+	uint32_t i = 1u;
 	for (auto it = j.begin(); it != j.end(); ++it, ++i) {
 		printf("\t%u/%u ", i, n);
 

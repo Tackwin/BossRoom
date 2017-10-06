@@ -56,8 +56,7 @@ void Player::initializeJson() {
 	_sprite.getSprite().setOrigin(_sprite.getSprite().getGlobalBounds().width / 2.f, _sprite.getSprite().getGlobalBounds().height / 2.f);
 	_sprite.getSprite().setPosition(pos);
 
-	_hitBox.size = _sprite.getSize();
-	_hitBox.dtPos = _hitBox.size * -0.5f;
+	_hitBox.r = _radius;
 }
 
 

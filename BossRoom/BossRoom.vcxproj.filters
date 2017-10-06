@@ -131,6 +131,9 @@
     <ClCompile Include="src\Physics\Object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\GUI\Shop.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Managers\AssetsManager.hpp">
@@ -204,6 +207,7 @@
     <ClInclude Include="include\Physics\Collider.hpp" />
     <ClInclude Include="include\Physics\World.hpp" />
     <ClInclude Include="include\Physics\Object.hpp" />
+    <ClInclude Include="include\GUI\Shop.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\BossRoom\res\config.json">

@@ -37,6 +37,8 @@ public:
 
 	const void draw(sf::RenderTarget& target, sf::Color color);
 
+	void print(const std::string pre = "", const std::string sui = "") const;
+
 	bool operator==(const Rectangle &r);
 	template<typename T>
 	Rectangle& operator=(const sf::Rect<T>& other) {

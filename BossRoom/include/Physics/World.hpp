@@ -33,17 +33,12 @@ private:
 		T second;
 
 		ordered_pair(T a, T b) {
+			first = b;
+			second = a;
 			if (a < b) {
 				first = a;
 				second = b;
 			}
-			else {
-				first = b;
-				second = a;
-			}
-
-			first = a;
-			second = b;
 		}
 
 		bool operator==(const ordered_pair<T>& other) const {

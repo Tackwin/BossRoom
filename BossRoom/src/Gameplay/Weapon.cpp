@@ -280,6 +280,9 @@ bool Weapon::isLooted() const {
 bool Weapon::isLootable() const {
 	return _lootable;
 }
+const sf::Sprite & Weapon::getUiSprite() const {
+	return _uiSprite;
+}
 void Weapon::setLootable(bool lootable) {
 	_lootable = lootable;
 }
