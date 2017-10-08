@@ -1,5 +1,23 @@
 #include <Physics/Collider.hpp>
 
+bool DiskRect(Vector2 circle, float r, Rectangle rect) {
+	Vector2 circleDistance;
+
+	circleDistance.x = abs(circle.x - rect.x);
+	circleDistance.y = abs(circle.y - rect.y);
+
+	if (circleDistance.x > (rect.w / 2 + r)) { return false; }
+	if (circleDistance.y > (rect.h / 2 + r)) { return false; }
+
+	if (circleDistance.x <= (rect.w / 2)) { return true; }
+	if (circleDistance.y <= (rect.h / 2)) { return true; }
+
+	auto cornerDistance_sq = (circleDistance.x - rect.w / 2) * (circleDistance.x - rect.w / 2) + 
+							 (circleDistance.y - rect.h / 2) * (circleDistance.y - rect.h / 2);
+
+	return cornerDistance_sq <= r * r;
+}
+
 void Disk::render(sf::RenderTarget& target) {
 	sf::CircleShape shape(r);
 	shape.setFillColor(sf::Color(200, 200, 200, 200));

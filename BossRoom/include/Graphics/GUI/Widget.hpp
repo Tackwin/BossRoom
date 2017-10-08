@@ -21,6 +21,7 @@ public:
 	};
 
 	Widget();
+	Widget(const Widget& copy) = delete;
 	Widget(Widget* const parent);
 	~Widget();
 
@@ -40,11 +41,11 @@ public:
 	void setOriginAbs(const Vector2& origin);
 	void setVisible(bool visible);
 
-	void addChild(Widget* const child);
+	void addChild(Widget* const child, int32_t z = 0);
 	bool haveChild(const Widget* const child);
-	void setParent(Widget* const parent);
+	void setParent(Widget* const parent, int32_t z = 0);
 	Widget* const getParent();
-	const std::vector<Widget*> getChilds();
+	const std::vector<std::pair<int32_t, Widget*>> getChilds();
 
 	virtual void render(sf::RenderTarget& target);
 	void propagateRender(sf::RenderTarget& target);
@@ -62,7 +63,7 @@ protected: //god this is growing into a god class... :(
 	bool _passThrough = false;
 
 	Widget* _parent = nullptr; //like, why do i even bother raw pointer mean, I DON'T HAVE THE OWNERSHIP, it settles it
-	std::vector<Widget*> _childs;
+	std::vector<std::pair<int32_t, Widget*>> _childs;
 
 	Callback _onHover;
 	Callback _onClick;

@@ -111,6 +111,9 @@
 		},
 		"panel_b": {
 			"sheet": "images/panel_b.png"
+		},
+		"quit": {
+			"sheet": "images/quit.png"
 		}
 	},
 	"sounds": {

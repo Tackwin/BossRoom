@@ -15,7 +15,17 @@ Shop::Shop() : Widget() {
 		std::bind(&Shop::onClickEnded, this),
 		std::bind(&Shop::onClickGoing, this)
 	});
-	_merchantPanel.setParent(this);
+	_merchantPanel.setParent(this, 0);
+	_merchantPanel.getSprite().setColor(sf::Color(100, 100, 100));
+
+	_quitPanel.setSprite(sf::Sprite(AssetsManager::getTexture("quit")));
+	_quitPanel.setSize({ 20, 20 });
+	_quitPanel.setOrigin({ 0, 0 });
+	_quitPanel.setPosition({
+		_merchantPanel.getPosition().x + _merchantPanel.getSize().x,
+		0
+	});
+	_quitPanel.setParent(&_merchantPanel, 2);
 }
 
 Shop::~Shop() {
@@ -23,13 +33,27 @@ Shop::~Shop() {
 }
 
 void Shop::addWeapon(const std::shared_ptr<Weapon>& weapon) {
+	constexpr float itemPanelSize = 70;
+
 	uint32_t size = _itemPanels.size();
 
-	_itemPanels.push_back(Panel());
-	_itemPanels.back().setSprite(weapon->getUiSprite());
-	_itemPanels.back().setSize({ 30, 30 });
-	_itemPanels.back().setPosition({ size * 35.f + 10, (size % 5) * 35.f + 10 });
-	_itemPanels.back().setParent(&_merchantPanel);
+	auto item = std::make_unique<_itemPanel>();
+	item->setPosition({ 
+		(size % 5) * (itemPanelSize + 5.f) + 10, 
+		(size / 5) * (itemPanelSize + 5.f) + 30 
+	});
+	
+	item->back.setSprite(sf::Sprite(AssetsManager::getTexture("panel_a")));
+	item->back.getSprite().setColor({80, 80, 80});
+	item->back.setSize({ itemPanelSize, itemPanelSize });
+
+	item->sprite.setSprite(weapon->getUiSprite());
+	item->sprite.setSize({ itemPanelSize - 4, itemPanelSize - 4 });
+
+	item->setParent(&_merchantPanel, 1);
+
+	_itemPanels.emplace_back();
+	_itemPanels.back().swap(item);
 }
 
 void Shop::enter() {
@@ -53,9 +77,11 @@ void Shop::onClickBegan() {
 		leave();
 	}
 }
+
 void Shop::onClickEnded(){
 	_dragging = false;
 }
+
 void Shop::onClickGoing() {
 	if (_dragging) {
 		setPosition(InputsManager::getMouseScreenPos() - _dragOffset);

@@ -34,7 +34,7 @@ void GridLayout::updatePos(){
 		pos.x = _externalPadding.x + (i % _col) * (_internalPadding.x + size.x / _col);
 		pos.y = _externalPadding.y + (i / _col) * (_internalPadding.y + size.y / _row);
 
-		_childs[i]->setPosition(pos);
+		_childs[i].second->setPosition(pos);
 	}
 }
 
@@ -48,7 +48,7 @@ void GridLayout::computeSize() {
 				goto breakLoops; //Yeah i know fuck off, it's a good case he's got so few >:(
 			}
 
-			Vector2 size = _childs[i * _col + j]->getSize();
+			Vector2 size = _childs[i * _col + j].second->getSize();
 			maxSize.x = std::max(maxSize.x, size.x);
 			maxSize.y = std::max(maxSize.y, size.y);
 			n++;

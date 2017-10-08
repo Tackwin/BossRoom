@@ -10,33 +10,36 @@ Widget::Widget() {
 }
 
 Widget::Widget(Widget* const parent) :
-_parent(parent) 
+	_parent(parent) 
 {
 }
 
 Widget::~Widget() {
 }
-void Widget::addChild(Widget* const child) {
+void Widget::addChild(Widget* const child, int32_t z) {
 	if (child == _parent)
 		return;
 
 	if (!haveChild(child)) {
-		_childs.push_back(child);
+		_childs.push_back({ z, child });
+		std::sort(_childs.begin(), _childs.end(), [](const auto& A, const auto& B) -> bool {
+			return A.first < B.first;
+		});
 	}
 	if (child->getParent() != this) {
 		child->setParent(this);
 	}
 }
 bool Widget::haveChild(const Widget* const child) {
-	return std::find(_childs.begin(), _childs.end(), child) != _childs.end();
+	return std::find_if(_childs.begin(), _childs.end(), [child](const auto& A) -> bool { return A.second == child; }) != _childs.end();
 }
-void Widget::setParent(Widget* const parent) {
+void Widget::setParent(Widget* const parent, int32_t z) {
 	if (haveChild(parent))
 		return;
 
 	_parent = parent;
 	if (!_parent->haveChild(this)) {
-		_parent->addChild(this);
+		_parent->addChild(this, z);
 	}
 }
 Widget* const Widget::getParent() {
@@ -78,7 +81,7 @@ void Widget::setVisible(bool visible) {
 	_visible = visible;
 }
 
-const std::vector<Widget*> Widget::getChilds() {
+const std::vector<std::pair<int32_t, Widget*>> Widget::getChilds() {
 	return _childs;
 }
 
@@ -95,7 +98,7 @@ void Widget::propagateRender(sf::RenderTarget& target) {
 
 		auto child = w->getChilds();
 		if (!w->isVisible()) continue;
-		for (auto& c : child) {
+		for (auto& [_, c] : child) {
 			if (std::find(close.begin(), close.end(), c) != close.end()) { // i think i can get rid of this given that my graph is a tree
 				continue;
 			}
@@ -136,7 +139,7 @@ void Widget::propagateInput() {
 		w->input();
 
 		auto child = w->getChilds();
-		for (auto& c : child) {
+		for (auto& [_, c] : child) {
 			if (std::find(close.begin(), close.end(), c) != close.end()) { // i find i can get rid of this given that my graph is a tree
 				continue;
 			}

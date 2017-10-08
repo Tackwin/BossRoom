@@ -2,6 +2,7 @@
 
 #include <Gameplay/Weapon.hpp>
 #include <Graphics/GUI/Widget.hpp> 
+#include <Graphics/GUI/Label.hpp> 
 #include <Graphics/GUI/Panel.hpp> 
 
 class Shop : public Widget {
@@ -14,12 +15,28 @@ public:
 	void enter();
 	void leave();
 private:
+	struct _itemPanel : public Widget {
+		_itemPanel() {
+			addChild(&back, 0);
+			addChild(&sprite, 1);
+			addChild(&label, 2);
+
+			sprite.setPosition({ 2, 2 });
+		}
+
+		Panel back;
+		Panel sprite;
+		Label label;
+	};
+
+
 	void onClickBegan();
 	void onClickEnded();
 	void onClickGoing();
 
 	Panel _merchantPanel;
-	std::vector<Panel> _itemPanels;
+	Panel _quitPanel;
+	std::vector<std::unique_ptr<_itemPanel>> _itemPanels;
 
 	bool _in = false;
 
