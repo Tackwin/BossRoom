@@ -73,8 +73,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Code\cpp\BossRoom\BossRoom\include;C:\SFML\include;C:\Code\cpp\enTT\src;C:\SFML\extlibs\headers;C:\glfw\include;D:\VulkanSDK\1.0.57.0\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\SFML\lib\$(Configuration);D:\VulkanSDK\1.0.57.0\Lib32;C:\glfw\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Code\cpp\BossRoom\BossRoom\include;C:\SFML\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\SFML\lib\$(Configuration);$(LibraryPath)</LibraryPath>
     <EnableCppCoreCheck>true</EnableCppCoreCheck>
     <CodeAnalysisRuleSet>D:\Program Files (x86)\Visual Studio 2017\Team Tools\Static Analysis Tools\Rule Sets\MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>false</RunCodeAnalysis>
@@ -82,8 +82,8 @@
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\Code\cpp\BossRoom\BossRoom\include;C:\SFML\include;C:\Code\cpp\enTT\src;C:\SFML\extlibs\headers;C:\glfw\include;D:\VulkanSDK\1.0.57.0\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\SFML\lib\$(Configuration);D:\VulkanSDK\1.0.57.0\Lib32;C:\glfw\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Code\cpp\BossRoom\BossRoom\include;C:\SFML\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\SFML\lib\$(Configuration);$(LibraryPath)</LibraryPath>
     <CodeAnalysisRuleSet>D:\Program Files (x86)\Visual Studio 2017\Team Tools\Static Analysis Tools\Rule Sets\MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <EnableCppCoreCheck>true</EnableCppCoreCheck>
@@ -133,7 +133,7 @@
       <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>vulkan-1.lib;glfw3.lib;opengl32.lib;sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;sfml-audio-d.lib;</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;sfml-audio-d.lib;</AdditionalDependencies>
       <OptimizeReferences>false</OptimizeReferences>
       <TreatLinkerWarningAsErrors>false</TreatLinkerWarningAsErrors>
       <EnableCOMDATFolding>false</EnableCOMDATFolding>

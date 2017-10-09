@@ -6,6 +6,7 @@
 #include "Managers/TimerManager.hpp"
 #include "Graphics/Particle.hpp"
 
+ParticleGenerator::ParticleGenerator() {}
 
 ParticleGenerator::ParticleGenerator(nlohmann::json json_, Vector2 pos_) :
 	_json(json_),
@@ -15,13 +16,14 @@ ParticleGenerator::ParticleGenerator(nlohmann::json json_, Vector2 pos_) :
 		float timer = getJsonValue<float>(_json, "iTime");
 
 		_particles.push_back(std::make_shared<Particle>(_json["particle"], _pos, Vector2::createUnitVector(unitaryRng(RNG) * 2 * PIf)));
-		TimerManager::addFunction(timer, "", _lambda);
+
+		_lambdaKey = TimerManager::addFunction(timer, "", _lambda);
 		return true;
 	};
 	_lambda(0);
 }
 
-void ParticleGenerator::update(float dt) {
+void ParticleGenerator::update(double dt) {
 	for (auto& p : _particles) {
 		p->update(dt);
 	}
@@ -37,3 +39,16 @@ void ParticleGenerator::render(sf::RenderTarget& target) {
 		p->render(target);
 	}
 }
+
+void ParticleGenerator::pause() {
+	_paused = true;
+	TimerManager::pauseFunction(_lambdaKey);
+};
+void ParticleGenerator::resume() {
+	_paused = false;
+	TimerManager::resumeFunction(_lambdaKey);
+};
+void ParticleGenerator::restart() {
+	_particles.clear();
+	resume();
+};

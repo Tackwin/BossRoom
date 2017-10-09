@@ -21,15 +21,17 @@ struct Function {
 	Callback f;
 
 	Function() {};
-	Function(double timer, const Callback &f)
+	Function(double timer, const Callback& f)
 		: clock(timer), timer(timer), time(timer), f(f) {
-
+	};
+	Function(double timer, const Callback&& f)
+		: clock(timer), timer(timer), time(timer), f(f) {
 	};
 };
 
 class TimerManager {
 private:
-	static std::map < std::string, std::shared_ptr<Function>> _functions;
+	static std::map<std::string, std::shared_ptr<Function>> _functions;
 
 private:
 	TimerManager();
@@ -38,6 +40,7 @@ private:
 public:
 	static bool INCREMENTAL;
 
+	static std::string addFunction(double timer, const std::string& key, const Function::Callback&& f);
 	static std::string addFunction(double timer, const std::string& key, const Function::Callback& f);
 	static std::string cloneFunction(const std::string& key);
 	static void resetTimerFunction(const std::string& key);

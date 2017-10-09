@@ -12294,12 +12294,12 @@ T getJsonValue(nlohmann::json json_, std::string key) {
 	T rng = static_cast<T>(mean);
 	if (j["type"] == "uniform") {
 		rng = static_cast<T>(j["real"].get<bool>() ?
-			std::uniform_real_distribution<float>(mean - range, mean + range)(RNG) :
-			std::uniform_int_distribution<int>((int)(mean - range), (int)(mean + range))(RNG)
-			);
+			std::uniform_real_distribution<double>(mean - range, mean + range)(RNG) :
+			std::uniform_int_distribution<long long>((long long)(mean - range), (long long)(mean + range))(RNG)
+		);
 	}
 	else if (j["type"] == "normal") {
-		rng = static_cast<T>(std::normal_distribution<float>(mean, range)(RNG));
+		rng = static_cast<T>(std::normal_distribution<double>(mean, range)(RNG));
 	}
 
 	if (auto it = j.find("min"); it != j.end() && rng < it.value().get<T>()) {

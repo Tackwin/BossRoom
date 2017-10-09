@@ -11,7 +11,7 @@ std::vector<std::shared_ptr<Boss>> Boss::bosses(C::N_LEVEL);
 
 void Boss::createBosses() {
 	bosses[0] = std::make_shared<Boss>(AssetsManager::getJson(JSON_KEY)["bosses"][0],
-		[](float, Boss&) { /*Update function*/
+		[](double, Boss&) { /*Update function*/
 			/*static bool goodToGo = false;
 			if (!goodToGo) {
 				goodToGo = boss._life < 0.33f * boss._maxLife;
@@ -60,7 +60,7 @@ void Boss::createBosses() {
 	);
 
 	bosses[1] = std::make_shared<Boss>(AssetsManager::getJson(JSON_KEY)["bosses"][1],
-		[](float, Boss&) { /*Update function*/ 
+		[](double, Boss&) { /*Update function*/
 			
 		},
 		[](Boss& boss) { // Init function
@@ -86,7 +86,7 @@ void Boss::createBosses() {
 	);
 
 	bosses[2] = std::make_shared<Boss>(AssetsManager::getJson(JSON_KEY)["bosses"][1],
-		[](float, Boss&) { /*Update function*/ },
+		[](double, Boss&) { /*Update function*/ },
 		[](Boss& boss) { // Init function
 			boss._keyPatterns.push_back(TimerManager::addFunction(3, "P1", [&boss](auto)mutable->bool {
 				Patterns::boomerang(boss, Patterns::_json["boomerang"]);
@@ -110,7 +110,7 @@ void Boss::createBosses() {
 	);
 
 	bosses[3] = std::make_shared<Boss>(AssetsManager::getJson(JSON_KEY)["bosses"][1],
-		[](float, Boss&) { /*Update function*/ },
+		[](double, Boss&) { /*Update function*/ },
 		[](Boss& boss) { // Init function
 			boss._keyPatterns.push_back(TimerManager::addFunction(4, "P1", [&boss](auto)mutable->bool {
 				Patterns::blastCosmopolitain(boss, Patterns::_json["blastCosmopolitain"]);
@@ -138,7 +138,7 @@ void Boss::createBosses() {
 	);
 
 	bosses[4] = std::make_shared<Boss>(AssetsManager::getJson(JSON_KEY)["bosses"][1],
-		[](float, Boss&) { /*Update function*/ },
+		[](double, Boss&) { /*Update function*/ },
 		[](Boss& boss) { // Init function
 			boss._keyPatterns.push_back(TimerManager::addFunction(6, "P1", [&boss](auto)mutable->bool {
 				Patterns::boomerang(boss, Patterns::_json["randomFire"]);
@@ -165,7 +165,7 @@ void Boss::destroyBosses() {
 	bosses.clear();
 }
 
-Boss::Boss(const basic_json<>& json, std::function<void(float, Boss&)> updateFunction, std::function<void(Boss&)> init, 
+Boss::Boss(const basic_json<>& json, std::function<void(double, Boss&)> updateFunction, std::function<void(Boss&)> init, 
 		   std::function<void(Boss&)> unInit):
 	Object(),
 	_json(json),
@@ -180,7 +180,7 @@ Boss::~Boss() {
 void Boss::enterLevel(Level* level) {
 	_level = level;
 
-	_life = _json["life"];
+	_life = getJsonValue<int32_t>(_json, "life");
 	_maxLife = _life;
 	pos.x = _json["startpos"]["x"];
 	pos.y = _json["startpos"]["y"];
@@ -221,8 +221,9 @@ void Boss::die() {
 }
 
 
-void Boss::update(float dt) {
+void Boss::update(double dt) {
 	_update(dt, *this);
+	_hitParticleGen.update(dt);
 }
 
 void Boss::render(sf::RenderTarget &target) {
@@ -263,5 +264,6 @@ void Boss::collision(Object* obj) {
 	if (auto ptr = dynamic_cast<Projectile*>(obj); ptr && ptr->isFromPlayer()) {
 		hit(ptr->getDamage());
 		ptr->remove();
+		_hitParticleGen.restart();
 	}
 }

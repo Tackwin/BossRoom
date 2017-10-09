@@ -8,6 +8,7 @@
 #include "3rd/json.hpp"
 
 #include "Graphics/AnimatedSprite.hpp"
+#include "Graphics/ParticleGenerator.hpp"
 #include <Physics/Object.hpp>
 #include "Math/Rectangle.hpp"
 #include "Math/Vector2.hpp"
@@ -18,7 +19,7 @@ class Boss : public Object {
 public:
 	Boss() {};
 	Boss(const nlohmann::basic_json<>& json,
-		 std::function<void(float, Boss&)> updateFunction,
+		 std::function<void(double, Boss&)> updateFunction,
 		 std::function<void(Boss&)> initFunction,
 		 std::function<void(Boss&)> unInitFunction);
 	~Boss();
@@ -28,7 +29,7 @@ public:
 
 	void die(); //POTATO NOOOOOOOOOOOOOOO :(
 	
-	void update(float dt);
+	void update(double dt);
 	void render(sf::RenderTarget& target);
 
 	void hit(unsigned int damage);
@@ -47,8 +48,8 @@ public:
 public: //TODO: make this private
 	nlohmann::basic_json<> _json;
 
-	int _life;
-	int _maxLife;
+	int32_t _life;
+	int32_t _maxLife;
 	float _radius;
 	sf::Color _color;
 
@@ -61,13 +62,14 @@ public: //TODO: make this private
 	std::vector<std::string> _keyPatterns; // (key, running)
 
 	std::function<void(Boss&)> _init;
-	std::function<void(float, Boss&)> _update;
+	std::function<void(double, Boss&)> _update;
 	std::function<void(Boss&)> _unInit;
 
 	AnimatedSprite _sprite;
 
 	std::vector<sf::Sound> _sounds;
 
+	ParticleGenerator _hitParticleGen;
 private:
 	void collision(Object* obj);
 };

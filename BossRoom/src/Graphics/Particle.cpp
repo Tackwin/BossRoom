@@ -28,7 +28,7 @@ Particle::Particle(nlohmann::json json_, Vector2 pos_, Vector2 dir_, Function up
 	}
 }
 
-void Particle::update(float dt) {
+void Particle::update(double dt) {
 	_pos += _dir * dt * _json["speed"].get<float>();
 	_update(dt);
 }

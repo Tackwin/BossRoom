@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include <enTT/registry.hpp>
 #include <type_traits>
 #include <cstdint>
 #include <variant>

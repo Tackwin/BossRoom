@@ -13,7 +13,7 @@
 
 class Particle {
 public:
-	using Function = std::function<void(float)>;
+	using Function = std::function<void(double)>;
 private:
 	sf::Sprite _sprite;
 
@@ -30,9 +30,9 @@ private:
 	std::unordered_map<std::string, std::string> _keys;
 
 public:
-	Particle(nlohmann::json json_, Vector2 pos_, Vector2 dir_, Function update_ = [](float) {});
+	Particle(nlohmann::json json_, Vector2 pos_, Vector2 dir_, Function update_ = [](double) {});
 
-	void update(float dt);
+	void update(double dt);
 	void render(sf::RenderTarget& target);
 
 	bool toRemove() const { return _remove; }

@@ -4,8 +4,6 @@
 
 #include <SFML/Graphics.hpp>
 
-#include <enTT/registry.hpp>
-
 #include "Global/Const.hpp"
 
 class Screen;
