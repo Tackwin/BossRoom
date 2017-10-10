@@ -99,7 +99,7 @@ void Game::render(sf::RenderTarget& target) {
 
 	target.setView(initView);
 
-	_debugTimeClockShape.setFillColor(sf::Color(_debugTimeClockColor, _debugTimeClockColor, _debugTimeClockColor));
+	_debugTimeClockShape.setFillColor(sf::Color(_debugTimeClockColor, _debugTimeClockColor, _debugTimeClockColor, 50));
 	target.draw(_debugTimeClockShape);
 }
 
@@ -114,5 +114,6 @@ void Game::enterDungeon() {
 }
 
 void Game::start() {
-	enterScreen(std::make_shared<StartScreen>());
+	//enterScreen(std::make_shared<StartScreen>());
+	enterRoom(0u);
 }

@@ -1,7 +1,7 @@
 #pragma once
 #include <functional>
 
-#include <Physics/Object.hpp>
+#include "Physics/Object.hpp"
 
 struct Zone : public Object {
 	using Callback = std::function<void(Object*)>;

@@ -5,11 +5,9 @@
 
 #include "Managers/AssetsManager.hpp"
 #include "Managers/InputsManager.hpp"
-#include "Gameplay/Game.hpp"
 #include "Managers/TimerManager.hpp"
+#include "Gameplay/Game.hpp"
 #include "Gameplay/Patterns.hpp"
-#include "Global/Const.hpp"
-#include <Math/Vec.hpp>
 
 std::map<std::string, std::shared_ptr<Function>> TimerManager::_functions;	//Initializing here just to make sure that it is destroyed at the END END of the program
 																			//(particularly after the destructor of everything)

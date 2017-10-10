@@ -9,7 +9,7 @@
 
 #include "Graphics/AnimatedSprite.hpp"
 #include "Graphics/ParticleGenerator.hpp"
-#include <Physics/Object.hpp>
+#include "Physics/Object.hpp"
 #include "Math/Rectangle.hpp"
 #include "Math/Vector2.hpp"
 
@@ -22,7 +22,7 @@ public:
 		 std::function<void(double, Boss&)> updateFunction,
 		 std::function<void(Boss&)> initFunction,
 		 std::function<void(Boss&)> unInitFunction);
-	~Boss();
+	virtual ~Boss() override;
 
 	void enterLevel(Level* level);
 	void exitLevel();
@@ -69,7 +69,7 @@ public: //TODO: make this private
 
 	std::vector<sf::Sound> _sounds;
 
-	ParticleGenerator _hitParticleGen;
+	std::vector<ParticleGenerator*> _particleEffects;
 private:
 	void collision(Object* obj);
 };

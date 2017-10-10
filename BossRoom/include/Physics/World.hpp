@@ -7,15 +7,10 @@
 
 #include <SFML/Graphics.hpp>
 
-#include <Math/Vector2.hpp>
-#include <Physics/Object.hpp>
+#include "Math/Vector2.hpp"
 
-#include <Graphics/Particle.hpp>
+#include "Physics/Object.hpp"
 
-#include <Gameplay/Player.hpp>
-#include <Gameplay/Projectile.hpp>
-#include <Gameplay/Zone.hpp>
-#include <Gameplay/Boss.hpp>
 class World {
 public:
 	void update(float dt);

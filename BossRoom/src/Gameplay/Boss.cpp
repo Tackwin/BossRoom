@@ -175,6 +175,7 @@ Boss::Boss(const basic_json<>& json, std::function<void(double, Boss&)> updateFu
 }
 
 Boss::~Boss() {
+	Object::~Object();
 }
 
 void Boss::enterLevel(Level* level) {
@@ -223,13 +224,23 @@ void Boss::die() {
 
 void Boss::update(double dt) {
 	_update(dt, *this);
-	_hitParticleGen.update(dt);
+	for (auto& fx : _particleEffects)
+		fx->update(dt);
+
+	for (size_t i = _particleEffects.size(); i > 0u; i--) {
+		if (_particleEffects[i - 1]->isEnded()) {
+			delete _particleEffects[i - 1];
+			_particleEffects.erase(_particleEffects.begin() + i - 1);
+		}
+	}
 }
 
 void Boss::render(sf::RenderTarget &target) {
 	_sprite.getSprite().setPosition(getPos());
 	_sprite.getSprite().setColor(_color);
 	_sprite.render(target);
+	for (auto& fx : _particleEffects)
+		fx->render(target);
 }
 
 void Boss::hit(unsigned int d) {
@@ -264,6 +275,16 @@ void Boss::collision(Object* obj) {
 	if (auto ptr = dynamic_cast<Projectile*>(obj); ptr && ptr->isFromPlayer()) {
 		hit(ptr->getDamage());
 		ptr->remove();
-		_hitParticleGen.restart();
+
+		auto& particleGeneratorJson = AssetsManager::getJson(JSON_KEY)["particlesGenerator"];
+		std::string particleGenerator = _json["hitParticle"];
+		
+		_particleEffects.push_back(
+			new ParticleGenerator(
+				particleGeneratorJson[particleGenerator],
+				ptr->getPos()
+			)
+		);
+		_particleEffects.back()->start();
 	}
 }

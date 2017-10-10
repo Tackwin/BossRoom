@@ -1,7 +1,9 @@
 #pragma once
+
 #include <functional>
-#include <Math/Vector2.hpp>
-#include <Math/Rectangle.hpp>
+
+#include "Math/Vector2.hpp"
+#include "Math/Rectangle.hpp"
 
 struct Object;
 struct Collider {

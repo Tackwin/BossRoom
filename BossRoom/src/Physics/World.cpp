@@ -1,8 +1,7 @@
 #include <Physics/World.hpp>
 
-#include <Managers/AssetsManager.hpp>
-
 #include <algorithm>
+#include <numeric>
 
 void World::updateInc(float dt, uint32_t itLevel) {
 	for (uint32_t i = 0u; i < itLevel; ++i) {

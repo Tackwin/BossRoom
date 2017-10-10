@@ -8,20 +8,17 @@
 
 ParticleGenerator::ParticleGenerator() {}
 
-ParticleGenerator::ParticleGenerator(nlohmann::json json_, Vector2 pos_) :
-	_json(json_),
-	_pos(pos_) {
-
-	_lambda = [&](auto)mutable -> bool {
-		float timer = getJsonValue<float>(_json, "iTime");
-
-		_particles.push_back(std::make_shared<Particle>(_json["particle"], _pos, Vector2::createUnitVector(unitaryRng(RNG) * 2 * PIf)));
-
-		_lambdaKey = TimerManager::addFunction(timer, "", _lambda);
-		return true;
-	};
-	_lambda(0);
+ParticleGenerator::ParticleGenerator(nlohmann::json json_, Vector2 pos_) {
+	loadJson(json_);
+	setPos(pos_);
 }
+
+ParticleGenerator::~ParticleGenerator() {
+	if (TimerManager::functionsExist(_lambdaKey)) {
+		TimerManager::removeFunction(_lambdaKey);
+	}
+}
+
 
 void ParticleGenerator::update(double dt) {
 	for (auto& p : _particles) {
@@ -50,5 +47,45 @@ void ParticleGenerator::resume() {
 };
 void ParticleGenerator::restart() {
 	_particles.clear();
-	resume();
+	if (TimerManager::functionsExist(_lambdaKey)) {
+		TimerManager::removeFunction(_lambdaKey);
+	}
+	start();
 };
+
+void ParticleGenerator::start() {
+	_remain = _nParticles;
+	_ended = false;
+	_lambda(0);
+}
+
+void ParticleGenerator::loadJson(const nlohmann::json& json) {
+	_json = json;
+
+	_remain = getJsonValue<uint32_t>(_json, "nParticles");
+	_nParticles = _remain;
+
+	_lambda = [&](auto)mutable -> bool {
+		float timer = getJsonValue<float>(_json, "iTime");
+
+		_particles.push_back(std::make_shared<Particle>(_json["particle"], _pos, Vector2::createUnitVector(unitaryRng(RNG) * 2 * PIf)));
+
+		if (_remain != 0) {
+			_lambdaKey = TimerManager::addFunction(timer, "", _lambda);
+			_remain--;
+			_ended = true;
+		}
+		return true;
+	};
+}
+
+void ParticleGenerator::setPos(const Vector2& pos) {
+	_pos = pos;
+}
+Vector2 ParticleGenerator::getPos() const {
+	return _pos;
+}
+
+bool ParticleGenerator::isEnded() const {
+	return _ended;
+}

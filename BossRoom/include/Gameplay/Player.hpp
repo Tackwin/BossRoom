@@ -7,10 +7,13 @@
 
 #include "3rd/json.hpp"
 
-#include "Graphics/AnimatedSprite.hpp"
-#include <Physics/Object.hpp>
 #include "Global/Const.hpp"
+
+#include "Physics/Object.hpp"
+
 #include "Math/Vector2.hpp"
+
+#include "Graphics/AnimatedSprite.hpp"
 
 class Level;
 class Weapon;

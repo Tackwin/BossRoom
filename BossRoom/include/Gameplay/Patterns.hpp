@@ -1,14 +1,18 @@
 #pragma once
 
 #include "3rd/json.hpp"
+
 #include "Managers/TimerManager.hpp"
+
 #include "Math/Rectangle.hpp"
+
 #include "Global/Const.hpp"
 #include "Global/Clock.hpp"
+
+#include "Gameplay/Boss.hpp"
 #include "Gameplay/Projectile.hpp"
 #include "Gameplay/Player.hpp"
 #include "Gameplay/Level.hpp"
-#include "Gameplay/Boss.hpp"
 #include "Gameplay/Game.hpp"
 
 class Patterns {

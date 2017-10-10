@@ -4,9 +4,11 @@
 
 #include <SFML/Graphics.hpp>
 
-#include <Global/Const.hpp>
-#include <Gameplay/Zone.hpp>
-#include <Physics/World.hpp>
+#include "Global/Const.hpp"
+
+#include "Physics/World.hpp"
+
+#include "Gameplay/Zone.hpp"
 
 class Boss;
 class Probe;
@@ -45,29 +47,29 @@ public: // TODO: Make this private
 
 	World _world;
 
-	uint32 _n;
+	uint32 _n = 0u;
 
-	std::shared_ptr<Boss> _boss;
-	std::shared_ptr<Player> _player;
+	std::shared_ptr<Boss> _boss = nullptr;
+	std::shared_ptr<Player> _player = nullptr;
 
-	std::vector<std::shared_ptr<Weapon>> _loot;
+	std::vector<std::shared_ptr<Weapon>> _loot = {};
 
 	LevelScreen* _screen = nullptr; //How the fuck i'm supposed to make LevelScreen pass this as a shared_ptr
 									//(std::enable_shared_from_this has his probleme) anyway, i DON'T have the ownership
 
-	std::vector<Zone> _zones;
+	std::vector<Zone> _zones = {};
 	Disk _entranceToNext;
 	
 	sf::Sprite _aimSprite;
-	uint8 _aimSpriteOpacity;
+	uint8 _aimSpriteOpacity = 0u;
 
-	std::shared_ptr<Object>  _floor;
-	std::vector<std::shared_ptr<Projectile>> _projectiles;
+	std::shared_ptr<Object>  _floor = nullptr;
+	std::vector<std::shared_ptr<Projectile>> _projectiles = {};
 	
 	bool _ended = false;
 	bool _aiming = false;
 	bool _running = false;
 
-	std::shared_ptr<Zone> _zone;
+	std::shared_ptr<Zone> _zone = nullptr;
 };
 

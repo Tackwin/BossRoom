@@ -1,9 +1,12 @@
 #include "Gameplay/Player.hpp"
 
 #include "Global/Const.hpp"
+
 #include "Managers/InputsManager.hpp"
 #include "Managers/AssetsManager.hpp"
 #include "Managers/TimerManager.hpp"
+
+#include "Gameplay/Projectile.hpp"
 #include "Gameplay/Weapon.hpp"
 #include "Gameplay/Level.hpp"
 #include "Gameplay/Game.hpp"
