@@ -24,11 +24,11 @@ void loadFontsFromJson(const nlohmann::json& json);
 int main(int, char**) {
 	printf("Loading jsons...\n");
 
-	AssetsManager::loadJson(JSON_KEY, JSON_PATH); 
+	AssetsManager::loadJson(JSON_KEY, JSON_PATH);
 	loadSpriteFromJson(AssetsManager::getJson(JSON_KEY));
 	loadSoundsFromJson(AssetsManager::getJson(JSON_KEY));
 	loadFontsFromJson(AssetsManager::getJson(JSON_KEY));
-	
+
 	Patterns::_json = AssetsManager::getJson(JSON_KEY)["patterns"];
 	C::game = std::make_shared<Game>();
 	game->start();
