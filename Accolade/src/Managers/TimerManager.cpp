@@ -91,7 +91,7 @@ void TimerManager::update(double dt) {
 			}
 			else { // i should get rid of all these branching in the *MAIN* loop
 				for (f->error += f->clock.elapsed(); !f->toRemove && f->clock.timer < f->error; f->error -= f->clock.timer) {
-					f->toRemove = f->f(fmin(dt, f->clock.timer));
+					f->toRemove = f->f(f->clock.elapsed());
 				}
 			}
 
