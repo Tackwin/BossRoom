@@ -23,6 +23,14 @@ struct Vector {
 		return components[i];
 	}
 
+	bool inRect(const Vector<D, T>& pos, const Vector<D, T>& size) const {
+		for (size_t i = 0u; i < D; ++i)
+			if (!(pos[i] < components[i] && components[i] < pos[i] + size[i]))
+				return false;
+
+		return true;
+	}
+
 	template<typename U>
 	Vector operator*(const U& scalaire) {
 		Vector<D, T> result;
@@ -73,6 +81,8 @@ struct Vector {
 	bool operator!=(const Vector<D, U>& other) const {
 		return !(this->operator==(other));
 	}
+
+	static constexpr Vector2f ZEROf = { 0, 0 };
 };
 
 using Vector2f = Vector<2U, float>;

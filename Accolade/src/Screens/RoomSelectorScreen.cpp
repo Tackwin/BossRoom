@@ -1,10 +1,12 @@
 #include "Screens/RoomSelectorScreen.hpp"
 
+#include "Const.hpp"
+#include "Game.hpp"
+
 #include "Managers/AssetsManager.hpp"
 #include "Managers/InputsManager.hpp"
-#include "Gameplay/Game.hpp"
 
-RoomSelectorScreen::RoomSelectorScreen(uint32 n):
+RoomSelectorScreen::RoomSelectorScreen(uint32_t n):
 	_n(n) {
 
 
@@ -18,7 +20,7 @@ RoomSelectorScreen::RoomSelectorScreen(uint32 n):
 	_triesInfoText.setPosition(100, 620);
 
 	_goTextButton = sf::Text(std::string("GOOO"), AssetsManager::getFont("consola"), 36);
-	//_goTextButton.setFillColor(sf::Color(0, 199, 255));
+	_goTextButton.setFillColor(sf::Color(0, 199, 255));
 	_goTextButton.setPosition(500, 340);
 
 	_goSpriteButton = sf::RectangleShape({ 150, 75 });
@@ -39,7 +41,7 @@ void RoomSelectorScreen::onExit() {
 
 void RoomSelectorScreen::update(float) {
 	if (InputsManager::isMouseJustPressed(sf::Mouse::Left) && 
-		InputsManager::getMouseScreenPos().isInRec({ 480, 320 }, { 150, 75 })) {
+		InputsManager::getMouseScreenPos().inRect({ 480, 320 }, { 150, 75 })) {
 		
 		game->enterRoom(_n);
 	}

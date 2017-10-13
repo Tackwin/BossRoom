@@ -2,14 +2,17 @@
 
 #include <algorithm>
 
-#include <Managers/AssetsManager.hpp>
-#include <Managers/InputsManager.hpp>
-#include <Gameplay/Projectile.hpp>
-#include <Graphics/GUI/Button.hpp>
-#include <Gameplay/Weapon.hpp>
-#include <Gameplay/Player.hpp>
-#include <Gameplay/Game.hpp>
-#include <Global/Const.hpp>
+#include "Const.hpp"
+#include "Game.hpp"
+
+#include "Managers/AssetsManager.hpp"
+#include "Managers/InputsManager.hpp"
+
+#include "Graphics/GUI/Button.hpp"
+
+#include "Gameplay/Projectile.hpp"
+#include "Gameplay/Weapon.hpp"
+#include "Gameplay/Player.hpp"
 
 StartScreen::StartScreen() :
 	_playerView({ WIDTH / 2.f, HEIGHT / 2.f }, { (float)WIDTH, (float)HEIGHT }),
@@ -87,7 +90,7 @@ void StartScreen::initializeWorld(){
 	_world.addObject(_zones["merchant"]);
 }
 
-void StartScreen::update(float dt) {
+void StartScreen::update(double dt) {
 	for (auto& p : _player->getProtectilesToShoot()) {
 		_projectiles.push_back(p);
 		_world.addObject(p);

@@ -2,11 +2,15 @@
 
 #include <tuple>
 
+#include "Game.hpp"
 #include "Const.hpp"
 
 #include "Managers/AssetsManager.hpp"
 #include "Managers/TimerManager.hpp"
 
+#include "Graphics/GUI/Panel.hpp"
+
+#include "Gameplay/Weapon.hpp"
 #include "Gameplay/Player.hpp"
 #include "Gameplay/Level.hpp" 
 
@@ -19,6 +23,7 @@ LevelScreen::LevelScreen(uint32 n) :
 	_gameView(_gameViewPos, _gameViewSize),
 	_level(std::make_unique<Level>(*Level::levels[_n]))
 {
+
 	constexpr float bossHealthTileSize = 60;
 	AssetsManager::getTexture("health_tile").setSmooth(true);
 	_bossHealthTileSprite.setOrigin(_bossHealthTileSprite.getTextureRect().width * 0.5f, _bossHealthTileSprite.getTextureRect().height * 0.5f);
@@ -111,27 +116,27 @@ void LevelScreen::renderGui(sf::RenderTarget& target) {
 	}
 	_bossHealthTileSprite.setPosition(pos);
 	
-	/*
+
 	auto& weaponGuiSprite = game->_player->_weapon->_uiSprite;
 	weaponGuiSprite.setPosition({ WIDTH - 50.f, HEIGHT - 50.f });
 	target.draw(weaponGuiSprite);
 
 	for (auto& panel : _panels) {
-		panel.render(target);
+		panel->render(target);
 	}
-	*/
 }
 
 void LevelScreen::shakeScreen(float power) {
 	constexpr uint32_t nShakes = 5;
 	constexpr float iTimeShakes = 0.03f;
-	//TimerManager::addLinearEase(1.f, "", &_gameViewOffset, Vector2::ZERO, { 50, 0 });
+	TimerManager::addLinearEase(1.f, "", &_gameViewOffset, { 0, 0 }, { 50, 0 });
+	/*
 	
 	TimerManager::addFunction(iTimeShakes, "shake", [](auto) mutable -> bool {
 		
 		return true; 
 	});
-
+	*/
 
 /*	TimerManager::addFunction(iTimeShakes, "shake", [&, p = power, n = nShakes](auto)mutable->bool {
 		Vector2 from = _gameViewOffset;
@@ -147,8 +152,7 @@ void LevelScreen::shakeScreen(float power) {
 #include "Gameplay/Game.hpp"
 #include "Gameplay/Boss.hpp"
 
-
+*/
 uint32_t LevelScreen::getIndex() const {
 	return _n;
 }
-*/

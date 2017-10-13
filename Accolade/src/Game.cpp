@@ -10,12 +10,10 @@
 #include "Screens/LevelScreen.hpp"
 #include "Screens/StartScreen.hpp"
 
-/*
 #include "Gameplay/Weapon.hpp"
 #include "Gameplay/Player.hpp"
 #include "Gameplay/Level.hpp"
 #include "Gameplay/Boss.hpp"
-*/
 
 void Game::start() {
 	enterRoom(0u);

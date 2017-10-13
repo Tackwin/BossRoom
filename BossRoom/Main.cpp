@@ -1,11 +1,11 @@
-
-#include <thread>
+#include <cstdio>
 
 #include <SFML/Graphics.hpp>
 
 #include "Managers/AssetsManager.hpp"
 #include "Managers/InputsManager.hpp"
 #include "Managers/TimerManager.hpp"
+
 #include "Gameplay/Game.hpp"
 #include "Gameplay/Patterns.hpp"
 
@@ -21,6 +21,27 @@ void loadSpriteFromJson(const nlohmann::json& json);
 void loadSoundsFromJson(const nlohmann::json& json);
 void loadFontsFromJson(const nlohmann::json& json);
 
+bool update(sf::RenderWindow& window, double dt) {
+	InputsManager::update(window);
+	C::game->update((float)(dt > MIN_MS ? dt : MIN_MS));
+	return false;
+}
+bool render(sf::RenderWindow& window) {
+	static uint64_t i = 0;
+	Clock c;
+	if (window.isOpen()) {
+		window.clear(sf::Color(50, 50, 50));
+		C::game->render(window);
+		window.display();
+	}
+	if (i++ >= ((MAX_FPS == 0) ? 1'000 : MAX_FPS)) {
+		//const auto& dt = c.elapsed() * 1'000'000.0;
+		//printf("Rendered in %u us.\n", static_cast<uint32_t>(dt));
+		i = 0;
+	}
+	return false;
+}
+
 int main(int, char**) {
 	printf("Loading jsons...\n");
 
@@ -35,26 +56,16 @@ int main(int, char**) {
 
 	sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT, 24), "Boss room");
 
-	const auto& updateKey = TimerManager::addFunction(MIN_MS, "update", [&window](auto dt)mutable->bool {
-		InputsManager::update(window);
-		C::game->update((float)(dt > MIN_MS ? dt : MIN_MS));
-		return false;
-	});
-	const auto& renderKey = TimerManager::addFunction(MAX_FPS == 0.f ? 0.f : 1.f / MAX_FPS, "render", [&window](auto)mutable->bool {
-		static uint64_t i = 0;
-		Clock c;
-		if (window.isOpen()) {
-			window.clear(sf::Color(50, 50, 50));
-			C::game->render(window);
-			window.display();
-		}
-		if (i++ >= ((MAX_FPS == 0) ? 1'000 : MAX_FPS)) {
-			//const auto& dt = c.elapsed() * 1'000'000.0;
-			//printf("Rendered in %u us.\n", static_cast<uint32_t>(dt));
-			i = 0;
-		}
-		return false;
-	});
+	const auto& updateKey = TimerManager::addFunction(
+		MIN_MS, 
+		"update", 
+		std::bind(&update, std::ref(window), std::placeholders::_1)
+	);
+	const auto& renderKey = TimerManager::addFunction(
+		MAX_FPS == 0.f ? 0.f : 1.f / MAX_FPS,
+		"render",
+		std::bind(&render, std::ref(window))
+	);
 
 	while (window.isOpen()) {
 		static sf::Clock dtClock;

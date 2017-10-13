@@ -7,7 +7,7 @@
 
 #include "3rd/json.hpp"
 
-#include "Global/Const.hpp"
+#include "Const.hpp"
 
 #include "Physics/Object.hpp"
 

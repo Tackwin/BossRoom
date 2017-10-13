@@ -55,6 +55,9 @@ SOFTWARE.
 #include <type_traits> // add_pointer, enable_if, is_arithmetic, is_base_of, is_const, is_constructible, is_convertible, is_floating_point, is_integral, is_nothrow_move_assignable, std::is_nothrow_move_constructible, std::is_pointer, std::is_reference, std::is_same, remove_const, remove_pointer, remove_reference
 #include <utility> // declval, forward, make_pair, move, pair, swap
 #include <vector> // vector
+#include <random>
+
+#include "Global/Const.hpp"
 
 // exclude unsupported compilers
 #if defined(__clang__)
