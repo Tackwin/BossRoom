@@ -30,17 +30,17 @@ void Disk::render(sf::RenderTarget& target) {
 
 bool Disk::collideWith(const Collider* collider) const {
 #pragma warning(disable:4456)
-	if (auto ptr = dynamic_cast<const Disk*>(collider); ptr) {
+	if (auto ptr = static_cast<const Disk*>(collider); collider->type == Type::DISK) {
 		return (getGlobalPos() - ptr->getGlobalPos()).length2() < (r + ptr->r) * (r + ptr->r);
 	}
-	else if (auto ptr = dynamic_cast<const Box*>(collider); ptr) {
+	else if (auto ptr = static_cast<const Box*>(collider); collider->type == Type::BOX) {
 		return ptr->isIn(getGlobalPos());
 	}
 	return false;
 }
 
 bool Box::collideWith(const Collider* collider) const {
-	if (auto ptr = dynamic_cast<const Disk*>(collider); ptr) {
+	if (auto ptr = static_cast<const Disk*>(collider); collider->type == Type::DISK) {
 		Vector2f halfSize = size * 0.5f;
 		Vector2f center = ptr->getGlobalPos() - (getGlobalPos() + halfSize);
 
@@ -58,7 +58,7 @@ bool Box::collideWith(const Collider* collider) const {
 
 		return side.length2() < ptr->r * ptr->r;
 	}
-	else if (auto ptr = dynamic_cast<const Box*>(collider); ptr) {
+	else if (auto ptr = static_cast<const Box*>(collider); collider->type == Type::BOX) {
 		return Rectangle<2, float>(getGlobalPos(), size).intersect(Rectangle<2, float>(ptr->getGlobalPos(), ptr->size));
 	}
 	return false;

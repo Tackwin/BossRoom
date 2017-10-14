@@ -77,15 +77,15 @@ std::string TimerManager::cloneFunction(const std::string& key) {
 }
 
 void TimerManager::update(double dt) {
-	for(auto it = std::begin(_functions); it != std::end(_functions);){
+	for (auto it = std::begin(_functions); it != std::end(_functions);) {
 		auto &f = it->second;
-		if(f->toRemove) {
+		if (f->toRemove) {
 			_functions.erase((it++)->first);
 			continue;
 		}
 
-		if(f->clock.isOver()) {
-			
+		if (f->clock.isOver()) {
+
 			if (f->clock.timer == 0.) {
 				f->toRemove = f->f(dt);
 			}
@@ -99,5 +99,11 @@ void TimerManager::update(double dt) {
 		}
 
 		++it;
+	}
+}
+
+void TimerManager::updateInc(double dt, uint32_t n) {
+	for (uint32_t i = 0u; i < n; ++i) {
+		update(dt / n);
 	}
 }

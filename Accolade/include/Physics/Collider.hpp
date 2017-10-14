@@ -7,6 +7,11 @@
 
 struct Object;
 struct Collider {
+	enum struct Type : uint32_t {
+		DISK,
+		BOX
+	} type;
+
 	using Callback = std::function<void(Object*)>;
 
 	Callback onEnter = [](Object*) {};
@@ -34,6 +39,12 @@ private:
 struct Disk : Collider {
 	float r = 0.f;
 
+	Disk() :
+		Collider()
+	{
+		type = Type::DISK;
+	}
+
 	virtual bool isIn(const Vector2f& p) const override {
 		return (p - getGlobalPos()).length2() < r * r;
 	}
@@ -44,6 +55,12 @@ struct Disk : Collider {
 
 struct Box : Collider {
 	Vector2f size;
+
+	Box() :
+		Collider()
+	{
+		type = Type::BOX;
+	}
 
 	virtual bool isIn(const Vector2f& p) const override {
 		return p.inRect(getGlobalPos(), size);

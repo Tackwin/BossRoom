@@ -69,6 +69,7 @@ public:
 	static std::string addSinIOEase(double t, std::string key, T* v, T min, T max);
 
 	static void update(double dt);
+	static void updateInc(double dt, uint32_t n);
 };
 
 template<typename T>
