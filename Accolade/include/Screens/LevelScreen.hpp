@@ -28,11 +28,11 @@ public:
 private: 
 	uint32_t _n;
 
-	sf::View _guiView;
-	sf::View _gameView;
 	Vector2f _gameViewPos;
 	Vector2f _gameViewSize;
 	Vector2f _gameViewOffset;
+	sf::View _guiView;
+	sf::View _gameView;
 
 	std::unique_ptr<Level> _level;
 	

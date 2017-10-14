@@ -85,7 +85,7 @@ void StartScreen::initializeWorld(){
 	_zones["merchant"]->pos.y = _merchantShop.getPosition().y + _merchantShop.getGlobalBounds().height * 0.5f;
 	_zones["merchant"]->sensor = true;
 	_zones["merchant"]->collisionMask |= Object::PLAYER;
-	_zones["merchant"]->collider->onEnter = [&](auto) mutable { enterShop(); };
+	_zones["merchant"]->collider->onEnter = [&](Object*) mutable { enterShop(); };
 
 	_world.addObject(_zones["merchant"]);
 }

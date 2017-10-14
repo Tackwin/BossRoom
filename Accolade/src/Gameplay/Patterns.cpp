@@ -37,7 +37,7 @@ void Patterns::randomFire(Boss& boss, uint32 nOrbs, float a, float dtA, float ti
 		Vector2f dir = Vector2f::createUnitVector(ca);
 		Vector2f pos = boss.getPos() + dir * (boss.getRadius() + 10);
 
-		TimerManager::addFunction(sumDelay, "random fire_", [&boss, projectile, pos, dir](auto) -> bool {
+		TimerManager::addFunction(sumDelay, "random fire_", [&boss, projectile, pos, dir](double) -> bool {
 			boss.shoot(projectile, pos, dir);
 			return true;
 		});
@@ -54,7 +54,7 @@ std::string Patterns::directionalFire(Boss& boss, nlohmann::json json) {
 }
 std::string Patterns::directionalFire(Boss& boss, float fireRate, float time, nlohmann::json projectile) {
 	const auto& lambda = 
-		[&boss, projectile, N = time * fireRate](auto)mutable->bool {
+		[&boss, projectile, N = time * fireRate](double)mutable->bool {
 			float a = (float)boss.getPos().angleTo(boss.getLevel()->getPlayerPos());
 
 			Vector2f dir = Vector2f::createUnitVector(a);
@@ -81,7 +81,7 @@ std::string Patterns::barage(Boss& boss, nlohmann::json json) {
 	);
 }
 std::string Patterns::barage(Boss& boss, uint32 nOrbs, uint32 nWaves, float iTime, nlohmann::json projectile) {
-	const auto& barage = [&boss, nWaves, nOrbs, projectile](auto)mutable->bool {
+	const auto& barage = [&boss, nWaves, nOrbs, projectile](double)mutable->bool {
 		
 		for (uint32 i = 0; i < nOrbs; ++i) {
 			Vector2f pos((float)WIDTH, (float)HEIGHT * i / nOrbs);

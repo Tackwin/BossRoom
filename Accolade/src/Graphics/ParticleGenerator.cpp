@@ -28,7 +28,7 @@ void ParticleGenerator::update(double dt) {
 	}
 
 	_particles.erase(
-		std::remove_if(_particles.begin(), _particles.end(), [](const auto& A) {return A->toRemove(); }),
+		std::remove_if(_particles.begin(), _particles.end(), [](const std::shared_ptr<Particle>& A) { return A->toRemove(); }),
 		_particles.end()
 	);
 }
@@ -67,7 +67,7 @@ void ParticleGenerator::loadJson(const nlohmann::json& json) {
 	_remain = getJsonValue<uint32_t>(_json, "nParticles");
 	_nParticles = _remain;
 
-	_lambda = [&](auto)mutable -> bool {
+	_lambda = [&](double)mutable -> bool {
 		float timer = getJsonValue<float>(_json, "iTime");
 
 		_particles.push_back(std::make_shared<Particle>(_json["particle"], _pos, Vector2f::createUnitVector(unitaryRng(RNG) * 2 * PIf)));

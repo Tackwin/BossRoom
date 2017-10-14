@@ -23,7 +23,7 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 			me._loot = false;
 
 			me._keys.push_back(
-				TimerManager::addFunction(me._json["cooldowns"][0], "1-cd", [&me](auto)mutable->bool {
+				TimerManager::addFunction(me._json["cooldowns"][0], "1-cd", [&me](double)mutable->bool {
 				me._flags |= 1;
 				TimerManager::pauseFunction(me._keys[0]);
 				return false;
@@ -69,7 +69,7 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 		_weapons[1]->_equip = [](Weapon& me)mutable->void {
 			me._loot = false;
 
-			me._keys.push_back(TimerManager::addFunction(me._json["cooldowns"][0], "1-cd", [&me](auto)mutable->bool {
+			me._keys.push_back(TimerManager::addFunction(me._json["cooldowns"][0], "1-cd", [&me](double)mutable->bool {
 				me._flags |= 1;
 				TimerManager::pauseFunction(me._keys[0]);
 				return false;
@@ -111,7 +111,7 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 		weapon->_equip = [](Weapon& me)mutable->void {
 			me._loot = false;
 
-			me._keys.push_back(TimerManager::addFunction(me._json["cooldowns"][0], "1-cd", [&me](auto)mutable->bool {
+			me._keys.push_back(TimerManager::addFunction(me._json["cooldowns"][0], "1-cd", [&me](double)mutable->bool {
 				me._flags |= 1;
 				TimerManager::pauseFunction(me._keys[0]);
 				return false;
@@ -148,30 +148,29 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 		AssetsManager::loadSound(sound1Str, ASSETS_PATH + sound1Str);
 		weapon->_activeSounds.push_back(sf::Sound(AssetsManager::getSound(sound1Str)));
 	}
-	/*{
+	{
 	_weapons.push_back(std::make_shared<Weapon>(player, AssetsManager::getJson(JSON_KEY)["weapons"][3]));
 	auto& weapon = _weapons[3];
 	weapon->_equip = [](Weapon& me)mutable->void {
-	me._loot = false;
+		me._loot = false;
 
-	me._keys.push_back(TimerManager::addFunction(me._json["cooldowns"][0], "1-cd", [&me](float)mutable->bool {
-	me._flags |= 1;
-	TimerManager::pauseFunction(me._keys[0]);
-	return false;
-	}));
+		me._keys.push_back(TimerManager::addFunction(me._json["cooldowns"][0], "1-cd", [&me](double)mutable->bool {
+			me._flags |= 1;
+			TimerManager::pauseFunction(me._keys[0]);
+			return false;
+		}));
 	};
 	weapon->_unEquip = [](Weapon& me)mutable->void {
-	for (auto& k : me._keys) {
-	if (TimerManager::functionsExist(k))
-	TimerManager::removeFunction(k);
-	}
-	me._keys.clear();
+		for (auto& k : me._keys) {
+			if (TimerManager::functionsExist(k))
+				TimerManager::removeFunction(k);
+		}
+		me._keys.clear();
 	};
 
-	weapon->_active = [](Weapon&, uint32)mutable->void {
-	};
+	weapon->_active = [](Weapon&, uint32)mutable->void {};
 	weapon->_activeSounds.push_back(sf::Sound(AssetsManager::getSound(weapon->_json["sound"])));
-	}*/
+	}
 }
 void Weapon::destroyWeapons() {
 	_weapons.clear();

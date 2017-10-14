@@ -130,18 +130,22 @@ void LevelScreen::renderGui(sf::RenderTarget& target) {
 	}
 }
 
-void LevelScreen::shakeScreen(float) {
-	/*constexpr uint32_t nShakes = 5;
+void LevelScreen::shakeScreen(float power) {
+	constexpr uint32_t nShakes = 5;
 	constexpr float iTimeShakes = 0.03f;
 	TimerManager::addLinearEase(1.f, "", &_gameViewOffset, { 0, 0 }, { 50, 0 });
-	
-	TimerManager::addFunction(iTimeShakes, "shake", [&, p = power, n = nShakes](auto)mutable->bool {
+
+	auto& lambda = [&, p = power, n = nShakes](double)mutable->bool {
 		Vector2f from = _gameViewOffset;
+		Vector2f to = Vector2f::createUnitVector(unitaryRng(RNG) * 2 * PIf) * power;
 		TimerManager::addLinearEase(iTimeShakes, "shake", &_gameViewOffset, from, to);
 		if (n-- <= 0)
 			TimerManager::addLinearEase(iTimeShakes, "shakeBack", &_gameViewOffset, _gameViewOffset, { 0, 0 });
 		return n == 0;
-	});*/
+	};
+
+	TimerManager::addFunction(iTimeShakes, "shake", lambda);
+
 }
 
 uint32_t LevelScreen::getIndex() const {

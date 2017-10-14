@@ -48,7 +48,7 @@ void Boss::enterLevel(Level* level) {
 	collider = &_disk;
 	_disk.userPtr = this;
 	_disk.r = _radius;
-	_disk.onEnter = [&](auto obj) {collision(obj); };
+	_disk.onEnter = [&](Object* obj) { collision(obj); };
 	idMask |= BOSS;
 
 	_init(*this);
@@ -97,7 +97,7 @@ void Boss::hit(unsigned int d) {
 	_life -= d;
 	_life = _life < 0 ? 0 : _life;
 
-	const auto& blinkDown = [&](auto)mutable->bool {
+	const auto& blinkDown = [&](double)mutable->bool {
 		_color = sf::Color::hexToColor(_json["color"]);
 		return true;
 	};

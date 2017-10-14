@@ -71,7 +71,7 @@ void Shop::leave() {
 void Shop::onClickBegan() {
 	auto rect = Rectangle<2, float>(
 		{ _merchantPanel.getGlobalPosition().x, _merchantPanel.getGlobalPosition().y },
-		{_merchantPanel.getSize().x, _merchantPanel.getSize().y * 0.05f}
+		{ _merchantPanel.getSize().x,			_merchantPanel.getSize().y * 0.05f }
 	);
 	if (InputsManager::getMouseScreenPos().inRect(rect.pos, rect.size)) {
 		_dragging = true;

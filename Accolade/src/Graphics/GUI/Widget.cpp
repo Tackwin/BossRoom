@@ -22,9 +22,11 @@ void Widget::addChild(Widget* const child, int32_t z) {
 
 	if (!haveChild(child)) {
 		_childs.push_back({ z, child });
-		std::sort(_childs.begin(), _childs.end(), [](const auto& A, const auto& B) -> bool {
-			return A.first < B.first;
-		});
+		std::sort(_childs.begin(), _childs.end(), 
+			[](const std::pair<int32_t, Widget*>& A, const std::pair<int32_t, Widget*>& B) -> bool {
+				return A.first < B.first;
+			}
+		);
 	}
 	if (child->getParent() != this) {
 		child->setParent(this);

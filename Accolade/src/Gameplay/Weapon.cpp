@@ -83,7 +83,7 @@ void Weapon::loot(Vector2f pos_) {
 	_lootedSprite.setPosition(pos_);
 	_lootZone->pos = _lootedPos;
 	_lootZone->setRadius(_radius);
-	_lootZone->inside = [&](auto) mutable -> void { 
+	_lootZone->inside = [&](Object*) mutable -> void { 
 		if (_lootable)
 			_looted = true; 
 	};
