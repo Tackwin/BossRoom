@@ -75,6 +75,8 @@ void LevelScreen::update(double dt) {
 }
 
 void LevelScreen::render(sf::RenderTarget& target) {
+	const auto& initialView = target.getView();
+
 	_gameView.setCenter(_gameViewPos + _gameViewOffset);
 	target.setView(_gameView);
 	if (_level) _level->render(target);
@@ -85,6 +87,8 @@ void LevelScreen::render(sf::RenderTarget& target) {
 
 	for (auto& i : _playerLife)
 		target.draw(i);
+
+	target.setView(initialView);
 }
 
 void LevelScreen::renderGui(sf::RenderTarget& target) {

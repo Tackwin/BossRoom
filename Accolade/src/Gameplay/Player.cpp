@@ -116,6 +116,7 @@ void Player::update(double) {
 void Player::render(sf::RenderTarget &target) {
 	_sprite.getSprite().setPosition(pos);
 	_sprite.render(target);
+
 }
 void Player::shoot() {
 	_sprite.pushAnim("action");

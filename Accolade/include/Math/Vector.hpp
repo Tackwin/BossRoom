@@ -40,7 +40,11 @@ struct Vector {
 		T components[D];
 	};
 
-	Vector() {}
+	Vector() {
+		for (size_t i = 0u; i < D; ++i) {
+			components[i] = static_cast<T>(0);
+		}
+	}
 	
 	template<size_t Dp = D, typename U>
 	Vector(const sf::Vector2<U>& vec, typename std::enable_if_t<Dp == 2, T>* = nullptr) :
@@ -101,6 +105,7 @@ struct Vector {
 
 	Vector<D, T>& normalize() {
 		const auto& l = length();
+		if (l == 0) return *this;
 		for (size_t i = 0u; i < D; ++i) {
 			components[i] /= l;
 		}

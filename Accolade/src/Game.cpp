@@ -33,7 +33,7 @@ void Game::render(sf::RenderTarget& target) {
 	auto initialView = target.getView();
 
 	_screens.top()->render(target);
-
+	target.setView(initialView);
 	for (auto& [_, v] : _debugText) {
 		target.draw(v);
 	}
