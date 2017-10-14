@@ -20,11 +20,11 @@ void Game::start() {
 }
 
 void Game::enterDungeon() {
-	enterScreen(std::make_unique<StartScreen>());
+	enterScreen(new StartScreen());
 }
 
 void Game::nextRoom() {
-	if (auto* screen = dynamic_cast<LevelScreen*>(_screens.top().get())) {
+	if (auto* screen = dynamic_cast<LevelScreen*>(_screens.top())) {
 		enterRoom(screen->getIndex() + 1);
 	}
 }
@@ -42,7 +42,7 @@ void Game::render(sf::RenderTarget& target) {
 }
 
 void Game::updateDebugText(double dt) {
-	static float avgMs = 0;
+	static double avgMs = 0;
 	static int avgN = 0;
 	static constexpr int avgRange = MAX_FPS == 0 ? 100 : MAX_FPS;
 
@@ -63,16 +63,12 @@ void Game::update(double dt) {
 }
 
 void Game::exitScreen() {
-	if (_screens.empty())
-		return;
-
-	_screens.top()->onExit();
-	_screens.pop();
+	pop();
 	if (!_screens.empty())
 		_screens.top()->onEnter();
 }
 
-void Game::enterScreen(std::unique_ptr<Screen>&& s) {
+void Game::enterScreen(Screen* s) {
 	if (!_screens.empty()) {
 		_screens.top()->onExit();
 	}
@@ -80,31 +76,40 @@ void Game::enterScreen(std::unique_ptr<Screen>&& s) {
 	_screens.push(s);
 }
 
-void Game::enterRoom(uint32 n) {
-	enterScreen(std::make_unique<LevelScreen>(n));
+void Game::enterRoom(uint32_t n) {
+	enterScreen(new LevelScreen(n));
 }
 
 Game::~Game() {
 	for (uint32 i = _screens.size(); i > 0u; --i) {
-		_screens.top()->onExit();
-		_screens.pop();
+		pop();
 	}
 
-	//Level::destroyLevels();
-	//Boss::destroyBosses();
-	//Weapon::destroyWeapons();
+	Level::destroyLevels();
+	Boss::destroyBosses();
+	Weapon::destroyWeapons();
 }
 
 Game::Game() : 
-	_player(std::make_unique<Player>())
+	_player(std::make_shared<Player>(AssetsManager::getJson(JSON_KEY)["player"]))
 {
-	//Weapon::createWeapons(_player);
-	//Boss::createBosses();
-	//Level::createLevels();
+	Weapon::createWeapons(_player);
+	Boss::createBosses();
+	Level::createLevels();
+
+	_player->swapWeapon(std::make_shared<Weapon>(*Weapon::_weapons[0]));
 
 	_debugText["ups"].setFont(AssetsManager::getFont("consola"));
 	_debugText["ups"].setCharacterSize(20);
 	_debugText["ups"].setPosition(5, 5);
 	_debugText["ups"].setFillColor(sf::Color(100, 100, 100));
 
+}
+
+void Game::pop() {
+	if (_screens.empty()) return;
+
+	_screens.top()->onExit();
+	delete _screens.top();
+	_screens.pop();
 }

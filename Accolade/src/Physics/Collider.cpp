@@ -1,7 +1,9 @@
-#include <Physics/Collider.hpp>
+#include "Physics/Collider.hpp"
 
-bool DiskRect(Vector2 circle, float r, Rectangle rect) {
-	Vector2 circleDistance;
+#include "Math/Rectangle.hpp"
+
+bool DiskRect(Vector2f circle, float r, Rectangle<2, float> rect) {
+	Vector2f circleDistance;
 
 	circleDistance.x = abs(circle.x - rect.x);
 	circleDistance.y = abs(circle.y - rect.y);
@@ -39,10 +41,10 @@ bool Disk::collideWith(const Collider* collider) const {
 
 bool Box::collideWith(const Collider* collider) const {
 	if (auto ptr = dynamic_cast<const Disk*>(collider); ptr) {
-		Vector2 halfSize = size * 0.5f;
-		Vector2 center = ptr->getGlobalPos() - (getGlobalPos() + halfSize);
+		Vector2f halfSize = size * 0.5f;
+		Vector2f center = ptr->getGlobalPos() - (getGlobalPos() + halfSize);
 
-		Vector2 side = {
+		Vector2f side = {
 			fabs(center.x) - halfSize.x,
 			fabs(center.y) - halfSize.y
 		};
@@ -57,7 +59,7 @@ bool Box::collideWith(const Collider* collider) const {
 		return side.length2() < ptr->r * ptr->r;
 	}
 	else if (auto ptr = dynamic_cast<const Box*>(collider); ptr) {
-		return Rectangle(getGlobalPos(), size).intersect(Rectangle(ptr->getGlobalPos(), ptr->size));
+		return Rectangle<2, float>(getGlobalPos(), size).intersect(Rectangle<2, float>(ptr->getGlobalPos(), ptr->size));
 	}
 	return false;
 #pragma warning(default:4456)

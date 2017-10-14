@@ -27,10 +27,10 @@ uint32_t GridLayout::getCol() {
 
 void GridLayout::updatePos(){
 	computeSize();
-	Vector2 size = _size;
+	Vector2f size = _size;
 
 	for (uint32_t i = 0u; i < _childs.size(); ++i) {
-		Vector2 pos;
+		Vector2f pos;
 		pos.x = _externalPadding.x + (i % _col) * (_internalPadding.x + size.x / _col);
 		pos.y = _externalPadding.y + (i / _col) * (_internalPadding.y + size.y / _row);
 
@@ -39,7 +39,7 @@ void GridLayout::updatePos(){
 }
 
 void GridLayout::computeSize() {
-	Vector2 maxSize;
+	Vector2f maxSize;
 	
 	uint32_t n = 0u;
 	for (uint32_t i = 0u; i < _row; ++i) {
@@ -48,7 +48,7 @@ void GridLayout::computeSize() {
 				goto breakLoops; //Yeah i know fuck off, it's a good case he's got so few >:(
 			}
 
-			Vector2 size = _childs[i * _col + j].second->getSize();
+			Vector2f size = _childs[i * _col + j].second->getSize();
 			maxSize.x = std::max(maxSize.x, size.x);
 			maxSize.y = std::max(maxSize.y, size.y);
 			n++;
@@ -56,21 +56,21 @@ void GridLayout::computeSize() {
 	}
 breakLoops:
 
-	_size = _externalPadding + Vector2((maxSize.x + _internalPadding.x) * _col, (maxSize.y + _internalPadding.y) * _row);
+	_size = _externalPadding + Vector2f((maxSize.x + _internalPadding.x) * _col, (maxSize.y + _internalPadding.y) * _row);
 }
 
 
-void GridLayout::setInternalPadding(const Vector2& padding) {
+void GridLayout::setInternalPadding(const Vector2f& padding) {
 	_internalPadding = padding;
 }
-Vector2 GridLayout::getInternalPadding() {
+Vector2f GridLayout::getInternalPadding() {
 	return _internalPadding;
 }
 
-void GridLayout::setExternalPadding(const Vector2& padding) {
+void GridLayout::setExternalPadding(const Vector2f& padding) {
 	_externalPadding = padding;
 }
-Vector2 GridLayout::getExternalPadding() {
+Vector2f GridLayout::getExternalPadding() {
 	return _externalPadding;
 }
 

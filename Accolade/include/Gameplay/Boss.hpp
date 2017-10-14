@@ -7,8 +7,7 @@
 
 #include "3rd/json.hpp"
 
-#include "Math/Rectangle.hpp"
-#include "Math/Vec.hpp"
+#include "Math/Vector.hpp"
 
 #include "Graphics/AnimatedSprite.hpp"
 #include "Graphics/ParticleGenerator.hpp"
@@ -36,9 +35,17 @@ public:
 
 	void hit(unsigned int damage);
 	void addProjectile(const std::shared_ptr<Projectile>& projectile);
+	void shoot(const nlohmann::json& json, const Vector2f& pos, const Vector2f& dir);
 
 	Vector2f getDirToFire() const;
 	Vector2f getPos() const;
+
+	float getRadius() const;
+
+	int32_t getLife() const;
+	int32_t getMaxLife() const;
+
+	const Level* getLevel() const;
 
 	const std::vector<std::shared_ptr<Projectile>>& getProtectilesToShoot() const;
 	void clearProtectilesToShoot();
@@ -59,7 +66,7 @@ private:
 
 	Disk _disk;
 
-	std::vector<std::unique_ptr<Projectile>> _projectilesToShoot;
+	std::vector<std::shared_ptr<Projectile>> _projectilesToShoot;
 
 	std::vector<std::string> _keyPatterns; // (key, running)
 

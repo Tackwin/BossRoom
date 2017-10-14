@@ -8,8 +8,7 @@
 
 #include "3rd/json.hpp"
 
-#include "Math/Rectangle.hpp"
-
+#include "Math/Vector.hpp"
 
 class AnimatedSprite{
 public:
@@ -23,7 +22,7 @@ public:
 	void render(sf::RenderTarget& target);
 
 	sf::Sprite& getSprite();
-	const Vector2 getSize();
+	const Vector2f getSize();
 
 	AnimatedSprite& operator=(const AnimatedSprite& other);
 private:

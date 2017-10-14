@@ -1,12 +1,15 @@
-#include <Global/Const.hpp>
-#include <Managers/AssetsManager.hpp>
-#include <Managers/InputsManager.hpp>
-#include <Math/Rectangle.hpp>
-#include <GUI/Shop.hpp>
+#include "GUI/Shop.hpp"
+
+#include "Const.hpp"
+
+#include "Math/Rectangle.hpp"
+
+#include "Managers/AssetsManager.hpp"
+#include "Managers/InputsManager.hpp"
 
 Shop::Shop() : Widget() {
 	_merchantPanel.setSprite(sf::Sprite(AssetsManager::getTexture("panel_a")));
-	_merchantPanel.setOrigin(Vector2::ZERO);
+	_merchantPanel.setOrigin({ 0, 0 });
 	_merchantPanel.setPosition({ 50, 50 });
 	_merchantPanel.setSize({ WIDTH * 0.8f, HEIGHT * 0.7f });
 	_merchantPanel.setVisible(false);
@@ -66,14 +69,20 @@ void Shop::leave() {
 }
 
 void Shop::onClickBegan() {
-	auto rect = Rectangle(_merchantPanel.getGlobalPosition().x, _merchantPanel.getGlobalPosition().y, _merchantPanel.getSize().x, _merchantPanel.getSize().y * 0.05f);
-	if (rect.isInside(InputsManager::getMouseScreenPos())) {
+	auto rect = Rectangle<2, float>(
+		{ _merchantPanel.getGlobalPosition().x, _merchantPanel.getGlobalPosition().y },
+		{_merchantPanel.getSize().x, _merchantPanel.getSize().y * 0.05f}
+	);
+	if (InputsManager::getMouseScreenPos().inRect(rect.pos, rect.size)) {
 		_dragging = true;
 		_dragOffset = InputsManager::getMouseScreenPos() - getGlobalPosition();
 	}
 
-	rect = Rectangle(_merchantPanel.getGlobalPosition().x, _merchantPanel.getGlobalPosition().y + _merchantPanel.getSize().y - 20, 20, 20);
-	if (rect.isInside(InputsManager::getMouseScreenPos())) {
+	rect = Rectangle<2, float>(
+		{ _merchantPanel.getGlobalPosition().x, _merchantPanel.getGlobalPosition().y + _merchantPanel.getSize().y - 20 },
+		{ 20, 20 }
+	);
+	if (InputsManager::getMouseScreenPos().inRect(rect.pos, rect.size)) {
 		leave();
 	}
 }

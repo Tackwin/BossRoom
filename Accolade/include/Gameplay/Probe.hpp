@@ -2,14 +2,16 @@
 #include <vector>
 #include <string>
 
+#include <SFML/Graphics.hpp>
+
 #include "3rd/json.hpp"
 
-#include "Math/Vector2.hpp"
+#include "Math/Vector.hpp"
 
 class Probe {
 public:
 
-	Probe(nlohmann::basic_json<> _json, Vector2 pos, Vector2 dest, 
+	Probe(nlohmann::basic_json<> _json, Vector2f pos, Vector2f dest, 
 		std::function<void(Probe&)> initFunction,
 		std::function<void(Probe&, float)> updateFunction,
 		std::function<void(Probe&)> unInitFunction);
@@ -22,8 +24,8 @@ public: //TODO: make this private
 	
 	nlohmann::basic_json<> _json;
 
-	Vector2 _dest;
-	Vector2 _pos;
+	Vector2f _dest;
+	Vector2f _pos;
 	
 	float _speed;
 	bool _setuped = false;

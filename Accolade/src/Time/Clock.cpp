@@ -5,7 +5,7 @@ Clock::time_point Clock::now(void) {
 	return nowTimePoint;
 }
 
-Clock::Clock(double timer = 0.0) : timer(timer), _start(now()) {
+Clock::Clock(double timer) : timer(timer), _start(now()) {
 }
 Clock::~Clock() {
 }

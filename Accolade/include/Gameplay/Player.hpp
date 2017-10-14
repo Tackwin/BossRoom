@@ -9,9 +9,9 @@
 
 #include "Const.hpp"
 
-#include "Physics/Object.hpp"
+#include "Math/Vector.hpp"
 
-#include "Math/Vector2.hpp"
+#include "Physics/Object.hpp"
 
 #include "Graphics/AnimatedSprite.hpp"
 
@@ -29,22 +29,22 @@ public:
 	void enterLevel(Level* level);
 	void exitLevel();
 
-	void update(float dt);
+	void update(double dt);
 	void render(sf::RenderTarget& target);
 
 	void shoot();
 	void hit(unsigned int damage);
 	void startCaC();
 
-	Vector2 getDirToFire();
+	Vector2f getDirToFire();
 
 	std::shared_ptr<Weapon> getWeapon() const;
 	void swapWeapon(std::shared_ptr<Weapon> weapon);
 	
 	void addProjectile(const std::shared_ptr<Projectile>& projectile);
 
-	Vector2 getPos();
-	void setPos(const Vector2& v);
+	Vector2f getPos();
+	void setPos(const Vector2f& v);
 
 	const std::vector<std::shared_ptr<Projectile>>& getProtectilesToShoot() const;
 	void clearProtectilesToShoot();
@@ -72,7 +72,7 @@ public: //TODO: Make private
 
 	int32_t _life;
 	int32_t _maxLife;
-	Vector2 _dir;
+	Vector2f _dir;
 	float _speed;
 	float _radius;
 	sf::Color _color;

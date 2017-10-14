@@ -26,9 +26,9 @@ public:
 	void start(LevelScreen* screen_);
 	void stop();
 
-	void update(float dt);
-	void updateEnding(float dt);
-	void updateRunning(float dt);
+	void update(double dt);
+	void updateEnding(double dt);
+	void updateRunning(double dt);
 	void render(sf::RenderTarget& target);
 
 	void startAim();
@@ -42,7 +42,9 @@ public:
 
 	float getNormalizedBossLife() const;
 
-public: // TODO: Make this private
+	Vector2f getPlayerPos() const;
+
+private: // TODO: Make this private
 	void removeNeeded();
 
 	World _world;

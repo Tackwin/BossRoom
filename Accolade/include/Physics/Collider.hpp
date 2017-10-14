@@ -1,9 +1,9 @@
 #pragma once
 
 #include <functional>
+#include <SFML/Graphics.hpp>
 
-#include "Math/Vec.hpp"
-#include "Math/Rectangle.hpp"
+#include "Math/Vector.hpp"
 
 struct Object;
 struct Collider {
@@ -11,21 +11,21 @@ struct Collider {
 
 	Callback onEnter = [](Object*) {};
 
-	Vector2 dtPos = Vector2::ZERO;
+	Vector2f dtPos = { 0, 0 };
 
 	void* userPtr = nullptr;
 
-	virtual bool isIn(const Vector2& p) const = 0;
+	virtual bool isIn(const Vector2f& p) const = 0;
 	virtual bool collideWith(const Collider* collider) const = 0;
 
 	virtual void render(sf::RenderTarget& target) = 0;
 
 
-	Vector2 getGlobalPos() const { return __pos + dtPos; }
-	void setPos(const Vector2& pos) { __pos = pos; }
+	Vector2f getGlobalPos() const { return __pos + dtPos; }
+	void setPos(const Vector2f& pos) { __pos = pos; }
 
 protected:
-	Vector2 __pos;
+	Vector2f __pos;
 
 private:
 	bool _colliding = false;
@@ -34,7 +34,7 @@ private:
 struct Disk : Collider {
 	float r = 0.f;
 
-	virtual bool isIn(const Vector2& p) const override {
+	virtual bool isIn(const Vector2f& p) const override {
 		return (p - getGlobalPos()).length2() < r * r;
 	}
 	virtual bool collideWith(const Collider* collider) const override;
@@ -43,10 +43,10 @@ struct Disk : Collider {
 };
 
 struct Box : Collider {
-	Vector2 size;
+	Vector2f size;
 
-	virtual bool isIn(const Vector2& p) const override {
-		return Rectangle(getGlobalPos(), size).isInside(p);
+	virtual bool isIn(const Vector2f& p) const override {
+		return p.inRect(getGlobalPos(), size);
 	};
 	virtual bool collideWith(const Collider* collider) const override;
 

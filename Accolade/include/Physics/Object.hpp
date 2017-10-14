@@ -3,8 +3,8 @@
 #include <bitset>
 #include <vector>
 
-#include <Math/Vec.hpp>
-#include <Physics/Collider.hpp>
+#include "Math/Vector.hpp"
+#include "Physics/Collider.hpp"
 
 struct Object {
 	enum BIT_TAGS {
@@ -22,12 +22,12 @@ struct Object {
 	Object();
 	virtual ~Object();
 
-	Vector2f pos = Vector2f::ZEROf;
+	Vector2f pos = { 0, 0 };
 
-	Vector2f velocity = Vector2f::ZEROf;
+	Vector2f velocity = { 0, 0 };
 	std::vector<Vector2f> flatVelocities;
 	
-	Vector2f force = Vector2f::ZEROf;
+	Vector2f force = { 0, 0 };
 	std::vector<Vector2f> flatForces;
 
 	std::bitset<BITSET_SIZE> collisionMask = 0;

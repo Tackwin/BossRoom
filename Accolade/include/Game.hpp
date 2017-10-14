@@ -16,7 +16,7 @@ public:
 	void enterRoom(uint32_t n);
 	void nextRoom();
 
-	void enterScreen(std::unique_ptr<Screen>&& s);
+	void enterScreen(Screen* s);
 	void exitScreen();
 
 	void update(double dt);
@@ -25,13 +25,15 @@ public:
 	void render(sf::RenderTarget& target);
 
 	void enterDungeon();
+
+	void pop();
 public: //TODO: Make this private
 	uint8_t _debugTimeClockColor;
 	sf::CircleShape _debugTimeClockShape;
 
 	std::shared_ptr<Player> _player;
 
-	std::stack<std::unique_ptr<Screen>> _screens;
+	std::stack<Screen*> _screens;
 
 	sf::Text _fpsText;
 	std::map<std::string, sf::Text> _debugText;

@@ -5,9 +5,9 @@
 
 #include "3rd/json.hpp"
 
-#include "Math/Vector2.hpp"
+#include "Const.hpp"
 
-#include "Global/Const.hpp"
+#include "Math/Vector.hpp"
 
 #include "Physics/Collider.hpp"
 #include "Physics/Object.hpp"
@@ -15,17 +15,17 @@
 class Projectile : public Object {
 public:
 	Projectile();
-	Projectile(nlohmann::json json, Vector2 pos, Vector2 dir, bool player);
-	Projectile(nlohmann::json json, Vector2 pos, Vector2 dir, bool player, 
+	Projectile(nlohmann::json json, Vector2f pos, Vector2f dir, bool player);
+	Projectile(nlohmann::json json, Vector2f pos, Vector2f dir, bool player, 
 			   std::function<void(Projectile&, double)> update);
 	~Projectile();
 
 
-	Vector2 getPos() const;
-	void setPos(const Vector2& p);
+	Vector2f getPos() const;
+	void setPos(const Vector2f& p);
 
-	Vector2 getDir() const;
-	void setDir(const Vector2& d);
+	Vector2f getDir() const;
+	void setDir(const Vector2f& d);
 
 	bool toRemove() const;
 	void remove();
@@ -33,12 +33,19 @@ public:
 	int32_t getDamage() const;
 
 	bool isFromPlayer() const;
-public:
+
+	void update(double dt);
+	void render(sf::RenderTarget& target);
+
+	void changeLifespan(float lifeSpan);
+
+	bool toRemove();
+private:
 	nlohmann::json _json;
 
 	std::string _key;
 
-	Vector2 _dir;
+	Vector2f _dir;
 
 	std::function<void(Projectile&, double)> _update;
 	
@@ -56,11 +63,5 @@ public:
 
 	sf::Sprite _sprite;
 
-	void update(float dt);
-	void render(sf::RenderTarget& target);
-
-	void changeLifespan(float lifeSpan);
-
-	bool toRemove();
 };
 

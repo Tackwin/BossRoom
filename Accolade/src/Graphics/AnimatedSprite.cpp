@@ -1,9 +1,9 @@
 #include "Graphics/AnimatedSprite.hpp"
 
+#include "Const.hpp"
+
 #include "Managers/TimerManager.hpp"
 #include "Managers/AssetsManager.hpp"
-
-#include "Global/Const.hpp"
 
 AnimatedSprite::AnimatedSprite() {
 
@@ -47,10 +47,13 @@ void AnimatedSprite::pushAnim(const std::string& key_, uint32_t offset_) {
 			n %= frames;
 			_stackAnim.top().i = n;
 
-			_sprite.setTextureRect(static_cast<sf::IntRect>(Rectangle{
-				(float)(col + n) * w, (float)row * h, 
-				(float)w		  , (float)h
-			}));
+			sf::IntRect intRect;
+			intRect.left = (col + n) * w;
+			intRect.top = row * h;
+			intRect.width = w;
+			intRect.height = h;
+
+			_sprite.setTextureRect(intRect);
 			n++;
 
 			return false;
@@ -65,18 +68,20 @@ void AnimatedSprite::popAnim() {
 	_stackAnim.pop();
 	if (!_stackAnim.empty()) {
 		const auto& top = _stackAnim.top();
+		sf::IntRect intRect;
+		intRect.left = (top.col + top.i) * top.w;
+		intRect.top = top.row * top.h;
+		intRect.width = top.w;
+		intRect.height = top.h;
 
 		TimerManager::resumeFunction(top.keyCallback);
-		_sprite.setTextureRect(static_cast<sf::IntRect>(Rectangle{
-			(float)(top.col + top.i) * top.w, (float)top.row * top.h,
-			(float)top.w, (float)top.h
-		}));
+		_sprite.setTextureRect(intRect);
 	}
 }
 void AnimatedSprite::render(sf::RenderTarget& target) {
 	target.draw(_sprite);
 }
-const Vector2 AnimatedSprite::getSize() {
+const Vector2f AnimatedSprite::getSize() {
 	return { _json["rect"][0], _json["rect"][1] };
 }
 sf::Sprite& AnimatedSprite::getSprite() {

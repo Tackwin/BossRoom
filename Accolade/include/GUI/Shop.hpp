@@ -41,5 +41,5 @@ private:
 	bool _in = false;
 
 	bool _dragging = false;
-	Vector2 _dragOffset = Vector2::ZERO;
+	Vector2f _dragOffset = { 0, 0 };
 };

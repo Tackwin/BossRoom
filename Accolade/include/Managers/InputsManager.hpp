@@ -1,7 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
-#include "Math/Vec.hpp"
+#include "Math/Vector.hpp"
 
 class InputsManager {
 private:

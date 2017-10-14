@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <numeric>
 
-void World::updateInc(float dt, uint32_t itLevel) {
+void World::updateInc(double dt, uint32_t itLevel) {
 	for (uint32_t i = 0u; i < itLevel; ++i) {
 		update(dt / itLevel);
 	}
@@ -16,7 +16,7 @@ void World::updateInc(float dt, uint32_t itLevel) {
 	}
 }
 
-void World::update(float dt) {
+void World::update(double dt) {
 	for (uint32_t i = _objects.size(); i > 0u; --i) {
 		if (!_objects[i - 1].expired()) continue;
 		
@@ -34,8 +34,14 @@ void World::update(float dt) {
 	for (auto& obj1w : _objects) {
 		auto obj1 = obj1w.lock();
 
-		Vector2f flatForces = std::accumulate(obj1->flatForces.begin(), obj1->flatForces.end(), { 0, 0 });
-		Vector2f flatVelocities = std::accumulate(obj1->flatVelocities.begin(), obj1->flatVelocities.end(), { 0, 0 });
+		Vector2f flatForces = { 0, 0 };
+		for (const auto& v : obj1->flatForces) {
+			flatForces += v;
+		}
+		Vector2f flatVelocities = { 0, 0 };
+		for (const auto& v : obj1->flatVelocities) {
+			flatVelocities += v;
+		}
 
 		Vector2f pos = obj1->pos;
 
@@ -92,7 +98,7 @@ void World::update(float dt) {
 			}
 		}
 
-		obj1->force = Vector2f::ZEROf;
+		obj1->force = { 0, 0 };
 		obj1->velocity = nVel;
 		obj1->pos = nPos;
 

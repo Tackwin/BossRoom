@@ -8,14 +8,14 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "Math/Vec.hpp"
+#include "Math/Vector.hpp"
 
 #include "Physics/Object.hpp"
 
 class World {
 public:
-	void update(float dt);
-	void updateInc(float dt, uint32_t itLevel);
+	void update(double dt);
+	void updateInc(double dt, uint32_t itLevel);
 	void render(sf::RenderTarget& target);
 
 	void addObject(std::weak_ptr<Object> obj);

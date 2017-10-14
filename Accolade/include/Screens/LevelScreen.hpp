@@ -3,7 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "Math/Vec.hpp"
+#include "Math/Vector.hpp"
 
 #include "Screens/Screen.hpp"
 

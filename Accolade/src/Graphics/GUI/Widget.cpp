@@ -47,33 +47,33 @@ Widget* const Widget::getParent() {
 }
 
 
-Vector2 Widget::getSize() const {
+Vector2f Widget::getSize() const {
 	return _size;
 }
-const Vector2& Widget::getOrigin() const {
+const Vector2f& Widget::getOrigin() const {
 	return _origin;
 }
-const Vector2& Widget::getPosition() const {
+const Vector2f& Widget::getPosition() const {
 	return _pos;
 }
-Vector2 Widget::getGlobalPosition() const {
-	return _pos + (_parent ? _parent->getGlobalPosition() : Vector2::ZERO);
+Vector2f Widget::getGlobalPosition() const {
+	return _pos + (_parent ? _parent->getGlobalPosition() : Vector2f{0, 0});
 }
 bool Widget::isVisible() const {
 	return _visible;
 }
 
 
-void Widget::setSize(const Vector2& size) {
+void Widget::setSize(const Vector2f& size) {
 	_size = size;
 }
-void Widget::setPosition(const Vector2& pos) {
+void Widget::setPosition(const Vector2f& pos) {
 	_pos = pos;
 }
-void Widget::setOrigin(const Vector2& origin) {
+void Widget::setOrigin(const Vector2f& origin) {
 	_origin = origin;
 }
-void Widget::setOriginAbs(const Vector2& origin) {
+void Widget::setOriginAbs(const Vector2f& origin) {
 	_origin.x = origin.x / getSize().x;
 	_origin.y = origin.y / getSize().y;
 }
@@ -112,7 +112,7 @@ void Widget::propagateRender(sf::RenderTarget& target) {
 void Widget::input() {
 	if (!_visible) return;
 
-	if (InputsManager::getMouseScreenPos().isInRec(getGlobalPosition() - Vector2(_origin.x * _size.x, _origin.y * _size.y), _size)) {
+	if (InputsManager::getMouseScreenPos().inRect(getGlobalPosition() - Vector2f{ _origin.x * _size.x, _origin.y * _size.y }, _size)) {
 		if (InputsManager::isMouseJustPressed(sf::Mouse::Left)) {
 			if (_onClick.began) 
 				_onClick.began();

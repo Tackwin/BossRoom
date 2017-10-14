@@ -37,6 +37,8 @@ namespace C {
 	constexpr double PId = 3.1415926535897923846;
 	constexpr float PIf = 3.1415926f;
 
+	constexpr uint32 N_LEVEL = 5u;
+
 	extern std::default_random_engine RNG;
 	extern std::uniform_real_distribution<float> unitaryRng;
 	constexpr unsigned int SEED = 0;

@@ -10,6 +10,7 @@
 
 #include "Graphics/GUI/Panel.hpp"
 
+#include "Gameplay/Projectile.hpp"
 #include "Gameplay/Weapon.hpp"
 #include "Gameplay/Player.hpp"
 #include "Gameplay/Level.hpp" 
@@ -17,8 +18,8 @@
 LevelScreen::LevelScreen(uint32 n) :
 	_n(n),
 	_bossHealthTileSprite(AssetsManager::getTexture("health_tile")),
-	_gameViewPos(Vector2f{WIDTH, HEIGHT} * 0.5f),
-	_gameViewSize(Vector2f{WIDTH, HEIGHT}),
+	_gameViewPos({ WIDTH * 0.5f, HEIGHT * 0.5f}),
+	_gameViewSize({ (float)WIDTH, (float)HEIGHT }),
 	_guiView(_gameViewPos, _gameViewSize),
 	_gameView(_gameViewPos, _gameViewSize),
 	_level(std::make_unique<Level>(*Level::levels[_n]))
@@ -37,7 +38,7 @@ LevelScreen::~LevelScreen() {
 void LevelScreen::onEnter() {
 	_level->start(this);
 	
-	auto player = _level->_player;
+	auto player = game->_player;
 	player->initializeJson();
 	for (int i = 0; i < player->_maxLife; i++) {
 		_playerLife.push_back(sf::RectangleShape());
@@ -62,8 +63,7 @@ void LevelScreen::update(double dt) {
 	if (_gameViewSize != _gameView.getSize())
 		_gameView.setSize(_gameViewSize);
 
-	auto boss = _level->_boss;
-	auto player = _level->_player;
+	auto player = game->_player;
 
 	for (int i = 0; i < player->_maxLife; i++) {
 		_playerLife[i].setFillColor(i < player->_life ? sf::Color(180, 50, 50) : sf::Color(90, 20, 20));
@@ -126,33 +126,20 @@ void LevelScreen::renderGui(sf::RenderTarget& target) {
 	}
 }
 
-void LevelScreen::shakeScreen(float power) {
-	constexpr uint32_t nShakes = 5;
+void LevelScreen::shakeScreen(float) {
+	/*constexpr uint32_t nShakes = 5;
 	constexpr float iTimeShakes = 0.03f;
 	TimerManager::addLinearEase(1.f, "", &_gameViewOffset, { 0, 0 }, { 50, 0 });
-	/*
 	
-	TimerManager::addFunction(iTimeShakes, "shake", [](auto) mutable -> bool {
-		
-		return true; 
-	});
-	*/
-
-/*	TimerManager::addFunction(iTimeShakes, "shake", [&, p = power, n = nShakes](auto)mutable->bool {
-		Vector2 from = _gameViewOffset;
+	TimerManager::addFunction(iTimeShakes, "shake", [&, p = power, n = nShakes](auto)mutable->bool {
+		Vector2f from = _gameViewOffset;
 		TimerManager::addLinearEase(iTimeShakes, "shake", &_gameViewOffset, from, to);
 		if (n-- <= 0)
-			TimerManager::addLinearEase(iTimeShakes, "shakeBack", &_gameViewOffset, _gameViewOffset, Vector2::ZERO);
+			TimerManager::addLinearEase(iTimeShakes, "shakeBack", &_gameViewOffset, _gameViewOffset, { 0, 0 });
 		return n == 0;
-	});
-	*/
+	});*/
 }
-/*
-#include "Gameplay/Weapon.hpp"
-#include "Gameplay/Game.hpp"
-#include "Gameplay/Boss.hpp"
 
-*/
 uint32_t LevelScreen::getIndex() const {
 	return _n;
 }

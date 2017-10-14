@@ -12270,6 +12270,8 @@ inline nlohmann::json::json_pointer operator "" __json_pointer(const char* s, st
 #pragma GCC diagnostic pop
 #endif
 
+#include "Const.hpp"
+
 template<typename T>
 T getJsonValue(nlohmann::json json_, std::string key) {
 	assert(json_.find(key) != json_.end());

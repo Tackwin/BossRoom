@@ -3,7 +3,7 @@
 #include "Managers/AssetsManager.hpp"
 #include "Managers/TimerManager.hpp"
 
-Particle::Particle(nlohmann::json json_, Vector2 pos_, Vector2 dir_, Function update_) :
+Particle::Particle(nlohmann::json json_, Vector2f pos_, Vector2f dir_, Function update_) :
 	_json(json_),
 	_pos(pos_),
 	_dir(dir_),
@@ -37,7 +37,7 @@ void Particle::render(sf::RenderTarget& target) {
 	target.draw(_sprite);
 }
 
-std::vector<std::shared_ptr<Particle>> Particle::burst(nlohmann::json json_, Vector2 pos_){
+std::vector<std::shared_ptr<Particle>> Particle::burst(nlohmann::json json_, Vector2f pos_){
 	std::vector<std::shared_ptr<Particle>> particles;
 	uint32_t nParticles = (uint32_t)getJsonValue<int>(json_, "nParticles");
 	auto particleJson = json_["particle"];
@@ -45,8 +45,8 @@ std::vector<std::shared_ptr<Particle>> Particle::burst(nlohmann::json json_, Vec
 	particles.reserve(nParticles);
 
 	for (uint32_t i = 0; i < nParticles; ++i) {
-		Vector2 pos = pos_;
-		Vector2 dir = Vector2::createUnitVector(getJsonValue<float>(json_, "dir"));
+		Vector2f pos = pos_;
+		Vector2f dir = Vector2f::createUnitVector(getJsonValue<float>(json_, "dir"));
 		particles.push_back(std::make_shared<Particle>(particleJson, pos, dir));
 	}
 	

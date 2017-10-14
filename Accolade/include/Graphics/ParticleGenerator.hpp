@@ -8,7 +8,7 @@
 
 #include "3rd/json.hpp"
 
-#include "Math/Vec.hpp"
+#include "Math/Vector.hpp"
 
 class Particle;
 class ParticleGenerator {

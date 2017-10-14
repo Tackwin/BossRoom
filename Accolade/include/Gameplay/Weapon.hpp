@@ -8,11 +8,12 @@
 
 #include "3rd/json.hpp"
 
-#include "Math/Vector2.hpp"
-#include "Global/Const.hpp"
-#include <Gameplay/Zone.hpp>
-#include <Physics/Object.hpp>
+#include "Const.hpp"
 
+#include "Math/Vector.hpp"
+
+#include "Physics/Object.hpp"
+#include "Gameplay/Zone.hpp"
 
 class Player;
 class Weapon : public Object {
@@ -32,7 +33,7 @@ public:
 	void render(sf::RenderTarget& target);
 	void renderGui(sf::RenderTarget& target);
 
-	void loot(Vector2 pos);
+	void loot(Vector2f pos);
 
 	bool isLooted() const;
 
@@ -49,7 +50,7 @@ public:
 public: //TODO: Make this private
 	std::shared_ptr<Player> _player;
 
-	Vector2 _lootedPos;
+	Vector2f _lootedPos;
 	sf::Sprite _uiSprite;
 	sf::Sprite _lootedSprite;
 
