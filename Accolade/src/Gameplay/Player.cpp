@@ -25,8 +25,8 @@ Player::Player(const nlohmann::json& json) :
 	collider = &_hitBox;
 
 	pos = { 100, 100 };
-	idMask |= Object::PLAYER;
-	collisionMask |= Object::FLOOR;
+	idMask |= Object::BIT_TAGS::PLAYER;
+	collisionMask |= Object::BIT_TAGS::FLOOR;
 }
 
 Player::~Player() {
@@ -100,9 +100,16 @@ void Player::update(double) {
 			if (_floored)
 				_floored = false;
 
-			if (velocity.y > 0.f) velocity.y = 0.f;
-			velocity.y -= sqrtf(G * 2.f * _jumpHeight); // derived from equation of motion, thanks Newton
+			_jumping = true;
+
+			velocity.y = -sqrtf(G * 2.f * _jumpHeight); // derived from equation of motion, thanks Newton
 			_nJumpsLeft--;
+		}
+		else if (InputsManager::isKeyPressed(_jumpK) && _jumping) {
+			flatVelocities.push_back({ 0, -300 });
+		}
+		else if (_jumping && !InputsManager::isKeyPressed(_jumpK)) {
+			_jumping = false;
 		}
 		_dir.normalize();
 	
@@ -111,6 +118,14 @@ void Player::update(double) {
 		flatForces.push_back({ 0, G });
 		flatVelocities.push_back(_dir * (float)(InputsManager::isKeyPressed(_slowK) ? _slowSpeed : _speed));
 	}
+
+	const auto& projectileBuffer = _weapon->getProjectileBuffer();
+	_projectilesToShoot.insert(
+		_projectilesToShoot.end(),
+		projectileBuffer.begin(),
+		projectileBuffer.end()
+	);
+	_weapon->clearProjectileBuffer();
 }
 
 void Player::render(sf::RenderTarget &target) {
@@ -204,7 +219,9 @@ std::shared_ptr<Weapon> Player::getWeapon() const {
 }
 
 void Player::floored() {
+	printf("Floored\n");
 	_nJumpsLeft = 2u;
+	_jumping = false;
 	_floored = true;
 }
 bool Player::isFloored() const {

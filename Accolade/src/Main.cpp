@@ -51,6 +51,8 @@ int main(int, char**) {
 	game->start();
 
 	sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT, 24), "Boss room");
+	window.setKeyRepeatEnabled(false);
+	window.setFramerateLimit(10);
 
 	const auto& updateKey = TimerManager::addFunction(
 		MIN_MS,

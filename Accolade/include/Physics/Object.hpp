@@ -7,12 +7,14 @@
 #include "Physics/Collider.hpp"
 
 struct Object {
-	enum BIT_TAGS {
-		PLAYER = 1,
-		FLOOR = PLAYER << 1,
-		PROJECTILE = FLOOR << 1,
-		BOSS = PROJECTILE << 1,
-		ZONE = BOSS << 1
+	struct BIT_TAGS {
+		using type = uint8_t;
+
+		static constexpr type PLAYER = 1;
+		static constexpr type FLOOR = PLAYER << 1;
+		static constexpr type PROJECTILE = FLOOR << 1;
+		static constexpr type BOSS = PROJECTILE << 1;
+		static constexpr type ZONE = BOSS << 1;
 	};
 
 	static uint64_t N;

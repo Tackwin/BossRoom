@@ -16,6 +16,7 @@
 #include "Gameplay/Zone.hpp"
 
 class Player;
+class Projectile;
 class Weapon : public Object {
 public:
 	Weapon(const Weapon& other);
@@ -39,8 +40,13 @@ public:
 
 	void setLootable(bool lootable);
 	bool isLootable() const;
+	
+	void addProjectile(const std::shared_ptr<Projectile>& projectile);
+	const std::vector<std::shared_ptr<Projectile>>& getProjectileBuffer() const;
+	void clearProjectileBuffer();
 
 	const sf::Sprite& getUiSprite() const;
+	std::string getStringSoundActive(uint32_t n) const;
 
 	std::shared_ptr<Zone>& getLootZone();
 
@@ -68,6 +74,7 @@ public: //TODO: Make this private
 	std::shared_ptr<Zone> _lootZone;
 
 	std::vector<sf::Sound> _activeSounds;
+	std::vector<std::shared_ptr<Projectile>> _projectileBuffer;
 
 	std::function<void(Weapon&)> _equip;
 	std::function<void(Weapon&)> _unEquip;

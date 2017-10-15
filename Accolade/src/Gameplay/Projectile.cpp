@@ -29,9 +29,9 @@ Projectile::Projectile(nlohmann::json json, Vector2f pos, Vector2f dir, bool pla
 	_disk.userPtr = this;
 	_disk.r = _radius;
 
-	idMask |= PROJECTILE;
-	collisionMask |= (player ? BOSS : PLAYER);
-	collisionMask |= FLOOR;
+	idMask |= BIT_TAGS::PROJECTILE;
+	collisionMask |= (player ? BIT_TAGS::BOSS : BIT_TAGS::PLAYER);
+	collisionMask |= BIT_TAGS::FLOOR;
 
 	velocity = _dir * _speed;
 

@@ -31,6 +31,14 @@ struct Vector {
 		return (A - B).length2() < eps * eps;
 	}
 
+	static Vector<D, T> clamp(const Vector<D, T>& V, const Vector<D, T>& min, const Vector<D, T>& max) {
+		Vector<D, T> result;
+		for (uint32_t i = 0u; i < D; ++i) {
+			result[i] = std::clamp(V[i], min[i], max[i]);
+		}
+		return result;
+	}
+
 	union {
 		struct {
 			T x;
@@ -67,6 +75,13 @@ struct Vector {
 	}
 	const T& operator[](size_t i) const {
 		return components[i];
+	}
+
+	Vector<D, T>& clamp(const Vector<D, T>& min, const Vector<D, T>& max) {
+		for (uint32_t i = 0u; i < D; ++i) {
+			components[i] = std::clamp(components[i], min[i], max[i]);
+		}
+		return *this;
 	}
 
 	bool inRect(const Vector<D, T>& pos, const Vector<D, T>& size) const {
@@ -173,7 +188,7 @@ struct Vector {
 	Vector<D, T>& operator*=(const U& scalaire) {
 		static_assert(std::is_scalar<U>::value);
 		for (size_t i = 0; i < getDimension(); ++i) {
-			components[i] += static_cast<T>(scalaire);
+			components[i] *= static_cast<T>(scalaire);
 		}
 		return *this;
 	}

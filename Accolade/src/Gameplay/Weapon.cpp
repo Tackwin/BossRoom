@@ -124,3 +124,17 @@ const sf::Sprite & Weapon::getUiSprite() const {
 void Weapon::setLootable(bool lootable) {
 	_lootable = lootable;
 }
+
+void Weapon::addProjectile(const std::shared_ptr<Projectile>& projectile) {
+	_projectileBuffer.push_back(projectile);
+}
+const std::vector<std::shared_ptr<Projectile>>& Weapon::getProjectileBuffer() const {
+	return _projectileBuffer;
+}
+void Weapon::clearProjectileBuffer() {
+	_projectileBuffer.clear();
+}
+
+std::string Weapon::getStringSoundActive(uint32_t n) const {
+	return _json["sounds"]["active"][n].get<std::string>();
+}

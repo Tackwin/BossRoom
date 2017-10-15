@@ -87,7 +87,8 @@ std::string Patterns::barage(Boss& boss, uint32 nOrbs, uint32 nWaves, float iTim
 			Vector2f pos((float)WIDTH, (float)HEIGHT * i / nOrbs);
 			Vector2f dir = Vector2f::createUnitVector(PIf);
 
-			boss.shoot(projectile, pos, dir);
+			const auto& pr = std::make_shared<Projectile>(projectile, pos, dir, false);
+			boss.addProjectile(pr);
 		}
 
 		return --nWaves == 0;

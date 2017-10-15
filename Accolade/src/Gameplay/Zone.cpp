@@ -6,8 +6,8 @@ Zone::Zone(float r) : Object() {
 
 	collider = _disk.get();
 	collider->onEnter = [&](Object* obj) {collision(obj); };
-	idMask |= ZONE;
-	collisionMask |= PLAYER;
+	idMask |= BIT_TAGS::ZONE;
+	collisionMask |= BIT_TAGS::PLAYER;
 }
 Zone::~Zone() {
 	Object::~Object();

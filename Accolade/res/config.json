@@ -208,7 +208,9 @@
 		"radius": 25,
 		"specialSpeed": 800,
 		"invincibilityTime": 0.2,
-		"jumpHeight": 400,
+		"jumpHeight": 300,
+		"jumpBoostMultiplier": 1.3,
+		"jumpBoostTime": 0.2,
 
 		"sprite": "player",
 		"startpos": {
@@ -378,14 +380,14 @@
 			"radius": 10,
 			"sprite": "weapon0",
 			"sounds": {
-				"active": [ "sounds/shoot.wav" ]
+				"active": [ "shoot" ]
 			},
 
 			"projectile": {
 				"damage": 1,
 				"speed": 700,
 				"radius": 7,
-				"lifespan": 3,
+				"lifespan": 1,
 				"destroyOthers": false,
 				"sprite": "projectiles-1"
 			}
@@ -395,7 +397,7 @@
 			"radius": 10,
 			"sprite": "weapon1",
 			"sounds": {
-				"active": [ "sounds/shoot.wav" ]
+				"active": [ "shoot" ]
 			},
 
 			"projectile": {
@@ -413,7 +415,7 @@
 			"radius": 10,
 			"sprite": "weapon2",
 			"sounds": {
-				"active": [ "sounds/shoot.wav" ]
+				"active": [ "shoot" ]
 			},
 
 			"projectile": {
@@ -428,7 +430,9 @@
 		{
 			"cooldowns": [ 0.7 ],
 			"sprite": "sword",
-			"sound": "sword",
+			"sounds": {
+				"active": [ "shoot" ]
+			},
 			"radius": 10,
 			"damage": 10,
 			"remainTime": 0.2,

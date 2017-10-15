@@ -70,11 +70,13 @@ void StartScreen::initializeWorld(){
 	_world.addObject(_player);
 
 	_floor = std::make_shared<Object>();
-	_floor->idMask |= Object::FLOOR;
+	_floor->idMask |= Object::BIT_TAGS::FLOOR;
 	_floor->pos = { 0, 600 };
 	Box* box = new Box();
 	box->size = { 3000, 120 };
-	box->onEnter = [p = _player](auto) { if (!p->isFloored()) p->floored(); };
+	box->onEnter = [p = _player](auto) { 
+		p->floored(); 
+	};
 	_floor->collider = box;
 
 	_world.addObject(_floor);
@@ -84,7 +86,7 @@ void StartScreen::initializeWorld(){
 	_zones["merchant"]->pos.x = _merchantShop.getPosition().x + _merchantShop.getGlobalBounds().width * 0.5f;
 	_zones["merchant"]->pos.y = _merchantShop.getPosition().y + _merchantShop.getGlobalBounds().height * 0.5f;
 	_zones["merchant"]->sensor = true;
-	_zones["merchant"]->collisionMask |= Object::PLAYER;
+	_zones["merchant"]->collisionMask |= Object::BIT_TAGS::PLAYER;
 	_zones["merchant"]->collider->onEnter = [&](Object*) mutable { enterShop(); };
 
 	_world.addObject(_zones["merchant"]);

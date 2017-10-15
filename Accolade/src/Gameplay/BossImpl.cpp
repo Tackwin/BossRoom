@@ -12,32 +12,32 @@
 
 void Boss::createBosses() {
 	bosses[0] = std::make_shared<Boss>(AssetsManager::getJson(JSON_KEY)["bosses"][0],
-		[](double, Boss&) {},
+		[](double, Boss&) {}, //update function
 		[](Boss& boss) { // Init function
-		auto sound = sf::Sound(AssetsManager::getSound("shoot2"));
-		sound.setVolume(SOUND_LEVEL);
-		boss._sounds.push_back(sound);
+			auto sound = sf::Sound(AssetsManager::getSound("shoot2"));
+			sound.setVolume(SOUND_LEVEL);
+			boss._sounds.push_back(sound);
 
-		boss._keyPatterns.push_back(TimerManager::addFunction(3, "P1", [&boss](double)mutable->bool {
-			Patterns::directionalFire(boss, Patterns::_json["directionalFire"]);
-			boss._sprite.pushAnim("action");
-			boss._sounds[0].play();
-			return false;
-		}));
-		boss._keyPatterns.push_back(TimerManager::addFunction(4, "P2", [&boss](double)mutable->bool {
-			if (boss._life < 0.66f * boss._maxLife) {
-				Patterns::barage(boss, Patterns::_json["barage"]);
+			boss._keyPatterns.push_back(TimerManager::addFunction(3, "P1", [&boss](double)mutable->bool {
+				Patterns::directionalFire(boss, Patterns::_json["directionalFire"]);
 				boss._sprite.pushAnim("action");
-			}
-			return false;
-		}));
-	},
+				boss._sounds[0].play();
+				return false;
+			}));
+			boss._keyPatterns.push_back(TimerManager::addFunction(4, "P2", [&boss](double)mutable->bool {
+				if (boss._life < 0.66f * boss._maxLife) {
+					Patterns::barage(boss, Patterns::_json["barage"]);
+					boss._sprite.pushAnim("action");
+				}
+				return false;
+			}));
+		},
 		[](Boss& boss) { // UnInit function
-		for (auto& k : boss._keyPatterns) {
-			TimerManager::removeFunction(k);
+			for (auto& k : boss._keyPatterns) {
+				TimerManager::removeFunction(k);
+			}
+			boss._keyPatterns.clear();
 		}
-		boss._keyPatterns.clear();
-	}
 	);
 
 	bosses[1] = std::make_shared<Boss>(AssetsManager::getJson(JSON_KEY)["bosses"][1],

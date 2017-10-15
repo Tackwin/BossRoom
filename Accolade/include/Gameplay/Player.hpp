@@ -94,6 +94,9 @@ public: //TODO: Make private
 	bool _invincible = false;
 	bool _freeze = false;
 
+	bool _jumping = false;
+	bool _boostingJump = false;
+
 	Level* _level = nullptr;
 	std::shared_ptr<Weapon> _weapon;
 

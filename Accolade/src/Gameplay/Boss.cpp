@@ -22,6 +22,8 @@ Boss::Boss(const basic_json<>& json, std::function<void(double, Boss&)> updateFu
 	_update(updateFunction),
 	_init(init),
 	_unInit(unInit) {
+
+	collisionMask |= Object::BIT_TAGS::PROJECTILE;
 }
 
 Boss::~Boss() {
@@ -49,7 +51,6 @@ void Boss::enterLevel(Level* level) {
 	_disk.userPtr = this;
 	_disk.r = _radius;
 	_disk.onEnter = [&](Object* obj) { collision(obj); };
-	idMask |= BOSS;
 
 	_init(*this);
 }
@@ -133,11 +134,10 @@ void Boss::clearProtectilesToShoot() {
 void Boss::collision(Object* obj) {
 	if (auto ptr = dynamic_cast<Projectile*>(obj); ptr && ptr->isFromPlayer()) {
 		hit(ptr->getDamage());
-		ptr->remove();
 
 		auto& particleGeneratorJson = AssetsManager::getJson(JSON_KEY)["particlesGenerator"];
 		std::string particleGenerator = _json["hitParticle"];
-		
+
 		_particleEffects.push_back(
 			new ParticleGenerator(
 				particleGeneratorJson[particleGenerator],
@@ -145,6 +145,8 @@ void Boss::collision(Object* obj) {
 			)
 		);
 		_particleEffects.back()->start();
+		
+		ptr->remove();
 	}
 }
 float Boss::getRadius() const {

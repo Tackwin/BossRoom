@@ -24,10 +24,11 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 
 			me._keys.push_back(
 				TimerManager::addFunction(me._json["cooldowns"][0], "1-cd", [&me](double)mutable->bool {
-				me._flags |= 1;
-				TimerManager::pauseFunction(me._keys[0]);
-				return false;
-			}));
+					me._flags |= 1;
+					TimerManager::pauseFunction(me._keys[0]);
+					return false;
+				}
+			));
 		};
 		_weapons[0]->_unEquip = [](Weapon& me)mutable->void {
 			for (auto& k : me._keys) {
@@ -38,29 +39,30 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 		};
 
 		_weapons[0]->_active = [](Weapon& me, uint32)mutable->void {
+			static bool evenShot = false;
+			
 			if ((me._flags & 1) == 1) {
 				me._flags ^= 1;
 				me._player->shoot();
 				//TimerManager::resumeFunction(me._keys[0]);
 
 				Vector2f dir = (InputsManager::getMouseWorldPos() - me._player->getPos()).normalize();
+			
 				float a = (float)dir.angleX();
-				static bool evenShot = false;
 				a += static_cast<float>((evenShot ? -1 : 1) * PIf / 6);
 				Vector2f pos = me._player->getPos() + Vector2f(cos(a), sin(a)) * (me._player->_radius + 5);
 
 				evenShot = !evenShot;
 
-				//if (me._activeSounds[0].getStatus() != sf::Sound::Playing) {
 				me._activeSounds[0].play();
-				//}
-				me._player->addProjectile(std::make_shared<Projectile>(me._json["projectile"], pos, dir, true));
+
+				me.addProjectile(std::make_shared<Projectile>(me._json["projectile"], pos, dir, true));
 			}
 		};
-		std::string sound1Str = _weapons[0]->_json["sounds"]["active"][0];
-		AssetsManager::loadSound(sound1Str, ASSETS_PATH + sound1Str);
-		auto sound = sf::Sound(AssetsManager::getSound(sound1Str));
+
+		auto sound = sf::Sound(AssetsManager::getSound(_weapons[0]->getStringSoundActive(0)));
 		sound.setVolume(SOUND_LEVEL);
+		
 		_weapons[0]->_activeSounds.push_back(sound);
 	}
 	{
@@ -84,25 +86,28 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 		};
 
 		_weapons[1]->_active = [](Weapon& me, uint32)mutable->void {
+			static bool evenShot = false;
+			
 			if ((me._flags & 1) == 1) {
 				me._flags ^= 1;
 				TimerManager::resumeFunction(me._keys[0]);
 
 				Vector2f dir = (InputsManager::getMouseWorldPos() - me._player->getPos()).normalize();
+			
 				float a = (float)dir.angleX();
-				static bool evenShot = false;
 				a += static_cast<float>((evenShot ? -1 : 1) * PIf / 6);
 				Vector2f pos = me._player->getPos() + Vector2f(cos(a), sin(a)) * (me._player->_radius + 5);
 
 				evenShot = !evenShot;
+				
 				me._activeSounds[0].play();
 				me._player->addProjectile(std::make_shared<Projectile>(me._json["projectile"], pos, dir, true));
 			}
 		};
-		std::string sound1Str = _weapons[1]->_json["sounds"]["active"][0].get<std::string>();
-		AssetsManager::loadSound(sound1Str, ASSETS_PATH + sound1Str);
-		auto sound = sf::Sound(AssetsManager::getSound(sound1Str));
+		
+		auto sound = sf::Sound(AssetsManager::getSound(_weapons[1]->getStringSoundActive(0)));
 		sound.setVolume(SOUND_LEVEL);
+
 		_weapons[1]->_activeSounds.push_back(sound);
 	}
 	{
@@ -144,32 +149,37 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 				}
 			}
 		};
-		std::string sound1Str = weapon->_json["sounds"]["active"][0].get<std::string>();
-		AssetsManager::loadSound(sound1Str, ASSETS_PATH + sound1Str);
-		weapon->_activeSounds.push_back(sf::Sound(AssetsManager::getSound(sound1Str)));
+		auto sound = sf::Sound(AssetsManager::getSound(_weapons[2]->getStringSoundActive(0)));
+		sound.setVolume(SOUND_LEVEL);
+
+		_weapons[2]->_activeSounds.push_back(sound);
 	}
 	{
-	_weapons.push_back(std::make_shared<Weapon>(player, AssetsManager::getJson(JSON_KEY)["weapons"][3]));
-	auto& weapon = _weapons[3];
-	weapon->_equip = [](Weapon& me)mutable->void {
-		me._loot = false;
+		_weapons.push_back(std::make_shared<Weapon>(player, AssetsManager::getJson(JSON_KEY)["weapons"][3]));
+		auto& weapon = _weapons[3];
+		weapon->_equip = [](Weapon& me)mutable->void {
+			me._loot = false;
 
-		me._keys.push_back(TimerManager::addFunction(me._json["cooldowns"][0], "1-cd", [&me](double)mutable->bool {
-			me._flags |= 1;
-			TimerManager::pauseFunction(me._keys[0]);
-			return false;
-		}));
-	};
-	weapon->_unEquip = [](Weapon& me)mutable->void {
-		for (auto& k : me._keys) {
-			if (TimerManager::functionsExist(k))
-				TimerManager::removeFunction(k);
-		}
-		me._keys.clear();
-	};
+			me._keys.push_back(TimerManager::addFunction(me._json["cooldowns"][0], "1-cd", [&me](double)mutable->bool {
+				me._flags |= 1;
+				TimerManager::pauseFunction(me._keys[0]);
+				return false;
+			}));
+		};
+		weapon->_unEquip = [](Weapon& me)mutable->void {
+			for (auto& k : me._keys) {
+				if (TimerManager::functionsExist(k))
+					TimerManager::removeFunction(k);
+			}
+			me._keys.clear();
+		};
 
-	weapon->_active = [](Weapon&, uint32)mutable->void {};
-	weapon->_activeSounds.push_back(sf::Sound(AssetsManager::getSound(weapon->_json["sound"])));
+		weapon->_active = [](Weapon&, uint32)mutable->void {};
+
+		auto sound = sf::Sound(AssetsManager::getSound(_weapons[3]->getStringSoundActive(0)));
+		sound.setVolume(SOUND_LEVEL);
+
+		_weapons[3]->_activeSounds.push_back(sound);
 	}
 }
 void Weapon::destroyWeapons() {
