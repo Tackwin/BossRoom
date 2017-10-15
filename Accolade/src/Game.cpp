@@ -16,11 +16,11 @@
 #include "Gameplay/Boss.hpp"
 
 void Game::start() {
-	enterRoom(0u);
+	enterScreen(new StartScreen());
 }
 
 void Game::enterDungeon() {
-	enterScreen(new StartScreen());
+	enterRoom(0u);
 }
 
 void Game::nextRoom() {

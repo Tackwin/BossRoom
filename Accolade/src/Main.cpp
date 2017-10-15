@@ -5,6 +5,7 @@
 #include "Managers/AssetsManager.hpp"
 #include "Managers/InputsManager.hpp"
 #include "Managers/TimerManager.hpp"
+#include "Managers/EventManager.hpp"
 
 #include "Game.hpp"
 #include "Gameplay/Patterns.hpp"
@@ -38,6 +39,16 @@ bool render(sf::RenderWindow& window) {
 	return false;
 }
 
+void test(int b, int c) {
+	printf("test %d, %d\n", b, c);
+}
+void testImpl(uint32_t n, ...) {
+	va_list args;
+	va_start(args, n);
+	test(va_arg(args, int), va_arg(args, int));
+	va_end(args);
+}
+
 int main(int, char**) {
 	printf("Loading jsons...\n");
 
@@ -52,7 +63,10 @@ int main(int, char**) {
 
 	sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT, 24), "Boss room");
 	window.setKeyRepeatEnabled(false);
-	window.setFramerateLimit(10);
+	window.setFramerateLimit(0);
+
+	EventManager::subscribe("event", &testImpl);
+	EventManager::fire("event", 0, 5, 6);
 
 	const auto& updateKey = TimerManager::addFunction(
 		MIN_MS,
