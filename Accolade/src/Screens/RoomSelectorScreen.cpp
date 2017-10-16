@@ -41,7 +41,7 @@ void RoomSelectorScreen::onExit() {
 
 void RoomSelectorScreen::update(float) {
 	if (InputsManager::isMouseJustPressed(sf::Mouse::Left) && 
-		InputsManager::getMouseScreenPos().inRect({ 480, 320 }, { 150, 75 })) {
+		InputsManager::getMouseScreenPos().inRect<float>({ 480.f, 320.f }, { 150.f, 75.f })) {
 		
 		game->enterRoom(_n);
 	}

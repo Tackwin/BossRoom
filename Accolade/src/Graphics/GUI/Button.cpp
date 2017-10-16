@@ -5,10 +5,12 @@ Widget() {
 	_onClick.began = [&]() mutable {
 		_normal.setVisible(false);
 		_hold.setVisible(true);
+		return true;
 	};
 	_onClick.ended = [&]() mutable {
 		_normal.setVisible(true);
 		_hold.setVisible(false);
+		return true;
 	};
 
 	_hold.setVisible(false);

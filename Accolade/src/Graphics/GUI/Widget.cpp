@@ -4,7 +4,7 @@
 
 #include <Managers/InputsManager.hpp>
 
-const Widget::Callback::type Widget::Callback::ZERO = []() {};
+const Widget::Callback::type Widget::Callback::ZERO = []() { return false; };
 
 Widget::Widget() {
 }
@@ -16,7 +16,33 @@ Widget::Widget(Widget* const parent) :
 
 Widget::~Widget() {
 }
+
+void Widget::emancipate(){
+	if (!_parent)
+		return;
+
+	if (_parent->haveChild(this))
+		_parent->denyChild(this);
+
+	_parent = nullptr;
+}
+void Widget::denyChild(Widget* const child) {
+	if (!haveChild(child))
+		return;
+
+	const auto& it = std::find_if(_childs.begin(), _childs.end(), 
+		[child](const std::pair<int32_t, Widget*>& A) -> bool {
+			return A.second == child;
+		}
+	);
+
+	Widget* c = it->second;
+	_childs.erase(it);
+	c->emancipate();
+}
 void Widget::addChild(Widget* const child, int32_t z) {
+	if (!child) return;
+
 	if (child == _parent)
 		return;
 
@@ -33,9 +59,13 @@ void Widget::addChild(Widget* const child, int32_t z) {
 	}
 }
 bool Widget::haveChild(const Widget* const child) {
+	if (!child) return false;
+
 	return std::find_if(_childs.begin(), _childs.end(), [child](const auto& A) -> bool { return A.second == child; }) != _childs.end();
 }
 void Widget::setParent(Widget* const parent, int32_t z) {
+	if (!parent) return;
+
 	if (haveChild(parent))
 		return;
 
@@ -61,6 +91,12 @@ const Vector2f& Widget::getPosition() const {
 Vector2f Widget::getGlobalPosition() const {
 	return _pos + (_parent ? _parent->getGlobalPosition() : Vector2f{0, 0});
 }
+Rectangle2f Widget::getGlobalBoundingBox() const {
+	return {
+		getGlobalPosition() - Vector2f(_origin.x * _size.x, _origin.y * _size.y),
+		getSize()
+	};
+}
 bool Widget::isVisible() const {
 	return _visible;
 }
@@ -82,6 +118,7 @@ void Widget::setOriginAbs(const Vector2f& origin) {
 void Widget::setVisible(bool visible) {
 	_visible = visible;
 }
+
 
 const std::vector<std::pair<int32_t, Widget*>> Widget::getChilds() {
 	return _childs;
@@ -111,43 +148,54 @@ void Widget::propagateRender(sf::RenderTarget& target) {
 	}
 }
 
-void Widget::input() {
-	if (!_visible) return;
+std::array<bool, 9> Widget::input(const std::array<bool, 9>& mask) {
+	std::array<bool, 9> result = { false };
 
-	if (InputsManager::getMouseScreenPos().inRect(getGlobalPosition() - Vector2f{ _origin.x * _size.x, _origin.y * _size.y }, _size)) {
-		if (InputsManager::isMouseJustPressed(sf::Mouse::Left)) {
+	if (!_visible) return result;
+
+	if (getGlobalBoundingBox().in(InputsManager::getMouseScreenPos())) {
+		if (InputsManager::isMouseJustPressed(sf::Mouse::Left) && !mask[0]) {
 			if (_onClick.began) 
-				_onClick.began();
+				result[0] = _onClick.began();
 		}
-		if (InputsManager::isMousePressed(sf::Mouse::Left)) {
+		if (InputsManager::isMousePressed(sf::Mouse::Left) && !mask[1]) {
 			if (_onClick.going)
-				_onClick.going();
+				result[1] = _onClick.going();
 		}
-		if (InputsManager::isMouseJustReleased(sf::Mouse::Left)) {
+		if (InputsManager::isMouseJustReleased(sf::Mouse::Left) && !mask[2]) {
 			if (_onClick.ended)
-				_onClick.ended();
+				result[2] = _onClick.ended();
 		}
 	}
+
+	return result;
 }
 
 void Widget::propagateInput() {
-	std::queue<Widget*> open;
-	std::vector<Widget*> close;
+	struct Node {
+		Node() {};
+		Node(Widget* w) : widget(w) {};
+		Node(std::array<bool, 9> mask, Widget* w) : mask(mask), widget(w) {};
 
-	open.push(this);
+		std::array<bool, 9> mask = { false };
+		Widget* widget = nullptr;
+	};
+
+	std::queue<Node> open;
+
+	constexpr std::array<bool, 9> allFalse = { false, false, false, false, false, false, false, false, false, };
+	constexpr std::array<bool, 9> allTrue  = { true, true, true, true, true, true, true, true, true  };
+
+	open.push({ allFalse, this });
 	while (!open.empty()) {
 		auto w = open.front();
 		open.pop();
-		w->input();
+		auto mask = w.widget->input(w.mask);
+		if (mask == allTrue) continue;
 
-		auto child = w->getChilds();
-		for (auto& [_, c] : child) {
-			if (std::find(close.begin(), close.end(), c) != close.end()) { // i find i can get rid of this given that my graph is a tree
-				continue;
-			}
-
-			open.push(c);
-			close.push_back(c);
+		auto child = w.widget->getChilds();
+		for (auto&[_, c] : child) {
+			open.push(Node(mask, c));
 		}
 	}
 }

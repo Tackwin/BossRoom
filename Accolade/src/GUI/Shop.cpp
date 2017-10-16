@@ -7,7 +7,10 @@
 #include "Managers/AssetsManager.hpp"
 #include "Managers/InputsManager.hpp"
 
-Shop::Shop() : Widget() {
+Shop::Shop() : 
+	Widget(),
+	_infoPanel(this)
+{
 	_merchantPanel.setSprite(sf::Sprite(AssetsManager::getTexture("panel_a")));
 	_merchantPanel.setOrigin({ 0, 0 });
 	_merchantPanel.setPosition({ 50, 50 });
@@ -23,40 +26,57 @@ Shop::Shop() : Widget() {
 
 	_quitPanel.setSprite(sf::Sprite(AssetsManager::getTexture("quit")));
 	_quitPanel.setSize({ 20, 20 });
-	_quitPanel.setOrigin({ 0, 0 });
+	_quitPanel.setOrigin({ 1, 0 });
 	_quitPanel.setPosition({
-		_merchantPanel.getPosition().x + _merchantPanel.getSize().x,
+		_merchantPanel.getSize().x,
 		0
 	});
 	_quitPanel.setParent(&_merchantPanel, 2);
+
+	_infoPanel.setSprite(sf::Sprite(AssetsManager::getTexture("panel_a")));
+	_infoPanel.setOrigin({ 0, 0 });
+	_infoPanel.setPosition({ WIDTH * 0.4f - 25, 25.f });
+	_infoPanel.setSize({ WIDTH * 0.4f - 25, HEIGHT * 0.7f - 25 });
+	_infoPanel.getSprite().setColor(sf::Color(120, 110, 110));
+	_infoPanel.setParent(&_merchantPanel, 2);
+	_infoPanel.setVisible(false);
+
+	_focusPanel.setSprite(sf::Sprite(AssetsManager::getTexture("panel_a")));
+	_focusPanel.setSize({ _ItemPanel::PANEL_SIZE + 2, _ItemPanel::PANEL_SIZE + 2 });
+	_focusPanel.setOriginAbs({ 3, 3});
+	_focusPanel.setVisible(true);
+	_focusPanel.getSprite().setColor(sf::Color(255, 255, 255, 100));
 }
 
 Shop::~Shop() {
 	Widget::~Widget();
 }
 
-void Shop::addWeapon(const std::shared_ptr<Weapon>& weapon) {
-	constexpr float itemPanelSize = 70;
+void Shop::addWeapon(const Weapon* weapon) {
+	constexpr uint32_t itemPerRow = 7;
 
 	uint32_t size = _itemPanels.size();
+	uint32_t nId = 0u;
+	bool flag = false;
+	do {
+		flag = false;
+		for (const auto& it : _itemPanels) {
+			if (nId == it.first) {
+				nId++;
+				flag = true;
+				break;
+			}
+		}
+	} while (flag);
 
-	auto item = std::make_unique<_itemPanel>();
+	auto item = std::make_unique<_ItemPanel>(this, weapon, nId);
 	item->setPosition({ 
-		(size % 5) * (itemPanelSize + 5.f) + 10, 
-		(size / 5) * (itemPanelSize + 5.f) + 30 
+		(size % itemPerRow) * (_ItemPanel::PANEL_SIZE + 5.f) + 10,
+		(size / itemPerRow) * (_ItemPanel::PANEL_SIZE + 5.f) + 30
 	});
-	
-	item->back.setSprite(sf::Sprite(AssetsManager::getTexture("panel_a")));
-	item->back.getSprite().setColor({80, 80, 80});
-	item->back.setSize({ itemPanelSize, itemPanelSize });
-
-	item->sprite.setSprite(weapon->getUiSprite());
-	item->sprite.setSize({ itemPanelSize - 4, itemPanelSize - 4 });
-
 	item->setParent(&_merchantPanel, 1);
 
-	_itemPanels.emplace_back();
-	_itemPanels.back().swap(item);
+	_itemPanels[nId].swap(item);
 }
 
 void Shop::enter() {
@@ -68,31 +88,127 @@ void Shop::leave() {
 	_merchantPanel.setVisible(false);
 }
 
-void Shop::onClickBegan() {
+bool Shop::onClickBegan() {
 	auto rect = Rectangle<2, float>(
+		{ _quitPanel.getGlobalPosition().x - 20, _quitPanel.getGlobalPosition().y},
+		{ 20, 20 }
+	);
+	if (InputsManager::getMouseScreenPos().inRect(rect.pos, rect.size)) {
+		leave();
+		return true;
+	}
+
+	rect = Rectangle<2, float>(
 		{ _merchantPanel.getGlobalPosition().x, _merchantPanel.getGlobalPosition().y },
 		{ _merchantPanel.getSize().x,			_merchantPanel.getSize().y * 0.05f }
 	);
 	if (InputsManager::getMouseScreenPos().inRect(rect.pos, rect.size)) {
 		_dragging = true;
 		_dragOffset = InputsManager::getMouseScreenPos() - getGlobalPosition();
+		return true;
 	}
 
-	rect = Rectangle<2, float>(
-		{ _merchantPanel.getGlobalPosition().x, _merchantPanel.getGlobalPosition().y + _merchantPanel.getSize().y - 20 },
-		{ 20, 20 }
-	);
-	if (InputsManager::getMouseScreenPos().inRect(rect.pos, rect.size)) {
-		leave();
+	unFocus();
+	return false;
+}
+
+bool Shop::onClickEnded(){
+	if (_dragging) {
+		_dragging = false;
+		return true;
 	}
+	return false;
 }
 
-void Shop::onClickEnded(){
-	_dragging = false;
-}
-
-void Shop::onClickGoing() {
+bool Shop::onClickGoing() {
 	if (_dragging) {
 		setPosition(InputsManager::getMouseScreenPos() - _dragOffset);
+		return true;
 	}
+	return false;
+}
+
+void Shop::focusItem(uint32_t i) {
+	focused = i;
+	_focusPanel.setParent(&_itemPanels[i]->sprite, 1);
+	
+	_infoPanel.populateBy(_itemPanels[i]->weapon);
+	_infoPanel.setVisible(true);
+}
+void Shop::unFocus() {
+	focused = 0u;
+	_focusPanel.emancipate();
+
+	_infoPanel.setVisible(false);
+}
+
+Shop::_ItemPanel::_ItemPanel(Shop * shop, const Weapon* weapon, uint32_t id) :
+	_shop(shop),
+	weapon(weapon),
+	_id(id)
+{
+
+	setSprite(sf::Sprite(AssetsManager::getTexture("panel_a")));
+	getSprite().setColor({ 80, 80, 80 });
+	setSize({ PANEL_SIZE, PANEL_SIZE });
+
+	sprite.setSprite(weapon->getUiSprite());
+	sprite.setSize({ PANEL_SIZE - 4, PANEL_SIZE - 4 });
+	sprite.setPosition({ 2, 2 });
+	sprite.setOnClick({
+		std::bind(&Shop::_ItemPanel::onClickBegan, this),
+		std::bind(&Shop::_ItemPanel::onClickEnded, this),
+		std::bind(&Shop::_ItemPanel::onClickGoing, this)
+	});
+
+	addChild(&sprite, 1);
+	addChild(&label, 2);
+}
+
+bool Shop::_ItemPanel::onClickBegan() {
+	_shop->focusItem(_id);
+	return true;
+}
+bool Shop::_ItemPanel::onClickEnded() {
+	return true;
+}
+bool Shop::_ItemPanel::onClickGoing() {
+	return true;
+}
+
+Shop::_InfoPanel::_InfoPanel(Shop* shop) :
+	_shop(shop)
+{
+	auto& name = labels["name"];
+	name.setString("Name: Le niqueur de maman");
+	name.setFont("consola");
+	name.setCharSize(25);
+	name.setPosition({ 50, 25 });
+	name.setParent(this, 1);
+
+	auto& effect = labels["effect"];
+	effect.setString("Effect: nique ta mère");
+	effect.setFont("consola");
+	effect.setCharSize(22);
+	effect.setPosition({ 70, 50 });
+	effect.setParent(this, 1);
+
+	auto& icon = panels["icon"];
+	icon.setParent(this, 1);
+}
+void Shop::_InfoPanel::populateBy(const Weapon* weapon) {
+	auto& icon = panels["icon"];
+	icon.setSprite(weapon->getUiSprite());
+	icon.setSize({ 150, 150 });
+	icon.setPosition({ 50, 100 });
+}
+
+bool Shop::_InfoPanel::onClickBegan() {
+	return true;
+}
+bool Shop::_InfoPanel::onClickEnded() {
+	return true;
+}
+bool Shop::_InfoPanel::onClickGoing() {
+	return true;
 }

@@ -1,23 +1,23 @@
 #pragma once
+#include <array>
 #include <memory>
 #include <functional>
 
 #include <SFML/Graphics.hpp>
 
 #include "Math/Vector.hpp"
-
-
+#include "Math/Rectangle.hpp"
 
 class Widget {
 public:
 	struct Callback {
-		using type = std::function<void(void)>;
+		using type = std::function<bool(void)>;
 
 		static const type ZERO;
 
-		type began;
-		type ended;
-		type going;
+		type began = ZERO;
+		type ended = ZERO;
+		type going = ZERO;
 	};
 
 	Widget();
@@ -29,6 +29,7 @@ public:
 	const Vector2f& getOrigin() const;
 	Vector2f getGlobalPosition() const;
 	const Vector2f& getPosition() const;
+	Rectangle2f getGlobalBoundingBox() const;
 	bool isVisible() const;
 
 	void setOnHover(const Callback& onHover);
@@ -41,6 +42,8 @@ public:
 	void setOriginAbs(const Vector2f& origin);
 	void setVisible(bool visible);
 
+	void emancipate();
+	void denyChild(Widget* const child);
 	void addChild(Widget* const child, int32_t z = 0);
 	bool haveChild(const Widget* const child);
 	void setParent(Widget* const parent, int32_t z = 0);
@@ -50,7 +53,7 @@ public:
 	virtual void render(sf::RenderTarget& target);
 	void propagateRender(sf::RenderTarget& target);
 
-	void input();
+	std::array<bool, 9> input(const std::array<bool, 9>& mask);
 	void propagateInput();
 
 protected: //god this is growing into a god class... :(

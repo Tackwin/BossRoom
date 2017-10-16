@@ -38,18 +38,18 @@ void StartScreen::initializeGui() {
 
 	_guiRoot.addChild(&_weaponIcon);
 	_guiRoot.addChild(&_shop);
-	_shop.addWeapon(Weapon::_weapons[0]);
-	_shop.addWeapon(Weapon::_weapons[1]);
-	_shop.addWeapon(Weapon::_weapons[2]);
-	_shop.addWeapon(Weapon::_weapons[0]);
-	_shop.addWeapon(Weapon::_weapons[1]);
-	_shop.addWeapon(Weapon::_weapons[2]);
-	_shop.addWeapon(Weapon::_weapons[0]);
-	_shop.addWeapon(Weapon::_weapons[1]);
-	_shop.addWeapon(Weapon::_weapons[2]);
-	_shop.addWeapon(Weapon::_weapons[0]);
-	_shop.addWeapon(Weapon::_weapons[1]);
-	_shop.addWeapon(Weapon::_weapons[2]);
+	_shop.addWeapon(Weapon::_weapons[0].get());
+	_shop.addWeapon(Weapon::_weapons[1].get());
+	_shop.addWeapon(Weapon::_weapons[2].get());
+	_shop.addWeapon(Weapon::_weapons[0].get());
+	_shop.addWeapon(Weapon::_weapons[1].get());
+	_shop.addWeapon(Weapon::_weapons[2].get());
+	_shop.addWeapon(Weapon::_weapons[0].get());
+	_shop.addWeapon(Weapon::_weapons[1].get());
+	_shop.addWeapon(Weapon::_weapons[2].get());
+	_shop.addWeapon(Weapon::_weapons[0].get());
+	_shop.addWeapon(Weapon::_weapons[1].get());
+	_shop.addWeapon(Weapon::_weapons[2].get());
 }
 
 void StartScreen::onEnter() {

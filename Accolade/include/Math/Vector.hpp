@@ -4,7 +4,6 @@
 
 #include <SFML/System/Vector2.hpp>
 
-
 template<size_t D, typename T = float>
 struct Vector {
 	static Vector<D, T> createUnitVector(float angles[D]) {
@@ -84,10 +83,16 @@ struct Vector {
 		return *this;
 	}
 
-	bool inRect(const Vector<D, T>& pos, const Vector<D, T>& size) const {
-		for (size_t i = 0u; i < D; ++i)
-			if (!(pos[i] < components[i] && components[i] < pos[i] + size[i]))
+	template<typename U>
+	bool inRect(const Vector<D, U>& pos, const Vector<D, U>& size) const {
+		for (size_t i = 0u; i < D; ++i) {
+			if (!(
+					static_cast<T>(pos[i]) < components[i] &&
+					components[i] < static_cast<T>(pos[i] + size[i])
+				)) {
 				return false;
+			}
+		}
 
 		return true;
 	}

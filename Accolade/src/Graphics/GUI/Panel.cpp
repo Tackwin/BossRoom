@@ -28,8 +28,8 @@ void Panel::render(sf::RenderTarget& target) {
 		_size.y / _backSprite.getTextureRect().height
 	);
 	_backSprite.setOrigin({
-		_origin.x * getSize().x,
-		_origin.y * getSize().y
+		_origin.x * _backSprite.getTextureRect().width,
+		_origin.y * _backSprite.getTextureRect().height
 	});
 
 	_backSprite.setPosition(getGlobalPosition());
