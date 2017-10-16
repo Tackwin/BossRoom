@@ -4,6 +4,8 @@
 #include <functional>
 #include <stdarg.h>
 #include <vector>
+#include <map>
+#include <any>
 /*
 
 EventListener::create() {
@@ -27,17 +29,20 @@ EventFirer::collided_with(CollisionObject object) {
 
 class EventManager {
 public:
-	using EventCallback = void(*)(uint32_t, ...);
+	using EventCallbackParameter = const std::initializer_list<std::any>&;
+	using EventCallback = std::function<void(EventCallbackParameter)>;
 	
-	static void subscribe(const std::string& key, const EventCallback& callback);
-	static void unSuscribe(const std::string& key, const EventCallback& callback);
+	static uint32_t subscribe(const std::string& key, const EventCallback& callback);
+	static void unSubscribe(const std::string& key, uint32_t id);
 
-	static void fire(const std::string& key, uint32_t n, ...);
+	static void fire(std::string key, EventCallbackParameter args = {});
 private:
+
+	static uint32_t ID;
 
 	static 
 	std::unordered_map<
 		std::string, 
-		std::vector<EventCallback>
+		std::map<uint32_t, EventCallback>
 	> _callbacks;
 };
