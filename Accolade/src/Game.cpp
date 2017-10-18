@@ -107,7 +107,6 @@ Game::Game() :
 	Weapon w(*Weapon::_weapons[0]);
 	for (size_t i = 0u; i < 1'000'000; ++i) {
 		_player->swapWeapon(&w);
-		printf("%d\n", TimerManager::getNFunction());
 	}
 }
 
