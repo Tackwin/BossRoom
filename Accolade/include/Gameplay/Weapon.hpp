@@ -19,6 +19,7 @@ class Player;
 class Projectile;
 class Weapon : public Object {
 public:
+	Weapon();
 	Weapon(const Weapon& other);
 	Weapon(std::shared_ptr<Player> player, nlohmann::json json);
 	~Weapon();
@@ -40,7 +41,13 @@ public:
 
 	void setLootable(bool lootable);
 	bool isLootable() const;
+
+	void setName(const std::string& name);
+	std::string getName() const;
 	
+	void setCost(const uint32_t& cost);
+	uint32_t getCost() const;
+
 	void addProjectile(const std::shared_ptr<Projectile>& projectile);
 	const std::vector<std::shared_ptr<Projectile>>& getProjectileBuffer() const;
 	void clearProjectileBuffer();
@@ -50,10 +57,17 @@ public:
 
 	std::shared_ptr<Zone>& getLootZone();
 
+	Weapon& operator=(const Weapon& other);
+
 	static std::vector<std::shared_ptr<Weapon>> _weapons;
 	static void createWeapons(std::shared_ptr<Player> player);
 	static void destroyWeapons();
-public: //TODO: Make this private
+private: //TODO: Make this private
+	void swap(Weapon& other);
+
+	std::string _name;
+	uint32_t _cost;
+
 	std::shared_ptr<Player> _player;
 
 	Vector2f _lootedPos;
@@ -76,12 +90,12 @@ public: //TODO: Make this private
 	std::vector<sf::Sound> _activeSounds;
 	std::vector<std::shared_ptr<Projectile>> _projectileBuffer;
 
-	std::function<void(Weapon&)> _equip;
-	std::function<void(Weapon&)> _unEquip;
+	std::function<void(Weapon&)> _equip = [](Weapon&) {};
+	std::function<void(Weapon&)> _unEquip = [](Weapon&) {};
 
-	std::function<void(Weapon&, uint32)> _active;
-	std::function<void(Weapon&, uint32)> _passive;
+	std::function<void(Weapon&, uint32)> _active = [](Weapon&, uint32) {};
+	std::function<void(Weapon&, uint32)> _passive = [](Weapon&, uint32) {};
 
-	std::function<void(Weapon&, float)> _update;
+	std::function<void(Weapon&, float)> _update = [](Weapon&, float) {};
 };
 

@@ -22,6 +22,8 @@ public:
 	void update(double dt);
 	void updateDebugText(double dt);
 
+	Player* getPlayer() const;
+
 	void render(sf::RenderTarget& target);
 
 	void enterDungeon();

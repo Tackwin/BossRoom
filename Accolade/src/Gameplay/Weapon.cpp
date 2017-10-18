@@ -13,12 +13,16 @@
 #include "Gameplay/Player.hpp"
 #include "Gameplay/Level.hpp"
 
+Weapon::Weapon() {};
+
 Weapon::Weapon(std::shared_ptr<Player> player, nlohmann::json json)
 	: _player(player),
 	_json(json),
 	_radius(json["radius"]),
-	_lootZone(std::make_shared<Zone>(_radius)){
-
+	_lootZone(std::make_shared<Zone>(_radius)),
+	_name(""),
+	_cost(0)
+{
 	_lootedSprite = sf::Sprite(AssetsManager::getTexture(_json["sprite"]));
 	_uiSprite = sf::Sprite(AssetsManager::getTexture(_json["sprite"]));
 	_uiSprite.setScale(2, 2);
@@ -45,10 +49,9 @@ Weapon::Weapon(const Weapon& other) :
 	_update(other._update),
 	
 	_activeSounds(other._activeSounds),
-	_lootedPos(other._lootedPos) 
+	_lootedPos(other._lootedPos)
 
 {
-
 	_lootZone = std::make_shared<Zone>(_radius);
 
 	const std::string& str = _json["sprite"];
@@ -65,7 +68,6 @@ Weapon::Weapon(const Weapon& other) :
 
 
 Weapon::~Weapon() {
-
 }
 
 void Weapon::render(sf::RenderTarget& target) {
@@ -137,4 +139,48 @@ void Weapon::clearProjectileBuffer() {
 
 std::string Weapon::getStringSoundActive(uint32_t n) const {
 	return _json["sounds"]["active"][n].get<std::string>();
+}
+
+void Weapon::setName(const std::string& name) {
+	_name = name;
+}
+std::string Weapon::getName() const {
+	return _name;
+}
+
+void Weapon::setCost(const uint32_t& cost) {
+	_cost = cost;
+}
+uint32_t Weapon::getCost() const {
+	return _cost;
+}
+
+void Weapon::swap(Weapon& other) {
+	std::swap(_name, other._name);
+	std::swap(_cost, other._cost);
+	std::swap(_player, other._player);
+	std::swap(_lootedPos, other._lootedPos);
+	std::swap(_uiSprite, other._uiSprite);
+	std::swap(_lootedSprite, other._lootedSprite);
+	std::swap(_radius, other._radius);
+	std::swap(_keys, other._keys);
+	std::swap(_flags, other._flags);
+	std::swap(_json, other._json);
+	std::swap(_loot, other._loot);
+	std::swap(_looted, other._looted);
+	std::swap(_lootable, other._lootable);
+	std::swap(_lootZone, other._lootZone);
+	std::swap(_activeSounds, other._activeSounds);
+	std::swap(_projectileBuffer, other._projectileBuffer);
+	std::swap(_equip, other._equip);
+	std::swap(_unEquip, other._unEquip);
+	std::swap(_active, other._active);
+	std::swap(_passive, other._passive);
+	std::swap(_update, other._update);
+}
+
+Weapon& Weapon::operator=(const Weapon& other) {
+	Weapon tmp(other);
+	swap(tmp);
+	return *this;
 }

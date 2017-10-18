@@ -34,6 +34,8 @@ private:
 	static std::unordered_map<std::string, std::shared_ptr<Function>> _functions;
 
 public:
+	static uint32_t getNFunction();
+
 	static std::string addFunction(double timer, const std::string& key, const Function::Callback&& f);
 	static std::string addFunction(double timer, const std::string& key, const Function::Callback& f);
 	static std::string cloneFunction(const std::string& key);

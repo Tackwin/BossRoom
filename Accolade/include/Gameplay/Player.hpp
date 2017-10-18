@@ -14,9 +14,9 @@
 #include "Physics/Object.hpp"
 
 #include "Graphics/AnimatedSprite.hpp"
+#include "Gameplay/Weapon.hpp"
 
 class Level;
-class Weapon;
 class Projectile;
 class Player : public Object {
 public:
@@ -38,7 +38,8 @@ public:
 
 	Vector2f getDirToFire();
 
-	std::shared_ptr<Weapon> getWeapon() const;
+	const Weapon* getWeapon() const;
+	void swapWeapon(Weapon* weapon);
 	void swapWeapon(std::shared_ptr<Weapon> weapon);
 	
 	void addProjectile(const std::shared_ptr<Projectile>& projectile);
@@ -57,6 +58,8 @@ public:
 
 	void floored();
 	bool isFloored() const;
+
+	void unEquip();
 public: //TODO: Make private
 
 	uint32_t _nJumpsLeft = 2;
@@ -98,7 +101,7 @@ public: //TODO: Make private
 	bool _boostingJump = false;
 
 	Level* _level = nullptr;
-	std::shared_ptr<Weapon> _weapon;
+	Weapon _weapon;
 
 	AnimatedSprite _sprite;
 	sf::Sound _hitSound;

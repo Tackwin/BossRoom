@@ -13,7 +13,6 @@ auto Patterns::getValue(std::string pattern, nlohmann::json json, std::string st
 	return json[str].is_null() ? _json[pattern][str] : json[str];
 }
 
-
 nlohmann::json Patterns::_json;
 
 void Patterns::randomFire(Boss& boss, nlohmann::json json) {

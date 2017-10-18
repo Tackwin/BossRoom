@@ -42,4 +42,6 @@ void Label::render(sf::RenderTarget & target) {
 	target.draw(_text);
 }
 
-
+std::string Label::getString() const {
+	return _text.getString();
+}

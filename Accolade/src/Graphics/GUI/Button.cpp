@@ -1,19 +1,16 @@
 #include <Graphics/GUI/Button.hpp>
 
 Button::Button() : 
-Widget() {
-	_onClick.began = [&]() mutable {
-		_normal.setVisible(false);
-		_hold.setVisible(true);
-		return true;
-	};
-	_onClick.ended = [&]() mutable {
-		_normal.setVisible(true);
-		_hold.setVisible(false);
-		return true;
-	};
+	Widget() 
+{
+	_onClick.began = std::bind(&Button::onClickBegan, this);
+	_onClick.ended = std::bind(&Button::onClickEnded, this);
 
 	_hold.setVisible(false);
+
+	_normal.setParent(this, 0);
+	_hold.setParent(this, 1);
+	_label.setParent(this, 2);
 }
 
 sf::Sprite& Button::getSprite() {
@@ -42,23 +39,42 @@ void Button::computeSize() {
 	_size.y = std::max({ _normal.getSize().y, _hold.getSize().y, _label.getSize().y });
 }
 
-void Button::render(sf::RenderTarget& target) {
-	Widget::render(target);
-	if (!_visible) return;
+void Button::render(sf::RenderTarget&) {}
 
-	_normal.setOrigin(_origin);
-	_normal.setSize(_size);
-	_normal.setPosition(getGlobalPosition());
+void Button::setString(const std::string& label) {
+	_label.setString(label);
+}
+std::string Button::getString() const {
+	return _label.getString();
+}
 
-	_hold.setOrigin(_origin);
-	_hold.setSize(_size);
-	_hold.setPosition(getGlobalPosition());
+bool Button::onClickBegan() {
+	_normal.setVisible(false);
+	_hold.setVisible(true);
+	return true;
+}
+bool Button::onClickEnded() {
+	_normal.setVisible(true);
+	_hold.setVisible(false);
+	return true;
+}
+bool Button::onClickGoing() {
+	return false;
+}
 
-	_label.setOrigin(_origin);
-	_label.setSize(_size);
-	_label.setPosition(getGlobalPosition());
+void Button::setSize(const Vector2f& size) {
+	Widget::setSize(size);
+	_normal.setSize(size);
+	_label.setSize(size);
+	_hold.setSize(size);
+}
+void Button::setOrigin(const Vector2f& origin) {
+	Widget::setOrigin(origin);
+	_normal.setOrigin(origin);
+	_label.setOrigin(origin);
+	_hold.setOrigin(origin);
+}
 
-	_normal.render(target);
-	_hold.render(target);
-	_label.render(target);
+Label& Button::getLabel() {
+	return _label;
 }

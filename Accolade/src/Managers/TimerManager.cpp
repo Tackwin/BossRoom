@@ -7,6 +7,10 @@
 
 std::unordered_map<std::string, std::shared_ptr<TimerManager::Function>> TimerManager::_functions;
 
+uint32_t TimerManager::getNFunction() {
+	return _functions.size();
+}
+
 std::string TimerManager::addFunction(double timer, const std::string& key, const Function::Callback&& f) {
 	uint8_t i = (uint8_t)rand();
 	std::string candidate = key + std::to_string(i);

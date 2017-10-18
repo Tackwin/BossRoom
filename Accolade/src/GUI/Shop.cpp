@@ -1,11 +1,16 @@
 #include "GUI/Shop.hpp"
 
+#include <string>
+
+#include "Game.hpp"
 #include "Const.hpp"
 
 #include "Math/Rectangle.hpp"
 
 #include "Managers/AssetsManager.hpp"
 #include "Managers/InputsManager.hpp"
+
+#include "Gameplay/Player.hpp"
 
 Shop::Shop() : 
 	Widget(),
@@ -33,13 +38,7 @@ Shop::Shop() :
 	});
 	_quitPanel.setParent(&_merchantPanel, 2);
 
-	_infoPanel.setSprite(sf::Sprite(AssetsManager::getTexture("panel_a")));
-	_infoPanel.setOrigin({ 0, 0 });
-	_infoPanel.setPosition({ WIDTH * 0.4f - 25, 25.f });
-	_infoPanel.setSize({ WIDTH * 0.4f - 25, HEIGHT * 0.7f - 25 });
-	_infoPanel.getSprite().setColor(sf::Color(120, 110, 110));
 	_infoPanel.setParent(&_merchantPanel, 2);
-	_infoPanel.setVisible(false);
 
 	_focusPanel.setSprite(sf::Sprite(AssetsManager::getTexture("panel_a")));
 	_focusPanel.setSize({ _ItemPanel::PANEL_SIZE + 2, _ItemPanel::PANEL_SIZE + 2 });
@@ -52,7 +51,7 @@ Shop::~Shop() {
 	Widget::~Widget();
 }
 
-void Shop::addWeapon(const Weapon* weapon) {
+void Shop::addWeapon(Weapon* weapon) {
 	constexpr uint32_t itemPerRow = 7;
 
 	uint32_t size = _itemPanels.size();
@@ -142,7 +141,7 @@ void Shop::unFocus() {
 	_infoPanel.setVisible(false);
 }
 
-Shop::_ItemPanel::_ItemPanel(Shop * shop, const Weapon* weapon, uint32_t id) :
+Shop::_ItemPanel::_ItemPanel(Shop * shop, Weapon* weapon, uint32_t id) :
 	_shop(shop),
 	weapon(weapon),
 	_id(id)
@@ -179,8 +178,15 @@ bool Shop::_ItemPanel::onClickGoing() {
 Shop::_InfoPanel::_InfoPanel(Shop* shop) :
 	_shop(shop)
 {
+	setSprite(sf::Sprite(AssetsManager::getTexture("panel_a")));
+	setOrigin({ 0, 0 });
+	setPosition({ WIDTH * 0.4f - 25, 25.f });
+	setSize({ WIDTH * 0.4f - 25, HEIGHT * 0.7f - 25 });
+	getSprite().setColor(sf::Color(120, 110, 110));
+	setVisible(false);
+
 	auto& name = labels["name"];
-	name.setString("Name: Le niqueur de maman");
+	name.setString("Name: ");
 	name.setFont("consola");
 	name.setCharSize(25);
 	name.setPosition({ 50, 25 });
@@ -193,20 +199,53 @@ Shop::_InfoPanel::_InfoPanel(Shop* shop) :
 	effect.setPosition({ 70, 50 });
 	effect.setParent(this, 1);
 
+	auto& cost = labels["cost"];
+	cost.setString("cost: ");
+	cost.setFont("consola");
+	cost.setCharSize(22);
+	cost.setPosition({ 70, 75 });
+	cost.setParent(this, 1);
+
 	auto& icon = panels["icon"];
 	icon.setParent(this, 1);
+
+	auto& buy = buttons["buy"];
+	buy.getLabel().setFont("consola");
+	buy.setSprite(sf::Sprite(AssetsManager::getTexture("panel_a")));
+	buy.getSprite().setColor(sf::Color(150, 160, 150));
+	buy.setSize({ 200, 65 });
+	buy.setString("Buy");
+	buy.setOrigin({ .5f, .5f });
+	buy.setPosition({ getSize().x / 2, getSize().y * 0.75f });
+	buy.setParent(this, 1);
+	buy.setOnClick({
+		std::bind(&Shop::_InfoPanel::onClickBegan, this),
+		std::bind(&Shop::_InfoPanel::onClickEnded, this),
+		std::bind(&Shop::_InfoPanel::onClickGoing, this)
+	});
 }
-void Shop::_InfoPanel::populateBy(const Weapon* weapon) {
+void Shop::_InfoPanel::populateBy(Weapon* weapon) {
+	using namespace std::literals;
+
 	auto& icon = panels["icon"];
 	icon.setSprite(weapon->getUiSprite());
 	icon.setSize({ 150, 150 });
-	icon.setPosition({ 50, 100 });
+	icon.setPosition({ 50, 120 });
+
+	auto& name = labels["name"];
+	name.setString("Name: "s + weapon->getName());
+
+	auto& cost = labels["cost"];
+	cost.setString("Cost: "s + std::to_string(weapon->getCost()));
+
+	_weapon = weapon;
 }
 
 bool Shop::_InfoPanel::onClickBegan() {
 	return true;
 }
 bool Shop::_InfoPanel::onClickEnded() {
+	game->getPlayer()->swapWeapon(_weapon);
 	return true;
 }
 bool Shop::_InfoPanel::onClickGoing() {

@@ -9,10 +9,10 @@
 #include "Physics/World.hpp"
 
 #include "Gameplay/Zone.hpp"
+#include "Gameplay/Weapon.hpp"
 
 class Boss;
 class Probe;
-class Weapon;
 class Player;
 class Particle; 
 class Projectile;
@@ -54,7 +54,7 @@ private: // TODO: Make this private
 	std::shared_ptr<Boss> _boss = nullptr;
 	std::shared_ptr<Player> _player = nullptr;
 
-	std::vector<std::shared_ptr<Weapon>> _loot = {};
+	std::vector<Weapon> _loot = {};
 
 	LevelScreen* _screen = nullptr; //How the fuck i'm supposed to make LevelScreen pass this as a shared_ptr
 									//(std::enable_shared_from_this has his probleme) anyway, i DON'T have the ownership

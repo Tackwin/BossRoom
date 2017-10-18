@@ -64,6 +64,8 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 		sound.setVolume(SOUND_LEVEL);
 		
 		_weapons[0]->_activeSounds.push_back(sound);
+		_weapons[0]->setName("La sulfateuse");
+		_weapons[0]->setCost(1u);
 	}
 	{
 		_weapons.push_back(std::make_shared<Weapon>(player, AssetsManager::getJson(JSON_KEY)["weapons"][1]));
@@ -109,6 +111,8 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 		sound.setVolume(SOUND_LEVEL);
 
 		_weapons[1]->_activeSounds.push_back(sound);
+		_weapons[1]->setName("La sulfateuse excité");
+		_weapons[1]->setCost(5u);
 	}
 	{
 		_weapons.push_back(std::make_shared<Weapon>(player, AssetsManager::getJson(JSON_KEY)["weapons"][2]));
@@ -153,6 +157,8 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 		sound.setVolume(SOUND_LEVEL);
 
 		_weapons[2]->_activeSounds.push_back(sound);
+		_weapons[2]->setName("l'éclabousseur");
+		_weapons[2]->setCost(10u);
 	}
 	{
 		_weapons.push_back(std::make_shared<Weapon>(player, AssetsManager::getJson(JSON_KEY)["weapons"][3]));

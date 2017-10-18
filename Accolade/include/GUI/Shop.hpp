@@ -14,7 +14,7 @@ public:
 	Shop();
 	~Shop();
 
-	void addWeapon(const Weapon* weapon);
+	void addWeapon(Weapon* weapon);
 
 	void focusItem(uint32_t i);
 	void unFocus();
@@ -25,7 +25,7 @@ private:
 	struct _ItemPanel : public Panel {
 		static constexpr float PANEL_SIZE = 60.f;
 
-		_ItemPanel(Shop* shop, const Weapon* weapon, uint32_t id);
+		_ItemPanel(Shop* shop, Weapon* weapon, uint32_t id);
 
 		bool onClickBegan();
 		bool onClickEnded();
@@ -34,7 +34,7 @@ private:
 		Panel sprite;
 		Label label;
 
-		const Weapon* weapon;
+		Weapon* weapon;
 
 	private:
 		Shop* _shop;
@@ -44,7 +44,7 @@ private:
 	public:
 		_InfoPanel(Shop* shop);
 
-		void populateBy(const Weapon* weapon);
+		void populateBy(Weapon* weapon);
 
 		bool onClickBegan();
 		bool onClickEnded();
@@ -52,9 +52,12 @@ private:
 
 		std::map<std::string, Panel> panels;
 		std::map<std::string, Label> labels;
+		std::map<std::string, Button> buttons;
 	private:
+		
 		Shop* _shop;
 
+		Weapon* _weapon;
 	};
 
 	bool onClickBegan();

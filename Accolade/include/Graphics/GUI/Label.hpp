@@ -16,6 +16,8 @@ public:
 	void setTextColor(const sf::Color& color);
 	void setCharSize(const uint32_t& size);
 
+	std::string getString() const;
+
 	void computeSize();
 
 	virtual void render(sf::RenderTarget& target);

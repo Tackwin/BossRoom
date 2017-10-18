@@ -124,26 +124,23 @@ const std::vector<std::pair<int32_t, Widget*>> Widget::getChilds() {
 	return _childs;
 }
 
-void Widget::render(sf::RenderTarget&) { }
+void Widget::render(sf::RenderTarget&) {}
 void Widget::propagateRender(sf::RenderTarget& target) {
 	std::queue<Widget*> open;
-	std::vector<Widget*> close;
-
 	open.push(this);
+
 	while (!open.empty()) {
 		auto w = open.front();
 		open.pop();
 		w->render(target);
 
 		auto child = w->getChilds();
-		if (!w->isVisible()) continue;
-		for (auto& [_, c] : child) {
-			if (std::find(close.begin(), close.end(), c) != close.end()) { // i think i can get rid of this given that my graph is a tree
-				continue;
-			}
+		
+		if (!w->isVisible()) 
+			continue;
 
+		for (auto& [_, c] : child) {
 			open.push(c);
-			close.push_back(c);
 		}
 	}
 }

@@ -61,7 +61,7 @@ void StartScreen::onEnter() {
 	initializeWorld();
 }
 void StartScreen::onExit() {
-	_player->_weapon->unEquip();
+	_player->unEquip();
 	_projectiles.clear();
 	_world.purge();
 }
@@ -157,9 +157,10 @@ void StartScreen::renderGui(sf::RenderTarget& target) {
 	const auto oldView = target.getView();
 	target.setView(_guiView);
 	
-	_weaponIcon.setVisible((bool)_player->_weapon);
-	if (_player->_weapon) {
-		_weaponIcon.setSprite(_player->_weapon->_uiSprite);
+
+	_weaponIcon.setVisible((bool)_player->getWeapon());
+	if (_player->getWeapon()) {
+		_weaponIcon.setSprite(_player->getWeapon()->getUiSprite());
 		_weaponLabel.setPosition(_weaponIcon.getSize() * (-1.f));
 	}
 

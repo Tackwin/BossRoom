@@ -104,6 +104,11 @@ Game::Game() :
 	_debugText["ups"].setPosition(5, 5);
 	_debugText["ups"].setFillColor(sf::Color(100, 100, 100));
 
+	Weapon w(*Weapon::_weapons[0]);
+	for (size_t i = 0u; i < 1'000'000; ++i) {
+		_player->swapWeapon(&w);
+		printf("%d\n", TimerManager::getNFunction());
+	}
 }
 
 void Game::pop() {
@@ -112,4 +117,8 @@ void Game::pop() {
 	_screens.top()->onExit();
 	delete _screens.top();
 	_screens.pop();
+}
+
+Player* Game::getPlayer() const {
+	return _player.get();
 }

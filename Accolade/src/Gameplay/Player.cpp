@@ -64,21 +64,21 @@ void Player::initializeJson() {
 
 
 void Player::enterLevel(Level* level) {
-	_weapon->equip();
+	_weapon.equip();
 
  	_level = level;
 
 	_hitBox.onEnter = [&](Object* obj) { collision(obj); };
 }
 void Player::exitLevel() {
-	_weapon->unEquip();
+	_weapon.unEquip();
 	_level = nullptr;
 }
 
 void Player::update(double) {
 	bool tryingToShoot = game->_distance && InputsManager::isMousePressed(_AK);
 	if (tryingToShoot) {
-		_weapon->active(0);
+		_weapon.active(0);
 	}
 
 	if (!_freeze) {
@@ -119,13 +119,13 @@ void Player::update(double) {
 		flatVelocities.push_back(_dir * (float)(InputsManager::isKeyPressed(_slowK) ? _slowSpeed : _speed));
 	}
 
-	const auto& projectileBuffer = _weapon->getProjectileBuffer();
+	const auto& projectileBuffer = _weapon.getProjectileBuffer();
 	_projectilesToShoot.insert(
 		_projectilesToShoot.end(),
 		projectileBuffer.begin(),
 		projectileBuffer.end()
 	);
-	_weapon->clearProjectileBuffer();
+	_weapon.clearProjectileBuffer();
 }
 
 void Player::render(sf::RenderTarget &target) {
@@ -161,10 +161,14 @@ void Player::startCaC() {
 	_freeze = true;
 }
 
+void Player::swapWeapon(Weapon* weapon) {
+	_weapon.unEquip();
+	_weapon = *weapon;
+	_weapon.equip();
+}
+
 void Player::swapWeapon(std::shared_ptr<Weapon> weapon) {
-	if(_weapon) _weapon->unEquip();
-	_weapon = weapon;
-	_weapon->equip();
+	swapWeapon(weapon.get());
 }
 
 Vector2f Player::getDirToFire() {
@@ -202,20 +206,19 @@ void Player::collision(Object* obj) {
 }
 
 void Player::dropWeapon() {
-	_weapon->loot(getPos());
-	_weapon->setLootable(false);
+
+	_weapon.loot(getPos());
+	_weapon.setLootable(false);
 
 	TimerManager::addFunction(0.5f, "ActivateLoot", [w = _weapon](double)mutable->bool {
-		if (w) {
-			w->setLootable(true);
-		}
+		w.setLootable(true);
 
 		return true;
 	});
 }
 
-std::shared_ptr<Weapon> Player::getWeapon() const {
-	return _weapon;
+const Weapon* Player::getWeapon() const {
+	return &_weapon;
 }
 
 void Player::floored() {
@@ -226,4 +229,8 @@ void Player::floored() {
 }
 bool Player::isFloored() const {
 	return _floored;
+}
+
+void Player::unEquip() {
+	_weapon.unEquip();
 }
