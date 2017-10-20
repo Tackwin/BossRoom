@@ -53,7 +53,7 @@ bool TimerManager::functionsExist(const std::string& key) {
 void TimerManager::removeFunction(const std::string& key) {
 	auto it = _functions.find(key);
 	assert(it != std::end(_functions) && "Can't find the function");
-	_functions.erase(it);
+	it->second->toRemove = true;
 }
 void TimerManager::pauseFunction(const std::string& key) {
 	auto it = _functions.find(key);

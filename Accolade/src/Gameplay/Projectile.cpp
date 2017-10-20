@@ -43,7 +43,7 @@ Projectile::Projectile(nlohmann::json json, Vector2f pos, Vector2f dir, bool pla
 		dist(RNG) * whole	, dist(RNG) * whole, 
 		whole				,	whole
 	});
-	_sprite.setOrigin(_radius * 2, _radius * 2); // i don't know why i need to double it, maybe because i do shit with texture rect just above...
+	_sprite.setOrigin(_radius, _radius); // i don't know why it's off, maybe because i do shit with texture rect just above...
 	_sprite.setPosition(pos);
 
 	_key = TimerManager::addFunction(_lifespan, "destroy", [&](double)->bool {

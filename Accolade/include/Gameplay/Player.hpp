@@ -62,6 +62,9 @@ public:
 	void unEquip();
 public: //TODO: Make private
 
+	void keyPress(sf::Keyboard::Key key);
+	void jumpKeyPressed();
+
 	uint32_t _nJumpsLeft = 2;
 
 	int32_t _AK;

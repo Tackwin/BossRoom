@@ -1,5 +1,7 @@
 #include "Managers/InputsManager.hpp"
 
+#include "Managers/EventManager.hpp"
+
 bool InputsManager::keyPressed[sf::Keyboard::KeyCount];
 bool InputsManager::keyJustPressed[sf::Keyboard::KeyCount];
 bool InputsManager::keyJustReleased[sf::Keyboard::KeyCount];
@@ -67,6 +69,8 @@ void InputsManager::update(sf::RenderWindow &window) {
 
 			keyJustPressed[event.key.code] = true;
 			keyPressed[event.key.code] = true;
+
+			EventManager::fire("keyPressed", { event.key.code });
 		}
 		if(event.type == sf::Event::KeyReleased) {
 			if (event.key.code == sf::Keyboard::Unknown)
@@ -74,19 +78,34 @@ void InputsManager::update(sf::RenderWindow &window) {
 
 			keyJustReleased[event.key.code] = true;
 			keyPressed[event.key.code] = false;
+			
+			EventManager::fire("keyReleased", { event.key.code });
 		}
 		if(event.type == sf::Event::MouseButtonPressed) {
 			mouseJustPressed[event.mouseButton.button] = true;
 			mousePressed[event.mouseButton.button] = true;
+			
+			EventManager::fire("mousePressed", { event.mouseButton.button });
 		}
 		if(event.type == sf::Event::MouseButtonReleased) {
 			mouseJustReleased[event.mouseButton.button] = true;
 			mousePressed[event.mouseButton.button] = false;
+			
+			EventManager::fire("mouseReleased", { event.mouseButton.button });
 		}
 	}
+	for (int32_t i = 0u; i < sf::Keyboard::KeyCount; ++i) {
+		if (keyPressed[i])
+			EventManager::fire("keyPress", { i });
+	}
+	for (int32_t i = 0u; i < sf::Mouse::ButtonCount; ++i) {
+		if (mousePressed[i])
+			EventManager::fire("mousePress", { i });
+	}
+
 	mouseScreenPos.x = (float)sf::Mouse::getPosition(window).x;
 	mouseScreenPos.y = (float)sf::Mouse::getPosition(window).y;
 	
-	mouseWorldPos.x = window.mapPixelToCoords({ (int)mouseScreenPos.x, (int)mouseScreenPos.y }).x;
-	mouseWorldPos.y = window.mapPixelToCoords({ (int)mouseScreenPos.x, (int)mouseScreenPos.y }).y;
+	mouseWorldPos.x = window.mapPixelToCoords({ (int32_t)mouseScreenPos.x, (int32_t)mouseScreenPos.y }).x;
+	mouseWorldPos.y = window.mapPixelToCoords({ (int32_t)mouseScreenPos.x, (int32_t)mouseScreenPos.y }).y;
 }

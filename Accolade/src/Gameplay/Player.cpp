@@ -6,6 +6,7 @@
 #include "Managers/InputsManager.hpp"
 #include "Managers/AssetsManager.hpp"
 #include "Managers/TimerManager.hpp"
+#include "Managers/EventManager.hpp"
 
 #include "Gameplay/Projectile.hpp"
 #include "Gameplay/Weapon.hpp"
@@ -27,6 +28,19 @@ Player::Player(const nlohmann::json& json) :
 	pos = { 100, 100 };
 	idMask |= Object::BIT_TAGS::PLAYER;
 	collisionMask |= Object::BIT_TAGS::FLOOR;
+
+	EventManager::subscribe("keyPressed", [&](EventManager::EventCallbackParameter args) -> void {
+		auto key = std::any_cast<sf::Keyboard::Key>(*args.begin());
+
+		if (key == _jumpK) {
+			jumpKeyPressed();
+		}
+	});
+
+	EventManager::subscribe("keyPress", [&](EventManager::EventCallbackParameter args) -> void {
+		auto key = std::any_cast<int32_t>(*args.begin());
+		keyPress(static_cast<sf::Keyboard::Key>(key));
+	});
 }
 
 Player::~Player() {
@@ -82,35 +96,10 @@ void Player::update(double) {
 	}
 
 	if (!_freeze) {
-		_dir = { 0, 0 };
-		if (InputsManager::isKeyPressed(_upK)) {
-			_dir.y = -1;
-		}
-		else if (InputsManager::isKeyPressed(_downK)) {
-			_dir.y = 1;
-		}
-		if (InputsManager::isKeyPressed(_leftK)) {
-			_dir.x = -1;
-		}
-		else if (InputsManager::isKeyPressed(_rightK)) {
-			_dir.x = 1;
-		}
-
-		if (InputsManager::isKeyJustPressed(_jumpK) && _nJumpsLeft > 0u) {
-			if (_floored)
-				_floored = false;
-
-			_jumping = true;
-
-			velocity.y = -sqrtf(G * 2.f * _jumpHeight); // derived from equation of motion, thanks Newton
-			_nJumpsLeft--;
-		}
-		else if (InputsManager::isKeyPressed(_jumpK) && _jumping) {
-			flatVelocities.push_back({ 0, -300 });
-		}
-		else if (_jumping && !InputsManager::isKeyPressed(_jumpK)) {
+		if (_jumping && !InputsManager::isKeyPressed(_jumpK)) {
 			_jumping = false;
 		}
+
 		_dir.normalize();
 	
 		if (tryingToShoot) _dir *= 0.2f;
@@ -233,4 +222,38 @@ bool Player::isFloored() const {
 
 void Player::unEquip() {
 	_weapon.unEquip();
+}
+
+void Player::jumpKeyPressed() {
+	if (_nJumpsLeft > 0u) {
+		if (_floored)
+			_floored = false;
+
+		_jumping = true;
+
+		velocity.y = -sqrtf(G * 2.f * _jumpHeight); // derived from equation of motion, thanks Newton
+		_nJumpsLeft--;
+	}
+}
+
+void Player::keyPress(sf::Keyboard::Key key) {
+	_dir = { 0, 0 };
+
+	if (key == _upK) {
+		_dir.y = -1;
+	}
+	else if (key == _downK) {
+		_dir.y = 1;
+	}
+
+	if (key == _leftK) {
+		_dir.x = -1;
+	}
+	else if (key == _rightK) {
+		_dir.x = 1;
+	}
+
+	if (key == _jumpK && _jumping) {
+		flatVelocities.push_back({ 0, -300 });
+	}
 }

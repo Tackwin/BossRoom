@@ -1,6 +1,6 @@
 #include "Managers/EventManager.hpp"
 
-std::unordered_map<std::string, std::map<uint32_t, EventManager::EventCallback>> EventManager::_callbacks;
+std::unordered_map<std::string, std::unordered_map<uint32_t, EventManager::EventCallback>> EventManager::_callbacks;
 
 uint32_t EventManager::subscribe(const std::string& key, const EventCallback& callback) {
 	auto& map = _callbacks[key];

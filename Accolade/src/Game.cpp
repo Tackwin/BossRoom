@@ -103,11 +103,6 @@ Game::Game() :
 	_debugText["ups"].setCharacterSize(20);
 	_debugText["ups"].setPosition(5, 5);
 	_debugText["ups"].setFillColor(sf::Color(100, 100, 100));
-
-	Weapon w(*Weapon::_weapons[0]);
-	for (size_t i = 0u; i < 1'000'000; ++i) {
-		_player->swapWeapon(&w);
-	}
 }
 
 void Game::pop() {

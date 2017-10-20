@@ -4,28 +4,7 @@
 #include <functional>
 #include <stdarg.h>
 #include <vector>
-#include <map>
 #include <any>
-/*
-
-EventListener::create() {
-	subscirbe("event", &on_event);
-}
-
-EventListener::on_event(T a, U b,...) {
-	unSubscirbe("event", &on_event);
-	// Do stuff...
-}
-
-And here is a producer:
-EventFirer::collided_with(CollisionObject object) {
-	fire("event", new T(), new U());
-}
-
-
-*/
-
-
 
 class EventManager {
 public:
@@ -40,9 +19,8 @@ private:
 
 	static uint32_t ID;
 
-	static 
-	std::unordered_map<
+	static std::unordered_map<
 		std::string, 
-		std::map<uint32_t, EventCallback>
+		std::unordered_map<uint32_t, EventCallback>
 	> _callbacks;
 };
