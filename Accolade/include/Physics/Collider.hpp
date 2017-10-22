@@ -15,6 +15,7 @@ struct Collider {
 	using Callback = std::function<void(Object*)>;
 
 	Callback onEnter = [](Object*) {};
+	Callback onExit = [](Object*) {};
 
 	Vector2f dtPos = { 0, 0 };
 

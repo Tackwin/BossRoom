@@ -8,7 +8,7 @@ void World::updateInc(double dt, uint32_t itLevel) {
 		update(dt / itLevel);
 	}
 
-	for (auto wobj1 : _objects) {
+	for (auto& [_, wobj1] : _objectsMap) { // pls fix this intellisense bug soon ;(
 		auto obj1 = wobj1.lock();
 
 		obj1->flatVelocities.clear();
@@ -16,32 +16,33 @@ void World::updateInc(double dt, uint32_t itLevel) {
 	}
 }
 
+#pragma warning(push)
+#pragma warning(disable:4239)
 void World::update(double dt) {
-	for (uint32_t i = _objects.size(); i > 0u; --i) {
-		if (!_objects[i - 1].expired()) continue;
+	for (auto& it : _objectsMap) { 
+		auto& id = it.first;
+		auto& obj = it.second;
+
+		if (!obj.expired()) continue;
 		
-		_objects.erase(_objects.begin() + i - 1);
+		for (uint32_t j = 0u; j < Object::BITSET_SIZE; ++j) {
+			auto& jt = std::find(_objectsPool[j].cbegin(), _objectsPool[j].cend(), id);
+			if (jt == _objectsPool[j].end()) continue;
+
+			_objectsPool[j].erase(jt);
+		}
+
+		_objectsMap.erase(id);
 	}
 
-	for (uint32_t j = 0u; j < Object::BITSET_SIZE; ++j) {
-		for (uint32_t k = _objectsPool[j].size(); k > 0u; --k) {
-			if (!_objectsPool[j][k - 1].expired()) continue;
-			
-			_objectsPool[j].erase(_objectsPool[j].begin() + k - 1);
-		}
-	}
+	std::vector<Vector2f> vec;
+	auto sum = std::accumulate(vec.begin(), vec.end(), Vector2f(0, 0));
 
-	for (auto& obj1w : _objects) {
-		auto obj1 = obj1w.lock();
+	for (auto& it : _objectsMap) {
+		auto obj1 = it.second.lock();
 
-		Vector2f flatForces = { 0, 0 };
-		for (const auto& v : obj1->flatForces) {
-			flatForces += v;
-		}
-		Vector2f flatVelocities = { 0, 0 };
-		for (const auto& v : obj1->flatVelocities) {
-			flatVelocities += v;
-		}
+		Vector2f flatForces = std::accumulate(obj1->flatForces.begin(), obj1->flatForces.end(), Vector2f(0, 0));
+		Vector2f flatVelocities = std::accumulate(obj1->flatVelocities.begin(), obj1->flatVelocities.end(), Vector2f(0, 0));
 
 		Vector2f pos = obj1->pos;
 
@@ -51,50 +52,55 @@ void World::update(double dt) {
 		bool xCollider = false;
 		bool yCollider = false;
 
-		bool collisionCalback = false;
+		const auto& unions = getUnionOfMask(obj1->collisionMask);
 
-		for (uint32_t i = 0u; i < Object::BITSET_SIZE && obj1->collider; ++i) {
-			if (!obj1->collisionMask[i]) continue;
-			
-			for (auto& obj2w : _objectsPool[i]) {
-				auto obj2 = obj2w.lock();
+		for (auto& obj2w : unions) {
+			auto obj2 = _objectsMap[obj2w].lock();
 
-				if (obj1.get() == obj2.get()) continue;
+			if (obj1.get() == obj2.get()) continue;
 
+			if (!xCollider) {
 				obj1->pos.x = nPos.x;
 				obj1->collider->setPos({ nPos.x, pos.y });
-				if (!xCollider && obj1->collider->collideWith(obj2->collider)) {
+
+				if (obj1->collider->collideWith(obj2->collider)) {
 					nVel.x = 0;
 					obj1->pos.x = pos.x;
 					nPos.x = pos.x;
 					xCollider = true;
 				}
+			}
 
-				obj1->pos = nPos;
-				obj1->collider->setPos(nPos);
-				if (!yCollider && obj1->collider->collideWith(obj2->collider)) {
+			if (!yCollider) {
+				obj1->pos.y = nPos.y;
+				obj1->collider->setPos({ pos.x, nPos.y });
+
+				if (obj1->collider->collideWith(obj2->collider)) {
 					nVel.y = 0;
 					obj1->pos.y = pos.y;
 					nPos.y = pos.y;
 					yCollider = true;
 				}
+			}
 
-				if ((xCollider || yCollider) && !collisionCalback) {
-					if (!_collisionStates[{obj1->id, obj2->id}]) {
-						obj1->collider->onEnter(obj2.get());
-						obj2->collider->onEnter(obj1.get());
-					}
-
-					_collisionStates[{obj1->id, obj2->id}] = true;
-					collisionCalback = true;
-				}
-				else {
-					_collisionStates[{obj1->id, obj2->id}] = false;
+			if (xCollider || yCollider) {
+				if (!_collisionStates[{obj1->id, obj2->id}]) {
+					obj1->collider->onEnter(obj2.get());
+					obj2->collider->onEnter(obj1.get());
 				}
 
-				if (xCollider && yCollider) {
-					break;
+				_collisionStates[{obj1->id, obj2->id}] = true;
+			}
+			else {
+				if (_collisionStates[{obj1->id, obj2->id}]) {
+					obj1->collider->onExit(obj2.get());
+					obj2->collider->onExit(obj1.get());
 				}
+				_collisionStates[{obj1->id, obj2->id}] = false;
+			}
+
+			if (xCollider && yCollider) {
+				break;
 			}
 		}
 
@@ -108,46 +114,76 @@ void World::update(double dt) {
 }
 
 void World::render(sf::RenderTarget& target) {
-	for (auto& obj : _objects) {
+	for (auto& [_, obj] : _objectsMap) {
 		if (obj.expired()) continue;
 
 		obj.lock()->collider->render(target);
 	}
 }
 
-
 void World::addObject(std::weak_ptr<Object> obj) {
-	_objects.push_back(obj);
+	uint32_t id = getUID();
+	_objectsMap[id] = obj;
 
 	for (uint32_t i = 0u; i < Object::BITSET_SIZE; ++i) {
 		if (!obj.lock()->idMask[i]) continue;
 
-		_objectsPool[i].push_back(obj);
+		_objectsPool[i].push_back(id);
+		std::sort(_objectsPool[i].begin(), _objectsPool[i].end());
 	}
 }
 
-void World::delObject(std::weak_ptr<Object> obj) {
-	for (uint32_t i = _objects.size(); i > 0u; --i) {
-		if (_objects[i - 1].lock() == obj.lock()) {
-			_objects.erase(_objects.begin() + i - 1);
+void World::delObject(std::weak_ptr<Object> obj_) {
+	uint32_t id = 0u;
+	for (auto& [id_, obj] : _objectsMap) {
+		if (obj.lock() == obj_.lock()) {
+			id = id_;
+			_objectsMap.erase(id);
 			break;
 		}
 	}
 
-	for (uint32_t i = 0u; i < Object::BITSET_SIZE; ++i) {
-		if (!obj.lock()->idMask[i]) continue;
+	for (size_t i = 0u; i < Object::BITSET_SIZE; ++i) {
+		if (!obj_.lock()->idMask[i]) continue;
 
-		for (uint32_t j = _objectsPool[i].size(); j > 0u; --j) {
-			if (_objectsPool[i][j - 1].lock() == obj.lock()) {
-				_objectsPool[i].erase(_objectsPool[i].begin() + j - 1);
-				break;
-			}
-		}
+		auto &it = std::find(_objectsPool[i].cbegin(), _objectsPool[i].cend(), id);
+		_objectsPool[i].erase(it);
+		std::sort(_objectsPool[i].begin(), _objectsPool[i].end());
 	}
 }
+#pragma warning(pop)
 
 void World::purge() {
-	_objects.clear();
+	_objectsMap.clear();
 	for (uint32_t i = 0u; i < Object::BITSET_SIZE; ++i) 
 		_objectsPool[i].clear();
+}
+
+uint32_t World::getUID() const {
+	uint32_t n_id = 0u;
+	bool flag = false;
+	do {
+		flag = false;
+		for (auto& [id, _] : _objectsMap) {
+			if (n_id == id) {
+				n_id++;
+				flag = true;
+			}
+		}
+	} while (flag);
+	return n_id;
+}
+
+std::vector<uint32_t> World::getUnionOfMask(const std::bitset<Object::BITSET_SIZE>& mask) {
+	std::vector<uint32_t> result;
+
+	for (size_t i = 0u; i < Object::BITSET_SIZE; ++i) {
+		if (!mask[i]) continue;
+
+		std::set_union(	_objectsPool[i].begin()	, _objectsPool[i].end(),
+						result.begin()			, result.end(),
+						std::back_inserter(result));
+	}
+
+	return result;
 }

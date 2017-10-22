@@ -3,6 +3,7 @@
 //Everything here is juste shit, i'm coming back in the old way
 
 #include <map>
+#include <unordered_map>
 #include <memory>
 #include <vector>
 
@@ -23,6 +24,9 @@ public:
 
 	void purge();
 private:
+
+	std::vector<uint32_t> getUnionOfMask(const std::bitset<Object::BITSET_SIZE>& mask);
+
 	template<typename T>
 	struct ordered_pair {
 		T first;
@@ -45,10 +49,12 @@ private:
 		}
 	};
 
+	uint32_t getUID() const;
+
 	uint32_t _iterationLevel = 5;
 
 	std::map<ordered_pair<uint64_t>, bool> _collisionStates;
 
-	std::vector<std::weak_ptr<Object>> _objects;
-	std::vector<std::weak_ptr<Object>> _objectsPool[Object::BITSET_SIZE];
+	std::unordered_map<uint32_t, std::weak_ptr<Object>> _objectsMap;
+	std::vector<uint32_t> _objectsPool[Object::BITSET_SIZE];
 };

@@ -17,8 +17,9 @@ void Disk::render(sf::RenderTarget& target) {
 	target.draw(shape);
 }
 
-bool Disk::collideWith(const Collider* collider) const {
+#pragma warning(push)
 #pragma warning(disable:4456)
+bool Disk::collideWith(const Collider* collider) const {
 	if (auto ptr = static_cast<const Disk*>(collider); collider->type == Type::DISK) {
 		return (getGlobalPos() - ptr->getGlobalPos()).length2() < (r + ptr->r) * (r + ptr->r);
 	}
@@ -36,8 +37,8 @@ bool Box::collideWith(const Collider* collider) const {
 		return Rectangle<2, float>(getGlobalPos(), size).intersect(Rectangle<2, float>(ptr->getGlobalPos(), ptr->size));
 	}
 	return false;
-#pragma warning(default:4456)
 }
+#pragma warning(pop)
 
 void Box::render(sf::RenderTarget& target) {
 	sf::RectangleShape shape(size);

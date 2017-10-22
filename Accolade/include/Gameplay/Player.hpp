@@ -59,10 +59,13 @@ public:
 	void floored();
 	bool isFloored() const;
 
+	void toggleFocus();
+
 	void unEquip();
 public: //TODO: Make private
 
-	void keyPress(sf::Keyboard::Key key);
+	void keyPressed(sf::Keyboard::Key key);
+	void keyReleased(sf::Keyboard::Key key);
 	void jumpKeyPressed();
 
 	uint32_t _nJumpsLeft = 2;
@@ -102,6 +105,8 @@ public: //TODO: Make private
 
 	bool _jumping = false;
 	bool _boostingJump = false;
+
+	bool _focus = true;
 
 	Level* _level = nullptr;
 	Weapon _weapon;

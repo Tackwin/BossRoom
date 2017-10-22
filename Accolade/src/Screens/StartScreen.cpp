@@ -88,11 +88,15 @@ void StartScreen::initializeWorld(){
 	_zones["merchant"]->sensor = true;
 	_zones["merchant"]->collisionMask |= Object::BIT_TAGS::PLAYER;
 	_zones["merchant"]->collider->onEnter = [&](Object*) mutable { enterShop(); };
+	_zones["merchant"]->collider->onExit = [&](Object*) mutable { leaveShop(); };
 
 	_world.addObject(_zones["merchant"]);
 }
 
 void StartScreen::update(double dt) {
+	removeNeeded();
+	_guiRoot.propagateInput();
+
 	for (auto& p : _player->getProtectilesToShoot()) {
 		_projectiles.push_back(p);
 		_world.addObject(p);
@@ -108,7 +112,6 @@ void StartScreen::update(double dt) {
 
 	if (_enteredShop && InputsManager::isKeyJustPressed(sf::Keyboard::E)) {
 		unActivateShop();
-		leaveShop();
 	}
 	if (_isInShop && InputsManager::isKeyJustPressed(sf::Keyboard::E)) {
 		activateShop();
@@ -117,10 +120,6 @@ void StartScreen::update(double dt) {
 	if (_dungeonDoor.getGlobalBounds().contains(_player->pos)) {
 		game->enterDungeon();
 	}
-
-	removeNeeded();
-
-	_guiRoot.propagateInput();
 }
 void StartScreen::render(sf::RenderTarget& target) {
 	const auto oldView = target.getView();
@@ -229,17 +228,21 @@ void StartScreen::leaveShop() {
 
 void StartScreen::removeNeeded() {
 	for (size_t i = _projectiles.size(); i > 0; --i) {
-		if (_projectiles[i - 1]->toRemove())
+		if (_projectiles[i - 1]->toRemove()) {
+			_world.delObject(_projectiles[i - 1]);
 			_projectiles.erase(_projectiles.begin() + i - 1);
+		}
 	}
 }
 
 void StartScreen::activateShop() {
 	_enteredShop = true;
+	_player->toggleFocus();
 	_shop.leave();
 }
 
 void StartScreen::unActivateShop() {
 	_enteredShop = false;
+	_player->toggleFocus();
 	_shop.enter();
 }

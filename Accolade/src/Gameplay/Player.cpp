@@ -32,14 +32,11 @@ Player::Player(const nlohmann::json& json) :
 	EventManager::subscribe("keyPressed", [&](EventManager::EventCallbackParameter args) -> void {
 		auto key = std::any_cast<sf::Keyboard::Key>(*args.begin());
 
-		if (key == _jumpK) {
-			jumpKeyPressed();
-		}
+		keyPressed(key);
 	});
-
-	EventManager::subscribe("keyPress", [&](EventManager::EventCallbackParameter args) -> void {
-		auto key = std::any_cast<int32_t>(*args.begin());
-		keyPress(static_cast<sf::Keyboard::Key>(key));
+	EventManager::subscribe("keyReleased", [&](EventManager::EventCallbackParameter args) -> void {
+		auto key = std::any_cast<sf::Keyboard::Key>(*args.begin());
+		keyReleased(key);
 	});
 }
 
@@ -90,8 +87,9 @@ void Player::exitLevel() {
 }
 
 void Player::update(double) {
-	bool tryingToShoot = game->_distance && InputsManager::isMousePressed(_AK);
+	bool tryingToShoot = game->_distance && InputsManager::isMousePressed(_AK) && _focus;
 	if (tryingToShoot) {
+		printf("_focus: %s\n", _focus ? "true" : "false");
 		_weapon.active(0);
 	}
 
@@ -100,8 +98,11 @@ void Player::update(double) {
 			_jumping = false;
 		}
 
+		if (InputsManager::isKeyPressed(_jumpK) && _jumping) {
+			flatVelocities.push_back({ 0, -300 });
+		}
+
 		_dir.normalize();
-	
 		if (tryingToShoot) _dir *= 0.2f;
 
 		flatForces.push_back({ 0, G });
@@ -236,8 +237,10 @@ void Player::jumpKeyPressed() {
 	}
 }
 
-void Player::keyPress(sf::Keyboard::Key key) {
-	_dir = { 0, 0 };
+void Player::keyPressed(sf::Keyboard::Key key) {
+	if (key == _jumpK) {
+		jumpKeyPressed();
+	}
 
 	if (key == _upK) {
 		_dir.y = -1;
@@ -252,8 +255,25 @@ void Player::keyPress(sf::Keyboard::Key key) {
 	else if (key == _rightK) {
 		_dir.x = 1;
 	}
+}
 
-	if (key == _jumpK && _jumping) {
-		flatVelocities.push_back({ 0, -300 });
+void Player::keyReleased(sf::Keyboard::Key key) {
+	if (key == _upK) {
+		_dir.y = std::max(_dir.y, 0.f);
 	}
+	else if (key == _downK) {
+		_dir.y = std::min(_dir.y, 0.f);
+	}
+
+	if (key == _leftK) {
+		_dir.x = std::max(_dir.x, 0.f);
+	}
+	else if (key == _rightK) {
+		_dir.x = std::min(_dir.x, 0.f);
+	}
+}
+
+
+void Player::toggleFocus() {
+	_focus = !_focus;
 }
