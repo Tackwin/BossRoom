@@ -59,15 +59,20 @@ void World::update(double dt) {
 
 			if (obj1.get() == obj2.get()) continue;
 
+			bool flag = false;
 			if (!xCollider) {
 				obj1->pos.x = nPos.x;
 				obj1->collider->setPos({ nPos.x, pos.y });
 
 				if (obj1->collider->collideWith(obj2->collider)) {
-					nVel.x = 0;
-					obj1->pos.x = pos.x;
-					nPos.x = pos.x;
-					xCollider = true;
+					if (!obj2->collider->sensor) {
+						nVel.x = 0;
+						obj1->pos.x = pos.x;
+						nPos.x = pos.x;
+						xCollider = true;
+					}
+				
+					flag = true;
 				}
 			}
 
@@ -76,17 +81,20 @@ void World::update(double dt) {
 				obj1->collider->setPos({ pos.x, nPos.y });
 
 				if (obj1->collider->collideWith(obj2->collider)) {
-					nVel.y = 0;
-					obj1->pos.y = pos.y;
-					nPos.y = pos.y;
-					yCollider = true;
+					if (!obj2->collider->sensor){
+						nVel.y = 0;
+						obj1->pos.y = pos.y;
+						nPos.y = pos.y;
+						yCollider = true;
+					}
+
+					flag = true;
 				}
 			}
 
-			if (xCollider || yCollider) {
+			if (flag) {
 				if (!_collisionStates[{obj1->id, obj2->id}]) {
 					obj1->collider->onEnter(obj2.get());
-					obj2->collider->onEnter(obj1.get());
 				}
 
 				_collisionStates[{obj1->id, obj2->id}] = true;
@@ -94,8 +102,8 @@ void World::update(double dt) {
 			else {
 				if (_collisionStates[{obj1->id, obj2->id}]) {
 					obj1->collider->onExit(obj2.get());
-					obj2->collider->onExit(obj1.get());
 				}
+
 				_collisionStates[{obj1->id, obj2->id}] = false;
 			}
 

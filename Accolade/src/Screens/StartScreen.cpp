@@ -85,10 +85,10 @@ void StartScreen::initializeWorld(){
 	_zones["merchant"]->setRadius(150.f);
 	_zones["merchant"]->pos.x = _merchantShop.getPosition().x + _merchantShop.getGlobalBounds().width * 0.5f;
 	_zones["merchant"]->pos.y = _merchantShop.getPosition().y + _merchantShop.getGlobalBounds().height * 0.5f;
-	_zones["merchant"]->sensor = true;
 	_zones["merchant"]->collisionMask |= Object::BIT_TAGS::PLAYER;
-	_zones["merchant"]->collider->onEnter = [&](Object*) mutable { enterShop(); };
+	_zones["merchant"]->collider->sensor = true;
 	_zones["merchant"]->collider->onExit = [&](Object*) mutable { leaveShop(); };
+	_zones["merchant"]->collider->onEnter = [&](Object*) mutable { enterShop(); };
 
 	_world.addObject(_zones["merchant"]);
 }
@@ -113,7 +113,7 @@ void StartScreen::update(double dt) {
 	if (_enteredShop && InputsManager::isKeyJustPressed(sf::Keyboard::E)) {
 		unActivateShop();
 	}
-	if (_isInShop && InputsManager::isKeyJustPressed(sf::Keyboard::E)) {
+	else if (_isInShop && InputsManager::isKeyJustPressed(sf::Keyboard::E)) {
 		activateShop();
 	}
 
@@ -237,12 +237,12 @@ void StartScreen::removeNeeded() {
 
 void StartScreen::activateShop() {
 	_enteredShop = true;
-	_player->toggleFocus();
-	_shop.leave();
+	_player->setFocus(false);
+	_shop.enter();
 }
 
 void StartScreen::unActivateShop() {
 	_enteredShop = false;
-	_player->toggleFocus();
-	_shop.enter();
+	_player->setFocus(true);
+	_shop.leave();
 }

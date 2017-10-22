@@ -89,7 +89,6 @@ void Player::exitLevel() {
 void Player::update(double) {
 	bool tryingToShoot = game->_distance && InputsManager::isMousePressed(_AK) && _focus;
 	if (tryingToShoot) {
-		printf("_focus: %s\n", _focus ? "true" : "false");
 		_weapon.active(0);
 	}
 
@@ -212,7 +211,12 @@ const Weapon* Player::getWeapon() const {
 }
 
 void Player::floored() {
-	printf("Floored\n");
+	static uint32_t i = 0u;
+	if (++i > 1000u) {
+		printf("floored\n");
+		i = 0u;
+	}
+
 	_nJumpsLeft = 2u;
 	_jumping = false;
 	_floored = true;
@@ -274,6 +278,9 @@ void Player::keyReleased(sf::Keyboard::Key key) {
 }
 
 
-void Player::toggleFocus() {
-	_focus = !_focus;
+void Player::setFocus(bool focus) {
+	_focus = focus;
+}
+bool Player::getFocus() const {
+	return _focus;
 }

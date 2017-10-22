@@ -59,7 +59,8 @@ public:
 	void floored();
 	bool isFloored() const;
 
-	void toggleFocus();
+	void setFocus(bool focus = true);
+	bool getFocus() const;
 
 	void unEquip();
 public: //TODO: Make private

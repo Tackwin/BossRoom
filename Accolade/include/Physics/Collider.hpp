@@ -19,6 +19,8 @@ struct Collider {
 
 	Vector2f dtPos = { 0, 0 };
 
+	bool sensor = false;
+
 	void* userPtr = nullptr;
 
 	virtual bool isIn(const Vector2f& p) const = 0;

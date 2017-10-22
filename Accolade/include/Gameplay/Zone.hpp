@@ -11,7 +11,6 @@ struct Zone : public Object {
 	Callback inside = [](Object*) {};
 
 	bool toRemove = false;
-	bool sensor = true;
 
 	Zone(float r = 0.f);
 	virtual ~Zone() override;
