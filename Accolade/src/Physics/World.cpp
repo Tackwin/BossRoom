@@ -39,6 +39,7 @@ void World::update(double dt) {
 	auto sum = std::accumulate(vec.begin(), vec.end(), Vector2f(0, 0));
 
 	for (auto& it : _objectsMap) {
+		auto obj1Id = it.first;
 		auto obj1 = it.second.lock();
 
 		Vector2f flatForces = std::accumulate(obj1->flatForces.begin(), obj1->flatForces.end(), Vector2f(0, 0));
@@ -54,8 +55,8 @@ void World::update(double dt) {
 
 		const auto& unions = getUnionOfMask(obj1->collisionMask);
 
-		for (auto& obj2w : unions) {
-			auto obj2 = _objectsMap[obj2w].lock();
+		for (auto& obj2Id : unions) {
+			auto obj2 = _objectsMap[obj2Id].lock();
 
 			if (obj1.get() == obj2.get()) continue;
 
@@ -93,18 +94,20 @@ void World::update(double dt) {
 			}
 
 			if (flag) {
-				if (!_collisionStates[{obj1->id, obj2->id}]) {
+				if (!_collisionStates[obj1Id][obj2Id]) {
 					obj1->collider->onEnter(obj2.get());
+					obj2->collider->onEnter(obj1.get());
 				}
 
-				_collisionStates[{obj1->id, obj2->id}] = true;
+				_collisionStates[obj1Id][obj2Id] = true;
 			}
 			else {
-				if (_collisionStates[{obj1->id, obj2->id}]) {
+				if (_collisionStates[obj1Id][obj2Id]) {
 					obj1->collider->onExit(obj2.get());
+					obj2->collider->onExit(obj1.get());
 				}
 
-				_collisionStates[{obj1->id, obj2->id}] = false;
+				_collisionStates[obj1Id][obj2Id] = false;
 			}
 
 			if (xCollider && yCollider) {
