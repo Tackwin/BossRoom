@@ -102,10 +102,12 @@ void Player::update(double) {
 		}
 
 		_dir.normalize();
-		if (tryingToShoot) _dir *= 0.2f;
+		if (tryingToShoot) _dir.x *= 0.2f;
+		if (InputsManager::isKeyPressed(_slowK))	_dir.x *= _slowSpeed;
+		else										_dir.x *= _speed;
 
 		flatForces.push_back({ 0, G });
-		flatVelocities.push_back(_dir * (float)(InputsManager::isKeyPressed(_slowK) ? _slowSpeed : _speed));
+		flatVelocities.push_back(_dir);
 	}
 
 	const auto& projectileBuffer = _weapon.getProjectileBuffer();
@@ -276,7 +278,6 @@ void Player::keyReleased(sf::Keyboard::Key key) {
 		_dir.x = std::min(_dir.x, 0.f);
 	}
 }
-
 
 void Player::setFocus(bool focus) {
 	_focus = focus;

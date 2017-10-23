@@ -151,11 +151,15 @@ void World::delObject(std::weak_ptr<Object> obj_) {
 }
 
 void World::removeNeeded() {
+	std::vector<uint32_t> toRemove;
+
 	for (auto& it : _objectsMap) {
 		auto& id = it.first;
 		auto& obj = it.second;
 
-		if (!obj.expired()) continue;
+		if (!obj.expired()) {
+			continue;
+		}
 
 		for (uint32_t j = 0u; j < Object::BITSET_SIZE; ++j) {
 			auto& jt = std::find(_objectsPool[j].cbegin(), _objectsPool[j].cend(), id);
@@ -164,6 +168,10 @@ void World::removeNeeded() {
 			_objectsPool[j].erase(jt);
 		}
 
+		toRemove.push_back(id);
+	}
+
+	for (auto& id : toRemove) {
 		_objectsMap.erase(id);
 	}
 }
@@ -211,6 +219,7 @@ void World::buildUnionCache() {
 		auto& id = it.first;
 		auto& obj = it.second;
 
+		if (obj.expired()) continue;
 		_unionsCache[id] = getUnionOfMask(obj.lock()->collisionMask);
 	}
 }
