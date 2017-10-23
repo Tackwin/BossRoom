@@ -19,24 +19,7 @@ void World::updateInc(double dt, uint32_t itLevel) {
 #pragma warning(push)
 #pragma warning(disable:4239)
 void World::update(double dt) {
-	for (auto& it : _objectsMap) { 
-		auto& id = it.first;
-		auto& obj = it.second;
-
-		if (!obj.expired()) continue;
-		
-		for (uint32_t j = 0u; j < Object::BITSET_SIZE; ++j) {
-			auto& jt = std::find(_objectsPool[j].cbegin(), _objectsPool[j].cend(), id);
-			if (jt == _objectsPool[j].end()) continue;
-
-			_objectsPool[j].erase(jt);
-		}
-
-		_objectsMap.erase(id);
-	}
-
-	std::vector<Vector2f> vec;
-	auto sum = std::accumulate(vec.begin(), vec.end(), Vector2f(0, 0));
+	removeNeeded();
 
 	for (auto& it : _objectsMap) {
 		auto obj1Id = it.first;
@@ -53,9 +36,9 @@ void World::update(double dt) {
 		bool xCollider = false;
 		bool yCollider = false;
 
-		const auto& unions = getUnionOfMask(obj1->collisionMask);
+		auto& collisionState = _collisionStates[obj1Id];
 
-		for (auto& obj2Id : unions) {
+		for (auto& obj2Id : _unionsCache[obj1Id]) {
 			auto obj2 = _objectsMap[obj2Id].lock();
 
 			if (obj1.get() == obj2.get()) continue;
@@ -93,21 +76,22 @@ void World::update(double dt) {
 				}
 			}
 
-			if (flag) {
-				if (!_collisionStates[obj1Id][obj2Id]) {
-					obj1->collider->onEnter(obj2.get());
-					obj2->collider->onEnter(obj1.get());
-				}
-
-				_collisionStates[obj1Id][obj2Id] = true;
-			}
-			else {
-				if (_collisionStates[obj1Id][obj2Id]) {
+			auto& collisionStateRef = collisionState[obj2Id];
+			if (!flag) {
+				if (collisionStateRef) {
 					obj1->collider->onExit(obj2.get());
 					obj2->collider->onExit(obj1.get());
 				}
 
-				_collisionStates[obj1Id][obj2Id] = false;
+				collisionStateRef = false;
+			}
+			else {
+				if (!collisionStateRef) {
+					obj1->collider->onEnter(obj2.get());
+					obj2->collider->onEnter(obj1.get());
+				}
+
+				collisionStateRef = true;
 			}
 
 			if (xCollider && yCollider) {
@@ -142,6 +126,8 @@ void World::addObject(std::weak_ptr<Object> obj) {
 		_objectsPool[i].push_back(id);
 		std::sort(_objectsPool[i].begin(), _objectsPool[i].end());
 	}
+
+	buildUnionCache();
 }
 
 void World::delObject(std::weak_ptr<Object> obj_) {
@@ -160,6 +146,25 @@ void World::delObject(std::weak_ptr<Object> obj_) {
 		auto &it = std::find(_objectsPool[i].cbegin(), _objectsPool[i].cend(), id);
 		_objectsPool[i].erase(it);
 		std::sort(_objectsPool[i].begin(), _objectsPool[i].end());
+	}
+	buildUnionCache();
+}
+
+void World::removeNeeded() {
+	for (auto& it : _objectsMap) {
+		auto& id = it.first;
+		auto& obj = it.second;
+
+		if (!obj.expired()) continue;
+
+		for (uint32_t j = 0u; j < Object::BITSET_SIZE; ++j) {
+			auto& jt = std::find(_objectsPool[j].cbegin(), _objectsPool[j].cend(), id);
+			if (jt == _objectsPool[j].end()) continue;
+
+			_objectsPool[j].erase(jt);
+		}
+
+		_objectsMap.erase(id);
 	}
 }
 #pragma warning(pop)
@@ -197,4 +202,15 @@ std::vector<uint32_t> World::getUnionOfMask(const std::bitset<Object::BITSET_SIZ
 	}
 
 	return result;
+}
+
+void World::buildUnionCache() {
+	_unionsCache.clear();
+
+	for (auto& it : _objectsMap) {
+		auto& id = it.first;
+		auto& obj = it.second;
+
+		_unionsCache[id] = getUnionOfMask(obj.lock()->collisionMask);
+	}
 }

@@ -96,6 +96,9 @@ void StartScreen::initializeWorld(){
 void StartScreen::update(double dt) {
 	removeNeeded();
 	_guiRoot.propagateInput();
+	if (_enteredShop && !_shop.isIn()) {
+		unActivateShop();
+	}
 
 	for (auto& p : _player->getProtectilesToShoot()) {
 		_projectiles.push_back(p);

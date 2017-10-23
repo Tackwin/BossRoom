@@ -25,6 +25,9 @@ public:
 	void purge();
 private:
 
+	void buildUnionCache();
+	void removeNeeded();
+
 	std::vector<uint32_t> getUnionOfMask(const std::bitset<Object::BITSET_SIZE>& mask);
 
 	uint32_t getUID() const;
@@ -33,6 +36,8 @@ private:
 
 	std::unordered_map<uint64_t, std::unordered_map<uint64_t, uint8_t>> _collisionStates;
 
+	std::unordered_map<uint32_t, std::vector<uint32_t>> _unionsCache;
 	std::unordered_map<uint32_t, std::weak_ptr<Object>> _objectsMap;
+
 	std::vector<uint32_t> _objectsPool[Object::BITSET_SIZE];
 };

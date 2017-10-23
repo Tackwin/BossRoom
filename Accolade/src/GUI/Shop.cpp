@@ -141,6 +141,11 @@ void Shop::unFocus() {
 	_infoPanel.setVisible(false);
 }
 
+bool Shop::isIn() const {
+	return _in;
+}
+
+
 Shop::_ItemPanel::_ItemPanel(Shop * shop, Weapon* weapon, uint32_t id) :
 	_shop(shop),
 	weapon(weapon),

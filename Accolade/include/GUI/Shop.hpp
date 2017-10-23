@@ -21,6 +21,8 @@ public:
 
 	void enter();
 	void leave();
+
+	bool isIn() const;
 private:
 	struct _ItemPanel : public Panel {
 		static constexpr float PANEL_SIZE = 60.f;
