@@ -36,6 +36,7 @@ public:
 	void renderGui(sf::RenderTarget& target);
 
 	void loot(Vector2f pos);
+	void pickUp();
 
 	bool isLooted() const;
 

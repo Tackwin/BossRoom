@@ -49,10 +49,11 @@ Weapon::Weapon(const Weapon& other) :
 	_update(other._update),
 	
 	_activeSounds(other._activeSounds),
-	_lootedPos(other._lootedPos)
+	_lootedPos(other._lootedPos),
 
+	_lootZone(other._lootZone)
 {
-	_lootZone = std::make_shared<Zone>(_radius);
+	_lootZone->pos = other._lootZone->pos;
 
 	const std::string& str = _json["sprite"];
 
@@ -60,8 +61,8 @@ Weapon::Weapon(const Weapon& other) :
 	_uiSprite = sf::Sprite(AssetsManager::getTexture(str));
 	_uiSprite.setScale(2, 2);
 	_uiSprite.setOrigin(
-		(float)_uiSprite.getTextureRect().width / 2.f,
-		(float)_uiSprite.getTextureRect().height / 2.f
+		_uiSprite.getTextureRect().width * 0.5f,
+		_uiSprite.getTextureRect().height * 0.5f
 	);
 	_uiSprite.setPosition((float)WIDTH, (float)HEIGHT);
 }
@@ -85,11 +86,15 @@ void Weapon::loot(Vector2f pos_) {
 	_lootedSprite.setPosition(pos_);
 	_lootZone->pos = _lootedPos;
 	_lootZone->setRadius(_radius);
-	_lootZone->inside = [&](Object*) mutable -> void { 
-		if (_lootable)
-			_looted = true; 
+	_lootZone->inside = [&](Object*) mutable -> void {
+		pickUp();
 	};
 }
+void Weapon::pickUp() {
+	if (_lootable)
+		_looted = true;
+}
+
 
 void Weapon::equip() {
 	_equip(*this);

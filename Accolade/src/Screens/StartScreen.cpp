@@ -17,7 +17,7 @@
 StartScreen::StartScreen() :
 	_playerView({ WIDTH / 2.f, HEIGHT / 2.f }, { (float)WIDTH, (float)HEIGHT }),
 	_guiView({ WIDTH / 2.f, HEIGHT / 2.f }, { (float)WIDTH, (float)HEIGHT })
-	{
+{
 
 	initializeGui();
 }
