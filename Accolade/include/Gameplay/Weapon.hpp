@@ -35,14 +35,6 @@ public:
 	void render(sf::RenderTarget& target);
 	void renderGui(sf::RenderTarget& target);
 
-	void loot(Vector2f pos);
-	void pickUp();
-
-	bool isLooted() const;
-
-	void setLootable(bool lootable);
-	bool isLootable() const;
-
 	void setName(const std::string& name);
 	std::string getName() const;
 	
@@ -55,8 +47,6 @@ public:
 
 	const sf::Sprite& getUiSprite() const;
 	std::string getStringSoundActive(uint32_t n) const;
-
-	std::shared_ptr<Zone>& getLootZone();
 
 	Weapon& operator=(const Weapon& other);
 
@@ -71,9 +61,7 @@ private: //TODO: Make this private
 
 	std::shared_ptr<Player> _player;
 
-	Vector2f _lootedPos;
 	sf::Sprite _uiSprite;
-	sf::Sprite _lootedSprite;
 
 	float _radius;
 
@@ -81,12 +69,6 @@ private: //TODO: Make this private
 	uint64 _flags = 0;
 
 	nlohmann::json _json;
-
-	bool _loot = false;
-	bool _looted = false;
-	bool _lootable = false;
-
-	std::shared_ptr<Zone> _lootZone;
 
 	std::vector<sf::Sound> _activeSounds;
 	std::vector<std::shared_ptr<Projectile>> _projectileBuffer;

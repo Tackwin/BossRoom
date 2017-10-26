@@ -200,6 +200,7 @@ uint32_t World::getUID() const {
 
 std::vector<uint32_t> World::getUnionOfMask(const std::bitset<Object::BITSET_SIZE>& mask) {
 	std::vector<uint32_t> result;
+	result.reserve(_objectsMap.size() * Object::BITSET_SIZE);
 
 	for (size_t i = 0u; i < Object::BITSET_SIZE; ++i) {
 		if (!mask[i]) continue;

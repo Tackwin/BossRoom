@@ -13,10 +13,13 @@ struct Zone : public Object {
 	bool toRemove = false;
 
 	Zone(float r = 0.f);
+	Zone(const Zone& other);
 	virtual ~Zone() override;
 
 	void setRadius(float r);
 	float getRadius() const;
+
+	Zone& operator=(const Zone& other);
 private:
 	std::vector<Object*> _objectsColliding;
 

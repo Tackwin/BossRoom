@@ -3,8 +3,8 @@
 Button::Button() : 
 	Widget() 
 {
-	_onClick.began = std::bind(&Button::onClickBegan, this);
-	_onClick.ended = std::bind(&Button::onClickEnded, this);
+	//_onClick.began = std::bind(&Button::onClickBegan, this);
+	//_onClick.ended = std::bind(&Button::onClickEnded, this);
 
 	_hold.setVisible(false);
 
@@ -12,6 +12,11 @@ Button::Button() :
 	_hold.setParent(this, 1);
 	_label.setParent(this, 2);
 }
+
+Button::~Button() {
+	Widget::~Widget();
+}
+
 
 sf::Sprite& Button::getSprite() {
 	return _normal.getSprite();

@@ -88,8 +88,8 @@ void Shop::leave() {
 }
 
 bool Shop::onClickBegan() {
-	auto rect = Rectangle<2, float>(
-		{ _quitPanel.getGlobalPosition().x - 20, _quitPanel.getGlobalPosition().y},
+	auto rect = Rectangle2f(
+		{ _quitPanel.getGlobalPosition().x - 20, _quitPanel.getGlobalPosition().y },
 		{ 20, 20 }
 	);
 	if (InputsManager::getMouseScreenPos().inRect(rect.pos, rect.size)) {
@@ -97,7 +97,7 @@ bool Shop::onClickBegan() {
 		return true;
 	}
 
-	rect = Rectangle<2, float>(
+	rect = Rectangle2f(
 		{ _merchantPanel.getGlobalPosition().x, _merchantPanel.getGlobalPosition().y },
 		{ _merchantPanel.getSize().x,			_merchantPanel.getSize().y * 0.05f }
 	);

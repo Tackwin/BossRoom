@@ -71,7 +71,5 @@ private: // TODO: Make this private
 	bool _ended = false;
 	bool _aiming = false;
 	bool _running = false;
-
-	std::shared_ptr<Zone> _zone = nullptr;
 };
 

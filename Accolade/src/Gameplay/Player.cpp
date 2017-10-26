@@ -198,12 +198,7 @@ void Player::collision(Object* obj) {
 
 void Player::dropWeapon() {
 
-	_weapon.loot(getPos());
-	_weapon.setLootable(false);
-
 	TimerManager::addFunction(0.5f, "ActivateLoot", [&w = _weapon](double)mutable->bool {
-		w.setLootable(true);
-
 		return true;
 	});
 }

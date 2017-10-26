@@ -20,8 +20,6 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 		_weapons.push_back(std::make_shared<Weapon>(player, AssetsManager::getJson(JSON_KEY)["weapons"][0]));
 
 		_weapons[0]->_equip = [](Weapon& me)mutable->void {
-			me._loot = false;
-
 			me._keys.push_back(
 				TimerManager::addFunction(me._json["cooldowns"][0], "1-cd", [&me](double)mutable->bool {
 					me._flags |= 1;
@@ -71,8 +69,6 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 		_weapons.push_back(std::make_shared<Weapon>(player, AssetsManager::getJson(JSON_KEY)["weapons"][1]));
 
 		_weapons[1]->_equip = [](Weapon& me)mutable->void {
-			me._loot = false;
-
 			me._keys.push_back(TimerManager::addFunction(me._json["cooldowns"][0], "1-cd", [&me](double)mutable->bool {
 				me._flags |= 1;
 				TimerManager::pauseFunction(me._keys[0]);
@@ -118,8 +114,6 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 		_weapons.push_back(std::make_shared<Weapon>(player, AssetsManager::getJson(JSON_KEY)["weapons"][2]));
 		auto& weapon = _weapons[2];
 		weapon->_equip = [](Weapon& me)mutable->void {
-			me._loot = false;
-
 			me._keys.push_back(TimerManager::addFunction(me._json["cooldowns"][0], "1-cd", [&me](double)mutable->bool {
 				me._flags |= 1;
 				TimerManager::pauseFunction(me._keys[0]);
@@ -164,8 +158,6 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 		_weapons.push_back(std::make_shared<Weapon>(player, AssetsManager::getJson(JSON_KEY)["weapons"][3]));
 		auto& weapon = _weapons[3];
 		weapon->_equip = [](Weapon& me)mutable->void {
-			me._loot = false;
-
 			me._keys.push_back(TimerManager::addFunction(me._json["cooldowns"][0], "1-cd", [&me](double)mutable->bool {
 				me._flags |= 1;
 				TimerManager::pauseFunction(me._keys[0]);

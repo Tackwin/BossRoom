@@ -81,14 +81,15 @@ void StartScreen::initializeWorld(){
 
 	_world.addObject(_floor);
 
-	_zones["merchant"] = std::make_shared<Zone>();
-	_zones["merchant"]->setRadius(150.f);
-	_zones["merchant"]->pos.x = _merchantShop.getPosition().x + _merchantShop.getGlobalBounds().width * 0.5f;
-	_zones["merchant"]->pos.y = _merchantShop.getPosition().y + _merchantShop.getGlobalBounds().height * 0.5f;
-	_zones["merchant"]->collisionMask |= Object::BIT_TAGS::PLAYER;
-	_zones["merchant"]->collider->sensor = true;
-	_zones["merchant"]->collider->onExit = [&](Object*) mutable { leaveShop(); };
-	_zones["merchant"]->collider->onEnter = [&](Object*) mutable { enterShop(); };
+	auto& merchant = _zones["merchant"];
+	merchant = std::make_shared<Zone>();
+	merchant->setRadius(150.f);
+	merchant->pos.x = _merchantShop.getPosition().x + _merchantShop.getGlobalBounds().width * 0.5f;
+	merchant->pos.y = _merchantShop.getPosition().y + _merchantShop.getGlobalBounds().height * 0.5f;
+	merchant->collisionMask |= Object::BIT_TAGS::PLAYER;
+	merchant->collider->sensor = true;
+	merchant->collider->onExit = [&](Object*) mutable { leaveShop(); };
+	merchant->collider->onEnter = [&](Object*) mutable { enterShop(); };
 
 	_world.addObject(_zones["merchant"]);
 }

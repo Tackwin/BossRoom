@@ -6,9 +6,21 @@ Zone::Zone(float r) : Object() {
 
 	collider = _disk.get();
 	collider->onEnter = [&](Object* obj) {collision(obj); };
+	
 	idMask |= BIT_TAGS::ZONE;
-	collisionMask |= BIT_TAGS::PLAYER;
 }
+Zone::Zone(const Zone& other) : Object() {
+
+	_disk = std::make_shared<Disk>();
+	_disk->r = other._disk->r;
+
+	collider = _disk.get();
+	collider->onEnter = [&](Object* obj) { collision(obj);  };
+
+	idMask = other.idMask;
+	collisionMask = other.collisionMask;
+}
+
 Zone::~Zone() {
 	Object::~Object();
 }
@@ -23,4 +35,19 @@ void Zone::setRadius(float r) {
 
 float Zone::getRadius() const {
 	return reinterpret_cast<Disk*>(collider)->r;
+}
+
+Zone& Zone::operator=(const Zone& other) {
+	this->Object::operator=(other);
+
+	_disk = std::make_shared<Disk>();
+	_disk->r = other._disk->r;
+
+	collider = _disk.get();
+	collider->onEnter = [&](Object* obj) { collision(obj);  };
+
+	idMask = other.idMask;
+	collisionMask = other.collisionMask;
+
+	return *this;
 }

@@ -9,6 +9,7 @@
 class Button : public Widget {
 public:
 	Button();
+	~Button();
 
 	sf::Sprite& getSprite();
 	sf::Sprite& getHoldSprite();

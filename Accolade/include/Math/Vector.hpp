@@ -4,8 +4,66 @@
 
 #include <SFML/System/Vector2.hpp>
 
+template<size_t D, typename T>
+struct __vec_member {
+	T components[D];
+};
+template<typename T>
+struct __vec_member<1, T> {
+	union {
+		struct {
+			T x;
+		};
+		T components[1];
+	};
+};
+template<typename T>
+struct __vec_member<2, T> {
+	union {
+		struct {
+			T x;
+			T y;
+		};
+		T components[2];
+	};
+
+	__vec_member() : x(0), y(0) {}
+	__vec_member(T x, T y) : x(x), y(y) {}
+};
+template<typename T>
+struct __vec_member<3, T> {
+	union {
+		struct {
+			T x;
+			T y;
+			T z;
+		};
+		T components[3];
+	};
+};
+template<typename T>
+struct __vec_member<4, T> {
+	union {
+		struct {
+			T x;
+			T y;
+			T z;
+			T w;
+		};
+		struct {
+			T r;
+			T g;
+			T b;
+			T a;
+		};
+		T components[4];
+	};
+};
+
+
 template<size_t D, typename T = float>
-struct Vector {
+struct Vector : public __vec_member<D, T> {
+
 	static Vector<D, T> createUnitVector(float angles[D]) {
 		Vector<D, T> result;
 		result[0] = cosf(angles[0]);
@@ -24,12 +82,10 @@ struct Vector {
 	static Vector<2, T> createUnitVector(float angles) { // i'm not doing all the shit above for 2d
 		return { cosf(angles), sinf(angles) };
 	}
-
 	template<typename V>
 	static bool equal(const V& A, const V& B, float eps = FLT_EPSILON) {
 		return (A - B).length2() < eps * eps;
 	}
-
 	static Vector<D, T> clamp(const Vector<D, T>& V, const Vector<D, T>& min, const Vector<D, T>& max) {
 		Vector<D, T> result;
 		for (uint32_t i = 0u; i < D; ++i) {
@@ -37,15 +93,6 @@ struct Vector {
 		}
 		return result;
 	}
-
-	union {
-		struct {
-			T x;
-			T y;
-			T z;
-		};
-		T components[D];
-	};
 
 	Vector() {
 		for (size_t i = 0u; i < D; ++i) {
@@ -55,14 +102,12 @@ struct Vector {
 	
 	template<size_t Dp = D, typename U>
 	Vector(const sf::Vector2<U>& vec, typename std::enable_if_t<Dp == 2, T>* = nullptr) :
-		x(vec.x),
-		y(vec.y) 
+		__vec_member<2, T>(static_cast<T>(vec.x), static_cast<T>(vec.y))
 	{}
 
 	template<size_t Dp = D>
 	Vector(T x = 0, T y = 0, typename std::enable_if_t<Dp == 2, T>* = nullptr) :
-		x(x),
-		y(y)
+		__vec_member<2, T>(x, y)
 	{}
 
 	size_t getDimension() const {

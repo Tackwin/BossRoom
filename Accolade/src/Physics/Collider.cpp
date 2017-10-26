@@ -2,7 +2,7 @@
 
 #include "Math/Rectangle.hpp"
 
-bool DiskRect(Vector2f circle, float r, Rectangle<2, float> rect) {
+bool DiskRect(Vector2f circle, float r, Rectangle2f rect) {
 	Vector2f closest = Vector2f::clamp(circle, rect.pos, rect.pos + rect.size);
 
 	// If the distance is less than the circle's radius, an intersection occurs
@@ -24,17 +24,17 @@ bool Disk::collideWith(const Collider* collider) const {
 		return (getGlobalPos() - ptr->getGlobalPos()).length2() < (r + ptr->r) * (r + ptr->r);
 	}
 	else if (auto ptr = static_cast<const Box*>(collider); collider->type == Type::BOX) {
-		return DiskRect(getGlobalPos(), r, Rectangle<2U, float>(ptr->getGlobalPos(), ptr->size));
+		return DiskRect(getGlobalPos(), r, Rectangle2f(ptr->getGlobalPos(), ptr->size));
 	}
 	return false;
 }
 
 bool Box::collideWith(const Collider* collider) const {
 	if (auto ptr = static_cast<const Disk*>(collider); collider->type == Type::DISK) {
-		return DiskRect(ptr->getGlobalPos(), ptr->r, Rectangle<2U, float>(getGlobalPos(), size));
+		return DiskRect(ptr->getGlobalPos(), ptr->r, Rectangle2f(getGlobalPos(), size));
 	}
 	else if (auto ptr = static_cast<const Box*>(collider); collider->type == Type::BOX) {
-		return Rectangle<2, float>(getGlobalPos(), size).intersect(Rectangle<2, float>(ptr->getGlobalPos(), ptr->size));
+		return Rectangle2f(getGlobalPos(), size).intersect(Rectangle2f(ptr->getGlobalPos(), ptr->size));
 	}
 	return false;
 }

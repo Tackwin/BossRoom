@@ -19,11 +19,9 @@ Weapon::Weapon(std::shared_ptr<Player> player, nlohmann::json json)
 	: _player(player),
 	_json(json),
 	_radius(json["radius"]),
-	_lootZone(std::make_shared<Zone>(_radius)),
 	_name(""),
 	_cost(0)
 {
-	_lootedSprite = sf::Sprite(AssetsManager::getTexture(_json["sprite"]));
 	_uiSprite = sf::Sprite(AssetsManager::getTexture(_json["sprite"]));
 	_uiSprite.setScale(2, 2);
 	_uiSprite.setOrigin(
@@ -36,8 +34,6 @@ Weapon::Weapon(std::shared_ptr<Player> player, nlohmann::json json)
 Weapon::Weapon(const Weapon& other) :
 	_player(other._player),
 	_json(other._json),
-	_lootable(other._lootable),
-	_loot(other._loot),
 	_flags(other._flags),
 	_keys(other._keys),
 
@@ -48,16 +44,10 @@ Weapon::Weapon(const Weapon& other) :
 	_passive(other._passive),
 	_update(other._update),
 	
-	_activeSounds(other._activeSounds),
-	_lootedPos(other._lootedPos),
-
-	_lootZone(other._lootZone)
+	_activeSounds(other._activeSounds)
 {
-	_lootZone->pos = other._lootZone->pos;
-
 	const std::string& str = _json["sprite"];
 
-	_lootedSprite = sf::Sprite(AssetsManager::getTexture(str));
 	_uiSprite = sf::Sprite(AssetsManager::getTexture(str));
 	_uiSprite.setScale(2, 2);
 	_uiSprite.setOrigin(
@@ -71,30 +61,11 @@ Weapon::Weapon(const Weapon& other) :
 Weapon::~Weapon() {
 }
 
-void Weapon::render(sf::RenderTarget& target) {
-	if (_loot)
-		target.draw(_lootedSprite);
+void Weapon::render(sf::RenderTarget&) {
 }
 void Weapon::renderGui(sf::RenderTarget& target) {
 	target.draw(_uiSprite);
 }
-void Weapon::loot(Vector2f pos_) {
-	_loot = true;
-	_looted = false;
-	_lootedPos = pos_;
-	_lootable = true;
-	_lootedSprite.setPosition(pos_);
-	_lootZone->pos = _lootedPos;
-	_lootZone->setRadius(_radius);
-	_lootZone->inside = [&](Object*) mutable -> void {
-		pickUp();
-	};
-}
-void Weapon::pickUp() {
-	if (_lootable)
-		_looted = true;
-}
-
 
 void Weapon::equip() {
 	_equip(*this);
@@ -114,22 +85,8 @@ void Weapon::update(float dt) {
 	_update(*this, dt);
 }
 
-std::shared_ptr<Zone>& Weapon::getLootZone() {
-	return _lootZone;
-}
-
-bool Weapon::isLooted() const {
-	return _looted;
-}
-
-bool Weapon::isLootable() const {
-	return _lootable;
-}
 const sf::Sprite & Weapon::getUiSprite() const {
 	return _uiSprite;
-}
-void Weapon::setLootable(bool lootable) {
-	_lootable = lootable;
 }
 
 void Weapon::addProjectile(const std::shared_ptr<Projectile>& projectile) {
@@ -164,17 +121,11 @@ void Weapon::swap(Weapon& other) {
 	std::swap(_name, other._name);
 	std::swap(_cost, other._cost);
 	std::swap(_player, other._player);
-	std::swap(_lootedPos, other._lootedPos);
 	std::swap(_uiSprite, other._uiSprite);
-	std::swap(_lootedSprite, other._lootedSprite);
 	std::swap(_radius, other._radius);
 	std::swap(_keys, other._keys);
 	std::swap(_flags, other._flags);
 	std::swap(_json, other._json);
-	std::swap(_loot, other._loot);
-	std::swap(_looted, other._looted);
-	std::swap(_lootable, other._lootable);
-	std::swap(_lootZone, other._lootZone);
 	std::swap(_activeSounds, other._activeSounds);
 	std::swap(_projectileBuffer, other._projectileBuffer);
 	std::swap(_equip, other._equip);

@@ -2,12 +2,12 @@
 
 #include "Vector.hpp"
 
-template<size_t D, typename T>
+template<typename T>
 struct Rectangle {
 	union {
 		struct {
-			Vector<D, T> pos;
-			Vector<D, T> size;
+			Vector<2, T> pos;
+			Vector<2, T> size;
 		};
 		struct {
 			T x;
@@ -17,12 +17,12 @@ struct Rectangle {
 		};
 	};
 
-	Rectangle(const Vector<D, T>& pos, const Vector<D, T>& size) :
+	Rectangle(const Vector<2, T>& pos, const Vector<2, T>& size) :
 		pos(pos),
 		size(size) 
 	{}
 
-	bool intersect(const Rectangle<D, T>& other) const {
+	bool intersect(const Rectangle<T>& other) const {
 		return !(
 				pos.x + size.x < other.pos.x || pos.x > other.pos.x + other.size.x ||
 				pos.y + size.y < other.pos.y || pos.y > other.pos.y + other.size.y
@@ -30,11 +30,11 @@ struct Rectangle {
 	}
 
 	template<typename U>
-	bool in(const Vector<D, U>& p) const {
+	bool in(const Vector<2, U>& p) const {
 		return p.inRect(pos, size);
 	}
 };
 
 template<typename T>
-using Rectangle2 = Rectangle<2U, T>;
+using Rectangle2 = Rectangle<T>;
 using Rectangle2f = Rectangle2<float>;
