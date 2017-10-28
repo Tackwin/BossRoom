@@ -52,10 +52,10 @@ Shop::~Shop() {
 }
 
 void Shop::addWeapon(Weapon* weapon) {
-	constexpr uint32_t itemPerRow = 7;
+	constexpr u32 itemPerRow = 7;
 
-	uint32_t size = _itemPanels.size();
-	uint32_t nId = 0u;
+	u32 size = _itemPanels.size();
+	u32 nId = 0u;
 	bool flag = false;
 	do {
 		flag = false;
@@ -127,7 +127,7 @@ bool Shop::onClickGoing() {
 	return false;
 }
 
-void Shop::focusItem(uint32_t i) {
+void Shop::focusItem(u32 i) {
 	focused = i;
 	_focusPanel.setParent(&_itemPanels[i]->sprite, 1);
 	
@@ -146,7 +146,7 @@ bool Shop::isIn() const {
 }
 
 
-Shop::_ItemPanel::_ItemPanel(Shop * shop, Weapon* weapon, uint32_t id) :
+Shop::_ItemPanel::_ItemPanel(Shop * shop, Weapon* weapon, u32 id) :
 	_shop(shop),
 	weapon(weapon),
 	_id(id)

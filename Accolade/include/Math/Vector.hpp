@@ -88,7 +88,7 @@ struct Vector : public __vec_member<D, T> {
 	}
 	static Vector<D, T> clamp(const Vector<D, T>& V, const Vector<D, T>& min, const Vector<D, T>& max) {
 		Vector<D, T> result;
-		for (uint32_t i = 0u; i < D; ++i) {
+		for (u32 i = 0u; i < D; ++i) {
 			result[i] = std::clamp(V[i], min[i], max[i]);
 		}
 		return result;
@@ -122,7 +122,7 @@ struct Vector : public __vec_member<D, T> {
 	}
 
 	Vector<D, T>& clamp(const Vector<D, T>& min, const Vector<D, T>& max) {
-		for (uint32_t i = 0u; i < D; ++i) {
+		for (u32 i = 0u; i < D; ++i) {
 			components[i] = std::clamp(components[i], min[i], max[i]);
 		}
 		return *this;

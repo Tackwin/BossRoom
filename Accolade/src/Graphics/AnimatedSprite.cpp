@@ -20,7 +20,7 @@ AnimatedSprite::AnimatedSprite(const std::string& json_) :
 }
 
 
-void AnimatedSprite::pushAnim(const std::string& key_, uint32_t offset_) {
+void AnimatedSprite::pushAnim(const std::string& key_, u32 offset_) {
 	if (!_stackAnim.empty()) {
 		const auto& anim = _stackAnim.top();
 		TimerManager::pauseFunction(anim.keyCallback);
@@ -30,14 +30,14 @@ void AnimatedSprite::pushAnim(const std::string& key_, uint32_t offset_) {
 	auto& json = _json[key_];
 
 	const bool loop = json["loop"].is_null() ? false : json["loop"].get<bool>();
-	const uint32_t frames = json["frames"];
+	const u32 frames = json["frames"];
 	const float time = json["time"];
 	
 	Animation anim;
 	anim.w = json["rect"].is_null() ? _json["rect"][0] : json["rect"][0];
 	anim.h = json["rect"].is_null() ? _json["rect"][1] : json["rect"][1];
-	anim.row = json["row"].is_null() ? 0 : json["row"].get<uint32_t>();
-	anim.col = json["col"].is_null() ? 0 : json["col"].get<uint32_t>();
+	anim.row = json["row"].is_null() ? 0 : json["row"].get<u32>();
+	anim.col = json["col"].is_null() ? 0 : json["col"].get<u32>();
 	anim.keyCallback = TimerManager::addFunction(time / frames, key_, 
 		[&, row = anim.row, col = anim.col, frames, w = anim.w, h = anim.h, loop, n = offset_](double)mutable->bool{
 			if (!loop && n >= frames) {

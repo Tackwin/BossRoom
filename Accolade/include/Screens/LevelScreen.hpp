@@ -3,6 +3,8 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "Const.hpp"
+
 #include "Math/Vector.hpp"
 
 #include "Screens/Screen.hpp"
@@ -12,7 +14,7 @@ class Panel;
 class Player;
 class LevelScreen : public Screen {
 public:
-	LevelScreen(uint32_t n);
+	LevelScreen(u32 n);
 	~LevelScreen();
 
 	virtual void onEnter() override;
@@ -24,9 +26,9 @@ public:
 
 	void shakeScreen(float power = 1.0f);
 
-	uint32_t getIndex() const;
+	u32 getIndex() const;
 private: 
-	uint32_t _n;
+	u32 _n;
 
 	Vector2f _gameViewPos;
 	Vector2f _gameViewSize;

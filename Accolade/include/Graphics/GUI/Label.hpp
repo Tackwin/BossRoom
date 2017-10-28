@@ -14,7 +14,7 @@ public:
 	void setFont(const std::string& fontKey);
 	void setString(const std::string& message);
 	void setTextColor(const sf::Color& color);
-	void setCharSize(const uint32_t& size);
+	void setCharSize(const u32& size);
 
 	std::string getString() const;
 

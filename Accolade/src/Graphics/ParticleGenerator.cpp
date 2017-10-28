@@ -64,7 +64,7 @@ void ParticleGenerator::start() {
 void ParticleGenerator::loadJson(const nlohmann::json& json) {
 	_json = json;
 
-	_remain = getJsonValue<uint32_t>(_json, "nParticles");
+	_remain = getJsonValue<u32>(_json, "nParticles");
 	_nParticles = _remain;
 
 	_lambda = [&](double)mutable -> bool {

@@ -25,7 +25,7 @@ void Patterns::randomFire(Boss& boss, nlohmann::json json) {
 		getValue("randomFire", json, "projectile")
 	);
 }
-void Patterns::randomFire(Boss& boss, uint32 nOrbs, float a, float dtA, float time, nlohmann::json projectile) {
+void Patterns::randomFire(Boss& boss, u32 nOrbs, float a, float dtA, float time, nlohmann::json projectile) {
 	std::uniform_real_distribution<float> rngA(a - dtA * 0.5f, a + dtA * 0.5f);
 	std::uniform_real_distribution<float> rngDelay(0, 2 * time / nOrbs); //nOrbs * E(rngDt) = time
 
@@ -79,10 +79,10 @@ std::string Patterns::barage(Boss& boss, nlohmann::json json) {
 		getValue("barage", json, "projectile")
 	);
 }
-std::string Patterns::barage(Boss& boss, uint32 nOrbs, uint32 nWaves, float iTime, nlohmann::json projectile) {
+std::string Patterns::barage(Boss& boss, u32 nOrbs, u32 nWaves, float iTime, nlohmann::json projectile) {
 	const auto& barage = [&boss, nWaves, nOrbs, projectile](double)mutable->bool {
 		
-		for (uint32 i = 0; i < nOrbs; ++i) {
+		for (u32 i = 0; i < nOrbs; ++i) {
 			Vector2f pos((float)WIDTH, (float)HEIGHT * i / nOrbs);
 			Vector2f dir = Vector2f::createUnitVector(PIf);
 
@@ -105,7 +105,7 @@ std::string Patterns::snipe(Boss& boss, nlohmann::json json) {
 		getValue("snipe", json, "projectile")
 	);
 }
-std::string Patterns::snipe(Boss&, uint32, float, float, nlohmann::json) {
+std::string Patterns::snipe(Boss&, u32, float, float, nlohmann::json) {
 	/*auto lambda = std::shared_ptr<std::function<void()>>(new std::function<void()>);
 
 	*lambda = [&boss, aimTime, projectile, nShots, iTime, lambda]()mutable->void {
@@ -141,9 +141,9 @@ std::string Patterns::broyeur(Boss& boss, const nlohmann::json& json) {
 		getValue("broyeur", json, "projectile")
 	);
 }
-std::string Patterns::broyeur(Boss& boss, uint32 nOrbs, nlohmann::json projectile) {
+std::string Patterns::broyeur(Boss& boss, u32 nOrbs, nlohmann::json projectile) {
 	return TimerManager::addFunction(0, "broyeur", [boss, nOrbs, projectile](auto)mutable->bool {
-		for (uint32 i = 0; i < nOrbs; ++i) {
+		for (u32 i = 0; i < nOrbs; ++i) {
 			Vector2 pos(
 				(float)WIDTH * i / (nOrbs - 1) + WIDTH / (2 * nOrbs),
 				(float)((i & 1) ? 0 : HEIGHT)
@@ -169,7 +169,7 @@ std::string Patterns::cerclique(Boss& boss, const nlohmann::json& json) {
 	);
 }
 std::string Patterns::cerclique(Boss& boss, float radius, float vA, float height, float dtHeight,
-	uint32 nOrbs, float iTime, nlohmann::json projectile) {
+	u32 nOrbs, float iTime, nlohmann::json projectile) {
 	return TimerManager::addFunction(iTime, "cerclique",
 		[boss, radius, vA, height, dtHeight, projectile, nOrbs](auto)mutable->bool {
 		float h = height * HEIGHT;
@@ -204,10 +204,10 @@ std::string Patterns::rapprochement(Boss& boss, const nlohmann::json& json) {
 		getValue("rapprochement", json, "projectile")
 	);
 }
-std::string Patterns::rapprochement(Boss& boss, uint32 nOrbs, float eTime, float inSpawnRadius, float outSpawnRadius,
+std::string Patterns::rapprochement(Boss& boss, u32 nOrbs, float eTime, float inSpawnRadius, float outSpawnRadius,
 	nlohmann::json projectile) {
 	float sumS = 0;
-	for (uint32 i = 0; i < nOrbs; ++i) {
+	for (u32 i = 0; i < nOrbs; ++i) {
 		TimerManager::addFunction(sumS, "rapprochement",
 			[boss, nOrbs, eTime, inSpawnRadius, outSpawnRadius, projectile](auto)mutable->bool {
 			Vector2 pos = game->_player->getPos() + Vector2::createUnitVector(unitaryRng(RNG) * 2 * PIf) *
@@ -238,7 +238,7 @@ std::string Patterns::boomerang(Boss& boss, const nlohmann::json& json) {
 		getValue("boomerang", json, "projectile")
 	);
 }
-std::string Patterns::boomerang(Boss& boss, uint32 nBooms, float overShoot, float waitTime, nlohmann::json projectile) {
+std::string Patterns::boomerang(Boss& boss, u32 nBooms, float overShoot, float waitTime, nlohmann::json projectile) {
 	Vector2 pos = boss.getPos();
 	Vector2 dir = (game->_player->getPos() - boss.getPos()).normalize();
 
@@ -280,8 +280,8 @@ std::string Patterns::entonnoir(Boss& boss, const nlohmann::json& json) {
 		getValue("entonnoir", json, "projectile")
 	);
 }
-std::string Patterns::entonnoir(Boss& boss, uint32 nOrbs, float x, nlohmann::json projectile) {
-	for (uint32 i = 0; i < nOrbs; ++i) {
+std::string Patterns::entonnoir(Boss& boss, u32 nOrbs, float x, nlohmann::json projectile) {
+	for (u32 i = 0; i < nOrbs; ++i) {
 		Vector2 pos(WIDTH * (1 - x), (float)HEIGHT * i / nOrbs);
 		Vector2 dir = (game->_player->getPos() - Vector2(200, 0)) - pos;
 
@@ -301,14 +301,14 @@ std::string Patterns::blastCosmopolitain(Boss& boss, const nlohmann::json& json)
 		getValue("blastCosmopolitain", json, "projectile")
 	);
 }
-std::string Patterns::blastCosmopolitain(Boss& boss, uint32 nBlasts, uint32 nOrbs, float r, float iTime, float waitTime, const nlohmann::json& projectile) {
+std::string Patterns::blastCosmopolitain(Boss& boss, u32 nBlasts, u32 nOrbs, float r, float iTime, float waitTime, const nlohmann::json& projectile) {
 	return TimerManager::addFunction(iTime, "blastCosomoplitain",
 		[projectile, boss, nBlasts, nOrbs, r, waitTime](auto)mutable->bool {
 		float x = unitaryRng(RNG) * WIDTH;
 		float y = unitaryRng(RNG) * HEIGHT;
 		float a = unitaryRng(RNG) * 2 * PIf;
 
-		for (uint32 i = 0; i < nOrbs; ++i) {
+		for (u32 i = 0; i < nOrbs; ++i) {
 			float dtA = 2 * PIf * i / nOrbs;
 			Vector2 pos = Vector2::createUnitVector(a + dtA) * r + Vector2(x, y);
 

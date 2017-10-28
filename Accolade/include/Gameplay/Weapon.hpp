@@ -27,8 +27,8 @@ public:
 	void equip();
 	void unEquip();
 
-	void active(uint32 id);
-	void passive(uint32 id);
+	void active(u32 id);
+	void passive(u32 id);
 
 	void update(float dt);
 
@@ -38,15 +38,15 @@ public:
 	void setName(const std::string& name);
 	std::string getName() const;
 	
-	void setCost(const uint32_t& cost);
-	uint32_t getCost() const;
+	void setCost(const u32& cost);
+	u32 getCost() const;
 
 	void addProjectile(const std::shared_ptr<Projectile>& projectile);
 	const std::vector<std::shared_ptr<Projectile>>& getProjectileBuffer() const;
 	void clearProjectileBuffer();
 
 	const sf::Sprite& getUiSprite() const;
-	std::string getStringSoundActive(uint32_t n) const;
+	std::string getStringSoundActive(u32 n) const;
 
 	Weapon& operator=(const Weapon& other);
 
@@ -57,7 +57,7 @@ private: //TODO: Make this private
 	void swap(Weapon& other);
 
 	std::string _name;
-	uint32_t _cost;
+	u32 _cost;
 
 	std::shared_ptr<Player> _player;
 
@@ -66,7 +66,7 @@ private: //TODO: Make this private
 	float _radius;
 
 	std::vector<std::string> _keys;
-	uint64 _flags = 0;
+	u64 _flags = 0;
 
 	nlohmann::json _json;
 
@@ -76,8 +76,8 @@ private: //TODO: Make this private
 	std::function<void(Weapon&)> _equip = [](Weapon&) {};
 	std::function<void(Weapon&)> _unEquip = [](Weapon&) {};
 
-	std::function<void(Weapon&, uint32)> _active = [](Weapon&, uint32) {};
-	std::function<void(Weapon&, uint32)> _passive = [](Weapon&, uint32) {};
+	std::function<void(Weapon&, u32)> _active = [](Weapon&, u32) {};
+	std::function<void(Weapon&, u32)> _passive = [](Weapon&, u32) {};
 
 	std::function<void(Weapon&, float)> _update = [](Weapon&, float) {};
 };

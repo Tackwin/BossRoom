@@ -265,3 +265,5 @@ __pycache__/
 *.psd
 *.vcxproj
 *.vcxproj.filters
+/Deps/SFML
+/Accolade/gcc_compile.cmd

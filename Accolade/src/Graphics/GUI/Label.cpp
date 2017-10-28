@@ -15,7 +15,7 @@ void Label::setString(const std::string& message) {
 	_text.setString(message);
 	computeSize();
 }
-void Label::setCharSize(const uint32_t& size) {
+void Label::setCharSize(const u32& size) {
 	_text.setCharacterSize(size);
 	computeSize();
 }

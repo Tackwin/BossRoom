@@ -48,8 +48,8 @@ void Game::updateDebugText(double dt) {
 
 	avgMs += dt;
 	if (++avgN > avgRange) {
-		uint32_t fps = (uint32_t)(avgRange / (avgMs == .0f ? 1 : avgMs));
-		uint32_t 탎 = (uint32_t)(1000'000 * avgMs / avgRange); // :)
+		u32 fps = (u32)(avgRange / (avgMs == .0f ? 1 : avgMs));
+		u32 탎 = (u32)(1000'000 * avgMs / avgRange); // :)
 		_debugText["ups"].setString("Fps: " + std::to_string(fps) + "\t탎: " + std::to_string(탎));
 
 		avgN = 0;
@@ -76,12 +76,12 @@ void Game::enterScreen(Screen* s) {
 	_screens.push(s);
 }
 
-void Game::enterRoom(uint32_t n) {
+void Game::enterRoom(u32 n) {
 	enterScreen(new LevelScreen(n));
 }
 
 Game::~Game() {
-	for (uint32 i = _screens.size(); i > 0u; --i) {
+	for (u32 i = _screens.size(); i > 0u; --i) {
 		pop();
 	}
 

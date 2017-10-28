@@ -20,7 +20,7 @@ class LevelScreen;
 class Level  {
 public:
 	Level() {};
-	Level(std::shared_ptr<Boss> boss, uint32 _n);
+	Level(std::shared_ptr<Boss> boss, u32 _n);
 	~Level();
 
 	void start(LevelScreen* screen_);
@@ -49,7 +49,7 @@ private: // TODO: Make this private
 
 	World _world;
 
-	uint32 _n = 0u;
+	u32 _n = 0u;
 
 	std::shared_ptr<Boss> _boss = nullptr;
 	std::shared_ptr<Player> _player = nullptr;
@@ -63,7 +63,7 @@ private: // TODO: Make this private
 	Disk _entranceToNext;
 	
 	sf::Sprite _aimSprite;
-	uint8 _aimSpriteOpacity = 0u;
+	u08 _aimSpriteOpacity = 0u;
 
 	std::shared_ptr<Object>  _floor = nullptr;
 	std::vector<std::shared_ptr<Projectile>> _projectiles = {};

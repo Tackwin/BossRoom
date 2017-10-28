@@ -36,7 +36,7 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 			me._keys.clear();
 		};
 
-		_weapons[0]->_active = [](Weapon& me, uint32)mutable->void {
+		_weapons[0]->_active = [](Weapon& me, u32)mutable->void {
 			static bool evenShot = false;
 			
 			if ((me._flags & 1) == 1) {
@@ -83,7 +83,7 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 			me._keys.clear();
 		};
 
-		_weapons[1]->_active = [](Weapon& me, uint32)mutable->void {
+		_weapons[1]->_active = [](Weapon& me, u32)mutable->void {
 			static bool evenShot = false;
 			
 			if ((me._flags & 1) == 1) {
@@ -128,14 +128,14 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 			me._keys.clear();
 		};
 
-		weapon->_active = [](Weapon& me, uint32)mutable->void {
+		weapon->_active = [](Weapon& me, u32)mutable->void {
 			if ((me._flags & 1) == 1) {
 				me._flags ^= 1;
 				TimerManager::resumeFunction(me._keys[0]);
 
 				float A = (float)me._player->getDirToFire().angleX();
 				float spray = me._json["spray"];
-				for (uint32_t i = 0; i < 3; ++i) {
+				for (u32 i = 0; i < 3; ++i) {
 					float dtA = spray * (i / 2.f - 0.5f);
 					float a = A + dtA;
 					Vector2f dir = Vector2f::createUnitVector(a);
@@ -172,7 +172,7 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 			me._keys.clear();
 		};
 
-		weapon->_active = [](Weapon&, uint32)mutable->void {};
+		weapon->_active = [](Weapon&, u32)mutable->void {};
 
 		auto sound = sf::Sound(AssetsManager::getSound(_weapons[3]->getStringSoundActive(0)));
 		sound.setVolume(SOUND_LEVEL);

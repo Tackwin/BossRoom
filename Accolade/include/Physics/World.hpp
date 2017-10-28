@@ -9,6 +9,8 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "Const.hpp"
+
 #include "Math/Vector.hpp"
 
 #include "Physics/Object.hpp"
@@ -16,7 +18,7 @@
 class World {
 public:
 	void update(double dt);
-	void updateInc(double dt, uint32_t itLevel);
+	void updateInc(double dt, u32 itLevel);
 	void render(sf::RenderTarget& target);
 
 	void addObject(std::weak_ptr<Object> obj);
@@ -28,16 +30,16 @@ private:
 	void buildUnionCache();
 	void removeNeeded();
 
-	std::vector<uint32_t> getUnionOfMask(const std::bitset<Object::BITSET_SIZE>& mask);
+	std::vector<u32> getUnionOfMask(const std::bitset<Object::BITSET_SIZE>& mask);
 
-	uint32_t getUID() const;
+	u32 getUID() const;
 
-	uint32_t _iterationLevel = 5;
+	u32 _iterationLevel = 5;
 
-	std::unordered_map<uint64_t, std::unordered_map<uint64_t, uint8_t>> _collisionStates;
+	std::unordered_map<u64, std::unordered_map<u64, u08>> _collisionStates;
 
-	std::unordered_map<uint32_t, std::vector<uint32_t>> _unionsCache;
-	std::unordered_map<uint32_t, std::weak_ptr<Object>> _objectsMap;
+	std::unordered_map<u32, std::vector<u32>> _unionsCache;
+	std::unordered_map<u32, std::weak_ptr<Object>> _objectsMap;
 
-	std::vector<uint32_t> _objectsPool[Object::BITSET_SIZE];
+	std::vector<u32> _objectsPool[Object::BITSET_SIZE];
 };

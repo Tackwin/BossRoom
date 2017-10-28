@@ -15,7 +15,7 @@
 #include "Gameplay/Player.hpp"
 #include "Gameplay/Level.hpp" 
 
-LevelScreen::LevelScreen(uint32 n) :
+LevelScreen::LevelScreen(u32 n) :
 	_n(n),
 	_bossHealthTileSprite(AssetsManager::getTexture("health_tile")),
 	_gameViewPos({ WIDTH * 0.5f, HEIGHT * 0.5f}),
@@ -92,7 +92,7 @@ void LevelScreen::render(sf::RenderTarget& target) {
 }
 
 void LevelScreen::renderGui(sf::RenderTarget& target) {
-	constexpr uint32_t nTiles = 10;
+	constexpr u32 nTiles = 10;
 	constexpr float padding = -3;
 	constexpr std::tuple<float, float, float> colors[] = {
 		{ 0.f, 0.f, 0.f },
@@ -100,20 +100,20 @@ void LevelScreen::renderGui(sf::RenderTarget& target) {
 		{ 0.73f, 0.31f, 0.f },
 		{ 1.f, 0.73f, 0.31f }
 	};
-	constexpr uint32_t nColors = sizeof(colors) / sizeof(std::tuple<float, float, float>) - 1;
+	constexpr u32 nColors = sizeof(colors) / sizeof(std::tuple<float, float, float>) - 1;
 
 	const auto pos = _bossHealthTileSprite.getPosition();
 	const float& bossTileWidth = _bossHealthTileSprite.getGlobalBounds().width;
 	const float& bossLife = _level->getNormalizedBossLife() == 1.f ? 1.f - FLT_EPSILON : _level->getNormalizedBossLife(); // hack to bypass the problem below
 
-	for (uint32_t i = 0; i < nTiles; ++i) { // This depends on the fact that if a = n*b then  a mod 1 / n == b, need to check if it's true for float
-		const uint32_t& color = (uint32_t)(bossLife * nColors) +  // Not true for nColors == 3 :(
+	for (u32 i = 0; i < nTiles; ++i) { // This depends on the fact that if a = n*b then  a mod 1 / n == b, need to check if it's true for float
+		const u32& color = (u32)(bossLife * nColors) +  // Not true for nColors == 3 :(
 			(((float)i / (nTiles * nColors)) < fmodf(bossLife, 1.f / nColors) ? 1 : 0);
 		const float& r = std::get<0>(colors[color]); // ughh i wish that intelissens could do: const auto& [r, g, b] = tuple;
 		const float& g = std::get<1>(colors[color]);
 		const float& b = std::get<2>(colors[color]);
 
-		_bossHealthTileSprite.setColor(sf::Color((uint8_t)(r * 255), (uint8_t)(g * 255), (uint8_t)(b * 255)));
+		_bossHealthTileSprite.setColor(sf::Color((u08)(r * 255), (u08)(g * 255), (u08)(b * 255)));
 		target.draw(_bossHealthTileSprite);
 
 		_bossHealthTileSprite.move(bossTileWidth + padding, 0);
@@ -131,7 +131,7 @@ void LevelScreen::renderGui(sf::RenderTarget& target) {
 }
 
 void LevelScreen::shakeScreen(float power) {
-	constexpr uint32_t nShakes = 5;
+	constexpr u32 nShakes = 5;
 	constexpr float iTimeShakes = 0.03f;
 	TimerManager::addLinearEase(1.f, "", &_gameViewOffset, { 0, 0 }, { 50, 0 });
 
@@ -148,6 +148,6 @@ void LevelScreen::shakeScreen(float power) {
 
 }
 
-uint32_t LevelScreen::getIndex() const {
+u32 LevelScreen::getIndex() const {
 	return _n;
 }

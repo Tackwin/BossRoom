@@ -1,11 +1,11 @@
 #include "Managers/EventManager.hpp"
 
-std::unordered_map<std::string, std::unordered_map<uint32_t, EventManager::EventCallback>> EventManager::_callbacks;
+std::unordered_map<std::string, std::unordered_map<u32, EventManager::EventCallback>> EventManager::_callbacks;
 
-uint32_t EventManager::subscribe(const std::string& key, const EventCallback& callback) {
+u32 EventManager::subscribe(const std::string& key, const EventCallback& callback) {
 	auto& map = _callbacks[key];
 
-	uint32_t id = 0u;
+	u32 id = 0u;
 	bool flag = false;
 	do {
 		flag = false;
@@ -22,7 +22,7 @@ uint32_t EventManager::subscribe(const std::string& key, const EventCallback& ca
 	map[id] = callback;
 	return id;
 }
-void EventManager::unSubscribe(const std::string& key, uint32_t id) {
+void EventManager::unSubscribe(const std::string& key, u32 id) {
 	if (const auto& it = _callbacks.find(key); it == _callbacks.end())
 		return;
 

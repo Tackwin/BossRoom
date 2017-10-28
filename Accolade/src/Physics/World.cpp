@@ -3,8 +3,8 @@
 #include <algorithm>
 #include <numeric>
 
-void World::updateInc(double dt, uint32_t itLevel) {
-	for (uint32_t i = 0u; i < itLevel; ++i) {
+void World::updateInc(double dt, u32 itLevel) {
+	for (u32 i = 0u; i < itLevel; ++i) {
 		update(dt / itLevel);
 	}
 
@@ -117,10 +117,10 @@ void World::render(sf::RenderTarget& target) {
 }
 
 void World::addObject(std::weak_ptr<Object> obj) {
-	uint32_t id = getUID();
+	u32 id = getUID();
 	_objectsMap[id] = obj;
 
-	for (uint32_t i = 0u; i < Object::BITSET_SIZE; ++i) {
+	for (u32 i = 0u; i < Object::BITSET_SIZE; ++i) {
 		if (!obj.lock()->idMask[i]) continue;
 
 		_objectsPool[i].push_back(id);
@@ -131,7 +131,7 @@ void World::addObject(std::weak_ptr<Object> obj) {
 }
 
 void World::delObject(std::weak_ptr<Object> obj_) {
-	uint32_t id = 0u;
+	u32 id = 0u;
 	for (auto& [id_, obj] : _objectsMap) {
 		if (obj.lock() == obj_.lock()) {
 			id = id_;
@@ -151,7 +151,7 @@ void World::delObject(std::weak_ptr<Object> obj_) {
 }
 
 void World::removeNeeded() {
-	std::vector<uint32_t> toRemove;
+	std::vector<u32> toRemove;
 
 	for (auto& it : _objectsMap) {
 		auto& id = it.first;
@@ -161,7 +161,7 @@ void World::removeNeeded() {
 			continue;
 		}
 
-		for (uint32_t j = 0u; j < Object::BITSET_SIZE; ++j) {
+		for (u32 j = 0u; j < Object::BITSET_SIZE; ++j) {
 			auto& jt = std::find(_objectsPool[j].cbegin(), _objectsPool[j].cend(), id);
 			if (jt == _objectsPool[j].end()) continue;
 
@@ -179,12 +179,12 @@ void World::removeNeeded() {
 
 void World::purge() {
 	_objectsMap.clear();
-	for (uint32_t i = 0u; i < Object::BITSET_SIZE; ++i) 
+	for (u32 i = 0u; i < Object::BITSET_SIZE; ++i) 
 		_objectsPool[i].clear();
 }
 
-uint32_t World::getUID() const {
-	uint32_t n_id = 0u;
+u32 World::getUID() const {
+	u32 n_id = 0u;
 	bool flag = false;
 	do {
 		flag = false;
@@ -198,8 +198,8 @@ uint32_t World::getUID() const {
 	return n_id;
 }
 
-std::vector<uint32_t> World::getUnionOfMask(const std::bitset<Object::BITSET_SIZE>& mask) {
-	std::vector<uint32_t> result;
+std::vector<u32> World::getUnionOfMask(const std::bitset<Object::BITSET_SIZE>& mask) {
+	std::vector<u32> result;
 	result.reserve(_objectsMap.size() * Object::BITSET_SIZE);
 
 	for (size_t i = 0u; i < Object::BITSET_SIZE; ++i) {

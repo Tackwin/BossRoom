@@ -10,7 +10,6 @@
 #include "Gameplay/Patterns.hpp"
 #include "Gameplay/Player.hpp"
 
-
 using namespace nlohmann;
 
 std::vector<std::shared_ptr<Boss>> Boss::bosses(C::N_LEVEL);
@@ -33,7 +32,7 @@ Boss::~Boss() {
 void Boss::enterLevel(Level* level) {
 	_level = level;
 
-	_life = getJsonValue<int32_t>(_json, "life");
+	_life = getJsonValue<i32>(_json, "life");
 	_maxLife = _life;
 	pos.x = _json["startpos"]["x"];
 	pos.y = _json["startpos"]["y"];
@@ -55,7 +54,7 @@ void Boss::enterLevel(Level* level) {
 	_init(*this);
 }
 void Boss::exitLevel() {
-	for (uint32 i = _keyPatterns.size(); i != 0; --i) {
+	for (u32 i = _keyPatterns.size(); i != 0; --i) {
 		auto& k = _keyPatterns[i - 1];
 		TimerManager::removeFunction(k);
 
@@ -153,10 +152,10 @@ float Boss::getRadius() const {
 	return _radius;
 }
 
-int32 Boss::getLife() const {
+i32 Boss::getLife() const {
 	return _life;
 }
-int32 Boss::getMaxLife() const {
+i32 Boss::getMaxLife() const {
 	return _maxLife;
 }
 const Level* Boss::getLevel() const {

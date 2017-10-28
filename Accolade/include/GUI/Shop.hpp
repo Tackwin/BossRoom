@@ -16,7 +16,7 @@ public:
 
 	void addWeapon(Weapon* weapon);
 
-	void focusItem(uint32_t i);
+	void focusItem(u32 i);
 	void unFocus();
 
 	void enter();
@@ -27,7 +27,7 @@ private:
 	struct _ItemPanel : public Panel {
 		static constexpr float PANEL_SIZE = 60.f;
 
-		_ItemPanel(Shop* shop, Weapon* weapon, uint32_t id);
+		_ItemPanel(Shop* shop, Weapon* weapon, u32 id);
 
 		bool onClickBegan();
 		bool onClickEnded();
@@ -40,7 +40,7 @@ private:
 
 	private:
 		Shop* _shop;
-		uint32_t _id;
+		u32 _id;
 	};
 	struct _InfoPanel : public Panel {
 	public:
@@ -70,12 +70,12 @@ private:
 	Panel _focusPanel;
 	_InfoPanel _infoPanel;
 	Panel _quitPanel;
-	std::map<uint32_t, std::unique_ptr<_ItemPanel>> _itemPanels;
+	std::map<u32, std::unique_ptr<_ItemPanel>> _itemPanels;
 
 	bool _in = false;
 
 	bool _dragging = false;
 	Vector2f _dragOffset = { 0, 0 };
 
-	uint32_t focused = 0u;
+	u32 focused = 0u;
 };

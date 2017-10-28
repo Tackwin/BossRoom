@@ -20,10 +20,10 @@ public: //TODO:Make this private
 
 	nlohmann::json _json;
 
-	uint32_t _n;
+	u32 _n;
 
 public:
-	RoomSelectorScreen(uint32_t n);
+	RoomSelectorScreen(u32 n);
 	~RoomSelectorScreen();
 
 	virtual void onEnter();

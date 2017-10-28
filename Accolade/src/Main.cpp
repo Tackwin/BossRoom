@@ -24,7 +24,7 @@ bool update(sf::RenderWindow& window, double dt) {
 	return false;
 }
 bool render(sf::RenderWindow& window) {
-	static uint64_t i = 0;
+	static u64 i = 0;
 	Clock c;
 	if (window.isOpen()) {
 		window.clear(sf::Color(50, 50, 50));
@@ -85,11 +85,11 @@ int main(int, char**) {
 void loadSpriteFromJson(const nlohmann::json& json) {
 	assert(!json["sprites"].is_null());
 	const auto& j = json["sprites"];
-	const uint32_t n = j.size();
+	const u32 n = j.size();
 
 	printf("Loading %u textures from json...\n", n);
 
-	uint32_t i = 1u;
+	u32 i = 1u;
 	for (auto it = j.begin(); it != j.end(); ++it, ++i) {
 		printf("\t%u/%u ", i, n);
 
@@ -104,11 +104,11 @@ void loadSpriteFromJson(const nlohmann::json& json) {
 void loadSoundsFromJson(const nlohmann::json& json) {
 	assert(!json["sounds"].is_null());
 	const auto& j = json["sounds"];
-	const uint32_t n = j.size();
+	const u32 n = j.size();
 
 	printf("Loading %u sounds from json...\n", n);
 
-	uint32_t i = 1u;
+	u32 i = 1u;
 	for (auto it = j.begin(); it != j.end(); ++it, ++i) {
 		printf("\t%u/%u ", i, n);
 
@@ -121,11 +121,11 @@ void loadSoundsFromJson(const nlohmann::json& json) {
 void loadFontsFromJson(const nlohmann::json& json) {
 	assert(!json["fonts"].is_null());
 	const auto& j = json["fonts"];
-	const uint32_t n = j.size();
+	const u32 n = j.size();
 
 	printf("Loading %u fonts from json...\n", n);
 
-	uint32_t i = 1u;
+	u32 i = 1u;
 	for (auto it = j.begin(); it != j.end(); ++it, ++i) {
 		printf("\t%u/%u ", i, n);
 

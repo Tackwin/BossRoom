@@ -3,11 +3,13 @@
 #include <functional>
 #include <SFML/Graphics.hpp>
 
+#include "Const.hpp"
+
 #include "Math/Vector.hpp"
 
 struct Object;
 struct Collider {
-	enum struct Type : uint32_t {
+	enum struct Type : u32 {
 		DISK,
 		BOX
 	} type;

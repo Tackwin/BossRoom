@@ -16,7 +16,7 @@ public:
 	AnimatedSprite(const AnimatedSprite& sprite);
 	AnimatedSprite(const std::string& json);
 
-	void pushAnim(const std::string& key, uint32_t offset = 0);
+	void pushAnim(const std::string& key, u32 offset = 0);
 	void popAnim();
 
 	void render(sf::RenderTarget& target);
@@ -28,11 +28,11 @@ public:
 private:
 	struct Animation {
 		std::string keyCallback = "";
-		uint32_t col = 0;
-		uint32_t row = 0;
-		uint32_t w = 0;
-		uint32_t h = 0;
-		uint32_t i = 0;
+		u32 col = 0;
+		u32 row = 0;
+		u32 w = 0;
+		u32 h = 0;
+		u32 i = 0;
 	};
 
 	std::stack<Animation> _stackAnim;

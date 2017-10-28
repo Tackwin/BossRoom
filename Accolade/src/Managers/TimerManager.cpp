@@ -7,12 +7,12 @@
 
 std::unordered_map<std::string, std::shared_ptr<TimerManager::Function>> TimerManager::_functions;
 
-uint32_t TimerManager::getNFunction() {
+u32 TimerManager::getNFunction() {
 	return _functions.size();
 }
 
 std::string TimerManager::addFunction(double timer, const std::string& key, const Function::Callback&& f) {
-	uint8_t i = (uint8_t)rand();
+	u08 i = (u08)rand();
 	std::string candidate = key + std::to_string(i);
 	while(_functions.find(candidate) != _functions.end()) {
 		candidate = candidate + std::to_string(i);
@@ -21,7 +21,7 @@ std::string TimerManager::addFunction(double timer, const std::string& key, cons
 	return candidate;
 }
 std::string TimerManager::addFunction(double timer, const std::string& key, const Function::Callback& f) {
-	uint8_t i = (uint8_t)rand();
+	u08 i = (u08)rand();
 	std::string candidate = key + std::to_string(i);
 	while (_functions.find(candidate) != _functions.end()) {
 		candidate = candidate + std::to_string(i);
@@ -106,8 +106,8 @@ void TimerManager::update(double dt) {
 	}
 }
 
-void TimerManager::updateInc(double dt, uint32_t n) {
-	for (uint32_t i = 0u; i < n; ++i) {
+void TimerManager::updateInc(double dt, u32 n) {
+	for (u32 i = 0u; i < n; ++i) {
 		update(dt / n);
 	}
 }

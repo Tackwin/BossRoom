@@ -42,8 +42,8 @@ public:
 
 	float getRadius() const;
 
-	int32_t getLife() const;
-	int32_t getMaxLife() const;
+	i32 getLife() const;
+	i32 getMaxLife() const;
 
 	const Level* getLevel() const;
 
@@ -57,8 +57,8 @@ public:
 private:
 	nlohmann::basic_json<> _json;
 
-	int32_t _life;
-	int32_t _maxLife;
+	i32 _life;
+	i32 _maxLife;
 	float _radius;
 	sf::Color _color;
 

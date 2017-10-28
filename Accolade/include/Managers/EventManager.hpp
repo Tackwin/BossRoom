@@ -6,21 +6,23 @@
 #include <vector>
 #include <any>
 
+#include "Const.hpp"
+
 class EventManager {
 public:
 	using EventCallbackParameter = const std::initializer_list<std::any>&;
 	using EventCallback = std::function<void(EventCallbackParameter)>;
 	
-	static uint32_t subscribe(const std::string& key, const EventCallback& callback);
-	static void unSubscribe(const std::string& key, uint32_t id);
+	static u32 subscribe(const std::string& key, const EventCallback& callback);
+	static void unSubscribe(const std::string& key, u32 id);
 
 	static void fire(std::string key, EventCallbackParameter args = {});
 private:
 
-	static uint32_t ID;
+	static u32 ID;
 
 	static std::unordered_map<
 		std::string, 
-		std::unordered_map<uint32_t, EventCallback>
+		std::unordered_map<u32, EventCallback>
 	> _callbacks;
 };

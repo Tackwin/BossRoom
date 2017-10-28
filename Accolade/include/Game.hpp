@@ -4,6 +4,8 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "Const.hpp"
+
 class Screen;
 class Player;
 class Game {
@@ -13,7 +15,7 @@ public:
 
 	void start();
 
-	void enterRoom(uint32_t n);
+	void enterRoom(u32 n);
 	void nextRoom();
 
 	void enterScreen(Screen* s);
@@ -30,7 +32,7 @@ public:
 
 	void pop();
 public: //TODO: Make this private
-	uint8_t _debugTimeClockColor;
+	u08 _debugTimeClockColor;
 	sf::CircleShape _debugTimeClockShape;
 
 	std::shared_ptr<Player> _player;

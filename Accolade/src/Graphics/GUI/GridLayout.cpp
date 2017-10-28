@@ -2,26 +2,26 @@
 
 GridLayout::GridLayout() {
 }
-GridLayout::GridLayout(uint32_t row, uint32_t col) :
+GridLayout::GridLayout(u32 row, u32 col) :
 	_row(row),
 	_col(col)
 {
 }
 
 
-void GridLayout::setRow(uint32_t row) {
+void GridLayout::setRow(u32 row) {
 	_row = row;
 	updatePos();
 }
-uint32_t GridLayout::getRow() {
+u32 GridLayout::getRow() {
 	return _row;
 }
 
-void GridLayout::setCol(uint32_t col) {
+void GridLayout::setCol(u32 col) {
 	_col = col;
 	updatePos();
 }
-uint32_t GridLayout::getCol() {
+u32 GridLayout::getCol() {
 	return _col;
 }
 
@@ -29,7 +29,7 @@ void GridLayout::updatePos(){
 	computeSize();
 	Vector2f size = _size;
 
-	for (uint32_t i = 0u; i < _childs.size(); ++i) {
+	for (u32 i = 0u; i < _childs.size(); ++i) {
 		Vector2f pos;
 		pos.x = _externalPadding.x + (i % _col) * (_internalPadding.x + size.x / _col);
 		pos.y = _externalPadding.y + (i / _col) * (_internalPadding.y + size.y / _row);
@@ -41,9 +41,9 @@ void GridLayout::updatePos(){
 void GridLayout::computeSize() {
 	Vector2f maxSize;
 	
-	uint32_t n = 0u;
-	for (uint32_t i = 0u; i < _row; ++i) {
-		for (uint32_t j = 0u; j < _col; ++j) {
+	u32 n = 0u;
+	for (u32 i = 0u; i < _row; ++i) {
+		for (u32 j = 0u; j < _col; ++j) {
 			if (n >= _childs.size()) {
 				goto breakLoops; //Yeah i know fuck off, it's a good case he's got so few >:(
 			}
@@ -74,12 +74,12 @@ Vector2f GridLayout::getExternalPadding() {
 	return _externalPadding;
 }
 
-HorizontalLayout::HorizontalLayout(uint32_t col) :
+HorizontalLayout::HorizontalLayout(u32 col) :
 	GridLayout(1u, col) 
 {
 }
 
-VerticalLayout::VerticalLayout(uint32_t row) :
+VerticalLayout::VerticalLayout(u32 row) :
 	GridLayout(row, 1u)
 {
 }

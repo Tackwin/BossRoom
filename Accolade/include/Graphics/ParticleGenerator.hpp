@@ -39,8 +39,8 @@ private:
 	bool _ended = false;
 
 	Vector2f _pos = { 0, 0 };
-	uint32_t _remain = 0u;
-	uint32_t _nParticles = 0u;
+	u32 _remain = 0u;
+	u32 _nParticles = 0u;
 
 	std::vector<std::string> _keys = {};
 	std::function<bool(double)> _lambda = [](auto) {return false; };

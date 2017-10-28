@@ -5,6 +5,8 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "Const.hpp"
+
 #include "Math/Vector.hpp"
 #include "Math/Rectangle.hpp"
 
@@ -44,11 +46,11 @@ public:
 
 	void emancipate();
 	void denyChild(Widget* const child);
-	void addChild(Widget* const child, int32_t z = 0);
+	void addChild(Widget* const child, i32 z = 0);
 	bool haveChild(const Widget* const child);
-	void setParent(Widget* const parent, int32_t z = 0);
+	void setParent(Widget* const parent, i32 z = 0);
 	Widget* const getParent();
-	const std::vector<std::pair<int32_t, Widget*>> getChilds();
+	const std::vector<std::pair<i32, Widget*>> getChilds();
 
 	virtual void render(sf::RenderTarget& target);
 	void propagateRender(sf::RenderTarget& target);
@@ -66,7 +68,7 @@ protected: //god this is growing into a god class... :(
 	bool _passThrough = false;
 
 	Widget* _parent = nullptr; //like, why do i even bother raw pointer mean, I DON'T HAVE THE OWNERSHIP, it settles it
-	std::vector<std::pair<int32_t, Widget*>> _childs;
+	std::vector<std::pair<i32, Widget*>> _childs;
 
 	Callback _onHover;
 	Callback _onClick;

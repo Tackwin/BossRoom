@@ -208,7 +208,7 @@ const Weapon* Player::getWeapon() const {
 }
 
 void Player::floored() {
-	static uint32_t i = 0u;
+	static u32 i = 0u;
 	if (++i > 1000u) {
 		printf("floored\n");
 		i = 0u;

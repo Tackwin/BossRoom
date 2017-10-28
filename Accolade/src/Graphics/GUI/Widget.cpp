@@ -31,7 +31,7 @@ void Widget::denyChild(Widget* const child) {
 		return;
 
 	const auto& it = std::find_if(_childs.begin(), _childs.end(), 
-		[child](const std::pair<int32_t, Widget*>& A) -> bool {
+		[child](const std::pair<i32, Widget*>& A) -> bool {
 			return A.second == child;
 		}
 	);
@@ -40,7 +40,7 @@ void Widget::denyChild(Widget* const child) {
 	_childs.erase(it);
 	c->emancipate();
 }
-void Widget::addChild(Widget* const child, int32_t z) {
+void Widget::addChild(Widget* const child, i32 z) {
 	if (!child) return;
 
 	if (child == _parent)
@@ -49,7 +49,7 @@ void Widget::addChild(Widget* const child, int32_t z) {
 	if (!haveChild(child)) {
 		_childs.push_back({ z, child });
 		std::sort(_childs.begin(), _childs.end(), 
-			[](const std::pair<int32_t, Widget*>& A, const std::pair<int32_t, Widget*>& B) -> bool {
+			[](const std::pair<i32, Widget*>& A, const std::pair<i32, Widget*>& B) -> bool {
 				return A.first < B.first;
 			}
 		);
@@ -63,7 +63,7 @@ bool Widget::haveChild(const Widget* const child) {
 
 	return std::find_if(_childs.begin(), _childs.end(), [child](const auto& A) -> bool { return A.second == child; }) != _childs.end();
 }
-void Widget::setParent(Widget* const parent, int32_t z) {
+void Widget::setParent(Widget* const parent, i32 z) {
 	if (!parent) return;
 
 	if (haveChild(parent))
@@ -120,7 +120,7 @@ void Widget::setVisible(bool visible) {
 }
 
 
-const std::vector<std::pair<int32_t, Widget*>> Widget::getChilds() {
+const std::vector<std::pair<i32, Widget*>> Widget::getChilds() {
 	return _childs;
 }
 

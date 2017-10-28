@@ -69,19 +69,19 @@ public: //TODO: Make private
 	void keyReleased(sf::Keyboard::Key key);
 	void jumpKeyPressed();
 
-	uint32_t _nJumpsLeft = 2;
+	u32 _nJumpsLeft = 2;
 
-	int32_t _AK;
-	int32_t _upK;
-	int32_t _leftK;
-	int32_t _downK;
-	int32_t _rightK;
-	int32_t _slowK;
-	int32_t _dashK;
-	int32_t _jumpK;
+	i32 _AK;
+	i32 _upK;
+	i32 _leftK;
+	i32 _downK;
+	i32 _rightK;
+	i32 _slowK;
+	i32 _dashK;
+	i32 _jumpK;
 
-	int32_t _life;
-	int32_t _maxLife;
+	i32 _life;
+	i32 _maxLife;
 	Vector2f _dir;
 	float _speed;
 	float _radius;

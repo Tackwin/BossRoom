@@ -30,7 +30,7 @@ public:
 	bool toRemove() const;
 	void remove();
 
-	int32_t getDamage() const;
+	i32 getDamage() const;
 
 	bool isFromPlayer() const;
 
@@ -52,7 +52,7 @@ private:
 	float _lifespan;
 	float _speed;
 	float _radius;
-	int32_t _damage;
+	i32 _damage;
 
 	Disk _disk;
 

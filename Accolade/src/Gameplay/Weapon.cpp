@@ -74,10 +74,10 @@ void Weapon::unEquip() {
 	_unEquip(*this);
 }
 
-void Weapon::active(uint32 id_) {
+void Weapon::active(u32 id_) {
 	_active(*this, id_);
 }
-void Weapon::passive(uint32 id_) {
+void Weapon::passive(u32 id_) {
 	_passive(*this, id_);
 }
 
@@ -99,7 +99,7 @@ void Weapon::clearProjectileBuffer() {
 	_projectileBuffer.clear();
 }
 
-std::string Weapon::getStringSoundActive(uint32_t n) const {
+std::string Weapon::getStringSoundActive(u32 n) const {
 	return _json["sounds"]["active"][n].get<std::string>();
 }
 
@@ -110,10 +110,10 @@ std::string Weapon::getName() const {
 	return _name;
 }
 
-void Weapon::setCost(const uint32_t& cost) {
+void Weapon::setCost(const u32& cost) {
 	_cost = cost;
 }
-uint32_t Weapon::getCost() const {
+u32 Weapon::getCost() const {
 	return _cost;
 }
 

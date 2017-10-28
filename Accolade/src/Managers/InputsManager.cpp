@@ -2,6 +2,8 @@
 
 #include "Managers/EventManager.hpp"
 
+#include "Const.hpp"
+
 bool InputsManager::keyPressed[sf::Keyboard::KeyCount];
 bool InputsManager::keyJustPressed[sf::Keyboard::KeyCount];
 bool InputsManager::keyJustReleased[sf::Keyboard::KeyCount];
@@ -94,11 +96,11 @@ void InputsManager::update(sf::RenderWindow &window) {
 			EventManager::fire("mouseReleased", { event.mouseButton.button });
 		}
 	}
-	for (int32_t i = 0u; i < sf::Keyboard::KeyCount; ++i) {
+	for (i32 i = 0u; i < sf::Keyboard::KeyCount; ++i) {
 		if (keyPressed[i])
 			EventManager::fire("keyPress", { i });
 	}
-	for (int32_t i = 0u; i < sf::Mouse::ButtonCount; ++i) {
+	for (i32 i = 0u; i < sf::Mouse::ButtonCount; ++i) {
 		if (mousePressed[i])
 			EventManager::fire("mousePress", { i });
 	}
@@ -106,6 +108,6 @@ void InputsManager::update(sf::RenderWindow &window) {
 	mouseScreenPos.x = (float)sf::Mouse::getPosition(window).x;
 	mouseScreenPos.y = (float)sf::Mouse::getPosition(window).y;
 	
-	mouseWorldPos.x = window.mapPixelToCoords({ (int32_t)mouseScreenPos.x, (int32_t)mouseScreenPos.y }).x;
-	mouseWorldPos.y = window.mapPixelToCoords({ (int32_t)mouseScreenPos.x, (int32_t)mouseScreenPos.y }).y;
+	mouseWorldPos.x = window.mapPixelToCoords({ (i32)mouseScreenPos.x, (i32)mouseScreenPos.y }).x;
+	mouseWorldPos.y = window.mapPixelToCoords({ (i32)mouseScreenPos.x, (i32)mouseScreenPos.y }).y;
 }

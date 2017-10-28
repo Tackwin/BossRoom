@@ -39,12 +39,12 @@ void Particle::render(sf::RenderTarget& target) {
 
 std::vector<std::shared_ptr<Particle>> Particle::burst(nlohmann::json json_, Vector2f pos_){
 	std::vector<std::shared_ptr<Particle>> particles;
-	uint32_t nParticles = (uint32_t)getJsonValue<int>(json_, "nParticles");
+	auto nParticles = (u32)getJsonValue<i32>(json_, "nParticles");
 	auto particleJson = json_["particle"];
 
 	particles.reserve(nParticles);
 
-	for (uint32_t i = 0; i < nParticles; ++i) {
+	for (u32 i = 0u; i < nParticles; ++i) {
 		Vector2f pos = pos_;
 		Vector2f dir = Vector2f::createUnitVector(getJsonValue<float>(json_, "dir"));
 		particles.push_back(std::make_shared<Particle>(particleJson, pos, dir));

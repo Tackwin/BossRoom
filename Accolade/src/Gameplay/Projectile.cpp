@@ -35,10 +35,10 @@ Projectile::Projectile(nlohmann::json json, Vector2f pos, Vector2f dir, bool pla
 
 	velocity = _dir * _speed;
 
-	std::uniform_int_distribution<int32> dist(0, 2);
+	std::uniform_int_distribution<i32> dist(0, 2);
 
 	_sprite = sf::Sprite(AssetsManager::getTexture(json["sprite"]));
-	const int32 whole = _sprite.getTextureRect().width / 3;
+	const i32 whole = _sprite.getTextureRect().width / 3;
 	_sprite.setTextureRect({
 		dist(RNG) * whole	, dist(RNG) * whole, 
 		whole				,	whole
@@ -100,7 +100,7 @@ bool Projectile::toRemove() const {
 void Projectile::remove() {
 	_remove = true;
 }
-int32_t Projectile::getDamage() const {
+i32 Projectile::getDamage() const {
 	return _damage;
 }
 bool Projectile::isFromPlayer() const {

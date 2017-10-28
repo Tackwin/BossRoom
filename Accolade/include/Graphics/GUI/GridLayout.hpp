@@ -4,13 +4,13 @@
 class GridLayout : public Widget {
 public:
 	GridLayout();
-	GridLayout(uint32_t row, uint32_t col);
+	GridLayout(u32 row, u32 col);
 
-	void setRow(uint32_t row);
-	uint32_t getRow();
+	void setRow(u32 row);
+	u32 getRow();
 
-	void setCol(uint32_t col);
-	uint32_t getCol();
+	void setCol(u32 col);
+	u32 getCol();
 
 	void updatePos();
 	void computeSize();
@@ -22,8 +22,8 @@ public:
 	Vector2f getExternalPadding();
 
 protected:
-	uint32_t _row = 0u;
-	uint32_t _col = 0u;
+	u32 _row = 0u;
+	u32 _col = 0u;
 
 	Vector2f _internalPadding = { 0, 0 };
 	Vector2f _externalPadding = { 0, 0 };
@@ -31,10 +31,10 @@ protected:
 
 class HorizontalLayout : public GridLayout {
 public:
-	HorizontalLayout(uint32_t col);
+	HorizontalLayout(u32 col);
 };
 
 class VerticalLayout : public GridLayout {
 public:
-	VerticalLayout(uint32_t row);
+	VerticalLayout(u32 row);
 };

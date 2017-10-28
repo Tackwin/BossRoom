@@ -3,6 +3,7 @@
 #include <functional>
 #include <memory>
 
+#include "Const.hpp"
 #include "Time/Clock.hpp"
 
 class TimerManager {
@@ -34,7 +35,7 @@ private:
 	static std::unordered_map<std::string, std::shared_ptr<Function>> _functions;
 
 public:
-	static uint32_t getNFunction();
+	static u32 getNFunction();
 
 	static std::string addFunction(double timer, const std::string& key, const Function::Callback&& f);
 	static std::string addFunction(double timer, const std::string& key, const Function::Callback& f);

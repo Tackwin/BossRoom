@@ -6,7 +6,7 @@
 #include "Managers/AssetsManager.hpp"
 #include "Managers/InputsManager.hpp"
 
-RoomSelectorScreen::RoomSelectorScreen(uint32_t n):
+RoomSelectorScreen::RoomSelectorScreen(u32 n):
 	_n(n) {
 
 
