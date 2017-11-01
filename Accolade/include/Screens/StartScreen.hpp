@@ -20,6 +20,8 @@
 #include "GUI/Shop.hpp"
 
 
+
+struct Zone;
 class Player;
 class Projectile;
 class StartScreen : public Screen {

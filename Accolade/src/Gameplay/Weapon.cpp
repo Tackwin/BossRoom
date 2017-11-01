@@ -85,9 +85,13 @@ void Weapon::update(float dt) {
 	_update(*this, dt);
 }
 
-const sf::Sprite & Weapon::getUiSprite() const {
+const sf::Sprite& Weapon::getUiSprite() const {
 	return _uiSprite;
 }
+void Weapon::setUiSpritePos(const Vector2f& pos_) {
+	_uiSprite.setPosition(pos_);
+}
+
 
 void Weapon::addProjectile(const std::shared_ptr<Projectile>& projectile) {
 	_projectileBuffer.push_back(projectile);

@@ -2,12 +2,21 @@
 
 #include <functional>
 
+#include "Gameplay/Player.hpp"
+
 Loot::Loot(float r) :
 	Zone(r) 
 {
-	collider->onEnter = std::bind(&Loot::onEnter, this);
+	collider->onEnter = std::bind(&Loot::onEnter, this, std::placeholders::_1);
 
 	collisionMask |= Object::BIT_TAGS::PLAYER;
+}
+
+void Loot::setLootType(LOOT_TYPE type) {
+	_lootType = type;
+}
+Loot::LOOT_TYPE Loot::getLootType() const {
+	return _lootType;
 }
 
 void Loot::setWeapon(const std::shared_ptr<Weapon>& weapon) {
@@ -24,8 +33,24 @@ bool Loot::isLootable() const {
 	return _lootable;
 }
 
-void Loot::onEnter() {
+void Loot::render(sf::RenderTarget& target) {
+	switch (_lootType) {
+	case LOOT_TYPE::WEAPON:
+		_weapon->setUiSpritePos(pos);
+		_weapon->renderGui(target);
+		break;
+	}
+}
+
+void Loot::onEnter(Object* obj) { // we know typeof(obj) is necessarly Player*
 	if (!_lootable) return;
 
+	switch (_lootType) {
+	case LOOT_TYPE::WEAPON :
+		Player* player = static_cast<Player*>(obj);
+		player->swapWeapon(_weapon);
+		break;
+	}
 
+	_toRemove = true;
 }

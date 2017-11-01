@@ -12,12 +12,9 @@
 
 #include "Math/Vector.hpp"
 
-#include "Physics/Object.hpp"
-#include "Gameplay/Zone.hpp"
-
 class Player;
 class Projectile;
-class Weapon : public Object {
+class Weapon {
 public:
 	Weapon();
 	Weapon(const Weapon& other);
@@ -46,6 +43,7 @@ public:
 	void clearProjectileBuffer();
 
 	const sf::Sprite& getUiSprite() const;
+	void setUiSpritePos(const Vector2f& pos);
 	std::string getStringSoundActive(u32 n) const;
 
 	Weapon& operator=(const Weapon& other);

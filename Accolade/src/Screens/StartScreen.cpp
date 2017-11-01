@@ -13,6 +13,7 @@
 #include "Gameplay/Projectile.hpp"
 #include "Gameplay/Weapon.hpp"
 #include "Gameplay/Player.hpp"
+#include "Gameplay/Zone.hpp"
 
 StartScreen::StartScreen() :
 	_playerView({ WIDTH / 2.f, HEIGHT / 2.f }, { (float)WIDTH, (float)HEIGHT }),

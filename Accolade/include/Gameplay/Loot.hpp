@@ -1,6 +1,10 @@
 #pragma once
 #include <memory>
 
+#include <SFML/Graphics.hpp>
+
+#include "Const.hpp"
+
 #include "Zone.hpp"
 #include "Math/Vector.hpp"
 
@@ -8,7 +12,14 @@ class Weapon;
 class Loot : public Zone {
 public:
 
+	enum class LOOT_TYPE : u08 {
+		WEAPON = 0u
+	};
+
 	Loot(float r = 0.f);
+
+	void setLootType(LOOT_TYPE type);
+	LOOT_TYPE getLootType() const;
 
 	void setWeapon(const std::shared_ptr<Weapon>& weapon);
 	std::shared_ptr<Weapon> getWeapon() const;
@@ -16,10 +27,15 @@ public:
 	void setLootable(bool lootable = true);
 	bool isLootable() const;
 
+	void render(sf::RenderTarget& target);
+
 private:
-	void onEnter();
+	void onEnter(Object* obj);
+
+	LOOT_TYPE _lootType;
 
 	bool _lootable = false;
+	bool _toRemove = false;
 
 	sf::Sprite _lootSprite;
 	std::shared_ptr<Weapon> _weapon;
