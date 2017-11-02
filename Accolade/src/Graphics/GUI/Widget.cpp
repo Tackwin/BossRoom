@@ -1,6 +1,7 @@
 #include <Graphics/GUI/Widget.hpp>
 
 #include <queue>
+#include <stack>
 
 #include <Managers/InputsManager.hpp>
 
@@ -132,12 +133,12 @@ void Widget::propagateRender(sf::RenderTarget& target) {
 	while (!open.empty()) {
 		auto w = open.front();
 		open.pop();
-		w->render(target);
 
-		auto child = w->getChilds();
-		
 		if (!w->isVisible()) 
 			continue;
+		
+		w->render(target);
+		auto child = w->getChilds();
 
 		for (auto& [_, c] : child) {
 			open.push(c);
@@ -147,8 +148,6 @@ void Widget::propagateRender(sf::RenderTarget& target) {
 
 std::array<bool, 9> Widget::input(const std::array<bool, 9>& mask) {
 	std::array<bool, 9> result = { false };
-
-	if (!_visible) return result;
 
 	if (getGlobalBoundingBox().in(InputsManager::getMouseScreenPos())) {
 		if (InputsManager::isMouseJustPressed(sf::Mouse::Left) && !mask[0]) {
@@ -169,33 +168,44 @@ std::array<bool, 9> Widget::input(const std::array<bool, 9>& mask) {
 }
 
 void Widget::propagateInput() {
-	struct Node {
-		Node() {};
-		Node(Widget* w) : widget(w) {};
-		Node(std::array<bool, 9> mask, Widget* w) : mask(mask), widget(w) {};
-
-		std::array<bool, 9> mask = { false };
-		Widget* widget = nullptr;
-	};
-
-	std::queue<Node> open;
-
-	constexpr std::array<bool, 9> allFalse = { false, false, false, false, false, false, false, false, false, };
-	constexpr std::array<bool, 9> allTrue  = { true, true, true, true, true, true, true, true, true  };
-
-	open.push({ allFalse, this });
-	while (!open.empty()) {
-		auto w = open.front();
-		open.pop();
-		auto mask = w.widget->input(w.mask);
-		if (mask == allTrue) continue;
-
-		auto child = w.widget->getChilds();
-		for (auto&[_, c] : child) {
-			open.push(Node(mask, c));
-		}
-	}
+	constexpr std::array<bool, 9> allFalse = { false, false, false, false, false, false, false, false, false };
+	postOrderInput(allFalse);
 }
+
+template<u32 D>
+std::array<bool, D> orArray(const std::array<bool, D>& A, const std::array<bool, D>& B) {
+	std::array<bool, D> C;
+	for (u32 i = 0u; i < D; ++i) {
+		C[i] = A[i] || B[i];
+	}
+	return C;
+}
+
+std::array<bool, 9> Widget::postOrderInput(std::array<bool, 9> mask) {
+	constexpr std::array<bool, 9> allTrue = { true, true, true, true, true, true, true, true, true };
+
+	if (mask == allTrue) return allTrue;
+
+	std::array<bool, 9> maskAfterChild = mask;
+	for (auto& c : getChilds()) {
+		if (!c.second->isVisible()) continue;
+
+		maskAfterChild = orArray(c.second->postOrderInput(mask), maskAfterChild);
+	}
+	maskAfterChild = input(maskAfterChild);
+	return maskAfterChild;
+}
+
+
+/*
+								*
+							   / \
+							  *   *
+							 /|\  |\
+							* * * * *
+						   /|   |    
+						  * *   *    
+*/
 
 void Widget::setOnHover(const Callback& onHover) {
 	_onHover = onHover;

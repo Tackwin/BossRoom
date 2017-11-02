@@ -57,6 +57,7 @@ public:
 
 	std::array<bool, 9> input(const std::array<bool, 9>& mask);
 	void propagateInput();
+	std::array<bool, 9> postOrderInput(std::array<bool, 9> mask);
 
 protected: //god this is growing into a god class... :(
 

@@ -13,7 +13,8 @@ class Loot : public Zone {
 public:
 
 	enum class LOOT_TYPE : u08 {
-		WEAPON = 0u
+		NONE = 0u,
+		WEAPON
 	};
 
 	Loot(float r = 0.f);
@@ -32,7 +33,7 @@ public:
 private:
 	void onEnter(Object* obj);
 
-	LOOT_TYPE _lootType;
+	LOOT_TYPE _lootType = LOOT_TYPE::NONE;
 
 	bool _lootable = false;
 	bool _toRemove = false;

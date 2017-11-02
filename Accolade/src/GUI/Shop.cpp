@@ -88,6 +88,7 @@ void Shop::leave() {
 }
 
 bool Shop::onClickBegan() {
+	printf("Shop\n");
 	auto rect = Rectangle2f(
 		{ _quitPanel.getGlobalPosition().x - 20, _quitPanel.getGlobalPosition().y },
 		{ 20, 20 }
@@ -108,7 +109,7 @@ bool Shop::onClickBegan() {
 	}
 
 	unFocus();
-	return false;
+	return true;
 }
 
 bool Shop::onClickEnded(){
@@ -170,14 +171,15 @@ Shop::_ItemPanel::_ItemPanel(Shop * shop, Weapon* weapon, u32 id) :
 }
 
 bool Shop::_ItemPanel::onClickBegan() {
+	printf("ItemPanel\n");
 	_shop->focusItem(_id);
 	return true;
 }
 bool Shop::_ItemPanel::onClickEnded() {
-	return true;
+	return false;
 }
 bool Shop::_ItemPanel::onClickGoing() {
-	return true;
+	return false;
 }
 
 Shop::_InfoPanel::_InfoPanel(Shop* shop) :

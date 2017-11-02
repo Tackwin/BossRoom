@@ -267,3 +267,8 @@ struct Vector : public __vec_member<D, T> {
 	}
 };
 using Vector2f = Vector<2U, float>;
+
+template<size_t D, typename T, typename U>
+Vector<D, T> operator*(U scalar, const Vector<D, T>& vec) {
+	return vec * scalar;
+}
