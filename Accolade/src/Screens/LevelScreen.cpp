@@ -137,7 +137,7 @@ void LevelScreen::shakeScreen(float power) {
 
 	const auto& lambda = [&, p = power, n = nShakes](double)mutable->bool {
 		Vector2f from = _gameViewOffset;
-		Vector2f to = Vector2f::createUnitVector(unitaryRng(RNG) * 2 * PIf) * power;
+		Vector2f to = Vector2f::createUnitVector(unitaryRng(RD) * 2 * PIf) * power;
 		TimerManager::addLinearEase(iTimeShakes, "shake", &_gameViewOffset, from, to);
 		if (n-- <= 0)
 			TimerManager::addLinearEase(iTimeShakes, "shakeBack", &_gameViewOffset, _gameViewOffset, { 0, 0 });

@@ -32,7 +32,7 @@ void Patterns::randomFire(Boss& boss, u32 nOrbs, float a, float dtA, float time,
 	float sumDelay = 0.f;
 	
 	for (size_t i = 0u; i < nOrbs; ++i) {
-		float ca = rngA(RNG);
+		float ca = rngA(RD);
 		Vector2f dir = Vector2f::createUnitVector(ca);
 		Vector2f pos = boss.getPos() + dir * (boss.getRadius() + 10);
 
@@ -40,7 +40,7 @@ void Patterns::randomFire(Boss& boss, u32 nOrbs, float a, float dtA, float time,
 			boss.shoot(projectile, pos, dir);
 			return true;
 		});
-		sumDelay += rngDelay(RNG);
+		sumDelay += rngDelay(RD);
 	}
 }
 std::string Patterns::directionalFire(Boss& boss, nlohmann::json json) {
@@ -175,12 +175,12 @@ std::string Patterns::cerclique(Boss& boss, float radius, float vA, float height
 		float h = height * HEIGHT;
 		float dtH = dtHeight * HEIGHT;
 
-		Vector2 pos((float)WIDTH, (unitaryRng(RNG) * 2 - 1) * dtH + h);
+		Vector2 pos((float)WIDTH, (unitaryRng(RD) * 2 - 1) * dtH + h);
 		Vector2 cPos = pos;
 		Vector2 dir(-1, 0);
 
 		float a = 0;
-		int dirA = unitaryRng(RNG) > 0.5f ? 1 : -1;
+		int dirA = unitaryRng(RD) > 0.5f ? 1 : -1;
 
 		boss.addProjectile(std::make_shared<Projectile>(projectile, pos, dir, false,
 			[cPos, a, radius, vA, dirA](Projectile& me, auto dt) mutable {
@@ -210,8 +210,8 @@ std::string Patterns::rapprochement(Boss& boss, u32 nOrbs, float eTime, float in
 	for (u32 i = 0; i < nOrbs; ++i) {
 		TimerManager::addFunction(sumS, "rapprochement",
 			[boss, nOrbs, eTime, inSpawnRadius, outSpawnRadius, projectile](auto)mutable->bool {
-			Vector2 pos = game->_player->getPos() + Vector2::createUnitVector(unitaryRng(RNG) * 2 * PIf) *
-				(unitaryRng(RNG) * (outSpawnRadius - inSpawnRadius) + inSpawnRadius);
+			Vector2 pos = game->_player->getPos() + Vector2::createUnitVector(unitaryRng(RD) * 2 * PIf) *
+				(unitaryRng(RD) * (outSpawnRadius - inSpawnRadius) + inSpawnRadius);
 
 			auto ptrProjectile = std::make_shared<Projectile>(projectile, pos, Vector2::ZERO, false);
 			boss.addProjectile(ptrProjectile);
@@ -224,7 +224,7 @@ std::string Patterns::rapprochement(Boss& boss, u32 nOrbs, float eTime, float in
 			return true;
 		});
 
-		sumS += unitaryRng(RNG) * 2 * eTime / nOrbs;
+		sumS += unitaryRng(RD) * 2 * eTime / nOrbs;
 	}
 	return "nil";
 }
@@ -304,9 +304,9 @@ std::string Patterns::blastCosmopolitain(Boss& boss, const nlohmann::json& json)
 std::string Patterns::blastCosmopolitain(Boss& boss, u32 nBlasts, u32 nOrbs, float r, float iTime, float waitTime, const nlohmann::json& projectile) {
 	return TimerManager::addFunction(iTime, "blastCosomoplitain",
 		[projectile, boss, nBlasts, nOrbs, r, waitTime](auto)mutable->bool {
-		float x = unitaryRng(RNG) * WIDTH;
-		float y = unitaryRng(RNG) * HEIGHT;
-		float a = unitaryRng(RNG) * 2 * PIf;
+		float x = unitaryRng(RD) * WIDTH;
+		float y = unitaryRng(RD) * HEIGHT;
+		float a = unitaryRng(RD) * 2 * PIf;
 
 		for (u32 i = 0; i < nOrbs; ++i) {
 			float dtA = 2 * PIf * i / nOrbs;

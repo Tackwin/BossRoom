@@ -12,6 +12,7 @@ Loot::Loot(float r) :
 	collisionMask |= Object::BIT_TAGS::PLAYER;
 }
 
+
 void Loot::setLootType(LOOT_TYPE type) {
 	_lootType = type;
 }

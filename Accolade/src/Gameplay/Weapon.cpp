@@ -13,7 +13,7 @@
 #include "Gameplay/Player.hpp"
 #include "Gameplay/Level.hpp"
 
-Weapon::Weapon() {};
+Weapon::Weapon() {}
 
 Weapon::Weapon(std::shared_ptr<Player> player, nlohmann::json json)
 	: _player(player),
@@ -55,10 +55,6 @@ Weapon::Weapon(const Weapon& other) :
 		_uiSprite.getTextureRect().height * 0.5f
 	);
 	_uiSprite.setPosition((float)WIDTH, (float)HEIGHT);
-}
-
-
-Weapon::~Weapon() {
 }
 
 void Weapon::render(sf::RenderTarget&) {

@@ -87,7 +87,6 @@ Game::~Game() {
 
 	Level::destroyLevels();
 	Boss::destroyBosses();
-	Weapon::destroyWeapons();
 }
 
 Game::Game() : 
@@ -97,7 +96,7 @@ Game::Game() :
 	Boss::createBosses();
 	Level::createLevels();
 
-	_player->swapWeapon(std::make_shared<Weapon>(*Weapon::_weapons[0]));
+	_player->swapWeapon(std::make_shared<Weapon>(Weapon::_weapons[0]));
 
 	_debugText["ups"].setFont(AssetsManager::getFont("consola"));
 	_debugText["ups"].setCharacterSize(20);

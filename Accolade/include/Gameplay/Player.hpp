@@ -20,9 +20,7 @@ class Level;
 class Projectile;
 class Player : public Object {
 public:
-	Player() {};
 	Player(const nlohmann::json& json);
-	~Player();
 
 	void initializeJson();
 

@@ -70,7 +70,7 @@ void ParticleGenerator::loadJson(const nlohmann::json& json) {
 	_lambda = [&](double)mutable -> bool {
 		float timer = getJsonValue<float>(_json, "iTime");
 
-		//_particles.push_back(std::make_shared<Particle>(_json["particle"], _pos, Vector2f::createUnitVector(unitaryRng(RNG) * 2 * PIf)));
+		//_particles.push_back(std::make_shared<Particle>(_json["particle"], _pos, Vector2f::createUnitVector(unitaryRng(RD) * 2 * PIf)));
 
 		if (_remain != 0) {
 			_lambdaKey = TimerManager::addFunction(timer, "", _lambda);

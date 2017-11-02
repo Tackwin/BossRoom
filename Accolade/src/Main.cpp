@@ -10,7 +10,7 @@
 #include "Game.hpp"
 #include "Gameplay/Patterns.hpp"
 
-std::default_random_engine C::RNG(SEED);
+std::default_random_engine C::RD(SEED);
 std::uniform_real_distribution<float> C::unitaryRng(0.f, 1.f - FLT_EPSILON);
 std::shared_ptr<Game> C::game;
 

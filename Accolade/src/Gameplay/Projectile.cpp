@@ -40,7 +40,7 @@ Projectile::Projectile(nlohmann::json json, Vector2f pos, Vector2f dir, bool pla
 	_sprite = sf::Sprite(AssetsManager::getTexture(json["sprite"]));
 	const i32 whole = _sprite.getTextureRect().width / 3;
 	_sprite.setTextureRect({
-		dist(RNG) * whole	, dist(RNG) * whole, 
+		dist(RD) * whole	, dist(RD) * whole, 
 		whole				,	whole
 	});
 	_sprite.setOrigin(_radius, _radius); // i don't know why it's off, maybe because i do shit with texture rect just above...

@@ -40,9 +40,6 @@ Player::Player(const nlohmann::json& json) :
 	});
 }
 
-Player::~Player() {
-}
-
 void Player::initializeJson() {
 	_life = _json["life"];
 	_maxLife = _life;

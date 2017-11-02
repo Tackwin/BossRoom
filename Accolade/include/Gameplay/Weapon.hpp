@@ -1,4 +1,5 @@
 #pragma once
+#include <array>
 #include <vector>
 #include <memory>
 #include <functional>
@@ -19,7 +20,6 @@ public:
 	Weapon();
 	Weapon(const Weapon& other);
 	Weapon(std::shared_ptr<Player> player, nlohmann::json json);
-	~Weapon();
 
 	void equip();
 	void unEquip();
@@ -48,9 +48,8 @@ public:
 
 	Weapon& operator=(const Weapon& other);
 
-	static std::vector<std::shared_ptr<Weapon>> _weapons;
+	static std::array<Weapon, 4> _weapons;
 	static void createWeapons(std::shared_ptr<Player> player);
-	static void destroyWeapons();
 private: //TODO: Make this private
 	void swap(Weapon& other);
 

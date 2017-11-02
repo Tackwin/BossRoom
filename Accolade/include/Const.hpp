@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <random>
 #include <memory>
+#include <type_traits>
 
 #include "3rd/json.hpp"
 
@@ -39,10 +40,16 @@ namespace C {
 
 	constexpr u32 N_LEVEL = 5u;
 
-	extern std::default_random_engine RNG;
+	extern std::default_random_engine RD;
 	extern std::uniform_real_distribution<float> unitaryRng;
 	constexpr unsigned int SEED = 0;
 
 	extern std::shared_ptr<Game> game;
+
+	template<typename T> 
+	T rngRange(T min, T max) {
+		return min + unitaryRng(RD) * (max - min);
+	}
+
 };
 using namespace C;
