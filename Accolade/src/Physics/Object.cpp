@@ -6,5 +6,3 @@ Object::Object() :
 id(N++) {
 
 }
-Object::~Object() {
-}

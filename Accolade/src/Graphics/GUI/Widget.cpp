@@ -70,6 +70,10 @@ void Widget::setParent(Widget* const parent, i32 z) {
 	if (haveChild(parent))
 		return;
 
+	if (_parent) {
+		_parent->denyChild(this);
+	}
+
 	_parent = parent;
 	if (!_parent->haveChild(this)) {
 		_parent->addChild(this, z);
@@ -146,8 +150,9 @@ void Widget::propagateRender(sf::RenderTarget& target) {
 	}
 }
 
-std::array<bool, 9> Widget::input(const std::array<bool, 9>& mask) {
-	std::array<bool, 9> result = { false };
+std::bitset<9u> Widget::input(const std::bitset<9u>& mask) {
+	std::bitset<9u> result;
+	result.reset();
 
 	if (getGlobalBoundingBox().in(InputsManager::getMouseScreenPos())) {
 		if (InputsManager::isMouseJustPressed(sf::Mouse::Left) && !mask[0]) {
@@ -168,8 +173,7 @@ std::array<bool, 9> Widget::input(const std::array<bool, 9>& mask) {
 }
 
 void Widget::propagateInput() {
-	constexpr std::array<bool, 9> allFalse = { false, false, false, false, false, false, false, false, false };
-	postOrderInput(allFalse);
+	postOrderInput({});
 }
 
 template<u32 D>
@@ -181,18 +185,20 @@ std::array<bool, D> orArray(const std::array<bool, D>& A, const std::array<bool,
 	return C;
 }
 
-std::array<bool, 9> Widget::postOrderInput(std::array<bool, 9> mask) {
-	constexpr std::array<bool, 9> allTrue = { true, true, true, true, true, true, true, true, true };
+std::bitset<9u> Widget::postOrderInput(const std::bitset<9>& mask) {
+	if (mask.all()) 
+		return mask;
 
-	if (mask == allTrue) return allTrue;
-
-	std::array<bool, 9> maskAfterChild = mask;
+	auto maskAfterChild = mask;
 	for (auto& c : getChilds()) {
-		if (!c.second->isVisible()) continue;
 
-		maskAfterChild = orArray(c.second->postOrderInput(mask), maskAfterChild);
+		if (!c.second->isVisible()) 
+			continue;
+
+		maskAfterChild |= c.second->postOrderInput(mask);
 	}
-	maskAfterChild = input(maskAfterChild);
+
+	maskAfterChild |= input(maskAfterChild);
 	return maskAfterChild;
 }
 

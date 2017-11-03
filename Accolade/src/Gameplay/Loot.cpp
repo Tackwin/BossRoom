@@ -4,12 +4,12 @@
 
 #include "Gameplay/Player.hpp"
 
+
 Loot::Loot(float r) :
 	Zone(r) 
 {
 	collider->onEnter = std::bind(&Loot::onEnter, this, std::placeholders::_1);
-
-	collisionMask |= Object::BIT_TAGS::PLAYER;
+	collisionMask.set((size_t)Object::BIT_TAGS::PLAYER);
 }
 
 

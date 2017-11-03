@@ -48,7 +48,7 @@ namespace C {
 
 	template<typename T> 
 	T rngRange(T min, T max) {
-		return min + unitaryRng(RD) * (max - min);
+		return static_cast<T>(min + unitaryRng(RD) * (max - min));
 	}
 
 };

@@ -22,11 +22,7 @@ Boss::Boss(const basic_json<>& json, std::function<void(double, Boss&)> updateFu
 	_init(init),
 	_unInit(unInit) {
 
-	collisionMask |= Object::BIT_TAGS::PROJECTILE;
-}
-
-Boss::~Boss() {
-	Object::~Object();
+	collisionMask.set((size_t)Object::BIT_TAGS::PROJECTILE);
 }
 
 void Boss::enterLevel(Level* level) {
@@ -131,7 +127,7 @@ void Boss::clearProtectilesToShoot() {
 	_projectilesToShoot.clear();
 }
 void Boss::collision(Object* obj) {
-	if (auto ptr = dynamic_cast<Projectile*>(obj); ptr && ptr->isFromPlayer()) {
+	if (auto ptr = static_cast<Projectile*>(obj); obj->idMask.test((size_t)Object::BIT_TAGS::PROJECTILE) && ptr->isFromPlayer()) {
 		hit(ptr->getDamage());
 
 		auto& particleGeneratorJson = AssetsManager::getJson(JSON_KEY)["particlesGenerator"];

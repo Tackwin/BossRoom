@@ -23,7 +23,6 @@ public:
 		 std::function<void(double, Boss&)> updateFunction,
 		 std::function<void(Boss&)> initFunction,
 		 std::function<void(Boss&)> unInitFunction);
-	virtual ~Boss() override;
 
 	void enterLevel(Level* level);
 	void exitLevel();

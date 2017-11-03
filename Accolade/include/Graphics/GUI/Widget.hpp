@@ -1,5 +1,5 @@
 #pragma once
-#include <array>
+#include <bitset>
 #include <memory>
 #include <functional>
 
@@ -55,9 +55,9 @@ public:
 	virtual void render(sf::RenderTarget& target);
 	void propagateRender(sf::RenderTarget& target);
 
-	std::array<bool, 9> input(const std::array<bool, 9>& mask);
+	std::bitset<9u> input(const std::bitset<9u>& mask);
 	void propagateInput();
-	std::array<bool, 9> postOrderInput(std::array<bool, 9> mask);
+	std::bitset<9u> postOrderInput(const std::bitset<9u>& mask);
 
 protected: //god this is growing into a god class... :(
 

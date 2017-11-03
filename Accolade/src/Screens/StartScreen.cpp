@@ -39,7 +39,12 @@ void StartScreen::initializeGui() {
 
 	_guiRoot.addChild(&_weaponIcon);
 	_guiRoot.addChild(&_shop);
-	_shop.addWeapon(&Weapon::_weapons[0]);
+
+	for (u32 i = 0u; i < 10; ++i) {
+		for (u32 j = 0u; j < Weapon::_weapons.size(); ++j) {
+			_shop.addWeapon(&Weapon::_weapons[j]);
+		}
+	}
 }
 
 void StartScreen::onEnter() {
@@ -60,7 +65,7 @@ void StartScreen::initializeWorld(){
 	_world.addObject(_player);
 
 	_floor = std::make_shared<Object>();
-	_floor->idMask |= Object::BIT_TAGS::FLOOR;
+	_floor->idMask.set((size_t)Object::BIT_TAGS::FLOOR);
 	_floor->pos = { 0, 600 };
 	Box* box = new Box();
 	box->size = { 3000, 120 };
@@ -76,7 +81,7 @@ void StartScreen::initializeWorld(){
 	merchant->setRadius(150.f);
 	merchant->pos.x = _merchantShop.getPosition().x + _merchantShop.getGlobalBounds().width * 0.5f;
 	merchant->pos.y = _merchantShop.getPosition().y + _merchantShop.getGlobalBounds().height * 0.5f;
-	merchant->collisionMask |= Object::BIT_TAGS::PLAYER;
+	merchant->collisionMask.set((size_t)Object::BIT_TAGS::PLAYER);
 	merchant->collider->sensor = true;
 	merchant->collider->onExit = [&](Object*) mutable { leaveShop(); };
 	merchant->collider->onEnter = [&](Object*) mutable { enterShop(); };

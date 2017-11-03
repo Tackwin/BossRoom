@@ -7,7 +7,7 @@ Zone::Zone(float r) : Object() {
 	collider = _disk.get();
 	collider->onEnter = [&](Object* obj) {collision(obj); };
 	
-	idMask |= BIT_TAGS::ZONE;
+	idMask.set((size_t)BIT_TAGS::ZONE);
 }
 Zone::Zone(const Zone& other) : Object() {
 
@@ -19,10 +19,6 @@ Zone::Zone(const Zone& other) : Object() {
 
 	idMask = other.idMask;
 	collisionMask = other.collisionMask;
-}
-
-Zone::~Zone() {
-	Object::~Object();
 }
 
 void Zone::collision(Object* obj) {

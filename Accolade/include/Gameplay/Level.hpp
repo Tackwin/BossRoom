@@ -52,7 +52,7 @@ private: // TODO: Make this private
 
 	u32 _n = 0u;
 
-	std::vector<Loot*> _loots;
+	std::vector<std::shared_ptr<Loot>> _loots;
 
 	std::shared_ptr<Boss> _boss = nullptr;
 	std::shared_ptr<Player> _player = nullptr;

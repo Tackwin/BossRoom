@@ -9,22 +9,19 @@
 #include "Physics/Collider.hpp"
 
 struct Object {
-	struct BIT_TAGS {
-		using type = u08;
-
-		static constexpr type PLAYER = 1;
-		static constexpr type FLOOR = PLAYER << 1;
-		static constexpr type PROJECTILE = FLOOR << 1;
-		static constexpr type BOSS = PROJECTILE << 1;
-		static constexpr type ZONE = BOSS << 1;
+	enum class BIT_TAGS : u08 {
+		PLAYER = 0u,
+		FLOOR,
+		PROJECTILE,
+		BOSS,
+		ZONE
 	};
 
 	static u64 N;
 
-	static constexpr size_t BITSET_SIZE = 8u;
+	static constexpr u08 BITSET_SIZE = 8u;
 
 	Object();
-	virtual ~Object();
 
 	Vector2f pos = { 0, 0 };
 
@@ -34,8 +31,8 @@ struct Object {
 	Vector2f force = { 0, 0 };
 	std::vector<Vector2f> flatForces;
 
-	std::bitset<BITSET_SIZE> collisionMask = 0;
-	std::bitset<BITSET_SIZE> idMask;
+	std::bitset<BITSET_SIZE> collisionMask = {};
+	std::bitset<BITSET_SIZE> idMask = {};
 
 	Collider* collider = nullptr;
 

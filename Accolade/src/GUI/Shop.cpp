@@ -88,7 +88,6 @@ void Shop::leave() {
 }
 
 bool Shop::onClickBegan() {
-	printf("Shop\n");
 	auto rect = Rectangle2f(
 		{ _quitPanel.getGlobalPosition().x - 20, _quitPanel.getGlobalPosition().y },
 		{ 20, 20 }
@@ -171,7 +170,6 @@ Shop::_ItemPanel::_ItemPanel(Shop * shop, Weapon* weapon, u32 id) :
 }
 
 bool Shop::_ItemPanel::onClickBegan() {
-	printf("ItemPanel\n");
 	_shop->focusItem(_id);
 	return true;
 }

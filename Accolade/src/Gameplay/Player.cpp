@@ -26,8 +26,8 @@ Player::Player(const nlohmann::json& json) :
 	collider = &_hitBox;
 
 	pos = { 100, 100 };
-	idMask |= Object::BIT_TAGS::PLAYER;
-	collisionMask |= Object::BIT_TAGS::FLOOR;
+	idMask.set((size_t)Object::BIT_TAGS::PLAYER);
+	collisionMask.set((size_t)Object::BIT_TAGS::FLOOR);
 
 	EventManager::subscribe("keyPressed", [&](EventManager::EventCallbackParameter args) -> void {
 		auto key = std::any_cast<sf::Keyboard::Key>(*args.begin());
@@ -185,7 +185,7 @@ bool Player::isInvicible() const {
 }
 
 void Player::collision(Object* obj) {
-	if (auto ptr = dynamic_cast<Projectile*>(obj); ptr && !ptr->isFromPlayer()) {
+	if (auto ptr = static_cast<Projectile*>(obj); ptr->idMask.test((size_t)Object::BIT_TAGS::PROJECTILE) && !ptr->isFromPlayer()) {
 		if (!_invincible) {
 			hit(ptr->getDamage());
 		}

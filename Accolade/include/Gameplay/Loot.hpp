@@ -30,6 +30,7 @@ public:
 
 	void render(sf::RenderTarget& target);
 
+
 private:
 	void onEnter(Object* obj);
 

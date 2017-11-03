@@ -14,7 +14,6 @@ struct Zone : public Object {
 
 	Zone(float r = 0.f);
 	Zone(const Zone& other);
-	virtual ~Zone() override;
 
 	void setRadius(float r);
 	float getRadius() const;
