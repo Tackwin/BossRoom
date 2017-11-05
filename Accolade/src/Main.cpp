@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "Managers/MemoryManager.hpp"
 #include "Managers/AssetsManager.hpp"
 #include "Managers/InputsManager.hpp"
 #include "Managers/TimerManager.hpp"
@@ -13,6 +14,9 @@
 std::default_random_engine C::RD(SEED);
 std::uniform_real_distribution<float> C::unitaryRng(0.f, 1.f - FLT_EPSILON);
 std::shared_ptr<Game> C::game;
+
+void startGame();
+void loadRessources();
 
 void loadSpriteFromJson(const nlohmann::json& json);
 void loadSoundsFromJson(const nlohmann::json& json);
@@ -40,13 +44,46 @@ bool render(sf::RenderWindow& window) {
 }
 
 int main(int, char**) {
-	printf("Loading jsons...\n");
+	if constexpr (false) {
+		loadRessources();
+		startGame();
+	}
+	else {
+		struct A {
+			char a, b;
 
-	AssetsManager::loadJson(JSON_KEY, JSON_PATH);
-	loadSpriteFromJson(AssetsManager::getJson(JSON_KEY));
-	loadSoundsFromJson(AssetsManager::getJson(JSON_KEY));
-	loadFontsFromJson(AssetsManager::getJson(JSON_KEY));
+			A(char a = 0, char b = 0) : a(a), b(b) {}
+		};
 
+		struct B {
+			uint16_t a;
+			uint32_t b;
+
+			B(uint16_t a = 0, uint32_t b = 0) : a(a), b(b) {}
+		};
+
+		auto& mem = MemoryManager::I();
+
+		mem.initialize_buffer(100u);
+		auto p1 = mem.allocate<A>('h', 'e');
+		mem.allocate<A>('l', 'l');
+		mem.allocate<A>('o', ' ');
+		auto p4 = mem.allocate<A>('w', 'o');
+		mem.allocate<A>('r', 'l');
+		mem.allocate<A>('d', '!');
+		mem.deallocate(p1);
+		mem.deallocate(p4);
+		mem.allocate<A>('A', 'B');
+		mem.allocate<A>('C', 'D');
+		mem.allocate<uint8_t>('F');
+		auto p9 = mem.allocate<B>((uint16_t)0x1234, 0x12345678);
+		mem.allocate<B>((uint16_t)0x1200, 0x10022000);
+		mem.deallocate(p9);
+	}
+	return 0;
+}
+
+void startGame() {
 	Patterns::_json = AssetsManager::getJson(JSON_KEY)["patterns"];
 	C::game = std::make_shared<Game>();
 	game->start();
@@ -79,9 +116,15 @@ int main(int, char**) {
 
 	TimerManager::removeFunction(renderKey);
 	TimerManager::removeFunction(updateKey);
-	return 0;
 }
+void loadRessources() {
+	printf("Loading jsons...\n");
 
+	AssetsManager::loadJson(JSON_KEY, JSON_PATH);
+	loadSpriteFromJson(AssetsManager::getJson(JSON_KEY));
+	loadSoundsFromJson(AssetsManager::getJson(JSON_KEY));
+	loadFontsFromJson(AssetsManager::getJson(JSON_KEY));
+}
 void loadSpriteFromJson(const nlohmann::json& json) {
 	assert(!json["sprites"].is_null());
 	const auto& j = json["sprites"];
@@ -100,7 +143,6 @@ void loadSpriteFromJson(const nlohmann::json& json) {
 		AssetsManager::loadTexture(key, ASSETS_PATH + path);
 	}
 }
-
 void loadSoundsFromJson(const nlohmann::json& json) {
 	assert(!json["sounds"].is_null());
 	const auto& j = json["sounds"];
@@ -117,7 +159,6 @@ void loadSoundsFromJson(const nlohmann::json& json) {
 		AssetsManager::loadSound(key, ASSETS_PATH + path);
 	}
 }
-
 void loadFontsFromJson(const nlohmann::json& json) {
 	assert(!json["fonts"].is_null());
 	const auto& j = json["fonts"];
