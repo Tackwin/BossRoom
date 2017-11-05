@@ -49,9 +49,13 @@ void Loot::onEnter(Object* obj) { // we know typeof(obj) is necessarly Player*
 	switch (_lootType) {
 	case LOOT_TYPE::WEAPON :
 		Player* player = static_cast<Player*>(obj);
+	
+		auto player_weapon = player->getWeapon();
 		player->swapWeapon(_weapon);
+
+		_weapon = player_weapon;
 		break;
 	}
 
-	_toRemove = true;
+	setRemove(true);
 }

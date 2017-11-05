@@ -47,3 +47,11 @@ Zone& Zone::operator=(const Zone& other) {
 
 	return *this;
 }
+
+void Zone::setRemove(bool remove = true) {
+	_toRemove = remove;
+}
+bool Zone::needRemove() const {
+	return _toRemove;
+}
+

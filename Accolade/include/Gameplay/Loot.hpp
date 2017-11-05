@@ -37,7 +37,6 @@ private:
 	LOOT_TYPE _lootType = LOOT_TYPE::NONE;
 
 	bool _lootable = false;
-	bool _toRemove = false;
 
 	sf::Sprite _lootSprite;
 	std::shared_ptr<Weapon> _weapon;

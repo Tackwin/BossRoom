@@ -36,8 +36,7 @@ public:
 
 	Vector2f getDirToFire();
 
-	const Weapon* getWeapon() const;
-	void swapWeapon(Weapon* weapon);
+	std::shared_ptr<const Weapon> getWeapon() const;
 	void swapWeapon(std::shared_ptr<Weapon> weapon);
 	
 	void addProjectile(const std::shared_ptr<Projectile>& projectile);
@@ -108,7 +107,7 @@ public: //TODO: Make private
 	bool _focus = true;
 
 	Level* _level = nullptr;
-	Weapon _weapon;
+	std::shared_ptr<Weapon> _weapon;
 
 	AnimatedSprite _sprite;
 	sf::Sound _hitSound;

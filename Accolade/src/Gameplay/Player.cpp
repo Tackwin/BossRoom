@@ -72,21 +72,21 @@ void Player::initializeJson() {
 
 
 void Player::enterLevel(Level* level) {
-	_weapon.equip();
+	_weapon->equip();
 
  	_level = level;
 
 	_hitBox.onEnter = [&](Object* obj) { collision(obj); };
 }
 void Player::exitLevel() {
-	_weapon.unEquip();
+	_weapon->unEquip();
 	_level = nullptr;
 }
 
 void Player::update(double) {
 	bool tryingToShoot = game->_distance && InputsManager::isMousePressed(_AK) && _focus;
 	if (tryingToShoot) {
-		_weapon.active(0);
+		_weapon->active(0);
 	}
 
 	if (!_freeze) {
@@ -107,13 +107,13 @@ void Player::update(double) {
 		flatVelocities.push_back(_dir);
 	}
 
-	const auto& projectileBuffer = _weapon.getProjectileBuffer();
+	const auto& projectileBuffer = _weapon->getProjectileBuffer();
 	_projectilesToShoot.insert(
 		_projectilesToShoot.end(),
 		projectileBuffer.begin(),
 		projectileBuffer.end()
 	);
-	_weapon.clearProjectileBuffer();
+	_weapon->clearProjectileBuffer();
 }
 
 void Player::render(sf::RenderTarget &target) {
@@ -149,14 +149,10 @@ void Player::startCaC() {
 	_freeze = true;
 }
 
-void Player::swapWeapon(Weapon* weapon) {
-	_weapon.unEquip();
-	_weapon = *weapon;
-	_weapon.equip();
-}
-
 void Player::swapWeapon(std::shared_ptr<Weapon> weapon) {
-	swapWeapon(weapon.get());
+	_weapon->unEquip();
+	_weapon = weapon;
+	_weapon->equip();
 }
 
 Vector2f Player::getDirToFire() {
@@ -200,8 +196,8 @@ void Player::dropWeapon() {
 	});
 }
 
-const Weapon* Player::getWeapon() const {
-	return &_weapon;
+std::shared_ptr<const Weapon> Player::getWeapon() const {
+	return _weapon;
 }
 
 void Player::floored() {
@@ -220,7 +216,7 @@ bool Player::isFloored() const {
 }
 
 void Player::unEquip() {
-	_weapon.unEquip();
+	_weapon->unEquip();
 }
 
 void Player::jumpKeyPressed() {
