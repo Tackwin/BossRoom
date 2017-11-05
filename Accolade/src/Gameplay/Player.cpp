@@ -150,7 +150,9 @@ void Player::startCaC() {
 }
 
 void Player::swapWeapon(std::shared_ptr<Weapon> weapon) {
-	_weapon->unEquip();
+	if (_weapon)
+		_weapon->unEquip();
+	
 	_weapon = weapon;
 	_weapon->equip();
 }
@@ -196,7 +198,7 @@ void Player::dropWeapon() {
 	});
 }
 
-std::shared_ptr<const Weapon> Player::getWeapon() const {
+std::shared_ptr<Weapon> Player::getWeapon() const {
 	return _weapon;
 }
 

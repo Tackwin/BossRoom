@@ -42,7 +42,7 @@ void StartScreen::initializeGui() {
 
 	for (u32 i = 0u; i < 10; ++i) {
 		for (u32 j = 0u; j < Weapon::_weapons.size(); ++j) {
-			_shop.addWeapon(&Weapon::_weapons[j]);
+			_shop.addWeapon(std::make_shared<Weapon>(Weapon::_weapons[j]));
 		}
 	}
 }

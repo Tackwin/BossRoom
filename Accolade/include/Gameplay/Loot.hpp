@@ -22,7 +22,7 @@ public:
 	void setLootType(LOOT_TYPE type);
 	LOOT_TYPE getLootType() const;
 
-	void setWeapon(const std::shared_ptr<Weapon>& weapon);
+	void setWeapon(std::shared_ptr<Weapon> weapon);
 	std::shared_ptr<Weapon> getWeapon() const;
 
 	void setLootable(bool lootable = true);
@@ -37,6 +37,7 @@ private:
 	LOOT_TYPE _lootType = LOOT_TYPE::NONE;
 
 	bool _lootable = false;
+	float _lootImpossibleTime = 2.f;
 
 	sf::Sprite _lootSprite;
 	std::shared_ptr<Weapon> _weapon;

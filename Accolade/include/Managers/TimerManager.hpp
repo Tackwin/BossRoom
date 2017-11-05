@@ -39,6 +39,8 @@ public:
 
 	static std::string addFunction(double timer, const std::string& key, const Function::Callback&& f);
 	static std::string addFunction(double timer, const std::string& key, const Function::Callback& f);
+	static std::string addFunction(double timer, const Function::Callback&& f);
+	static std::string addFunction(double timer, const Function::Callback& f);
 	static std::string cloneFunction(const std::string& key);
 	static void resetTimerFunction(const std::string& key);
 	static void restartFunction(const std::string& key);

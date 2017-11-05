@@ -36,7 +36,7 @@ public:
 
 	Vector2f getDirToFire();
 
-	std::shared_ptr<const Weapon> getWeapon() const;
+	std::shared_ptr<Weapon> getWeapon() const;
 	void swapWeapon(std::shared_ptr<Weapon> weapon);
 	
 	void addProjectile(const std::shared_ptr<Projectile>& projectile);

@@ -1,6 +1,7 @@
 #include "Managers/TimerManager.hpp"
 
 #include <cassert>
+#include <utility>
 #include <string>
 
 #include "Time/Clock.hpp"
@@ -14,10 +15,10 @@ u32 TimerManager::getNFunction() {
 std::string TimerManager::addFunction(double timer, const std::string& key, const Function::Callback&& f) {
 	u08 i = (u08)rand();
 	std::string candidate = key + std::to_string(i);
-	while(_functions.find(candidate) != _functions.end()) {
+	while (_functions.find(candidate) != _functions.end()) {
 		candidate = candidate + std::to_string(i);
 	}
-	_functions[candidate] = std::make_shared<Function>(timer, f);
+	_functions[candidate] = std::make_shared<Function>(timer, std::forward<const Function::Callback>(f));
 	return candidate;
 }
 std::string TimerManager::addFunction(double timer, const std::string& key, const Function::Callback& f) {
@@ -28,6 +29,12 @@ std::string TimerManager::addFunction(double timer, const std::string& key, cons
 	}
 	_functions[candidate] = std::make_shared<Function>(timer, f);
 	return candidate;
+}
+std::string TimerManager::addFunction(double timer, const Function::Callback&& f) {
+	return addFunction(timer, "", std::forward<const Function::Callback>(f));
+}
+std::string TimerManager::addFunction(double timer, const Function::Callback& f) {
+	return addFunction(timer, "", f);
 }
 
 void TimerManager::resetTimerFunction(const std::string& key) {

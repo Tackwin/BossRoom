@@ -51,7 +51,7 @@ Shop::~Shop() {
 	Widget::~Widget();
 }
 
-void Shop::addWeapon(Weapon* weapon) {
+void Shop::addWeapon(std::shared_ptr<Weapon> weapon) {
 	constexpr u32 itemPerRow = 7;
 
 	u32 size = _itemPanels.size();
@@ -146,7 +146,7 @@ bool Shop::isIn() const {
 }
 
 
-Shop::_ItemPanel::_ItemPanel(Shop * shop, Weapon* weapon, u32 id) :
+Shop::_ItemPanel::_ItemPanel(Shop* shop, std::shared_ptr<Weapon> weapon, u32 id) :
 	_shop(shop),
 	weapon(weapon),
 	_id(id)
@@ -229,7 +229,7 @@ Shop::_InfoPanel::_InfoPanel(Shop* shop) :
 		std::bind(&Shop::_InfoPanel::onClickGoing, this)
 	});
 }
-void Shop::_InfoPanel::populateBy(Weapon* weapon) {
+void Shop::_InfoPanel::populateBy(std::shared_ptr<Weapon> weapon) {
 	using namespace std::literals;
 
 	auto& icon = panels["icon"];

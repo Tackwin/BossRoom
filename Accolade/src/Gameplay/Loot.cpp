@@ -3,7 +3,7 @@
 #include <functional>
 
 #include "Gameplay/Player.hpp"
-
+#include "Managers/TimerManager.hpp"
 
 Loot::Loot(float r) :
 	Zone(r) 
@@ -20,7 +20,7 @@ Loot::LOOT_TYPE Loot::getLootType() const {
 	return _lootType;
 }
 
-void Loot::setWeapon(const std::shared_ptr<Weapon>& weapon) {
+void Loot::setWeapon(std::shared_ptr<Weapon> weapon) {
 	_weapon = weapon;
 }
 std::shared_ptr<Weapon> Loot::getWeapon() const {
@@ -54,8 +54,13 @@ void Loot::onEnter(Object* obj) { // we know typeof(obj) is necessarly Player*
 		player->swapWeapon(_weapon);
 
 		_weapon = player_weapon;
+		_lootable = false;
+
+		TimerManager::addFunction(_lootImpossibleTime, [&lootable = _lootable](double) -> bool {
+			lootable = true;
+			return true;
+		});
+
 		break;
 	}
-
-	setRemove(true);
 }
