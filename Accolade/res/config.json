@@ -112,9 +112,12 @@
 		"panel_b": {
 			"sheet": "images/panel_b.png"
 		},
-		"quit": {
-			"sheet": "images/quit.png"
-		}
+    "quit": {
+      "sheet": "images/quit.png"
+    },
+    "slash": {
+      "sheet": "images/slash.png"
+    }
 	},
 	"sounds": {
 		"shoot": "sounds/shoot.wav",
@@ -433,7 +436,8 @@
 			"sounds": {
 				"active": [ "shoot" ]
 			},
-			"radius": 10,
+      "radius": 25,
+      "offsetX": 20,
 			"damage": 10,
 			"remainTime": 0.2,
 			"collider": {

@@ -3,7 +3,8 @@
 
 #include "Physics/Object.hpp"
 
-struct Zone : public Object {
+class Zone : public Object {
+public:
 	using Callback = std::function<void(Object*)>;
 
 	Callback entered = [](Object*) {};
@@ -21,12 +22,14 @@ struct Zone : public Object {
 	bool needRemove() const;
 
 	Zone& operator=(const Zone& other);
-private:
+protected:
 	std::vector<Object*> _objectsColliding;
 
 	std::shared_ptr<Disk> _disk;
 
 	bool _toRemove = false;
+
+	float _radius = 0.f;
 
 	void collision(Object* obj);
 };

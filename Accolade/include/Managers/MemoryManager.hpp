@@ -22,7 +22,8 @@ public:
 
 	template<typename T, class... Args>
 	T* allocate(Args... args) {
-		
+		printf("allocate\n");
+
 		u08* emplacement = nullptr;
 		for (size_t i = 0u; i < _free_memory.size(); ++i) { //testing if the memory place is big enough to hold T
 
@@ -67,6 +68,8 @@ public:
 
 	template<typename T>
 	void deallocate(T* ptr, size_t size = sizeof(T)) {
+		printf("deallocate\n");
+	
 		bool flag = true;
 
 		for (size_t i = 0u; i < _free_memory.size(); ++i) { // if the memory place is just following another, we merge them
@@ -102,4 +105,17 @@ private:
 	u08* _main_buffer = nullptr;
 
 	std::vector<mem_place> _free_memory;
+};
+
+template <typename T>
+struct shrd_ptr : std::shared_ptr<T> {
+
+	template<class... Args>
+	shrd_ptr(Args... args) :
+		std::shared_ptr<T>(
+			MemoryManager::I().allocate<T>(args...),
+			std::bind(&MemoryManager::deallocate<T>, &MemoryManager::I(), std::placeholders::_1, sizeof(T))
+		)
+	{}
+
 };

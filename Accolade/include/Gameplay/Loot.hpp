@@ -9,7 +9,7 @@
 #include "Math/Vector.hpp"
 
 class Weapon;
-class Loot : public Zone {
+class Loot : protected Zone {
 public:
 
 	enum class LOOT_TYPE : u08 {

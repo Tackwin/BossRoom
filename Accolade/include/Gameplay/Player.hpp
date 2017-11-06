@@ -16,6 +16,8 @@
 #include "Graphics/AnimatedSprite.hpp"
 #include "Gameplay/Weapon.hpp"
 
+
+class Zone;
 class Level;
 class Projectile;
 class Player : public Object {
@@ -38,7 +40,11 @@ public:
 
 	std::shared_ptr<Weapon> getWeapon() const;
 	void swapWeapon(std::shared_ptr<Weapon> weapon);
-	
+
+	template<class... Args>
+	void addProjectile(Args... args) {
+		(addProjectile(args), ...);
+	}
 	void addProjectile(const std::shared_ptr<Projectile>& projectile);
 
 	Vector2f getPos();
@@ -47,11 +53,17 @@ public:
 	const std::vector<std::shared_ptr<Projectile>>& getProtectilesToShoot() const;
 	void clearProtectilesToShoot();
 
+	template<class... Args>
+	void addZone(Args... args) {
+		(addZone(args), ...);
+	}
+	void addZone(const std::shared_ptr<Zone>& zone);
+	const std::vector<std::shared_ptr<Zone>>& getZonesToApply() const;
+	void clearZonesToApply();
+
 	bool isInvicible() const;
 
 	void collision(Object* obj); 
-
-	void dropWeapon();
 
 	void floored();
 	bool isFloored() const;
@@ -113,4 +125,5 @@ public: //TODO: Make private
 	sf::Sound _hitSound;
 
 	std::vector<std::shared_ptr<Projectile>> _projectilesToShoot;
+	std::vector<std::shared_ptr<Zone>> _zonesToApply;
 };

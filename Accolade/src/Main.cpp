@@ -2,6 +2,8 @@
 
 #include <SFML/Graphics.hpp>
 
+#include <functional>
+
 #include "Managers/MemoryManager.hpp"
 #include "Managers/AssetsManager.hpp"
 #include "Managers/InputsManager.hpp"
@@ -44,42 +46,8 @@ bool render(sf::RenderWindow& window) {
 }
 
 int main(int, char**) {
-	if constexpr (false) {
-		loadRessources();
-		startGame();
-	}
-	else {
-		struct A {
-			char a, b;
-
-			A(char a = 0, char b = 0) : a(a), b(b) {}
-		};
-
-		struct B {
-			uint16_t a;
-			uint32_t b;
-
-			B(uint16_t a = 0, uint32_t b = 0) : a(a), b(b) {}
-		};
-
-		auto& mem = MemoryManager::I();
-
-		mem.initialize_buffer(100u);
-		auto p1 = mem.allocate<A>('h', 'e');
-		mem.allocate<A>('l', 'l');
-		mem.allocate<A>('o', ' ');
-		auto p4 = mem.allocate<A>('w', 'o');
-		mem.allocate<A>('r', 'l');
-		mem.allocate<A>('d', '!');
-		mem.deallocate(p1);
-		mem.deallocate(p4);
-		mem.allocate<A>('A', 'B');
-		mem.allocate<A>('C', 'D');
-		mem.allocate<uint8_t>('F');
-		auto p9 = mem.allocate<B>((uint16_t)0x1234, 0x12345678);
-		mem.allocate<B>((uint16_t)0x1200, 0x10022000);
-		mem.deallocate(p9);
-	}
+	loadRessources();
+	startGame();
 	return 0;
 }
 

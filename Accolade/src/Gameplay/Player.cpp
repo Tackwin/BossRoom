@@ -10,10 +10,8 @@
 
 #include "Gameplay/Projectile.hpp"
 #include "Gameplay/Weapon.hpp"
-#include "Gameplay/Level.hpp"
 
 //vraiment ? 8 PUTAIN DE CARACTERES pour un PUTAIN de namespace, 'tain......
-using namespace nlohmann;
 
 Player::Player(const nlohmann::json& json) :
 	Object(),
@@ -79,7 +77,8 @@ void Player::enterLevel(Level* level) {
 	_hitBox.onEnter = [&](Object* obj) { collision(obj); };
 }
 void Player::exitLevel() {
-	_weapon->unEquip();
+	if (_weapon)
+		_weapon->unEquip();
 	_level = nullptr;
 }
 
@@ -99,7 +98,7 @@ void Player::update(double) {
 		}
 
 		_dir.normalize();
-		if (tryingToShoot) _dir.x *= 0.2f;
+		if (tryingToShoot)							_dir.x *= 0.2f;
 		if (InputsManager::isKeyPressed(_slowK))	_dir.x *= _slowSpeed;
 		else										_dir.x *= _speed;
 
@@ -191,13 +190,6 @@ void Player::collision(Object* obj) {
 	}
 }
 
-void Player::dropWeapon() {
-
-	TimerManager::addFunction(0.5f, "ActivateLoot", [&w = _weapon](double)mutable->bool {
-		return true;
-	});
-}
-
 std::shared_ptr<Weapon> Player::getWeapon() const {
 	return _weapon;
 }
@@ -274,4 +266,14 @@ void Player::setFocus(bool focus) {
 }
 bool Player::getFocus() const {
 	return _focus;
+}
+
+void Player::addZone(const std::shared_ptr<Zone>& zone) {
+	_zonesToApply.push_back(zone);
+}
+const std::vector<std::shared_ptr<Zone>>& Player::getZonesToApply() const {
+	return _zonesToApply;
+}
+void Player::clearZonesToApply() {
+	_zonesToApply.clear();
 }

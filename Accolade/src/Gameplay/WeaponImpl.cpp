@@ -133,7 +133,7 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 				me._flags ^= 1;
 				TimerManager::resumeFunction(me._keys[0]);
 
-				float A = (float)me._player->getDirToFire().angleX();
+				float A = (float)me.getPlayer()->getDirToFire().angleX();
 				float spray = me._json["spray"];
 				for (u32 i = 0; i < 3; ++i) {
 					float dtA = spray * (i / 2.f - 0.5f);
@@ -172,7 +172,20 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 			me._keys.clear();
 		};
 
-		weapon._active = [](Weapon&, u32)mutable->void {};
+		weapon._active = [](Weapon& me, u32 id)mutable->void {
+			std::shared_ptr<Player> player = me.getPlayer();
+			std::shared_ptr<Zone> zone = std::make_shared<Zone>(getJsonValue<float>(me.getJson(), "radius"));
+			zone->collider->dtPos = {
+				getJsonValue<float>(me.getJson(), "offsetX"),
+				0
+			};
+			zone->collisionMask.set((u08)Object::BIT_TAGS::BOSS);
+			zone->entered = [](Object* boss) {
+				
+			};
+
+			player->addZone();
+		};
 
 		auto sound = sf::Sound(AssetsManager::getSound(_weapons[3].getStringSoundActive(0)));
 		sound.setVolume(SOUND_LEVEL);

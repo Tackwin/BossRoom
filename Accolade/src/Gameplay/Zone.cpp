@@ -1,11 +1,15 @@
 #include <Gameplay/Zone.hpp>
 
-Zone::Zone(float r) : Object() {
+Zone::Zone(float r) : 
+	Object(),
+	_radius(r) 
+{
 	_disk = std::make_shared<Disk>();
 	_disk->r = r;
 
 	collider = _disk.get();
-	collider->onEnter = [&](Object* obj) {collision(obj); };
+	collider->onEnter = entered;
+	collider->onExit = exited;
 	
 	idMask.set((size_t)BIT_TAGS::ZONE);
 }

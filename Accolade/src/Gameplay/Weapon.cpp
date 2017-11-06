@@ -23,11 +23,11 @@ Weapon::Weapon(std::shared_ptr<Player> player, nlohmann::json json)
 	_cost(0)
 {
 	_uiSprite = sf::Sprite(AssetsManager::getTexture(_json["sprite"]));
-	_uiSprite.setScale(2, 2);
 	_uiSprite.setOrigin(
-		(float)_uiSprite.getTextureRect().width, 
-		(float)_uiSprite.getTextureRect().height
+		_uiSprite.getTextureRect().width * 0.5f, 
+		_uiSprite.getTextureRect().height * 0.5f
 	);
+	setUiSpriteSize({ 100.f, 100.f });
 	_uiSprite.setPosition((float)WIDTH, (float)HEIGHT);
 }
 
@@ -49,11 +49,11 @@ Weapon::Weapon(const Weapon& other) :
 	const std::string& str = _json["sprite"];
 
 	_uiSprite = sf::Sprite(AssetsManager::getTexture(str));
-	_uiSprite.setScale(2, 2);
 	_uiSprite.setOrigin(
 		_uiSprite.getTextureRect().width * 0.5f,
 		_uiSprite.getTextureRect().height * 0.5f
 	);
+	setUiSpriteSize({ 100.f, 100.f });
 	_uiSprite.setPosition((float)WIDTH, (float)HEIGHT);
 }
 
@@ -83,6 +83,12 @@ void Weapon::update(float dt) {
 
 const sf::Sprite& Weapon::getUiSprite() const {
 	return _uiSprite;
+}
+void Weapon::setUiSpriteSize(const Vector2f& size) {
+	_uiSprite.setScale(
+		size.x / _uiSprite.getTextureRect().width,
+		size.y / _uiSprite.getTextureRect().height
+	);
 }
 void Weapon::setUiSpritePos(const Vector2f& pos_) {
 	_uiSprite.setPosition(pos_);
@@ -115,6 +121,17 @@ void Weapon::setCost(const u32& cost) {
 }
 u32 Weapon::getCost() const {
 	return _cost;
+}
+
+void Weapon::setPlayer(const std::shared_ptr<Player>& player) {
+	_player = player;
+}
+const std::shared_ptr<Player> Weapon::getPlayer() const {
+	return _player;
+}
+
+const nlohmann::json& Weapon::getJson() const {
+	return _json;
 }
 
 void Weapon::swap(Weapon& other) {

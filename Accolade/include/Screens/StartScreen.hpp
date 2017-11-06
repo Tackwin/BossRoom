@@ -21,7 +21,7 @@
 
 
 
-struct Zone;
+class Zone;
 class Player;
 class Projectile;
 class StartScreen : public Screen {

@@ -37,6 +37,7 @@ bool Loot::isLootable() const {
 void Loot::render(sf::RenderTarget& target) {
 	switch (_lootType) {
 	case LOOT_TYPE::WEAPON:
+		_weapon->setUiSpriteSize({ _radius, _radius });
 		_weapon->setUiSpritePos(pos);
 		_weapon->renderGui(target);
 		break;

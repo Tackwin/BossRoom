@@ -43,8 +43,14 @@ public:
 	void clearProjectileBuffer();
 
 	const sf::Sprite& getUiSprite() const;
+	void setUiSpriteSize(const Vector2f& size);
 	void setUiSpritePos(const Vector2f& pos);
 	std::string getStringSoundActive(u32 n) const;
+
+	void setPlayer(const std::shared_ptr<Player>& player);
+	const std::shared_ptr<Player> getPlayer() const;
+
+	const nlohmann::json& getJson() const;
 
 	Weapon& operator=(const Weapon& other);
 
