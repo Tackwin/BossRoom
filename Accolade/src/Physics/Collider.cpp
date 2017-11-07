@@ -20,21 +20,41 @@ void Disk::render(sf::RenderTarget& target) {
 #pragma warning(push)
 #pragma warning(disable:4456)
 bool Disk::collideWith(const Collider* collider) const {
-	if (auto ptr = static_cast<const Disk*>(collider); collider->type == Type::DISK) {
-		return (getGlobalPos() - ptr->getGlobalPos()).length2() < (r + ptr->r) * (r + ptr->r);
+	if (auto ptr = static_cast<const Disk*>(collider); 
+		collider->type == Type::DISK) 
+	{
+		return 
+			(getGlobalPos() - ptr->getGlobalPos()).length2() <
+			(r + ptr->r) * (r + ptr->r);
 	}
-	else if (auto ptr = static_cast<const Box*>(collider); collider->type == Type::BOX) {
-		return DiskRect(getGlobalPos(), r, Rectangle2f(ptr->getGlobalPos(), ptr->size));
+	else if (auto ptr = static_cast<const Box*>(collider); 
+			collider->type == Type::BOX)
+	{
+		return DiskRect(
+			getGlobalPos(), 
+			r, 
+			Rectangle2f(ptr->getGlobalPos(), ptr->size)
+		);
 	}
 	return false;
 }
 
 bool Box::collideWith(const Collider* collider) const {
-	if (auto ptr = static_cast<const Disk*>(collider); collider->type == Type::DISK) {
-		return DiskRect(ptr->getGlobalPos(), ptr->r, Rectangle2f(getGlobalPos(), size));
+	if (auto ptr = static_cast<const Disk*>(collider); 
+		collider->type == Type::DISK) 
+	{
+		return DiskRect(
+			ptr->getGlobalPos(), 
+			ptr->r, 
+			Rectangle2f(getGlobalPos(), size)
+		);
 	}
-	else if (auto ptr = static_cast<const Box*>(collider); collider->type == Type::BOX) {
-		return Rectangle2f(getGlobalPos(), size).intersect(Rectangle2f(ptr->getGlobalPos(), ptr->size));
+	else if (auto ptr = static_cast<const Box*>(collider); 
+			collider->type == Type::BOX)
+	{
+		return Rectangle2f(getGlobalPos(), size).intersect(
+			Rectangle2f(ptr->getGlobalPos(), ptr->size)
+		);
 	}
 	return false;
 }

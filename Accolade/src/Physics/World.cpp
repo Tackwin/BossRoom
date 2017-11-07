@@ -25,8 +25,16 @@ void World::update(double dt) {
 		auto obj1Id = it.first;
 		auto obj1 = it.second.lock();
 
-		Vector2f flatForces = std::accumulate(obj1->flatForces.begin(), obj1->flatForces.end(), Vector2f(0, 0));
-		Vector2f flatVelocities = std::accumulate(obj1->flatVelocities.begin(), obj1->flatVelocities.end(), Vector2f(0, 0));
+		Vector2f flatForces = std::accumulate(
+			obj1->flatForces.begin(), 
+			obj1->flatForces.end(),
+			Vector2f(0, 0)
+		);
+		Vector2f flatVelocities = std::accumulate(
+			obj1->flatVelocities.begin(), 
+			obj1->flatVelocities.end(), 
+			Vector2f(0, 0)
+		);
 
 		Vector2f pos = obj1->pos;
 
@@ -162,7 +170,8 @@ void World::removeNeeded() {
 		}
 
 		for (u32 j = 0u; j < Object::BITSET_SIZE; ++j) {
-			auto& jt = std::find(_objectsPool[j].cbegin(), _objectsPool[j].cend(), id);
+			auto& jt = 
+				std::find(_objectsPool[j].cbegin(), _objectsPool[j].cend(), id);
 			if (jt == _objectsPool[j].end()) continue;
 
 			_objectsPool[j].erase(jt);
@@ -198,7 +207,9 @@ u32 World::getUID() const {
 	return n_id;
 }
 
-std::vector<u32> World::getUnionOfMask(const std::bitset<Object::BITSET_SIZE>& mask) {
+std::vector<u32> 
+	World::getUnionOfMask(const std::bitset<Object::BITSET_SIZE>& mask) 
+{
 	std::vector<u32> result;
 	result.reserve(_objectsMap.size() * Object::BITSET_SIZE);
 

@@ -14,14 +14,18 @@ using namespace nlohmann;
 
 std::vector<std::shared_ptr<Boss>> Boss::bosses(C::N_LEVEL);
 
-Boss::Boss(const basic_json<>& json, std::function<void(double, Boss&)> updateFunction, std::function<void(Boss&)> init, 
-		   std::function<void(Boss&)> unInit):
+Boss::Boss(const basic_json<>& json,
+	std::function<void(double, Boss&)> updateFunction,
+	std::function<void(Boss&)> init,
+	std::function<void(Boss&)> unInit) :
+
 	Object(),
 	_json(json),
 	_update(updateFunction),
 	_init(init),
-	_unInit(unInit) {
-
+	_unInit(unInit) 
+{
+	idMask.set((size_t)Object::BIT_TAGS::BOSS);
 	collisionMask.set((size_t)Object::BIT_TAGS::PROJECTILE);
 }
 
@@ -40,7 +44,10 @@ void Boss::enterLevel(Level* level) {
 	_sprite.pushAnim("idle");
 
 	_sprite.getSprite().setOrigin(_sprite.getSize() * 0.5f);
-	_sprite.getSprite().setScale(-(4 * _radius) / _sprite.getSize().x, (4 * _radius) / _sprite.getSize().y);
+	_sprite.getSprite().setScale(
+		-(4 * _radius) / _sprite.getSize().x,
+		(4 * _radius) / _sprite.getSize().y
+	);
 
 	collider = &_disk;
 	_disk.userPtr = this;
@@ -120,9 +127,13 @@ void Boss::addProjectile(const std::shared_ptr<Projectile>& projectile) {
 		_projectilesToShoot.push_back(projectile);//TODO: debug why the callbacks doesn't delete when the boss die
 }
 
-void Boss::shoot(const nlohmann::json& json, const Vector2f& pos_, const Vector2f& dir) {
+void Boss::shoot(const nlohmann::json& json,
+	const Vector2f& pos_, const Vector2f& dir) 
+{
 	if (_level && _life > 0) {
-		_projectilesToShoot.push_back(std::make_unique<Projectile>(json, pos_, dir, false));
+		_projectilesToShoot.push_back(
+			std::make_unique<Projectile>(json, pos_, dir, false)
+		);
 	}
 }
 
@@ -140,11 +151,18 @@ void Boss::clearProtectilesToShoot() {
 	_projectilesToShoot.clear();
 }
 void Boss::collision(Object* obj) {
-	if (auto ptr = static_cast<Projectile*>(obj); obj->idMask.test((size_t)Object::BIT_TAGS::PROJECTILE) && ptr->isFromPlayer()) {
+	if (auto ptr = static_cast<Projectile*>(obj); 
+			obj->idMask.test((size_t)Object::BIT_TAGS::PROJECTILE) && 
+			ptr->isFromPlayer()
+		) 
+	{
 		hit(ptr->getDamage());
 
-		auto& particleGeneratorJson = AssetsManager::getJson(JSON_KEY)["particlesGenerator"];
-		std::string particleGenerator = _json["hitParticle"];
+		auto& particleGeneratorJson =
+			AssetsManager::getJson(JSON_KEY)["particlesGenerator"];
+		
+		std::string particleGenerator = 
+			_json["hitParticle"];
 
 		_particleEffects.push_back(
 			new ParticleGenerator(

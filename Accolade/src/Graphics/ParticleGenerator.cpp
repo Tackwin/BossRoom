@@ -28,7 +28,11 @@ void ParticleGenerator::update(double dt) {
 	}
 
 	_particles.erase(
-		std::remove_if(_particles.begin(), _particles.end(), [](const std::shared_ptr<Particle>& A) { return A->toRemove(); }),
+		std::remove_if(
+			_particles.begin(), 
+			_particles.end(), 
+			[](const std::shared_ptr<Particle>& A) { return A->toRemove(); }
+		),
 		_particles.end()
 	);
 }

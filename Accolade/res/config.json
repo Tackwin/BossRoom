@@ -438,7 +438,7 @@
 			},
       "radius": 25,
       "offsetX": 20,
-			"damage": 10,
+			"damage": 7,
 			"remainTime": 0.2,
 			"collider": {
 				"type": "disk",

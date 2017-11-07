@@ -11,11 +11,18 @@ Particle::Particle(nlohmann::json json_, Vector2f pos_, Vector2f dir_, Function 
 {
 	std::string strSprite = _json["sprite"];
 	_sprite.setTexture(AssetsManager::getTexture(strSprite));
-	_sprite.setOrigin(_sprite.getTextureRect().width / 2.f, _sprite.getTextureRect().height / 2.f);
-	_keys["destroy"] = TimerManager::addFunction(getJsonValue<float>(_json, "lifetime"), "destroy", [&](double)mutable->bool {
-		_remove = true;
-		return true;
-	});
+	_sprite.setOrigin(
+		_sprite.getTextureRect().width / 2.f, 
+		_sprite.getTextureRect().height / 2.f
+	);
+	_keys["destroy"] = TimerManager::addFunction(
+		getJsonValue<float>(_json, "lifetime"), 
+		"destroy", 
+		[&](double)mutable->bool {
+			_remove = true;
+			return true;
+		}
+	);
 
 	_json["speed"] = getJsonValue<float>(_json, "speed"); //collapse the wave function :p
 	if (_json.find("a") != _json.end()) {
@@ -37,7 +44,9 @@ void Particle::render(sf::RenderTarget& target) {
 	target.draw(_sprite);
 }
 
-std::vector<std::shared_ptr<Particle>> Particle::burst(nlohmann::json json_, Vector2f pos_){
+std::vector<std::shared_ptr<Particle>> 
+	Particle::burst(nlohmann::json json_, Vector2f pos_)
+{
 	std::vector<std::shared_ptr<Particle>> particles;
 	auto nParticles = (u32)getJsonValue<i32>(json_, "nParticles");
 	auto particleJson = json_["particle"];
@@ -46,7 +55,9 @@ std::vector<std::shared_ptr<Particle>> Particle::burst(nlohmann::json json_, Vec
 
 	for (u32 i = 0u; i < nParticles; ++i) {
 		Vector2f pos = pos_;
-		Vector2f dir = Vector2f::createUnitVector(getJsonValue<float>(json_, "dir"));
+		Vector2f dir = 
+			Vector2f::createUnitVector(getJsonValue<float>(json_, "dir"));
+
 		particles.push_back(std::make_shared<Particle>(particleJson, pos, dir));
 	}
 	

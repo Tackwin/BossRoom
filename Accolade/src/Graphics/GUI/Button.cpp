@@ -40,8 +40,16 @@ void Button::computeSize() {
 	_hold.computeSize();
 	_label.computeSize();
 
-	_size.x = std::max({ _normal.getSize().x, _hold.getSize().x, _label.getSize().x });
-	_size.y = std::max({ _normal.getSize().y, _hold.getSize().y, _label.getSize().y });
+	_size.x = std::max({ 
+		_normal.getSize().x, 
+		_hold.getSize().x, 
+		_label.getSize().x 
+	});
+	_size.y = std::max({ 
+		_normal.getSize().y, 
+		_hold.getSize().y, 
+		_label.getSize().y 
+	});
 }
 
 void Button::render(sf::RenderTarget&) {}

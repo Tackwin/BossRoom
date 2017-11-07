@@ -174,10 +174,12 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 			case 0:
 				if (me._flags & 1) {
 					me._flags ^= 1;
-					TimerManager::addFunction(me.getJson()["cooldowns"][0], [me](double) mutable -> bool {
-						me._flags |= 1;
-						return true;
-					});
+					TimerManager::addFunction(me.getJson()["cooldowns"][0], 
+						[&me](double) mutable -> bool {
+							me._flags |= 1;
+							return true;
+						}
+					);
 				}
 				else {
 					break;

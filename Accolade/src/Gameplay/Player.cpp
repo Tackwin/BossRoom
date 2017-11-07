@@ -27,15 +27,19 @@ Player::Player(const nlohmann::json& json) :
 	idMask.set((size_t)Object::BIT_TAGS::PLAYER);
 	collisionMask.set((size_t)Object::BIT_TAGS::FLOOR);
 
-	EventManager::subscribe("keyPressed", [&](EventManager::EventCallbackParameter args) -> void {
-		auto key = std::any_cast<sf::Keyboard::Key>(*args.begin());
+	EventManager::subscribe("keyPressed", 
+		[&](EventManager::EventCallbackParameter args) -> void {
+			auto key = std::any_cast<sf::Keyboard::Key>(*args.begin());
 
-		keyPressed(key);
-	});
-	EventManager::subscribe("keyReleased", [&](EventManager::EventCallbackParameter args) -> void {
-		auto key = std::any_cast<sf::Keyboard::Key>(*args.begin());
-		keyReleased(key);
-	});
+			keyPressed(key);
+		}
+	);
+	EventManager::subscribe("keyReleased", 
+		[&](EventManager::EventCallbackParameter args) -> void {
+			auto key = std::any_cast<sf::Keyboard::Key>(*args.begin());
+			keyReleased(key);
+		}
+	);
 }
 
 void Player::initializeJson() {
@@ -62,7 +66,10 @@ void Player::initializeJson() {
 	_sprite = AnimatedSprite(_json["sprite"]);
 	_sprite.pushAnim("idle");
 
-	_sprite.getSprite().setOrigin(_sprite.getSprite().getGlobalBounds().width / 2.f, _sprite.getSprite().getGlobalBounds().height / 2.f);
+	_sprite.getSprite().setOrigin(
+		_sprite.getSprite().getGlobalBounds().width / 2.f, 
+		_sprite.getSprite().getGlobalBounds().height / 2.f
+	);
 	_sprite.getSprite().setPosition(pos);
 
 	_hitBox.r = _radius;
@@ -83,7 +90,10 @@ void Player::exitLevel() {
 }
 
 void Player::update(double) {
-	bool tryingToShoot = game->_distance && InputsManager::isMousePressed(_AK) && _focus;
+	bool tryingToShoot = 
+		game->_distance && 
+		InputsManager::isMousePressed(_AK) && _focus;
+
 	if (tryingToShoot) {
 		_weapon->active(0);
 	}
@@ -132,14 +142,20 @@ void Player::hit(float d) {
 
 	_life -= d;
 	_sprite.getSprite().setColor(sf::Color(230, 230, 230));
-	TimerManager::addFunction(0.33f, "blinkDown", [&, n = 0](double) mutable -> bool {
-		_sprite.getSprite().setColor((n++ % 2 == 0) ? sf::Color::White : sf::Color(230, 230, 230));
-		if (n >= 3) {
-			_invincible = false;
-			return true;
+	TimerManager::addFunction(0.33f, "blinkDown", 
+		[&, n = 0](double) mutable -> bool {
+			_sprite.getSprite().setColor(
+				(n++ % 2 == 0) 
+					? sf::Color::White 
+					: sf::Color(230, 230, 230)
+			);
+			if (n >= 3) {
+				_invincible = false;
+				return true;
+			}
+			return false;
 		}
-		return false;
-	});
+	);
 }
 
 void Player::startCaC() {
@@ -182,7 +198,10 @@ bool Player::isInvicible() const {
 }
 
 void Player::collision(Object* obj) {
-	if (auto ptr = static_cast<Projectile*>(obj); ptr->idMask.test((size_t)Object::BIT_TAGS::PROJECTILE) && !ptr->isFromPlayer()) {
+	if (auto ptr = static_cast<Projectile*>(obj); 
+			ptr->idMask.test((size_t)Object::BIT_TAGS::PROJECTILE) &&
+			!ptr->isFromPlayer()
+	) {
 		if (!_invincible) {
 			hit(ptr->getDamage());
 		}

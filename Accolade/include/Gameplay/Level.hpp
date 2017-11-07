@@ -12,6 +12,7 @@
 #include "Gameplay/Weapon.hpp"
 #include "Gameplay/Loot.hpp"
 
+class Zone;
 class Boss;
 class Probe;
 class Player;
@@ -48,6 +49,8 @@ public:
 private: // TODO: Make this private
 	void removeNeeded();
 
+	void pullPlayerObjects();
+
 	World _world;
 
 	u32 _n = 0u;
@@ -70,6 +73,7 @@ private: // TODO: Make this private
 
 	std::shared_ptr<Object>  _floor = nullptr;
 	std::vector<std::shared_ptr<Projectile>> _projectiles = {};
+	std::vector<std::shared_ptr<Zone>> _playerZones = {};
 	
 	bool _ended = false;
 	bool _aiming = false;

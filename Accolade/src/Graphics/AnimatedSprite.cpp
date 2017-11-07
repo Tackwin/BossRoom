@@ -39,7 +39,8 @@ void AnimatedSprite::pushAnim(const std::string& key_, u32 offset_) {
 	anim.row = json["row"].is_null() ? 0 : json["row"].get<u32>();
 	anim.col = json["col"].is_null() ? 0 : json["col"].get<u32>();
 	anim.keyCallback = TimerManager::addFunction(time / frames, key_, 
-		[&, row = anim.row, col = anim.col, frames, w = anim.w, h = anim.h, loop, n = offset_](double)mutable->bool{
+		[&, row = anim.row, col = anim.col, frames, 
+			w = anim.w, h = anim.h, loop, n = offset_](double) mutable -> bool{
 			if (!loop && n >= frames) {
 				popAnim();
 				return true;

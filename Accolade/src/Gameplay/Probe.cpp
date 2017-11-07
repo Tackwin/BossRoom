@@ -9,7 +9,13 @@ Probe::Probe(basic_json<> json, Vector2f pos, Vector2f dest,
 			 std::function<void(Probe&)> init, 
 			 std::function<void(Probe&, float)> update, 
 			 std::function<void(Probe&)> unInit) :
-	_json(json), _pos(pos), _dest(dest), _init(init), _update(update), _unInit(unInit) {
+	_json(json), 
+	_pos(pos), 
+	_dest(dest), 
+	_init(init), 
+	_update(update), 
+	_unInit(unInit) 
+{
 
 	_speed = getJsonValue<float>(json, "SPEED");
 	_radius = getJsonValue<float>(json, "RADIUS");

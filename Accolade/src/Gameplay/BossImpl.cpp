@@ -13,8 +13,8 @@
 void Boss::createBosses() {
 	bosses[0] = std::make_shared<Boss>(AssetsManager::getJson(JSON_KEY)["bosses"][0],
 		[](double, Boss&) {}, //update function
-		[](Boss& boss) { // Init function
-			auto sound = sf::Sound(AssetsManager::getSound("shoot2"));
+		[](Boss&) { // Init function
+			/*auto sound = sf::Sound(AssetsManager::getSound("shoot2"));
 			sound.setVolume(SOUND_LEVEL);
 			boss._sounds.push_back(sound);
 
@@ -30,7 +30,7 @@ void Boss::createBosses() {
 					boss._sprite.pushAnim("action");
 				}
 				return false;
-			}));
+			}));*/
 		},
 		[](Boss& boss) { // UnInit function
 			for (auto& k : boss._keyPatterns) {

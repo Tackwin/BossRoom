@@ -25,7 +25,14 @@ void Patterns::randomFire(Boss& boss, nlohmann::json json) {
 		getValue("randomFire", json, "projectile")
 	);
 }
-void Patterns::randomFire(Boss& boss, u32 nOrbs, float a, float dtA, float time, nlohmann::json projectile) {
+void Patterns::randomFire(
+	Boss& boss, 
+	u32 nOrbs, 
+	float a, 
+	float dtA, 
+	float time, 
+	nlohmann::json projectile
+) {
 	std::uniform_real_distribution<float> rngA(a - dtA * 0.5f, a + dtA * 0.5f);
 	std::uniform_real_distribution<float> rngDelay(0, 2 * time / nOrbs); //nOrbs * E(rngDt) = time
 
@@ -36,10 +43,12 @@ void Patterns::randomFire(Boss& boss, u32 nOrbs, float a, float dtA, float time,
 		Vector2f dir = Vector2f::createUnitVector(ca);
 		Vector2f pos = boss.getPos() + dir * (boss.getRadius() + 10);
 
-		TimerManager::addFunction(sumDelay, "random fire_", [&boss, projectile, pos, dir](double) -> bool {
-			boss.shoot(projectile, pos, dir);
-			return true;
-		});
+		TimerManager::addFunction(sumDelay, "random fire_", 
+			[&boss, projectile, pos, dir](double) -> bool {
+				boss.shoot(projectile, pos, dir);
+				return true;
+			}
+		);
 		sumDelay += rngDelay(RD);
 	}
 }
@@ -51,17 +60,26 @@ std::string Patterns::directionalFire(Boss& boss, nlohmann::json json) {
 		getValue("directionalFire", json, "projectile")
 	);
 }
-std::string Patterns::directionalFire(Boss& boss, float fireRate, float time, nlohmann::json projectile) {
+std::string Patterns::directionalFire(
+	Boss& boss, 
+	float fireRate, 
+	float time, 
+	nlohmann::json projectile
+) {
 	const auto& lambda = 
 		[&boss, projectile, N = time * fireRate](double)mutable->bool {
 			float a = (float)boss.getPos().angleTo(boss.getLevel()->getPlayerPos());
 
 			Vector2f dir = Vector2f::createUnitVector(a);
 
-			Vector2f pos = boss.getPos() + Vector2f::createUnitVector(a + PIf / 9) * (boss.getRadius() + 10);
+			Vector2f pos = 
+				boss.getPos() + 
+				Vector2f::createUnitVector(a + PIf / 9) * (boss.getRadius() + 10);
 			boss.shoot(projectile, pos, dir);
 
-			pos = boss.getPos() + Vector2f::createUnitVector(a - PIf / 9) * (boss.getRadius() + 10);
+			pos = 
+				boss.getPos() + 
+				Vector2f::createUnitVector(a - PIf / 9) * (boss.getRadius() + 10);
 			boss.shoot(projectile, pos, dir);
 
 			return --N <= 0;
@@ -79,7 +97,13 @@ std::string Patterns::barage(Boss& boss, nlohmann::json json) {
 		getValue("barage", json, "projectile")
 	);
 }
-std::string Patterns::barage(Boss& boss, u32 nOrbs, u32 nWaves, float iTime, nlohmann::json projectile) {
+std::string Patterns::barage(
+	Boss& boss, 
+	u32 nOrbs, 
+	u32 nWaves, 
+	float iTime, 
+	nlohmann::json projectile
+) {
 	const auto& barage = [&boss, nWaves, nOrbs, projectile](double)mutable->bool {
 		
 		for (u32 i = 0; i < nOrbs; ++i) {

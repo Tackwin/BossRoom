@@ -58,10 +58,12 @@ void Loot::onEnter(Object* obj) { // we know typeof(obj) is necessarly Player*
 		_weapon = player_weapon;
 		_lootable = false;
 
-		TimerManager::addFunction(_lootImpossibleTime, [&lootable = _lootable](double) -> bool {
-			lootable = true;
-			return true;
-		});
+		TimerManager::addFunction(_lootImpossibleTime, 
+			[&lootable = _lootable](double) -> bool {
+				lootable = true;
+				return true;
+			}
+		);
 
 		break;
 	}

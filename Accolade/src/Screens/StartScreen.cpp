@@ -79,8 +79,10 @@ void StartScreen::initializeWorld(){
 	auto& merchant = _zones["merchant"];
 	merchant = std::make_shared<Zone>();
 	merchant->setRadius(150.f);
-	merchant->pos.x = _merchantShop.getPosition().x + _merchantShop.getGlobalBounds().width * 0.5f;
-	merchant->pos.y = _merchantShop.getPosition().y + _merchantShop.getGlobalBounds().height * 0.5f;
+	merchant->pos.x = _merchantShop.getPosition().x +
+		_merchantShop.getGlobalBounds().width * 0.5f;
+	merchant->pos.y = _merchantShop.getPosition().y +
+		_merchantShop.getGlobalBounds().height * 0.5f;
 	merchant->collisionMask.set((size_t)Object::BIT_TAGS::PLAYER);
 	merchant->collider->sensor = true;
 	merchant->collider->onExit = [&](Object*) mutable { leaveShop(); };
@@ -136,11 +138,18 @@ void StartScreen::pullPlayerObjects() {
 void StartScreen::render(sf::RenderTarget& target) {
 	const auto oldView = target.getView();
 	
-	float minX = _startBackground.getGlobalBounds().left + _playerView.getSize().x / 2.f;
-	float maxX = _startBackground.getGlobalBounds().left + _startBackground.getGlobalBounds().width - _playerView.getSize().x / 2.f;
+	float minX = 
+		_startBackground.getGlobalBounds().left + _playerView.getSize().x / 2.f;
+	float maxX = 
+		_startBackground.getGlobalBounds().left + 
+		_startBackground.getGlobalBounds().width - 
+		_playerView.getSize().x / 2.f;
 
-	float minY = _startBackground.getGlobalBounds().top + _playerView.getSize().y / 2.f;
-	float maxY = _startBackground.getGlobalBounds().top + _startBackground.getGlobalBounds().height - _playerView.getSize().y / 2.f;
+	float minY = 
+		_startBackground.getGlobalBounds().top + _playerView.getSize().y / 2.f;
+	float maxY = _startBackground.getGlobalBounds().top + 
+		_startBackground.getGlobalBounds().height - 
+		_playerView.getSize().y / 2.f;
 
 	_playerView.setCenter({
 		std::clamp(_player->pos.x, minX, maxX),
@@ -242,14 +251,14 @@ void StartScreen::removeNeeded() {
 	for (size_t i = _projectiles.size(); i > 0; --i) {
 		if (_projectiles[i - 1]->toRemove()) {
 			_world.delObject(_projectiles[i - 1]);
-			_projectiles.erase(_projectiles.end() - i);
+			_projectiles.erase(_projectiles.begin() + i - 1);
 		}
 	}
 
 	for (size_t i = _playerZones.size(); i > 0; --i) {
 		if (_playerZones[i - 1]->toRemove()) {
 			_world.delObject(_playerZones[i - 1]);
-			_playerZones.erase(_playerZones.end() - i);
+			_playerZones.erase(_playerZones.begin() + i - 1);
 		}
 	}
 }

@@ -50,7 +50,8 @@ void Widget::addChild(Widget* const child, i32 z) {
 	if (!haveChild(child)) {
 		_childs.push_back({ z, child });
 		std::sort(_childs.begin(), _childs.end(), 
-			[](const std::pair<i32, Widget*>& A, const std::pair<i32, Widget*>& B) -> bool {
+			[](	const std::pair<i32, Widget*>& A, 
+				const std::pair<i32, Widget*>& B) -> bool {
 				return A.first < B.first;
 			}
 		);
@@ -62,7 +63,12 @@ void Widget::addChild(Widget* const child, i32 z) {
 bool Widget::haveChild(const Widget* const child) {
 	if (!child) return false;
 
-	return std::find_if(_childs.begin(), _childs.end(), [child](const auto& A) -> bool { return A.second == child; }) != _childs.end();
+	const auto& it = std::find_if(_childs.begin(), _childs.end(),
+		[child](const auto& A) -> bool {
+		return A.second == child;
+	});
+
+	return it != _childs.end();
 }
 void Widget::setParent(Widget* const parent, i32 z) {
 	if (!parent) return;
@@ -174,15 +180,6 @@ std::bitset<9u> Widget::input(const std::bitset<9u>& mask) {
 
 void Widget::propagateInput() {
 	postOrderInput({});
-}
-
-template<u32 D>
-std::array<bool, D> orArray(const std::array<bool, D>& A, const std::array<bool, D>& B) {
-	std::array<bool, D> C;
-	for (u32 i = 0u; i < D; ++i) {
-		C[i] = A[i] || B[i];
-	}
-	return C;
 }
 
 std::bitset<9u> Widget::postOrderInput(const std::bitset<9>& mask) {

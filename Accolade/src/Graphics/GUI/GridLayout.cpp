@@ -31,8 +31,10 @@ void GridLayout::updatePos(){
 
 	for (u32 i = 0u; i < _childs.size(); ++i) {
 		Vector2f pos;
-		pos.x = _externalPadding.x + (i % _col) * (_internalPadding.x + size.x / _col);
-		pos.y = _externalPadding.y + (i / _col) * (_internalPadding.y + size.y / _row);
+		pos.x = _externalPadding.x + (i % _col) * 
+				(_internalPadding.x + size.x / _col);
+		pos.y = _externalPadding.y + (i / _col) * 
+				(_internalPadding.y + size.y / _row);
 
 		_childs[i].second->setPosition(pos);
 	}
@@ -56,7 +58,10 @@ void GridLayout::computeSize() {
 	}
 breakLoops:
 
-	_size = _externalPadding + Vector2f((maxSize.x + _internalPadding.x) * _col, (maxSize.y + _internalPadding.y) * _row);
+	_size = _externalPadding + Vector2f{
+		(maxSize.x + _internalPadding.x) * _col,
+		(maxSize.y + _internalPadding.y) * _row
+	};
 }
 
 

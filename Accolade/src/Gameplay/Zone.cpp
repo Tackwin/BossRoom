@@ -6,23 +6,18 @@ Zone::Zone(float r) :
 {
 	_disk = std::make_shared<Disk>();
 	_disk->r = r;
+	_disk->sensor = true;
 
 	collider = _disk.get();
-	collider->onEnter = entered;
-	collider->onExit = exited;
+	collider->onEnter = [&](Object* obj) mutable { entered(obj); };
+	collider->onExit = [&](Object* obj) mutable { exited(obj); };
 	
 	idMask.set((size_t)BIT_TAGS::ZONE);
 }
-Zone::Zone(const Zone& other) : Object() {
-
-	_disk = std::make_shared<Disk>();
-	_disk->r = other._disk->r;
-
-	collider = _disk.get();
-	collider->onEnter = [&](Object* obj) { collision(obj);  };
-
-	idMask = other.idMask;
-	collisionMask = other.collisionMask;
+Zone::Zone(const Zone& other) : 
+	Object(other) 
+{
+	this->operator=(other);
 }
 
 void Zone::render(sf::RenderTarget& target) {
@@ -59,9 +54,11 @@ Zone& Zone::operator=(const Zone& other) {
 
 	_disk = std::make_shared<Disk>();
 	_disk->r = other._disk->r;
+	_disk->r = other._disk->sensor;
 
 	collider = _disk.get();
-	collider->onEnter = [&](Object* obj) { collision(obj);  };
+	collider->onEnter = [&](Object* obj) mutable { entered(obj); };
+	collider->onExit = [&](Object* obj) mutable { exited(obj); };
 
 	idMask = other.idMask;
 	collisionMask = other.collisionMask;

@@ -9,13 +9,15 @@ Projectile::Projectile() :
 	Object()
 {
 }
-Projectile::Projectile(nlohmann::json json, Vector2f pos, Vector2f dir, bool player) :
+Projectile::Projectile(nlohmann::json json, 
+	Vector2f pos, Vector2f dir, bool player) :
+
 	Object(),
 	_dir(dir),
 	_player(player),
 	_json(json),
-	_update([](Projectile&, double) {}) {
-
+	_update([](Projectile&, double) {}) 
+{
 	_speed = getJsonValue<float>(json, "speed");
 	_damage = getJsonValue<float>(json, "damage");
 	_radius = getJsonValue<float>(json, "radius");
@@ -51,9 +53,11 @@ Projectile::Projectile(nlohmann::json json, Vector2f pos, Vector2f dir, bool pla
 		return true;
 	});
 }
-Projectile::Projectile(nlohmann::json json, Vector2f pos, Vector2f dir, bool player, 
-					   std::function<void(Projectile&, double)> update):
-	Projectile(json, pos, dir, player) {
+Projectile::Projectile(nlohmann::json json, Vector2f pos, Vector2f dir, 
+	bool player, std::function<void(Projectile&, double)> update) :
+
+	Projectile(json, pos, dir, player)
+{
 	_update = update;
 }
 

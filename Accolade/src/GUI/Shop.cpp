@@ -98,8 +98,14 @@ bool Shop::onClickBegan() {
 	}
 
 	rect = Rectangle2f(
-		{ _merchantPanel.getGlobalPosition().x, _merchantPanel.getGlobalPosition().y },
-		{ _merchantPanel.getSize().x,			_merchantPanel.getSize().y * 0.05f }
+		{ 
+			_merchantPanel.getGlobalPosition().x, 
+			_merchantPanel.getGlobalPosition().y 
+		},
+		{ 
+			_merchantPanel.getSize().x,			
+			_merchantPanel.getSize().y * 0.05f 
+		}
 	);
 	if (InputsManager::getMouseScreenPos().inRect(rect.pos, rect.size)) {
 		_dragging = true;
