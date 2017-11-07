@@ -165,6 +165,12 @@ void StartScreen::render(sf::RenderTarget& target) {
 	for (auto& p : _projectiles) {
 		p->render(target);
 	}
+	for (auto& [_, p] : _zones) {
+		p->render(target);
+	}
+	for (auto& p : _playerZones) {
+		p->render(target);
+	}
 	_player->render(target);
 
 	renderGui(target);

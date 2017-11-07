@@ -186,7 +186,10 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 				}
 
 				std::shared_ptr<Player> player = me.getPlayer();
-				std::shared_ptr<Zone> zone = std::make_shared<Zone>(getJsonValue<float>(me.getJson(), "radius"));
+				std::shared_ptr<Zone> zone = 
+					std::make_shared<Zone>(
+						getJsonValue<float>(me.getJson(), "radius")
+					);
 
 				zone->pos = 
 					player->getPos() + 
@@ -194,7 +197,10 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 						getJsonValue<float>(me.getJson(), "offsetX"),
 						0
 					);
-
+				zone->addSprite(
+					"slash",
+					sf::Sprite(AssetsManager::getTexture("slash"))
+				);
 				zone->collisionMask.set((u08)Object::BIT_TAGS::BOSS);
 				zone->entered = [&me](Object* boss_) { // boss is Boss*
 					auto boss = static_cast<Boss*>(boss_);
@@ -203,10 +209,13 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 
 				player->addZone(zone);
 
-				TimerManager::addFunction(0.5f, [zone](double) -> bool {
-					zone->setRemove(true);
-					return true;
-				});
+				TimerManager::addFunction(
+					getJsonValue<float>(me.getJson(), "remainTime"), 
+					[zone](double) -> bool {
+						zone->setRemove(true);
+						return true;
+					}
+				);
 				break;
 			}
 		};

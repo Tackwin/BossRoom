@@ -436,10 +436,10 @@
 			"sounds": {
 				"active": [ "shoot" ]
 			},
-      "radius": 25,
-      "offsetX": 20,
+      "radius": 35,
+      "offsetX": 40,
 			"damage": 7,
-			"remainTime": 0.2,
+			"remainTime": 0.1,
 			"collider": {
 				"type": "disk",
 				"r": 10
