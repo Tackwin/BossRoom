@@ -28,7 +28,7 @@ Boss::Boss(const basic_json<>& json, std::function<void(double, Boss&)> updateFu
 void Boss::enterLevel(Level* level) {
 	_level = level;
 
-	_life = getJsonValue<i32>(_json, "life");
+	_life = getJsonValue<float>(_json, "life");
 	_maxLife = _life;
 	pos.x = _json["startpos"]["x"];
 	pos.y = _json["startpos"]["y"];
@@ -89,9 +89,22 @@ void Boss::render(sf::RenderTarget &target) {
 		fx->render(target);
 }
 
-void Boss::hit(unsigned int d) {
+void Boss::hit(float d) {
 	_life -= d;
 	_life = _life < 0 ? 0 : _life;
+
+	const auto& blinkDown = [&](double)mutable->bool {
+		_color = sf::Color::hexToColor(_json["color"]);
+		return true;
+	};
+
+	TimerManager::addFunction(0.05f, "blinkDown", blinkDown);
+	_color = sf::Color::hexToColor(_json["blinkColor"]);
+}
+
+void Boss::hit(u32 d) {
+	_life -= d;
+	_life = _life < 0.f ? 0.f : _life;
 
 	const auto& blinkDown = [&](double)mutable->bool {
 		_color = sf::Color::hexToColor(_json["color"]);
@@ -148,10 +161,10 @@ float Boss::getRadius() const {
 	return _radius;
 }
 
-i32 Boss::getLife() const {
+float Boss::getLife() const {
 	return _life;
 }
-i32 Boss::getMaxLife() const {
+float Boss::getMaxLife() const {
 	return _maxLife;
 }
 const Level* Boss::getLevel() const {

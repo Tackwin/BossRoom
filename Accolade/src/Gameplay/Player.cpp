@@ -124,7 +124,7 @@ void Player::shoot() {
 	_sprite.pushAnim("action");
 }
 
-void Player::hit(unsigned int d) {
+void Player::hit(float d) {
 	_invincible = true;
 
 	if (_hitSound.getStatus() == sf::Sound::Stopped)

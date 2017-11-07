@@ -14,6 +14,7 @@ Loot::Loot(float r) :
 
 
 void Loot::setLootType(LOOT_TYPE type) {
+	cleanSprites();
 	_lootType = type;
 }
 Loot::LOOT_TYPE Loot::getLootType() const {
@@ -22,6 +23,8 @@ Loot::LOOT_TYPE Loot::getLootType() const {
 
 void Loot::setWeapon(std::shared_ptr<Weapon> weapon) {
 	_weapon = weapon;
+	cleanSprites();
+	addSprite("icon", _weapon->getUiSprite());
 }
 std::shared_ptr<Weapon> Loot::getWeapon() const {
 	return _weapon;
@@ -37,9 +40,7 @@ bool Loot::isLootable() const {
 void Loot::render(sf::RenderTarget& target) {
 	switch (_lootType) {
 	case LOOT_TYPE::WEAPON:
-		_weapon->setUiSpriteSize({ _radius, _radius });
-		_weapon->setUiSpritePos(pos);
-		_weapon->renderGui(target);
+		Zone::render(target);
 		break;
 	}
 }

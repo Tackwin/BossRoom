@@ -1,5 +1,9 @@
 #pragma once
+#include <string>
 #include <functional>
+#include <unordered_map>
+
+#include <SFML/Graphics.hpp>
 
 #include "Physics/Object.hpp"
 
@@ -15,17 +19,26 @@ public:
 	Zone(float r = 0.f);
 	Zone(const Zone& other);
 
+	void render(sf::RenderTarget& target);
+
+	void addSprite(const std::string& key, const sf::Sprite& sprite);
+	void removeSprite(const std::string& key);
+	sf::Sprite& getSprite(const std::string& key);
+	void cleanSprites();
+
 	void setRadius(float r);
 	float getRadius() const;
 
 	void setRemove(bool remove = true);
-	bool needRemove() const;
+	bool toRemove() const;
 
 	Zone& operator=(const Zone& other);
 protected:
 	std::vector<Object*> _objectsColliding;
 
 	std::shared_ptr<Disk> _disk;
+
+	std::unordered_map<std::string, sf::Sprite> _sprites;
 
 	bool _toRemove = false;
 

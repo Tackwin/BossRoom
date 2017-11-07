@@ -14,6 +14,8 @@
 
 #include "Physics/Object.hpp"
 
+#include "Const.hpp"
+
 class Level;
 class Projectile;
 class Boss : public Object {
@@ -32,7 +34,8 @@ public:
 	void update(double dt);
 	void render(sf::RenderTarget& target);
 
-	void hit(unsigned int damage);
+	void hit(float damage);
+	void hit(u32 damage);
 	void addProjectile(const std::shared_ptr<Projectile>& projectile);
 	void shoot(const nlohmann::json& json, const Vector2f& pos, const Vector2f& dir);
 
@@ -41,8 +44,8 @@ public:
 
 	float getRadius() const;
 
-	i32 getLife() const;
-	i32 getMaxLife() const;
+	float getLife() const;
+	float getMaxLife() const;
 
 	const Level* getLevel() const;
 
@@ -56,8 +59,8 @@ public:
 private:
 	nlohmann::basic_json<> _json;
 
-	i32 _life;
-	i32 _maxLife;
+	float _life;
+	float _maxLife;
 	float _radius;
 	sf::Color _color;
 

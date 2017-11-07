@@ -39,6 +39,8 @@ public:
 	void leaveShop();
 private:
 
+	void pullPlayerObjects();
+
 	void initializeWorld();
 	void initializeGui();
 	void initializeSprite();
@@ -59,6 +61,7 @@ private:
 	nlohmann::json _json;
 
 	std::vector<std::shared_ptr<Projectile>> _projectiles;
+	std::vector<std::shared_ptr<Zone>> _playerZones;
 	std::shared_ptr<Player> _player;
 
 	bool _isInShop = false;

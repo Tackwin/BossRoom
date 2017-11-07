@@ -89,6 +89,8 @@ void StartScreen::initializeWorld(){
 	_world.addObject(_zones["merchant"]);
 }
 
+
+
 void StartScreen::update(double dt) {
 	removeNeeded();
 	_guiRoot.propagateInput();
@@ -96,11 +98,7 @@ void StartScreen::update(double dt) {
 		unActivateShop();
 	}
 
-	for (auto& p : _player->getProtectilesToShoot()) {
-		_projectiles.push_back(p);
-		_world.addObject(p);
-	}
-	_player->clearProtectilesToShoot();
+	pullPlayerObjects();
 
 	_player->update(dt);
 	for (auto& p : _projectiles) {
@@ -120,6 +118,21 @@ void StartScreen::update(double dt) {
 		game->enterDungeon();
 	}
 }
+
+void StartScreen::pullPlayerObjects() {
+	for (auto& p : _player->getProtectilesToShoot()) {
+		_projectiles.push_back(p);
+		_world.addObject(p);
+	}
+	_player->clearProtectilesToShoot();
+
+	for (auto& p : _player->getZonesToApply()) {
+		_playerZones.push_back(p);
+		_world.addObject(p);
+	}
+	_player->clearZonesToApply();
+}
+
 void StartScreen::render(sf::RenderTarget& target) {
 	const auto oldView = target.getView();
 	
@@ -229,7 +242,14 @@ void StartScreen::removeNeeded() {
 	for (size_t i = _projectiles.size(); i > 0; --i) {
 		if (_projectiles[i - 1]->toRemove()) {
 			_world.delObject(_projectiles[i - 1]);
-			_projectiles.erase(_projectiles.begin() + i - 1);
+			_projectiles.erase(_projectiles.end() - i);
+		}
+	}
+
+	for (size_t i = _playerZones.size(); i > 0; --i) {
+		if (_playerZones[i - 1]->toRemove()) {
+			_world.delObject(_playerZones[i - 1]);
+			_playerZones.erase(_playerZones.end() - i);
 		}
 	}
 }

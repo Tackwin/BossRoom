@@ -25,6 +25,23 @@ Zone::Zone(const Zone& other) : Object() {
 	collisionMask = other.collisionMask;
 }
 
+void Zone::render(sf::RenderTarget& target) {
+	for (auto& p : _sprites) {
+		auto s = p.second;
+		s.setOrigin(
+			s.getTextureRect().width * 0.5f,
+			s.getTextureRect().height * 0.5f
+		);
+		s.setScale(
+			2.f * _radius / s.getTextureRect().width,
+			2.f * _radius / s.getTextureRect().height
+		);
+		s.setPosition(pos);
+		target.draw(s);
+	}
+}
+
+
 void Zone::collision(Object* obj) {
 	inside(obj);
 }
@@ -55,7 +72,29 @@ Zone& Zone::operator=(const Zone& other) {
 void Zone::setRemove(bool remove) {
 	_toRemove = remove;
 }
-bool Zone::needRemove() const {
+bool Zone::toRemove() const {
 	return _toRemove;
 }
 
+void Zone::addSprite(const std::string& key, const sf::Sprite& sprite) {
+	_sprites[key] = sprite;
+}
+void Zone::removeSprite(const std::string& key) {
+	if (auto it = _sprites.find(key); it != _sprites.end()) {
+		_sprites.erase(it);
+	}
+}
+sf::Sprite& Zone::getSprite(const std::string& key) {
+	if (auto it = _sprites.find(key); it != _sprites.end()) {
+		return _sprites[key];
+	}
+	else {
+		assert("no sprite");	//the fuck i'm supposed to do ?
+								// i guess it's raise the question of an error handling system
+		return _sprites[key];
+	}
+}
+
+void Zone::cleanSprites() {
+	_sprites.clear();
+}

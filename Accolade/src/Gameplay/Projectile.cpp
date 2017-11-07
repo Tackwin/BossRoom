@@ -17,7 +17,7 @@ Projectile::Projectile(nlohmann::json json, Vector2f pos, Vector2f dir, bool pla
 	_update([](Projectile&, double) {}) {
 
 	_speed = getJsonValue<float>(json, "speed");
-	_damage = getJsonValue<int>(json, "damage");
+	_damage = getJsonValue<float>(json, "damage");
 	_radius = getJsonValue<float>(json, "radius");
 	_lifespan = getJsonValue<float>(json, "lifespan");
 	_destroyOthers = json["destroyOthers"];
@@ -100,7 +100,7 @@ bool Projectile::toRemove() const {
 void Projectile::remove() {
 	_remove = true;
 }
-i32 Projectile::getDamage() const {
+float Projectile::getDamage() const {
 	return _damage;
 }
 bool Projectile::isFromPlayer() const {

@@ -33,7 +33,7 @@ public:
 	void render(sf::RenderTarget& target);
 
 	void shoot();
-	void hit(unsigned int damage);
+	void hit(float damage);
 	void startCaC();
 
 	Vector2f getDirToFire();
@@ -80,6 +80,7 @@ public: //TODO: Make private
 
 	u32 _nJumpsLeft = 2;
 
+	//TODO: make this a map for fuck sake
 	i32 _AK;
 	i32 _upK;
 	i32 _leftK;
@@ -89,8 +90,8 @@ public: //TODO: Make private
 	i32 _dashK;
 	i32 _jumpK;
 
-	i32 _life;
-	i32 _maxLife;
+	float _life;
+	float _maxLife;
 	Vector2f _dir;
 	float _speed;
 	float _radius;

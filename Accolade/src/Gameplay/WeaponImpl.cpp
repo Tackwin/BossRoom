@@ -12,6 +12,7 @@
 #include "Gameplay/Projectile.hpp"
 #include "Gameplay/Player.hpp"
 #include "Gameplay/Level.hpp"
+#include "Gameplay/Boss.hpp"
 
 std::array<Weapon, 4> Weapon::_weapons;
 
@@ -158,11 +159,7 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 		_weapons[3] = Weapon(player, AssetsManager::getJson(JSON_KEY)["weapons"][3]);
 		auto& weapon = _weapons[3];
 		weapon._equip = [](Weapon& me)mutable->void {
-			me._keys.push_back(TimerManager::addFunction(me._json["cooldowns"][0], "1-cd", [&me](double)mutable->bool {
-				me._flags |= 1;
-				TimerManager::pauseFunction(me._keys[0]);
-				return false;
-			}));
+			me._flags = 0b1;
 		};
 		weapon._unEquip = [](Weapon& me)mutable->void {
 			for (auto& k : me._keys) {
@@ -173,18 +170,43 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 		};
 
 		weapon._active = [](Weapon& me, u32 id)mutable->void {
-			std::shared_ptr<Player> player = me.getPlayer();
-			std::shared_ptr<Zone> zone = std::make_shared<Zone>(getJsonValue<float>(me.getJson(), "radius"));
-			zone->collider->dtPos = {
-				getJsonValue<float>(me.getJson(), "offsetX"),
-				0
-			};
-			zone->collisionMask.set((u08)Object::BIT_TAGS::BOSS);
-			zone->entered = [](Object* boss) {
-				
-			};
+			switch (id) {
+			case 0:
+				if (me._flags & 1) {
+					me._flags ^= 1;
+					TimerManager::addFunction(me.getJson()["cooldowns"][0], [me](double) mutable -> bool {
+						me._flags |= 1;
+						return true;
+					});
+				}
+				else {
+					break;
+				}
 
-			player->addZone();
+				std::shared_ptr<Player> player = me.getPlayer();
+				std::shared_ptr<Zone> zone = std::make_shared<Zone>(getJsonValue<float>(me.getJson(), "radius"));
+
+				zone->pos = 
+					player->getPos() + 
+					Vector2f(
+						getJsonValue<float>(me.getJson(), "offsetX"),
+						0
+					);
+
+				zone->collisionMask.set((u08)Object::BIT_TAGS::BOSS);
+				zone->entered = [&me](Object* boss_) { // boss is Boss*
+					auto boss = static_cast<Boss*>(boss_);
+					boss->hit(getJsonValue<float>(me.getJson(), "damage"));
+				};
+
+				player->addZone(zone);
+
+				TimerManager::addFunction(0.5f, [zone](double) -> bool {
+					zone->setRemove(true);
+					return true;
+				});
+				break;
+			}
 		};
 
 		auto sound = sf::Sound(AssetsManager::getSound(_weapons[3].getStringSoundActive(0)));
