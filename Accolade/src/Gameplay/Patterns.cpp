@@ -1,6 +1,6 @@
 #include "Gameplay/Patterns.hpp"
 
-#include "Const.hpp"
+#include "Common.hpp"
 
 #include "Math/Vector.hpp"
 

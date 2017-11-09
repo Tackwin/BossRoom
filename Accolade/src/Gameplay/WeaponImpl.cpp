@@ -1,7 +1,7 @@
 #include "Gameplay/Weapon.hpp"
 
 #include "Game.hpp"
-#include "Const.hpp"
+#include "Common.hpp"
 
 #include "Managers/AssetsManager.hpp"
 #include "Managers/InputsManager.hpp"
@@ -23,7 +23,7 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 		_weapons[0]._equip = [](Weapon& me)mutable->void {
 			me._keys.push_back(
 				TimerManager::addFunction(me._json["cooldowns"][0], "1-cd", [&me](double)mutable->bool {
-					me._flags |= 1;
+					me._flags.set(0);
 					TimerManager::pauseFunction(me._keys[0]);
 					return false;
 				}
@@ -40,8 +40,8 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 		_weapons[0]._active = [](Weapon& me, u32)mutable->void {
 			static bool evenShot = false;
 			
-			if ((me._flags & 1) == 1) {
-				me._flags ^= 1;
+			if (me._flags[0]) {
+				me._flags.reset(0);
 				me._player->shoot();
 				//TimerManager::resumeFunction(me._keys[0]);
 
@@ -71,7 +71,7 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 
 		_weapons[1]._equip = [](Weapon& me)mutable->void {
 			me._keys.push_back(TimerManager::addFunction(me._json["cooldowns"][0], "1-cd", [&me](double)mutable->bool {
-				me._flags |= 1;
+				me._flags.set(0);
 				TimerManager::pauseFunction(me._keys[0]);
 				return false;
 			}));
@@ -87,8 +87,8 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 		_weapons[1]._active = [](Weapon& me, u32)mutable->void {
 			static bool evenShot = false;
 			
-			if ((me._flags & 1) == 1) {
-				me._flags ^= 1;
+			if (me._flags[0]) {
+				me._flags.reset(0);
 				TimerManager::resumeFunction(me._keys[0]);
 
 				Vector2f dir = (InputsManager::getMouseWorldPos() - me._player->getPos()).normalize();
@@ -116,7 +116,7 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 		auto& weapon = _weapons[2];
 		weapon._equip = [](Weapon& me)mutable->void {
 			me._keys.push_back(TimerManager::addFunction(me._json["cooldowns"][0], "1-cd", [&me](double)mutable->bool {
-				me._flags |= 1;
+				me._flags.set(0);
 				TimerManager::pauseFunction(me._keys[0]);
 				return false;
 			}));
@@ -130,8 +130,8 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 		};
 
 		weapon._active = [](Weapon& me, u32)mutable->void {
-			if ((me._flags & 1) == 1) {
-				me._flags ^= 1;
+			if (me._flags[0]) {
+				me._flags.reset(0);
 				TimerManager::resumeFunction(me._keys[0]);
 
 				float A = (float)me.getPlayer()->getDirToFire().angleX();
@@ -159,7 +159,7 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 		_weapons[3] = Weapon(player, AssetsManager::getJson(JSON_KEY)["weapons"][3]);
 		auto& weapon = _weapons[3];
 		weapon._equip = [](Weapon& me)mutable->void {
-			me._flags = 0b1;
+			me._flags.set();
 		};
 		weapon._unEquip = [](Weapon& me)mutable->void {
 			for (auto& k : me._keys) {
@@ -172,8 +172,8 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 		weapon._active = [](Weapon& me, u32 id)mutable->void {
 			switch (id) {
 			case 0:
-				if (me._flags & 1) {
-					me._flags ^= 1;
+				if (me._flags[0]) {
+					me._flags.reset(0);
 					TimerManager::addFunction(me.getJson()["cooldowns"][0], 
 						[&me](double) mutable -> bool {
 							me._flags |= 1;

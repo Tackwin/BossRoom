@@ -1,6 +1,6 @@
 #include "Graphics/AnimatedSprite.hpp"
 
-#include "Const.hpp"
+#include "Common.hpp"
 
 #include "Managers/TimerManager.hpp"
 #include "Managers/AssetsManager.hpp"

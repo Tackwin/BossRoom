@@ -9,7 +9,7 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "Const.hpp"
+#include "Common.hpp"
 
 #include "Math/Vector.hpp"
 

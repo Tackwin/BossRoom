@@ -1,6 +1,7 @@
 #pragma once
 #include <array>
 #include <vector>
+#include <bitset>
 #include <memory>
 #include <functional>
 
@@ -9,7 +10,7 @@
 
 #include "3rd/json.hpp"
 
-#include "Const.hpp"
+#include "Common.hpp"
 
 #include "Math/Vector.hpp"
 
@@ -69,7 +70,7 @@ private: //TODO: Make this private
 	float _radius;
 
 	std::vector<std::string> _keys;
-	u64 _flags = 0;
+	std::bitset<32u> _flags = 0;
 
 	nlohmann::json _json;
 

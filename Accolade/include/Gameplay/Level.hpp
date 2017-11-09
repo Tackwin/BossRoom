@@ -4,7 +4,7 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "Const.hpp"
+#include "Common.hpp"
 
 #include "Physics/World.hpp"
 

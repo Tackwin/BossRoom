@@ -1,7 +1,7 @@
 #include "Gameplay/Player.hpp"
 
 #include "Game.hpp"
-#include "Const.hpp"
+#include "Common.hpp"
 
 #include "Managers/InputsManager.hpp"
 #include "Managers/AssetsManager.hpp"

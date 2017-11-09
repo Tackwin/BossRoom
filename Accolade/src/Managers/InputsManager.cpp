@@ -2,7 +2,7 @@
 
 #include "Managers/EventManager.hpp"
 
-#include "Const.hpp"
+#include "Common.hpp"
 
 bool InputsManager::keyPressed[sf::Keyboard::KeyCount];
 bool InputsManager::keyJustPressed[sf::Keyboard::KeyCount];

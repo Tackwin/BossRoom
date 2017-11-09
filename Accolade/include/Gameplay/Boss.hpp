@@ -14,7 +14,7 @@
 
 #include "Physics/Object.hpp"
 
-#include "Const.hpp"
+#include "Common.hpp"
 
 class Level;
 class Projectile;

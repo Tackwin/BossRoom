@@ -3,7 +3,7 @@
 #include <string>
 
 #include "Game.hpp"
-#include "Const.hpp"
+#include "Common.hpp"
 
 #include "Math/Rectangle.hpp"
 

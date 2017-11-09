@@ -1,6 +1,6 @@
 #include "Game.hpp"
 
-#include "Const.hpp"
+#include "Common.hpp"
 
 #include "Managers/AssetsManager.hpp"
 #include "Managers/InputsManager.hpp"

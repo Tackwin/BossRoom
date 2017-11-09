@@ -1,7 +1,7 @@
 #include "Gameplay/Boss.hpp"
 
 #include "Game.hpp"
-#include "Const.hpp"
+#include "Common.hpp"
 
 #include "Managers/AssetsManager.hpp"
 #include "Managers/TimerManager.hpp"
