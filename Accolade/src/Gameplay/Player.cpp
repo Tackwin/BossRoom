@@ -214,12 +214,6 @@ std::shared_ptr<Weapon> Player::getWeapon() const {
 }
 
 void Player::floored() {
-	static u32 i = 0u;
-	if (++i > 1000u) {
-		printf("floored\n");
-		i = 0u;
-	}
-
 	_nJumpsLeft = 2u;
 	_jumping = false;
 	_floored = true;

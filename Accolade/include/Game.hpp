@@ -18,7 +18,7 @@ public:
 	void enterRoom(u32 n);
 	void nextRoom();
 
-	void enterScreen(Screen* s);
+	void enterScreen(std::shared_ptr<Screen> s);
 	void exitScreen();
 
 	void update(double dt);
@@ -37,7 +37,7 @@ public: //TODO: Make this private
 
 	std::shared_ptr<Player> _player;
 
-	std::stack<Screen*> _screens;
+	std::stack<std::shared_ptr<Screen>> _screens;
 
 	sf::Text _fpsText;
 	std::map<std::string, sf::Text> _debugText;

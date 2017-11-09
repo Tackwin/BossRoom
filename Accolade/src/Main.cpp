@@ -46,6 +46,9 @@ bool render(sf::RenderWindow& window) {
 }
 
 int main(int, char**) {
+
+	//let's try to fit our game into 16MiB
+	MemoryManager::I().initialize_buffer(1024 * 1024 * 16);
 	loadRessources();
 	startGame();
 	return 0;
@@ -53,7 +56,7 @@ int main(int, char**) {
 
 void startGame() {
 	Patterns::_json = AssetsManager::getJson(JSON_KEY)["patterns"];
-	C::game = std::make_shared<Game>();
+	C::game = MemoryManager::make_shared<Game>();
 	game->start();
 
 	sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT, 24), "Boss room");
@@ -70,6 +73,17 @@ void startGame() {
 		"render",
 		std::bind(&render, std::ref(window))
 	);
+	const auto& sizeKey = TimerManager::addFunction(
+		10.f,
+		"size",
+		[](double) -> bool {
+			const auto buffer_size = MM::I().get_buffer_size();
+			const auto free_size = MM::I().get_free_size();
+			printf("Size of MM's buffer: %u \t bytes\n", buffer_size);
+			printf("Size used by MM:     %u \t bytes\n", buffer_size - free_size);
+			return false;
+		}
+	);
 
 	while (window.isOpen()) {
 		static sf::Clock dtClock;
@@ -84,6 +98,7 @@ void startGame() {
 
 	TimerManager::removeFunction(renderKey);
 	TimerManager::removeFunction(updateKey);
+	TimerManager::removeFunction(sizeKey);
 }
 void loadRessources() {
 	printf("Loading jsons...\n");

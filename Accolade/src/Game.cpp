@@ -4,6 +4,7 @@
 
 #include "Managers/AssetsManager.hpp"
 #include "Managers/InputsManager.hpp"
+#include "Managers/MemoryManager.hpp"
 #include "Managers/TimerManager.hpp"
 
 #include "Screens/RoomSelectorScreen.hpp"
@@ -16,7 +17,7 @@
 #include "Gameplay/Boss.hpp"
 
 void Game::start() {
-	enterScreen(new StartScreen());
+	enterScreen(MM::make_shared<StartScreen>());
 }
 
 void Game::enterDungeon() {
@@ -24,7 +25,10 @@ void Game::enterDungeon() {
 }
 
 void Game::nextRoom() {
-	if (auto* screen = dynamic_cast<LevelScreen*>(_screens.top())) {
+	if (
+		auto screen = dynamic_cast<LevelScreen*>(_screens.top().get()); 
+		screen
+	) {
 		enterRoom(screen->getIndex() + 1);
 	}
 }
@@ -70,7 +74,7 @@ void Game::exitScreen() {
 		_screens.top()->onEnter();
 }
 
-void Game::enterScreen(Screen* s) {
+void Game::enterScreen(std::shared_ptr<Screen> s) {
 	if (!_screens.empty()) {
 		_screens.top()->onExit();
 	}
@@ -79,7 +83,7 @@ void Game::enterScreen(Screen* s) {
 }
 
 void Game::enterRoom(u32 n) {
-	enterScreen(new LevelScreen(n));
+	enterScreen(MM::make_shared<LevelScreen>(n));
 }
 
 Game::~Game() {
@@ -92,13 +96,15 @@ Game::~Game() {
 }
 
 Game::Game() : 
-	_player(std::make_shared<Player>(AssetsManager::getJson(JSON_KEY)["player"]))
+	_player(
+		MM::make_shared<Player>(AssetsManager::getJson(JSON_KEY)["player"])
+	)
 {
 	Weapon::createWeapons(_player);
 	Boss::createBosses();
 	Level::createLevels();
 
-	_player->swapWeapon(std::make_shared<Weapon>(Weapon::_weapons[0]));
+	_player->swapWeapon(MM::make_shared<Weapon>(Weapon::_weapons[0]));
 
 	_debugText["ups"].setFont(AssetsManager::getFont("consola"));
 	_debugText["ups"].setCharacterSize(20);
@@ -110,7 +116,6 @@ void Game::pop() {
 	if (_screens.empty()) return;
 
 	_screens.top()->onExit();
-	delete _screens.top();
 	_screens.pop();
 }
 

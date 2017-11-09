@@ -6,6 +6,7 @@
 #include "Game.hpp"
 
 #include "Managers/AssetsManager.hpp"
+#include "Managers/MemoryManager.hpp"
 #include "Managers/InputsManager.hpp"
 
 #include "Graphics/GUI/Button.hpp"
@@ -42,7 +43,7 @@ void StartScreen::initializeGui() {
 
 	for (u32 i = 0u; i < 10; ++i) {
 		for (u32 j = 0u; j < Weapon::_weapons.size(); ++j) {
-			_shop.addWeapon(std::make_shared<Weapon>(Weapon::_weapons[j]));
+			_shop.addWeapon(MM::make_shared<Weapon>(Weapon::_weapons[j]));
 		}
 	}
 }
@@ -64,7 +65,7 @@ void StartScreen::onExit() {
 void StartScreen::initializeWorld(){
 	_world.addObject(_player);
 
-	_floor = std::make_shared<Object>();
+	_floor = MM::make_shared<Object>();
 	_floor->idMask.set((size_t)Object::BIT_TAGS::FLOOR);
 	_floor->pos = { 0, 600 };
 	Box* box = new Box();
@@ -77,7 +78,7 @@ void StartScreen::initializeWorld(){
 	_world.addObject(_floor);
 
 	auto& merchant = _zones["merchant"];
-	merchant = std::make_shared<Zone>();
+	merchant = MM::make_shared<Zone>();
 	merchant->setRadius(150.f);
 	merchant->pos.x = _merchantShop.getPosition().x +
 		_merchantShop.getGlobalBounds().width * 0.5f;

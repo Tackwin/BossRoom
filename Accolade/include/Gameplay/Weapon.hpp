@@ -40,7 +40,8 @@ public:
 	u32 getCost() const;
 
 	void addProjectile(const std::shared_ptr<Projectile>& projectile);
-	const std::vector<std::shared_ptr<Projectile>>& getProjectileBuffer() const;
+	const 
+		std::vector<std::shared_ptr<Projectile>>& getProjectileBuffer() const;
 	void clearProjectileBuffer();
 
 	const sf::Sprite& getUiSprite() const;
