@@ -1,8 +1,23 @@
 #include "Managers/AssetsManager.hpp"
 
-#include <Windows.h>
 #include <cassert>
 #include <fstream>
+
+#ifdef _WIN32
+#include <Windows.h>
+void stubSetConsoleTextAttribute(HANDLE h, WORD w) {
+	SetConsoleTextAttribute(h, w);
+}
+#else
+void stubSetConsoleTextAttibute() {
+	static bool flag = false;
+	if (!flag) {
+		printf("Color console not yet supported!\n");
+		flag = true;
+	}
+};
+#endif
+
 
 std::unordered_map<std::string, sf::SoundBuffer> AssetsManager::_sounds;
 std::unordered_map<std::string, nlohmann::json> AssetsManager::_jsons;
@@ -20,23 +35,23 @@ bool AssetsManager::loadTexture(const std::string &key, const std::string &path)
 	if (_textures.find(key) != std::end(_textures))
 		return true;
 
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_BLUE);
+	stubSetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_BLUE);
 	std::printf("Loading: ");
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+	stubSetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 	auto &ref = _textures[key];
 	ref.setSmooth(true);
 	std::printf("%s ", path.c_str());
 
 	const bool loaded = ref.loadFromFile(path);
 	if(!loaded) {
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED);
+		stubSetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED);
 		printf(" Couldn't load file /!\\\n");
 	}
 	else {
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_GREEN);
+		stubSetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_GREEN);
 		printf(" Succes !\n");
 	}
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+	stubSetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 	return loaded;
 }
 
@@ -50,18 +65,18 @@ bool AssetsManager::loadImage(const std::string &key, const std::string &path) {
 	if (_images.find(key) != std::end(_images))
 		return true;
 
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_BLUE);
+	stubSetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_BLUE);
 	std::printf("Loading: ");
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+	stubSetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 	std::printf("%s ", path.c_str());
 	auto& ref = _images[key];
 
 	const bool loaded = ref.loadFromFile(path);
 	if(!loaded) {
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED);
+		stubSetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED);
 		printf(" Couldn't load file /!\\\n");
 	} else {
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_GREEN);
+		stubSetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_GREEN);
 		printf(" Succes !\n");
 	}
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
@@ -78,21 +93,21 @@ bool AssetsManager::loadFont(const std::string &key, const std::string &path) {
 	if (_fonts.find(key) != std::end(_fonts))
 		return true;
 	
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_BLUE);
+	stubSetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_BLUE);
 	std::printf("Loading: ");
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+	stubSetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 	std::printf("%s", path.c_str());
 	auto& ref = _fonts[key];
 
 	const bool loaded = ref.loadFromFile(path);
 	if(!loaded) {
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED);
+		stubSetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED);
 		printf(" Couldn't load file /!\\\n");
 	} else {
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_GREEN);
+		stubSetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_GREEN);
 		printf(" Succes !\n");
 	}
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+	stubSetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 	return loaded;
 }
 
@@ -106,22 +121,22 @@ bool AssetsManager::loadSound(const std::string &key, const std::string &path) {
 	if (_sounds.find(key) != std::end(_sounds))
 		return true;
 	
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_BLUE);
+	stubSetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_BLUE);
 	std::printf("Loading: ");
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+	stubSetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 	std::printf("%s ", path.c_str());
 	auto& ref = _sounds[key];
 
 	const bool loaded = ref.loadFromFile(path);
 	if (!loaded) {
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED);
+		stubSetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED);
 		printf(" Couldn't load file /!\\\n");
 	}
 	else {
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_GREEN);
+		stubSetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_GREEN);
 		printf(" Succes !\n");
 	}
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+	stubSetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 	return loaded;
 }
 
@@ -135,9 +150,9 @@ bool AssetsManager::loadJson(const std::string &key, const std::string &path) {
 	if (_jsons.find(key) != std::end(_jsons))
 		return true;
 
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_BLUE);
+	stubSetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_BLUE);
 	std::printf("Loading: ");
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+	stubSetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 	std::printf("%s ", path.c_str());
 
 	std::ifstream stream;
@@ -145,21 +160,21 @@ bool AssetsManager::loadJson(const std::string &key, const std::string &path) {
 	const bool loaded = stream.is_open() && stream.good();
 
 	if (!loaded) {
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED);
+		stubSetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED);
 		printf(" Couldn't load file /!\\\n");
 	}
 	else {
 		try {
 			stream >> _jsons[key];
-			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_GREEN);
+			stubSetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_GREEN);
 			printf(" Succes !\n");
 		}
 		catch (const std::exception& e) {
-			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED);
+			stubSetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED);
 			printf(" Couldn't load file /!\\ err: %s \n", e.what());
 		}
 	}
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+	stubSetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 	return loaded;
 }
 
@@ -175,21 +190,21 @@ bool AssetsManager::openMusic(const std::string &key, const std::string &path) {
 	if (_musics.find(key) != std::end(_musics))
 		return true;
 	
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_BLUE);
+	stubSetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_BLUE);
 	std::printf("Loading: ");
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+	stubSetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 	std::printf("%s ", path.c_str());
 	auto& ref = _musics[key];
 
 	const bool loaded = ref.openFromFile(path);
 	if(!loaded) {
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED);
+		stubSetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED);
 		printf(" Couldn't load file /!\\\n");
 	} else {
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_GREEN);
+		stubSetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_GREEN);
 		printf(" Succes !\n");
 	}
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+	stubSetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 	return loaded;
 }
 
