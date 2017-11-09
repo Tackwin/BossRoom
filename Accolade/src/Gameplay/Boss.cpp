@@ -14,6 +14,24 @@ using namespace nlohmann;
 
 std::vector<std::shared_ptr<Boss>> Boss::bosses(C::N_LEVEL);
 
+// Assume AARRGGBB
+sf::Color hexToColor(const std::string& hex) {
+	return sf::Color(
+		static_cast<sf::Uint8>(
+			std::stoi(std::string(hex.data() + 2, 2), nullptr, 16)
+		),
+		static_cast<sf::Uint8>(
+			std::stoi(std::string(hex.data() + 4, 2), nullptr, 16)
+		),
+		static_cast<sf::Uint8>(
+			std::stoi(std::string(hex.data() + 6, 2), nullptr, 16)
+		),
+		static_cast<sf::Uint8>(
+			std::stoi(std::string(hex.data() + 0, 2), nullptr, 16)
+		)
+	);
+}
+
 Boss::Boss(const basic_json<>& json,
 	std::function<void(double, Boss&)> updateFunction,
 	std::function<void(Boss&)> init,
@@ -37,7 +55,7 @@ void Boss::enterLevel(Level* level) {
 	pos.x = _json["startpos"]["x"];
 	pos.y = _json["startpos"]["y"];
 	_radius = _json["radius"];
-	_color = sf::Color::hexToColor(_json["color"]);
+	_color = hexToColor(_json["color"]);
 
 	const auto& str = _json["sprite"].get<std::string>();
 	_sprite = AnimatedSprite(str);
@@ -101,12 +119,12 @@ void Boss::hit(float d) {
 	_life = _life < 0 ? 0 : _life;
 
 	const auto& blinkDown = [&](double)mutable->bool {
-		_color = sf::Color::hexToColor(_json["color"]);
+		_color = hexToColor(_json["color"]);
 		return true;
 	};
 
 	TimerManager::addFunction(0.05f, "blinkDown", blinkDown);
-	_color = sf::Color::hexToColor(_json["blinkColor"]);
+	_color = hexToColor(_json["blinkColor"]);
 }
 
 void Boss::hit(u32 d) {
@@ -114,12 +132,12 @@ void Boss::hit(u32 d) {
 	_life = _life < 0.f ? 0.f : _life;
 
 	const auto& blinkDown = [&](double)mutable->bool {
-		_color = sf::Color::hexToColor(_json["color"]);
+		_color = hexToColor(_json["color"]);
 		return true;
 	};
 
 	TimerManager::addFunction(0.05f, "blinkDown", blinkDown);
-	_color = sf::Color::hexToColor(_json["blinkColor"]);
+	_color = hexToColor(_json["blinkColor"]);
 }
 
 void Boss::addProjectile(const std::shared_ptr<Projectile>& projectile) {
