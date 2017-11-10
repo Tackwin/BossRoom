@@ -8,7 +8,8 @@ void World::updateInc(double dt, u32 itLevel) {
 		update(dt / itLevel);
 	}
 
-	for (auto& [_, wobj1] : _objectsMap) { // pls fix this intellisense bug soon ;(
+	// pls fix this intellisense bug soon ;(
+	for (auto& [_, wobj1] : _objectsMap) { 
 		auto obj1 = wobj1.lock();
 
 		obj1->flatVelocities.clear();
@@ -139,22 +140,32 @@ void World::addObject(std::weak_ptr<Object> obj) {
 }
 
 void World::delObject(std::weak_ptr<Object> obj_) {
-	u32 id = 0u;
-	for (auto& [id_, obj] : _objectsMap) {
-		if (obj.lock() == obj_.lock()) {
-			id = id_;
-			_objectsMap.erase(id);
-			break;
+	using map_pair = std::pair<u32, std::weak_ptr<Object>>;
+	auto object_map_it = std::find_if(
+		_objectsMap.begin(),
+		_objectsMap.end(),
+		[ptr = obj_.lock()](const map_pair& A) -> bool {
+		return A.second.lock() == ptr;
 		}
+	);
+
+	u32 id = object_map_it->first;
+
+	_collisionStates.erase(id);
+	for (auto& c : _collisionStates) {
+		c.second.erase(id);
 	}
+	_objectsMap.erase(object_map_it);
 
 	for (size_t i = 0u; i < Object::BITSET_SIZE; ++i) {
 		if (!obj_.lock()->idMask[i]) continue;
 
-		auto &it = std::find(_objectsPool[i].cbegin(), _objectsPool[i].cend(), id);
-		_objectsPool[i].erase(it);
+		auto& object_pool_it = 
+			std::find(_objectsPool[i].cbegin(), _objectsPool[i].cend(), id);
+		_objectsPool[i].erase(object_pool_it);
 		std::sort(_objectsPool[i].begin(), _objectsPool[i].end());
 	}
+
 	buildUnionCache();
 }
 

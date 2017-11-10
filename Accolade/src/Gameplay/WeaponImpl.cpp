@@ -186,11 +186,11 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 					break;
 				}
 
+				float r = getJsonValue<float>(me.getJson(), "radius");
 				std::shared_ptr<Player> player = me.getPlayer();
-				std::shared_ptr<Zone> zone = 
-					MM::make_shared<Zone>(
-						getJsonValue<float>(me.getJson(), "radius")
-					);
+				std::shared_ptr<Zone> zone = MM::make_shared<Zone>(r);
+
+				printf("%f\n", r);
 
 				zone->pos = 
 					player->getPos() + 
@@ -217,6 +217,7 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 						return true;
 					}
 				);
+
 				break;
 			}
 		};

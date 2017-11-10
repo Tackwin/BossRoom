@@ -91,8 +91,8 @@ void Player::exitLevel() {
 
 void Player::update(double) {
 	bool tryingToShoot = 
-		game->_distance && 
-		InputsManager::isMousePressed(_AK) && _focus;
+		InputsManager::isMousePressed(_AK) && 
+		_focus;
 
 	if (tryingToShoot) {
 		_weapon->active(0);

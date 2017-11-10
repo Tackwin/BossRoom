@@ -36,7 +36,7 @@ private:
 
 	u32 _iterationLevel = 5;
 
-	std::unordered_map<u64, std::unordered_map<u64, u08>> _collisionStates;
+	std::unordered_map<u32, std::unordered_map<u32, u08>> _collisionStates;
 
 	std::unordered_map<u32, std::vector<u32>> _unionsCache;
 	std::unordered_map<u32, std::weak_ptr<Object>> _objectsMap;
