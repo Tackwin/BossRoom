@@ -5,6 +5,7 @@
 
 #include "Managers/AssetsManager.hpp"
 #include "Managers/InputsManager.hpp"
+#include "Managers/MemoryManager.hpp"
 #include "Managers/TimerManager.hpp"
 
 #include "Physics/Collider.hpp"
@@ -55,7 +56,7 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 
 				me._activeSounds[0].play();
 
-				me.addProjectile(std::make_shared<Projectile>(me._json["projectile"], pos, dir, true));
+				me.addProjectile(MM::make_shared<Projectile>(me._json["projectile"], pos, dir, true));
 			}
 		};
 
@@ -100,7 +101,7 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 				evenShot = !evenShot;
 				
 				me._activeSounds[0].play();
-				me._player->addProjectile(std::make_shared<Projectile>(me._json["projectile"], pos, dir, true));
+				me._player->addProjectile(MM::make_shared<Projectile>(me._json["projectile"], pos, dir, true));
 			}
 		};
 		
@@ -144,7 +145,7 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 
 					auto projectile = me._json["projectile"];
 					projectile["speed"] = projectile["speed"].get<float>() * ((i == 1) ? 1 : tanf(dtA) / sinf(dtA));
-					me._player->addProjectile(std::make_shared<Projectile>(projectile, pos, dir, true));
+					me._player->addProjectile(MM::make_shared<Projectile>(projectile, pos, dir, true));
 				}
 			}
 		};
@@ -187,7 +188,7 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 
 				std::shared_ptr<Player> player = me.getPlayer();
 				std::shared_ptr<Zone> zone = 
-					std::make_shared<Zone>(
+					MM::make_shared<Zone>(
 						getJsonValue<float>(me.getJson(), "radius")
 					);
 

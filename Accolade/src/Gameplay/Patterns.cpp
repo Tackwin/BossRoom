@@ -5,6 +5,7 @@
 #include "Math/Vector.hpp"
 
 #include "Managers/TimerManager.hpp"
+#include "Managers/MemoryManager.hpp"
 
 #include "Gameplay/Level.hpp"
 #include "Gameplay/Projectile.hpp"
@@ -110,7 +111,7 @@ std::string Patterns::barage(
 			Vector2f pos((float)WIDTH, (float)HEIGHT * i / nOrbs);
 			Vector2f dir = Vector2f::createUnitVector(PIf);
 
-			const auto& pr = std::make_shared<Projectile>(projectile, pos, dir, false);
+			const auto& pr = MM::make_shared<Projectile>(projectile, pos, dir, false);
 			boss.addProjectile(pr);
 		}
 

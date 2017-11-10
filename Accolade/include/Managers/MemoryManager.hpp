@@ -1,6 +1,7 @@
 #pragma once
 #include <algorithm>
 #include <cstdint>
+#include <utility>
 #include <vector>
 #include <memory>
 #include <cmath>
@@ -15,13 +16,18 @@ class MemoryManager {
 		std::size_t size;
 	};
 public:
+	template<typename T>
+	using unique_ptr = std::unique_ptr<T, void(*)(T*)>;
 
 	static MemoryManager& I();
 
 	template<typename T, class... Args>
-	static std::shared_ptr<T> make_shared(Args... args) {
+	static std::shared_ptr<T> make_shared(Args&&... args) {
+		const auto& ptr = 
+			MemoryManager::I().allocate<T>(std::forward<Args>(args)...);
+
 		return std::shared_ptr<T>(
-			MemoryManager::I().allocate<T>(args...),
+			ptr,
 			std::bind(
 				&MemoryManager::deallocate<T>,
 				&MemoryManager::I(),
@@ -31,12 +37,25 @@ public:
 		);
 	}
 
+	template<typename T, class... Args>
+	static unique_ptr<T> make_unique(Args&&... args) {
+		T* ptr = MemoryManager::I().allocate<T>(std::forward<Args>(args)...);
+
+		return unique_ptr<T>(
+			ptr,
+			[](T* ptr) {
+				MemoryManager::I().deallocate(ptr);
+			}
+		);
+	}
+
+
 	size_t get_buffer_size() const;
 	size_t get_free_size() const;
 	void initialize_buffer(size_t size);
 
 	template<typename T, class... Args>
-	T* allocate(Args... args) {
+	T* allocate(Args&&... args) {
 		u08* emplacement = nullptr;
 		//testing if the memory place is big enough to hold T
 		for (size_t i = 0u; i < _free_memory.size(); ++i) {
@@ -105,7 +124,7 @@ public:
 			throw std::runtime_error("Not enough place");
 		}
 		
-		return new(emplacement) T(args...);
+		return new(emplacement) T(std::forward<Args>(args)...);
 	}
 
 	template<typename T>

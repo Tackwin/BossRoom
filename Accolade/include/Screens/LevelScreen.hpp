@@ -7,6 +7,8 @@
 
 #include "Math/Vector.hpp"
 
+#include "Managers/MemoryManager.hpp"
+
 #include "Screens/Screen.hpp"
 
 class Level;
@@ -36,11 +38,9 @@ private:
 	sf::View _guiView;
 	sf::View _gameView;
 
-	std::unique_ptr<Level> _level;
+	MM::unique_ptr<Level> _level;
 	
 	sf::Sprite _bossHealthTileSprite;
 	std::vector<sf::RectangleShape> _playerLife;
-
-	std::vector<std::unique_ptr<Panel>> _panels;
 };
 

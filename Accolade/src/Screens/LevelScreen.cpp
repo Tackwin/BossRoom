@@ -22,9 +22,8 @@ LevelScreen::LevelScreen(u32 n) :
 	_gameViewSize({ (float)WIDTH, (float)HEIGHT }),
 	_guiView(_gameViewPos, _gameViewSize),
 	_gameView(_gameViewPos, _gameViewSize),
-	_level(std::make_unique<Level>(*Level::levels[_n]))
+	_level(MM::make_unique<Level>(*Level::levels[_n]))
 {
-
 	constexpr float bossHealthTileSize = 60;
 	AssetsManager::getTexture("health_tile").setSmooth(true);
 	_bossHealthTileSprite.setOrigin(
@@ -156,10 +155,6 @@ void LevelScreen::renderGui(sf::RenderTarget& target) {
 	sf::Sprite weaponGuiSprite = game->_player->_weapon->getUiSprite();
 	weaponGuiSprite.setPosition({ WIDTH - 50.f, HEIGHT - 50.f });
 	target.draw(weaponGuiSprite);
-
-	for (auto& panel : _panels) {
-		panel->render(target);
-	}
 }
 
 void LevelScreen::shakeScreen(float power) {

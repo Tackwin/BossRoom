@@ -5,6 +5,7 @@
 
 #include "Managers/AssetsManager.hpp"
 #include "Managers/TimerManager.hpp"
+#include "Managers/MemoryManager.hpp"
 
 #include "Gameplay/Projectile.hpp"
 #include "Gameplay/Patterns.hpp"
@@ -150,7 +151,7 @@ void Boss::shoot(const nlohmann::json& json,
 {
 	if (_level && _life > 0) {
 		_projectilesToShoot.push_back(
-			std::make_unique<Projectile>(json, pos_, dir, false)
+			MM::make_unique<Projectile>(json, pos_, dir, false)
 		);
 	}
 }
