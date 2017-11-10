@@ -23,10 +23,10 @@ namespace C {
 	constexpr char JSON_KEY[] = "json";
 	constexpr char JSON_PATH[] = ASSETS_PATH"config.json";
 
-	constexpr unsigned int WIDTH = 1280;
-	constexpr unsigned int HEIGHT = 720;
+	constexpr u32 WIDTH = 1280;
+	constexpr u32 HEIGHT = 720;
 
-	constexpr unsigned int MAX_FPS = 60;
+	constexpr u32 MAX_FPS = 60;
 
 	constexpr float MIN_DELTA = 1 / 30.f;
 	constexpr float MIN_MS = 0.000f;
@@ -42,7 +42,7 @@ namespace C {
 
 	extern std::default_random_engine RD;
 	extern std::uniform_real_distribution<float> unitaryRng;
-	constexpr unsigned int SEED = 0;
+	constexpr u32 SEED = 0;
 
 	extern std::shared_ptr<Game> game;
 

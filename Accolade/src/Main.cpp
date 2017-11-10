@@ -2,6 +2,8 @@
 
 #include <SFML/Graphics.hpp>
 
+#include <GLFW/glfw3.h>
+
 #include <functional>
 
 #include "Managers/MemoryManager.hpp"
@@ -12,6 +14,8 @@
 
 #include "Game.hpp"
 #include "Gameplay/Patterns.hpp"
+
+#include "System/Window.hpp"
 
 std::default_random_engine C::RD(SEED);
 std::uniform_real_distribution<float> C::unitaryRng(0.f, 1.f - FLT_EPSILON);
@@ -46,11 +50,17 @@ bool render(sf::RenderWindow& window) {
 }
 
 int main(int, char**) {
+	if (!glfwInit()) {
+		printf("couldn't init glfw");
+		assert(true);
+	}
 
 	//let's try to fit our game into 16MiB
 	MemoryManager::I().initialize_buffer(1024 * 1024 * 16);
 	loadRessources();
 	startGame();
+
+	glfwTerminate();
 	return 0;
 }
 

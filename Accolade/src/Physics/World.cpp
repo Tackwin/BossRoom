@@ -145,7 +145,7 @@ void World::delObject(std::weak_ptr<Object> obj_) {
 		_objectsMap.begin(),
 		_objectsMap.end(),
 		[ptr = obj_.lock()](const map_pair& A) -> bool {
-		return A.second.lock() == ptr;
+			return A.second.lock() == ptr;
 		}
 	);
 
@@ -162,6 +162,7 @@ void World::delObject(std::weak_ptr<Object> obj_) {
 
 		auto& object_pool_it = 
 			std::find(_objectsPool[i].cbegin(), _objectsPool[i].cend(), id);
+
 		_objectsPool[i].erase(object_pool_it);
 		std::sort(_objectsPool[i].begin(), _objectsPool[i].end());
 	}

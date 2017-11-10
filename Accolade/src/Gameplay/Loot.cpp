@@ -55,7 +55,7 @@ void Loot::onEnter(Object* obj) { // we know typeof(obj) is necessarly Player*
 		auto player_weapon = player->getWeapon();
 		player->swapWeapon(_weapon);
 
-		_weapon = player_weapon;
+		setWeapon(player_weapon);
 		_lootable = false;
 
 		TimerManager::addFunction(_lootImpossibleTime, 

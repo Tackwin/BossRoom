@@ -105,9 +105,10 @@ void InputsManager::update(sf::RenderWindow &window) {
 			EventManager::fire("mousePress", { i });
 	}
 
-	mouseScreenPos.x = (float)sf::Mouse::getPosition(window).x;
-	mouseScreenPos.y = (float)sf::Mouse::getPosition(window).y;
+	mouseScreenPos = sf::Mouse::getPosition(window);
 	
-	mouseWorldPos.x = window.mapPixelToCoords({ (i32)mouseScreenPos.x, (i32)mouseScreenPos.y }).x;
-	mouseWorldPos.y = window.mapPixelToCoords({ (i32)mouseScreenPos.x, (i32)mouseScreenPos.y }).y;
+	mouseWorldPos = window.mapPixelToCoords({
+		(i32)mouseScreenPos.x,
+		(i32)mouseScreenPos.y
+	});
 }
