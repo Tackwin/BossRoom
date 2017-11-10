@@ -39,7 +39,7 @@ void Window::pushEvent(const Event& event) {
 	_events.push(event);
 }
 
-const Window::Event& Window::pullEvent() {
+Window::Event Window::pullEvent() {
 	if (_events.empty()) {
 		return { Event::Type::NONE };
 	}
@@ -52,7 +52,7 @@ void Window::error_callback(int error, const char* msg) {
 	printf("Error: %d \n\t %s", error, msg);
 }
 void Window::key_callback(
-	GLFWwindow* GLFWwindow, int key, int scancode, int action, int mods
+	GLFWwindow* GLFWwindow, int key, int, int action, int mods
 ) {
 	Window* window = (Window*)glfwGetWindowUserPointer(GLFWwindow);
 

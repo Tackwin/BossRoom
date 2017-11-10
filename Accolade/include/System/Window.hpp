@@ -37,11 +37,11 @@ public:
 	~Window();
 
 	bool isOpen() const;
-	const Event& pullEvent();
+	Event pullEvent();
 
 	static void error_callback(int error, const char* msg);
 	static void key_callback(
-		GLFWwindow* GLFWwindow, int key, int scancode, int action, int mods
+		GLFWwindow* GLFWwindow, int key, int, int action, int mods
 	);
 
 private:
