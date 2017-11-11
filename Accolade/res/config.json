@@ -135,7 +135,7 @@
 		{
 			"name": "boss 0",
 			"sprite": "phoenix",
-			"life": 300,
+			"life": 500,
 			"radius": 65,
 			"color": "FFFFFFFF",
 			"hitParticle": "particleBurstFeather",

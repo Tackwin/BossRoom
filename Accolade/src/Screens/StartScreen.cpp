@@ -57,6 +57,9 @@ void StartScreen::onEnter() {
 	initializeWorld();
 }
 void StartScreen::onExit() {
+	if (_enteredShop)
+		unActivateShop();
+
 	_player->unEquip();
 	_projectiles.clear();
 	_world.purge();

@@ -38,7 +38,7 @@ void Boss::createBosses() {
 				2.5,
 				"P2",
 				[&boss](double)mutable->bool {
-				if (boss._life < 0.66f * boss._maxLife) {
+				if (boss._life < 0.5f * boss._maxLife) {
 					Patterns::snipe(boss, Patterns::_json["snipe"]);
 					boss._sprite.pushAnim("action");
 				}
@@ -49,7 +49,7 @@ void Boss::createBosses() {
 				4, 
 				"P3", 
 				[&boss](double)mutable->bool {
-					if (boss._life < 0.33f * boss._maxLife) {
+					if (boss._life < 0.2f * boss._maxLife) {
 
 						auto randomFireInfo = Patterns::_json["randomFire"];
 						randomFireInfo["nOrbs"] = 10;

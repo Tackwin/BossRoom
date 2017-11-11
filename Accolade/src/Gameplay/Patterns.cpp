@@ -159,7 +159,6 @@ std::string Patterns::snipe(
 					dir * 
 					(boss.getRadius() + projectile["radius"].get<float>() + 1);
 
-				printf("%f\n", projectile["speed"].get<float>());
 				boss.shoot(projectile, pos, dir);
 
 				if (--nShots != 0) {
