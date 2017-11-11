@@ -4,6 +4,7 @@
 #include "Common.hpp"
 
 #include "Managers/AssetsManager.hpp"
+#include "Managers/MemoryManager.hpp"
 #include "Managers/TimerManager.hpp"
 
 #include "Gameplay/Projectile.hpp"
@@ -11,27 +12,63 @@
 #include "Gameplay/Player.hpp"
 
 void Boss::createBosses() {
-	bosses[0] = std::make_shared<Boss>(AssetsManager::getJson(JSON_KEY)["bosses"][0],
+	bosses[0] = MM::make_shared<Boss>(
+		AssetsManager::getJson(JSON_KEY)["bosses"][0],
 		[](double, Boss&) {}, //update function
-		[](Boss&) { // Init function
-			/*auto sound = sf::Sound(AssetsManager::getSound("shoot2"));
+
+		[](Boss& boss) { // Init function
+			auto sound = sf::Sound(AssetsManager::getSound("shoot2"));
 			sound.setVolume(SOUND_LEVEL);
 			boss._sounds.push_back(sound);
 
-			boss._keyPatterns.push_back(TimerManager::addFunction(3, "P1", [&boss](double)mutable->bool {
-				Patterns::directionalFire(boss, Patterns::_json["directionalFire"]);
-				boss._sprite.pushAnim("action");
-				boss._sounds[0].play();
-				return false;
-			}));
-			boss._keyPatterns.push_back(TimerManager::addFunction(4, "P2", [&boss](double)mutable->bool {
+			boss._keyPatterns.push_back(TimerManager::addFunction(
+				3, 
+				"P1", 
+				[&boss](double)mutable->bool {
+					Patterns::directionalFire(
+						boss, 
+						Patterns::_json["directionalFire"]
+					);
+					boss._sprite.pushAnim("action");
+					boss._sounds[0].play();
+					return false;
+				}
+			));
+			boss._keyPatterns.push_back(TimerManager::addFunction(
+				2.5,
+				"P2",
+				[&boss](double)mutable->bool {
 				if (boss._life < 0.66f * boss._maxLife) {
-					Patterns::barage(boss, Patterns::_json["barage"]);
+					Patterns::snipe(boss, Patterns::_json["snipe"]);
 					boss._sprite.pushAnim("action");
 				}
 				return false;
-			}));*/
+			}
+			));
+			boss._keyPatterns.push_back(TimerManager::addFunction(
+				4, 
+				"P3", 
+				[&boss](double)mutable->bool {
+					if (boss._life < 0.33f * boss._maxLife) {
+
+						auto randomFireInfo = Patterns::_json["randomFire"];
+						randomFireInfo["nOrbs"] = 10;
+						randomFireInfo["a"] = boss.getPos().angleTo(
+							game->_player->getPos()
+						);
+						randomFireInfo["dtA"] = PIf / 1.5f;
+
+						Patterns::randomFire(
+							boss, 
+							randomFireInfo
+						);
+						boss._sprite.pushAnim("action");
+					}
+					return false;
+				}
+			));
 		},
+
 		[](Boss& boss) { // UnInit function
 			for (auto& k : boss._keyPatterns) {
 				TimerManager::removeFunction(k);
@@ -40,7 +77,8 @@ void Boss::createBosses() {
 		}
 	);
 
-	bosses[1] = std::make_shared<Boss>(AssetsManager::getJson(JSON_KEY)["bosses"][1],
+	bosses[1] = MM::make_shared<Boss>(
+		AssetsManager::getJson(JSON_KEY)["bosses"][1],
 		[](double, Boss&) {},
 		[](Boss& boss) { // Init function
 		boss._keyPatterns.push_back(TimerManager::addFunction(6, "P1", [&boss](double)mutable->bool {
@@ -48,11 +86,14 @@ void Boss::createBosses() {
 			return false;
 		}));
 		boss._keyPatterns.push_back(TimerManager::addFunction(3.5, "P2", [&boss](double)mutable->bool {
-			if (boss._life < 0.66f * boss._maxLife) Patterns::snipe(boss, Patterns::_json["snipe"]);
+			if (boss._life < 0.66f * boss._maxLife) {
+				Patterns::snipe(boss, Patterns::_json["snipe"]);
+			}
 			return false;
 		}));
 		boss._keyPatterns.push_back(TimerManager::addFunction(5, "P3", [&boss](double)mutable->bool {
-			if (boss._life < 0.33f * boss._maxLife) Patterns::barage(boss, Patterns::_json["barage"]);
+			if (boss._life < 0.33f * boss._maxLife) 
+				Patterns::barage(boss, Patterns::_json["barage"]);
 			return false;
 		}));
 	},

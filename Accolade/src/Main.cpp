@@ -5,6 +5,7 @@
 #include <GLFW/glfw3.h>
 
 #include <functional>
+#include <queue>
 
 #include "Managers/MemoryManager.hpp"
 #include "Managers/AssetsManager.hpp"
@@ -50,17 +51,26 @@ bool render(sf::RenderWindow& window) {
 }
 
 int main(int, char**) {
-	if (!glfwInit()) {
+	struct A {
+		int v = 0;
+		bool operator<(const A& a) {
+			return v < a.v;
+		}
+	};
+
+	std::priority_queue<A, std::vector<A>, A>();
+
+	/*if (!glfwInit()) {
 		printf("couldn't init glfw");
 		assert(true);
-	}
+	}*/
 
 	//let's try to fit our game into 16MiB
 	MemoryManager::I().initialize_buffer(1024 * 1024 * 16);
 	loadRessources();
 	startGame();
 
-	glfwTerminate();
+	//glfwTerminate();
 	return 0;
 }
 

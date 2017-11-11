@@ -204,6 +204,6 @@ float Boss::getLife() const {
 float Boss::getMaxLife() const {
 	return _maxLife;
 }
-const Level* Boss::getLevel() const {
+Level* Boss::getLevel() const {
 	return _level;
 }

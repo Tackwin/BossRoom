@@ -33,7 +33,7 @@ namespace C {
 
 	constexpr float G = 2'500.f;
 
-	constexpr float SOUND_LEVEL = 0.05f;
+	constexpr float SOUND_LEVEL = 0.2f;
 
 	constexpr double PId = 3.1415926535897923846;
 	constexpr float PIf = 3.1415926f;

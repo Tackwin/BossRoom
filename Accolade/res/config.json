@@ -117,6 +117,9 @@
     },
     "slash": {
       "sheet": "images/slash.png"
+    },
+    "boulefeu": {
+      "sheet": "images/boulefeu.png"
     }
 	},
 	"sounds": {
@@ -132,7 +135,7 @@
 		{
 			"name": "boss 0",
 			"sprite": "phoenix",
-			"life": 10,
+			"life": 300,
 			"radius": 65,
 			"color": "FFFFFFFF",
 			"hitParticle": "particleBurstFeather",
@@ -228,73 +231,73 @@
 			"a": 0,
 			"dtA": 6.28318530718,
 
-			"projectile": {
-				"damage": 1,
-				"speed": 300,
-				"radius": 5,
-				"lifespan": 5.5,
-				"destroyOthers": false,
+      "projectile": {
+        "damage": 1,
+        "speed": 300,
+        "radius": 10,
+        "lifespan": 7.5,
+        "destroyOthers": false,
 
-				"sprite": "projectiles-2"
-			}
+        "sprite": "boulefeu"
+      }
 		},
 		"directionalFire": {
-			"fireRate": 30,
+			"fireRate": 5,
 			"time": 0.7,
 
-			"projectile": {
-				"damage": 1,
-				"speed": 700,
-				"radius": 5,
-				"lifespan": 5,
-				"destroyOthers": false,
+      "projectile": {
+        "damage": 1,
+        "speed": 700,
+        "radius": 10,
+        "lifespan": 5,
+        "destroyOthers": false,
 
-				"sprite": "projectiles-2"
-			}
+        "sprite": "boulefeu"
+      }
 		},
 		"barage": {
 			"nOrbs": 18,
 			"nWaves": 1,
 			"iTime": 0,
 
-			"projectile": {
-				"damage": 1,
-				"speed": 300,
-				"radius": 5,
-				"lifespan": 4,
-				"destroyOthers": false,
+      "projectile": {
+        "damage": 1,
+        "speed": 300,
+        "radius": 5,
+        "lifespan": 4,
+        "destroyOthers": false,
 
-				"sprite": "projectiles-2"
-			}
+        "sprite": "boulefeu"
+      }
 		},
 		"snipe": {
 			"nShots": 1,
 			"aimTime": 1,
 			"iTime": 0.1,
 
-			"projectile": {
-				"damage": 1,
-				"speed": 1500,
-				"radius": 7,
-				"lifespan": 2,
-				"destroyOthers": false,
+      "projectile": {
+        "damage": 1,
+        "speed": 1500,
+        "radius": 7,
+        "lifespan": 2,
+        "destroyOthers": false,
 
-				"sprite": "projectiles-2"
-			}
+        "sprite": "boulefeu"
+      }
 
 		},
 		"broyeur": {
 			"nOrbs": 20,
 
-			"projectile": {
-				"damage": 1,
-				"speed": 300,
-				"radius": 5,
-				"lifespan": 3,
-				"destroyOthers": false,
+      "projectile": {
+        "damage": 1,
+        "speed": 300,
+        "radius": 5,
+        "lifespan": 3,
+        "destroyOthers": false,
 
-				"sprite": "projectiles-2"
-			}
+        "sprite": "boulefeu"
+      }
 		},
 		"cerclique": {
 			"radius": 150,
@@ -304,15 +307,15 @@
 			"nOrbs": 3,
 			"iTime": 0.75,
 
-			"projectile": {
-				"damage": 1,
-				"speed": 200,
-				"radius": 5,
-				"lifespan": 30,
-				"destroyOthers": false,
+      "projectile": {
+        "damage": 1,
+        "speed": 200,
+        "radius": 5,
+        "lifespan": 30,
+        "destroyOthers": false,
 
-				"sprite": "projectiles-2"
-			}
+        "sprite": "boulefeu"
+      }
 		},
 		"rapprochement": {
 			"nOrbs": 4,
@@ -320,44 +323,44 @@
 			"inSpawnRadius": 300,
 			"outSpawnRadius": 350,
 
-			"projectile": {
-				"damage": 1,
-				"speed": 400,
-				"radius": 5,
-				"lifespan": 7,
-				"destroyOthers": false,
+      "projectile": {
+        "damage": 1,
+        "speed": 400,
+        "radius": 5,
+        "lifespan": 7,
+        "destroyOthers": false,
 
-				"sprites": "projectiles-2"
-			}
+        "sprites": "boulefeu"
+      }
 		},
 		"boomerang": {
 			"nBooms": 2,
 			"waitTime": 0.5,
 			"overShoot": 300,
 
-			"projectile": {
-				"damage": 1,
-				"speed": 800,
-				"radius": 5,
-				"lifespan": 5,
-				"destroyOthers": false,
+      "projectile": {
+        "damage": 1,
+        "speed": 800,
+        "radius": 5,
+        "lifespan": 5,
+        "destroyOthers": false,
 
-				"sprite": "projectiles-2"
-			}
+        "sprite": "boulefeu"
+      }
 		},
 		"entonnoir": {
 			"nOrbs": 20,
 			"x": 0.1,
 
-			"projectile": {
-				"damage": 1,
-				"speed": 400,
-				"radius": 5,
-				"lifespan": 4,
-				"destroyOthers": false,
+      "projectile": {
+        "damage": 1,
+        "speed": 400,
+        "radius": 5,
+        "lifespan": 4,
+        "destroyOthers": false,
 
-				"sprite": "projectiles-2"
-			}
+        "sprite": "boulefeu"
+      }
 		},
 		"blastCosmopolitain": {
 			"nBlasts": 3,
@@ -366,15 +369,15 @@
 			"iTime": 0.2,
 			"waitTime": 1.5,
 
-			"projectile": {
-				"damage": 1,
-				"speed": 500,
-				"radius": 5,
-				"lifespan": 3,
-				"destroyOthers": false,
+      "projectile": {
+        "damage": 1,
+        "speed": 500,
+        "radius": 5,
+        "lifespan": 3,
+        "destroyOthers": false,
 
-				"sprite": "projectiles-2"
-			}
+        "sprite": "boulefeu"
+      }
 		}
 	},
 	"weapons": [
@@ -390,7 +393,7 @@
 				"damage": 1,
 				"speed": 700,
 				"radius": 7,
-				"lifespan": 1,
+				"lifespan": 5,
 				"destroyOthers": false,
 				"sprite": "projectiles-1"
 			}
@@ -407,7 +410,7 @@
 				"damage": 1,
 				"speed": 700,
 				"radius": 5,
-				"lifespan": 3,
+				"lifespan": 5,
 				"destroyOthers": false,
 				"sprite": "projectiles-1"
 			}
@@ -425,7 +428,7 @@
 				"damage": 1,
 				"speed": 700,
 				"radius": 5,
-				"lifespan": 3,
+				"lifespan": 5,
 				"destroyOthers": false,
 				"sprite": "projectiles-1"
 			}
@@ -438,7 +441,7 @@
 			},
       "radius": 35,
       "offsetX": 40,
-			"damage": 7,
+			"damage": 25,
 			"remainTime": 0.1,
 			"collider": {
 				"type": "disk",

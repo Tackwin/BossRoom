@@ -1,5 +1,6 @@
 #pragma once
 #include <unordered_map>
+#include <memory>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
@@ -42,3 +43,4 @@ private:
 	static std::unordered_map<std::string, sf::Font> _fonts;
 };
 
+using AM = AssetsManager;

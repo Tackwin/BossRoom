@@ -1,5 +1,5 @@
 #include "System/Window.hpp"
-
+/*
 #include <functional>
 
 Window::Window() :
@@ -75,3 +75,4 @@ void Window::key_callback(
 
 	window->pushEvent(e);
 }
+*/

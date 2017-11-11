@@ -9,6 +9,8 @@
 
 #include "Gameplay/Level.hpp"
 #include "Gameplay/Projectile.hpp"
+#include "Gameplay/Player.hpp"
+#include "Game.hpp"
 
 auto Patterns::getValue(std::string pattern, nlohmann::json json, std::string str) {
 	return json[str].is_null() ? _json[pattern][str] : json[str];
@@ -130,31 +132,51 @@ std::string Patterns::snipe(Boss& boss, nlohmann::json json) {
 		getValue("snipe", json, "projectile")
 	);
 }
-std::string Patterns::snipe(Boss&, u32, float, float, nlohmann::json) {
-	/*auto lambda = std::shared_ptr<std::function<void()>>(new std::function<void()>);
+std::string Patterns::snipe(
+	Boss& boss, 
+	u32 nShots, 
+	float aimTime, 
+	float iTime, 
+	nlohmann::json projectile
+) {
+	auto lambda = 
+		std::shared_ptr<std::function<void()>>(new std::function<void()>);
 
-	*lambda = [&boss, aimTime, projectile, nShots, iTime, lambda]()mutable->void {
-		boss._level->startAim();
-		TimerManager::addFunction(aimTime, "delay", [&boss, projectile, nShots, iTime, lambda](auto)mutable->bool {
-			boss._level->stopAim();
+	*lambda = 
+	[&boss, aimTime, projectile, nShots, iTime, lambda]()mutable->void {
+		boss.getLevel()->startAim();
+		TimerManager::addFunction(
+			aimTime, 
+			"delay", 
+			[&boss, projectile, nShots, iTime, lambda](double)mutable->bool {
+				boss.getLevel()->stopAim();
 
-			Vector2f pos = boss.getPos();
-			Vector2f dir = Vector2f::createUnitVector((float)pos.angleTo(game->_player->getPos()));
-			pos = pos + dir * (boss._radius + projectile["radius"].get<float>() + 1);
+				Vector2f pos = boss.getPos();
+				Vector2f dir = Vector2f::createUnitVector(
+					(float)pos.angleTo(game->_player->getPos())
+				);
+				pos = pos + 
+					dir * 
+					(boss.getRadius() + projectile["radius"].get<float>() + 1);
 
-			boss.shoot(projectile, pos, dir);
+				printf("%f\n", projectile["speed"].get<float>());
+				boss.shoot(projectile, pos, dir);
 
-			if (--nShots != 0) {
-				TimerManager::addFunction(iTime, "snipe", [lambda](auto)mutable->bool {
-					(*lambda)();
-					return true;
-				});
+				if (--nShots != 0) {
+					TimerManager::addFunction(
+						iTime, 
+						"snipe", 
+						[lambda](double)mutable->bool {
+							(*lambda)();
+							return true;
+						}
+					);
+				}
+				return true;
 			}
-			return true;
-		});
+		);
 	};
 	(*lambda)();
-	*/
 	return "nil";
 }
 /*

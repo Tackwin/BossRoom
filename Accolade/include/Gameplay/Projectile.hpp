@@ -18,8 +18,12 @@ public:
 	Projectile(nlohmann::json json, Vector2f pos, Vector2f dir, bool player);
 	Projectile(nlohmann::json json, Vector2f pos, Vector2f dir, bool player, 
 			   std::function<void(Projectile&, double)> update);
+	Projectile(const Projectile& other) = delete;
+	Projectile(const Projectile&& other) = delete;
 	~Projectile();
 
+	Projectile& operator=(const Projectile& other) = delete;
+	Projectile& operator=(const Projectile&& other) = delete;
 
 	Vector2f getPos() const;
 	void setPos(const Vector2f& p);

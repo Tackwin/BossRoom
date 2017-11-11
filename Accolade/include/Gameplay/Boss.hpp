@@ -47,7 +47,7 @@ public:
 	float getLife() const;
 	float getMaxLife() const;
 
-	const Level* getLevel() const;
+	Level* getLevel() const;
 
 	const std::vector<std::shared_ptr<Projectile>>& getProtectilesToShoot() const;
 	void clearProtectilesToShoot();

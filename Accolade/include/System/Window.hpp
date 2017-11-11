@@ -6,7 +6,7 @@
 
 #include "Common.hpp"
 
-
+/*
 class Window {
 public:
 
@@ -54,4 +54,4 @@ private:
 	GLFWwindow* _window = nullptr;
 
 	std::stack<Event> _events;
-};
+};*/

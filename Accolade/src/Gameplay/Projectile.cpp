@@ -40,18 +40,23 @@ Projectile::Projectile(nlohmann::json json,
 	std::uniform_int_distribution<i32> dist(0, 2);
 
 	_sprite = sf::Sprite(AssetsManager::getTexture(json["sprite"]));
-	const i32 whole = _sprite.getTextureRect().width / 3;
-	_sprite.setTextureRect({
-		dist(RD) * whole	, dist(RD) * whole, 
-		whole				,	whole
-	});
-	_sprite.setOrigin(_radius, _radius); // i don't know why it's off, maybe because i do shit with texture rect just above...
+	const auto& rect = _sprite.getTextureRect();
+	_sprite.setOrigin(Vector2f((float)rect.width, (float)rect.height) / 2.f); 
+	_sprite.setScale(
+		3.f * _radius / rect.width,
+		3.f * _radius / rect.height
+	);
+	_sprite.setRotation((float)(180.0 * _dir.angleX() / PId));
 	_sprite.setPosition(pos);
 
-	_key = TimerManager::addFunction(_lifespan, "destroy", [&](double)->bool {
-		_remove = true;
-		return true;
-	});
+	_key = TimerManager::addFunction(
+		_lifespan, 
+		"destroy", 
+		[&](double) mutable ->bool {
+			//_remove = true;
+			return true;
+		}
+	);
 }
 Projectile::Projectile(nlohmann::json json, Vector2f pos, Vector2f dir, 
 	bool player, std::function<void(Projectile&, double)> update) :
@@ -59,7 +64,28 @@ Projectile::Projectile(nlohmann::json json, Vector2f pos, Vector2f dir,
 	Projectile(json, pos, dir, player)
 {
 	_update = update;
-}
+}/*
+
+Projectile::Projectile(const Projectile& other) :
+	Projectile(
+		other._json,
+		other.getPos(),
+		other.getDir(),
+		other.isFromPlayer(),
+		other._update
+	)
+{}
+
+Projectile::Projectile(const Projectile&& other) :
+	Projectile(
+		other._json,
+		other.getPos(),
+		other.getDir(),
+		other.isFromPlayer(),
+		other._update
+	)
+{}
+*/
 
 Projectile::~Projectile() {
 	if (TimerManager::functionsExist(_key))
@@ -68,6 +94,10 @@ Projectile::~Projectile() {
 
 void Projectile::update(double dt) {
 	_update(*this, dt);
+	_lifespan -= (float)dt;
+	if (_lifespan < 0.f) {
+		_remove = true;
+	}
 }
 
 void Projectile::render(sf::RenderTarget &target) {
