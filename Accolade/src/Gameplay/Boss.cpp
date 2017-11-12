@@ -146,6 +146,12 @@ void Boss::addProjectile(const std::shared_ptr<Projectile>& projectile) {
 		_projectilesToShoot.push_back(projectile);//TODO: debug why the callbacks doesn't delete when the boss die
 }
 
+void Boss::shoot(const std::shared_ptr<Projectile>& projectile) {
+	if (_level && _life > 0) {
+		_projectilesToShoot.push_back(projectile);
+	}
+}
+
 void Boss::shoot(const nlohmann::json& json,
 	const Vector2f& pos_, const Vector2f& dir) 
 {
@@ -163,7 +169,8 @@ Vector2f Boss::getPos() const {
 	return pos;
 }
 
-const std::vector<std::shared_ptr<Projectile>>& Boss::getProtectilesToShoot() const {
+const std::vector<std::shared_ptr<Projectile>>& 
+	Boss::getProtectilesToShoot() const {
 	return _projectilesToShoot;
 }
 void Boss::clearProtectilesToShoot() {

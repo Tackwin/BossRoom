@@ -18,12 +18,6 @@ public:
 	Projectile(nlohmann::json json, Vector2f pos, Vector2f dir, bool player);
 	Projectile(nlohmann::json json, Vector2f pos, Vector2f dir, bool player, 
 			   std::function<void(Projectile&, double)> update);
-	Projectile(const Projectile& other) = delete;
-	Projectile(const Projectile&& other) = delete;
-	~Projectile();
-
-	Projectile& operator=(const Projectile& other) = delete;
-	Projectile& operator=(const Projectile&& other) = delete;
 
 	Vector2f getPos() const;
 	void setPos(const Vector2f& p);
@@ -34,6 +28,8 @@ public:
 	bool toRemove() const;
 	void remove();
 
+	bool toExplode();
+
 	float getDamage() const;
 
 	bool isFromPlayer() const;
@@ -43,11 +39,9 @@ public:
 
 	void changeLifespan(float lifeSpan);
 
-	bool toRemove();
+	const nlohmann::json& getJson() const;
 private:
 	nlohmann::json _json;
-
-	std::string _key;
 
 	Vector2f _dir;
 
@@ -62,6 +56,7 @@ private:
 
 	bool _player;
 	bool _remove = false;
+	bool _exploded = false;
 	bool _damageable = true;
 	bool _destroyOthers = false;
 

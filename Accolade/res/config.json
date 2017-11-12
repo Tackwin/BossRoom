@@ -120,6 +120,9 @@
     },
     "boulefeu": {
       "sheet": "images/boulefeu.png"
+    },
+    "white_disk": {
+      "sheet": "images/white_disk.png"
     }
 	},
 	"sounds": {
@@ -238,7 +241,14 @@
         "lifespan": 7.5,
         "destroyOthers": false,
 
-        "sprite": "boulefeu"
+        "sprite": "boulefeu",
+
+        "explosion": {
+          "radius": 20,
+          "damage": 1,
+          "force": 100,
+          "time": 0.1
+        }
       }
 		},
 		"directionalFire": {
@@ -252,7 +262,14 @@
         "lifespan": 5,
         "destroyOthers": false,
 
-        "sprite": "boulefeu"
+        "sprite": "boulefeu",
+
+        "explosion": {
+          "radius": 50,
+          "damage": 1,
+          "force": 300,
+          "time": 0.1
+        }
       }
 		},
 		"barage": {
@@ -277,7 +294,7 @@
 
       "projectile": {
         "damage": 1,
-        "speed": 1500,
+        "speed": 2000,
         "radius": 7,
         "lifespan": 2,
         "destroyOthers": false,

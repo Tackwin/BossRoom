@@ -190,8 +190,6 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 				std::shared_ptr<Player> player = me.getPlayer();
 				std::shared_ptr<Zone> zone = MM::make_shared<Zone>(r);
 
-				printf("%f\n", r);
-
 				zone->pos = 
 					player->getPos() + 
 					Vector2f(

@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <memory>
 #include <functional>
 #include <unordered_map>
 
@@ -7,14 +8,18 @@
 
 #include "Physics/Object.hpp"
 
+class Projectile;
 class Zone : public Object {
 public:
+	static std::shared_ptr<Zone> buildExplosion(
+		const std::shared_ptr<Projectile>& p
+	);
+
 	using Callback = std::function<void(Object*)>;
 
 	Callback entered = [](Object*) {};
 	Callback exited = [](Object*) {};
 	Callback inside = [](Object*) {};
-
 
 	Zone(float r = 0.f);
 	Zone(const Zone& other);

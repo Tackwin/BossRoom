@@ -28,6 +28,11 @@ Projectile::Projectile(nlohmann::json json,
 	this->pos = pos;
 
 	collider = &_disk;
+	collider->onEnter = [&](Object* obj) {
+		if (obj->idMask[(size_t)Object::BIT_TAGS::FLOOR]) {
+			_exploded = true;
+		}
+	};
 	_disk.userPtr = this;
 	_disk.r = _radius;
 
@@ -48,15 +53,6 @@ Projectile::Projectile(nlohmann::json json,
 	);
 	_sprite.setRotation((float)(180.0 * _dir.angleX() / PId));
 	_sprite.setPosition(pos);
-
-	_key = TimerManager::addFunction(
-		_lifespan, 
-		"destroy", 
-		[&](double) mutable ->bool {
-			//_remove = true;
-			return true;
-		}
-	);
 }
 Projectile::Projectile(nlohmann::json json, Vector2f pos, Vector2f dir, 
 	bool player, std::function<void(Projectile&, double)> update) :
@@ -64,32 +60,6 @@ Projectile::Projectile(nlohmann::json json, Vector2f pos, Vector2f dir,
 	Projectile(json, pos, dir, player)
 {
 	_update = update;
-}/*
-
-Projectile::Projectile(const Projectile& other) :
-	Projectile(
-		other._json,
-		other.getPos(),
-		other.getDir(),
-		other.isFromPlayer(),
-		other._update
-	)
-{}
-
-Projectile::Projectile(const Projectile&& other) :
-	Projectile(
-		other._json,
-		other.getPos(),
-		other.getDir(),
-		other.isFromPlayer(),
-		other._update
-	)
-{}
-*/
-
-Projectile::~Projectile() {
-	if (TimerManager::functionsExist(_key))
-		TimerManager::removeFunction(_key);
 }
 
 void Projectile::update(double dt) {
@@ -108,8 +78,8 @@ void Projectile::render(sf::RenderTarget &target) {
 void Projectile::changeLifespan(float) {
 }
 
-bool Projectile::toRemove() {
-	return _remove;
+bool Projectile::toExplode() {
+	return _exploded;
 }
 
 Vector2f Projectile::getPos() const {
@@ -139,4 +109,8 @@ float Projectile::getDamage() const {
 }
 bool Projectile::isFromPlayer() const {
 	return _player;
+}
+
+const nlohmann::json& Projectile::getJson() const {
+	return _json;
 }

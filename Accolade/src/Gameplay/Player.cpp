@@ -89,7 +89,7 @@ void Player::exitLevel() {
 	_level = nullptr;
 }
 
-void Player::update(double) {
+void Player::update(double dt) {
 	bool tryingToShoot = 
 		InputsManager::isMousePressed(_AK) && 
 		_focus;
@@ -115,6 +115,8 @@ void Player::update(double) {
 		flatForces.push_back({ 0, G });
 		flatVelocities.push_back(_dir);
 	}
+
+	velocity *= (float)std::pow(0.2, dt);
 
 	const auto& projectileBuffer = _weapon->getProjectileBuffer();
 	_projectilesToShoot.insert(
@@ -289,4 +291,8 @@ const std::vector<std::shared_ptr<Zone>>& Player::getZonesToApply() const {
 }
 void Player::clearZonesToApply() {
 	_zonesToApply.clear();
+}
+
+void Player::applyVelocity(Vector2f v) {
+	velocity += v;
 }

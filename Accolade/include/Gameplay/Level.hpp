@@ -36,6 +36,13 @@ public:
 	void startAim();
 	void stopAim();
 
+	void addProjectile(const std::shared_ptr<Projectile>& p);
+	void delProjectile(const std::shared_ptr<Projectile>& p);
+	void delProjectile(u32 i);
+	void addZone(const std::shared_ptr<Zone>& z);
+	void delZone(const std::shared_ptr<Zone>& z);
+	void delZone(u32 i);
+
 	void createLoots();
 
 	static std::vector<std::shared_ptr<Level>> levels;
@@ -65,7 +72,7 @@ private: // TODO: Make this private
 	LevelScreen* _screen = nullptr; //How the fuck i'm supposed to make LevelScreen pass this as a shared_ptr
 									//(std::enable_shared_from_this has his probleme) anyway, i DON'T have the ownership
 
-	std::vector<Zone> _zones = {};
+	std::vector<std::shared_ptr<Zone>> _zones = {};
 	Disk _entranceToNext;
 	
 	sf::Sprite _aimSprite;

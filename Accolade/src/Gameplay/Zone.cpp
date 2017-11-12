@@ -1,4 +1,52 @@
-#include <Gameplay/Zone.hpp>
+#include "Gameplay/Zone.hpp"
+
+#include "Managers/TimerManager.hpp"
+#include "Managers/MemoryManager.hpp"
+#include "Managers/AssetsManager.hpp"
+
+#include "Common.hpp"
+
+#include "Gameplay/Projectile.hpp"
+#include "Gameplay/Player.hpp"
+
+std::shared_ptr<Zone> Zone::buildExplosion(
+	const std::shared_ptr<Projectile>& p
+) {
+	if (p->getJson().find("explosion") == p->getJson().cend()) {
+		return std::shared_ptr<Zone>();
+	}
+	auto json = p->getJson()["explosion"];
+
+	auto z = MM::make_shared<Zone>(
+		getJsonValue<float>(json, "radius")
+	);
+
+	float d = getJsonValue<float>(json, "damage");
+	float f = getJsonValue<float>(json, "force");
+
+	z->pos = p->pos;
+	TimerManager::addFunction(
+		getJsonValue<float>(json, "time"),
+		[z](double) -> bool {
+			z->setRemove();
+			return false;
+		}
+	);
+	z->collisionMask.set((size_t)Object::BIT_TAGS::PLAYER);
+	z->collider->onEnter = [d, f, z](Object* obj) {
+		if (!obj->idMask[(size_t)Object::BIT_TAGS::PLAYER]) return;
+
+		Player* p = static_cast<Player*>(obj);
+		auto vec = Vector2f::createUnitVector(z->pos.angleTo(p->pos)) * f;
+		vec.y = -sqrtf(G * 2.f * -vec.y) / 1.5f;
+
+		p->hit(d);
+		p->applyVelocity(vec);
+	};
+
+	z->addSprite("white", sf::Sprite(AM::getTexture("white_disk")));
+	return z;
+}
 
 Zone::Zone(float r) : 
 	Object(),

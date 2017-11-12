@@ -37,7 +37,12 @@ public:
 	void hit(float damage);
 	void hit(u32 damage);
 	void addProjectile(const std::shared_ptr<Projectile>& projectile);
-	void shoot(const nlohmann::json& json, const Vector2f& pos, const Vector2f& dir);
+	void shoot(const std::shared_ptr<Projectile>& projectile);
+	void shoot(
+		const nlohmann::json& json, 
+		const Vector2f& pos, 
+		const Vector2f& dir
+	);
 
 	Vector2f getDirToFire() const;
 	Vector2f getPos() const;

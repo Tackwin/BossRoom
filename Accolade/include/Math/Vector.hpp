@@ -69,9 +69,9 @@ struct Vector : public __vec_member<D, T> {
 		result[0] = cosf(angles[0]);
 		for (size_t i = 1u; i < D; ++i) {
 
-			result[i] = (i + 1u != D) ? 
-							cosf(angles[i]) : 
-							1;
+			result[i] = (i + 1u != D) ?
+				cosf(angles[i]) :
+				1;
 
 			for (size_t j = 0u; j < D - 1u) {
 				result[i] *= sinf(angles[j]);
@@ -81,6 +81,27 @@ struct Vector : public __vec_member<D, T> {
 	}
 	static Vector<2, T> createUnitVector(float angles) { // i'm not doing all the shit above for 2d
 		return { cosf(angles), sinf(angles) };
+	}
+	static Vector<D, T> createUnitVector(double angles[D]) {
+		Vector<D, T> result;
+		result[0] = static_cast<T>(cos(angles[0]));
+		for (size_t i = 1u; i < D; ++i) {
+
+			result[i] = (i + 1u != D) ?
+				static_cast<T>(cos(angles[i])) :
+				1;
+
+			for (size_t j = 0u; j < D - 1u) {
+				result[i] *= static_cast<T>(sin(angles[j]));
+			}
+		}
+		return result;
+	}
+	static Vector<2, T> createUnitVector(double angles) { // i'm not doing all the shit above for 2d
+		return { 
+			static_cast<T>(cos(angles)),
+			static_cast<T>(sin(angles))
+		};
 	}
 	template<typename V>
 	static bool equal(const V& A, const V& B, float eps = FLT_EPSILON) {

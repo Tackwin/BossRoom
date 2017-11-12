@@ -72,6 +72,8 @@ public:
 	bool getFocus() const;
 
 	void unEquip();
+
+	void applyVelocity(Vector2f v);
 public: //TODO: Make private
 
 	void keyPressed(sf::Keyboard::Key key);
