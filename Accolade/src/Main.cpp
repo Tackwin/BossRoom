@@ -15,8 +15,8 @@
 
 #include "Game.hpp"
 #include "Gameplay/Patterns.hpp"
-
 #include "System/Window.hpp"
+
 
 std::default_random_engine C::RD(SEED);
 std::uniform_real_distribution<float> C::unitaryRng(0.f, 1.f - FLT_EPSILON);
@@ -34,6 +34,7 @@ bool update(sf::RenderWindow& window, double dt) {
 	C::game->update((float)(dt > MIN_MS ? dt : MIN_MS));
 	return false;
 }
+
 bool render(sf::RenderWindow& window) {
 	static u64 i = 0;
 	Clock c;
@@ -51,14 +52,6 @@ bool render(sf::RenderWindow& window) {
 }
 
 int main(int, char**) {
-	struct A {
-		int v = 0;
-		bool operator<(const A& a) {
-			return v < a.v;
-		}
-	};
-
-	std::priority_queue<A, std::vector<A>, A>();
 
 	/*if (!glfwInit()) {
 		printf("couldn't init glfw");

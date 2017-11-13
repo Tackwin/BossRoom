@@ -121,13 +121,12 @@ struct Vector : public __vec_member<D, T> {
 		}
 	}
 	
-	template<size_t Dp = D, typename U>
-	Vector(const sf::Vector2<U>& vec, typename std::enable_if_t<Dp == 2, T>* = nullptr) :
+	template<typename U>
+	Vector(const sf::Vector2<U>& vec, std::enable_if_t<D == 2, T>* = nullptr) :
 		__vec_member<2, T>(static_cast<T>(vec.x), static_cast<T>(vec.y))
 	{}
 
-	template<size_t Dp = D>
-	Vector(T x = 0, T y = 0, typename std::enable_if_t<Dp == 2, T>* = nullptr) :
+	Vector(T x, T y, std::enable_if_t<D == 2, T>* = nullptr) :
 		__vec_member<2, T>(x, y)
 	{}
 
@@ -179,12 +178,11 @@ struct Vector : public __vec_member<D, T> {
 		return result;
 	}
 
-	template<size_t Dp = D>
 	std::enable_if_t<D == 2, double> angleX() const {
 		return std::atan2(y, x);
 	}
 
-	template<typename U, size_t Dp = D>
+	template<typename U>
 	std::enable_if_t<D == 2, double> angleTo(const Vector<2U, U>& other) const {
 		return std::atan2(other.y - y, other.x - x);
 	}

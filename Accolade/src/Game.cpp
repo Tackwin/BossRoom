@@ -53,9 +53,9 @@ void Game::updateDebugText(double dt) {
 	avgMs += dt;
 	if (++avgN > avgRange) {
 		u32 fps = (u32)(avgRange / (avgMs == .0f ? 1 : avgMs));
-		u32 µs = (u32)(1000'000 * avgMs / avgRange); // :)
+		u32 Âµs = (u32)(1000'000 * avgMs / avgRange); // :)
 		_debugText["ups"].setString(
-			"Fps: " + std::to_string(fps) + "\tµs: " + std::to_string(µs)
+			"Fps: " + std::to_string(fps) + "\tÂµs: " + std::to_string(Âµs)
 		);
 
 		avgN = 0;

@@ -247,7 +247,7 @@
           "radius": 20,
           "damage": 1,
           "force": 100,
-          "time": 0.1
+          "time": 0.05
         }
       }
 		},
@@ -265,10 +265,10 @@
         "sprite": "boulefeu",
 
         "explosion": {
-          "radius": 50,
+          "radius": 35,
           "damage": 1,
           "force": 300,
-          "time": 0.1
+          "time": 0.05
         }
       }
 		},
@@ -399,16 +399,16 @@
 	},
 	"weapons": [
 		{
-			"cooldowns": [ 0.15 ],
-			"radius": 10,
+			"cooldowns": [ 0.45 ],
+			"radius": 30,
 			"sprite": "weapon0",
 			"sounds": {
 				"active": [ "shoot" ]
 			},
 
 			"projectile": {
-				"damage": 1,
-				"speed": 700,
+				"damage": 7,
+				"speed": 600,
 				"radius": 7,
 				"lifespan": 5,
 				"destroyOthers": false,
@@ -417,14 +417,14 @@
 		},
 		{
 			"cooldowns": [ 0.1 ],
-			"radius": 10,
+			"radius": 30,
 			"sprite": "weapon1",
 			"sounds": {
 				"active": [ "shoot" ]
 			},
 
 			"projectile": {
-				"damage": 1,
+				"damage": 2,
 				"speed": 700,
 				"radius": 5,
 				"lifespan": 5,
@@ -433,7 +433,7 @@
 			}
 		},
 		{
-			"cooldowns": [ 0.2 ],
+			"cooldowns": [ 0.5 ],
 			"spray": 0.0628318530718,
 			"radius": 10,
 			"sprite": "weapon2",
@@ -442,7 +442,7 @@
 			},
 
 			"projectile": {
-				"damage": 1,
+				"damage": 3,
 				"speed": 700,
 				"radius": 5,
 				"lifespan": 5,
@@ -456,9 +456,9 @@
 			"sounds": {
 				"active": [ "shoot" ]
 			},
-      "radius": 35,
+      "radius": 50,
       "offsetX": 40,
-			"damage": 25,
+			"damage": 40,
 			"remainTime": 0.1,
 			"collider": {
 				"type": "disk",

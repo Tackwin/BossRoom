@@ -57,7 +57,6 @@ struct Disk : Collider {
 
 	virtual void render(sf::RenderTarget& target) override;
 };
-
 struct Box : Collider {
 	Vector2f size;
 
