@@ -53,6 +53,8 @@ public:
 
 	Vector2f getPlayerPos() const;
 
+	bool lost() const;
+
 private: // TODO: Make this private
 	void removeNeeded();
 

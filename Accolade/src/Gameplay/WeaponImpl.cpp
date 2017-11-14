@@ -46,11 +46,16 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 				me._player->shoot();
 				//TimerManager::resumeFunction(me._keys[0]);
 
-				Vector2f dir = (InputsManager::getMouseWorldPos() - me._player->getPos()).normalize();
+				Vector2f dir = 
+					(InputsManager::getMouseWorldPos() - me._player->getPos())
+					.normalize();
 			
 				float a = (float)dir.angleX();
 				a += static_cast<float>((evenShot ? -1 : 1) * PIf / 6);
-				Vector2f pos = me._player->getPos() + Vector2f(cos(a), sin(a)) * (me._player->_radius + 5);
+				Vector2f pos = 
+					me._player->getPos() + 
+					Vector2f(cos(a), sin(a)) * 
+					(me._player->getPlayerInfo().radius + 5);
 
 				evenShot = !evenShot;
 
@@ -92,16 +97,28 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 				me._flags.reset(0);
 				TimerManager::resumeFunction(me._keys[0]);
 
-				Vector2f dir = (InputsManager::getMouseWorldPos() - me._player->getPos()).normalize();
+				Vector2f dir = 
+					(InputsManager::getMouseWorldPos() - me._player->getPos())
+					.normalize();
 			
 				float a = (float)dir.angleX();
 				a += static_cast<float>((evenShot ? -1 : 1) * PIf / 6);
-				Vector2f pos = me._player->getPos() + Vector2f(cos(a), sin(a)) * (me._player->_radius + 5);
+				Vector2f pos = 
+					me._player->getPos() +
+					Vector2f(cos(a), sin(a)) * 
+					(me._player->getPlayerInfo().radius + 5);
 
 				evenShot = !evenShot;
 				
 				me._activeSounds[0].play();
-				me._player->addProjectile(MM::make_shared<Projectile>(me._json["projectile"], pos, dir, true));
+				me._player->addProjectile(
+					MM::make_shared<Projectile>(
+						me._json["projectile"], 
+						pos, 
+						dir, 
+						true
+					)
+				);
 			}
 		};
 		

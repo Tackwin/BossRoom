@@ -13,7 +13,7 @@
 #include "Gameplay/Projectile.hpp"
 #include "Gameplay/Weapon.hpp"
 #include "Gameplay/Player.hpp"
-#include "Gameplay/Level.hpp" 
+#include "Gameplay/Level.hpp"
 
 LevelScreen::LevelScreen(u32 n) :
 	_n(n),
@@ -31,7 +31,7 @@ LevelScreen::LevelScreen(u32 n) :
 		_bossHealthTileSprite.getTextureRect().height * 0.5f
 	);
 	_bossHealthTileSprite.setScale(
-		bossHealthTileSize / _bossHealthTileSprite.getTextureRect().width, 
+		bossHealthTileSize / _bossHealthTileSprite.getTextureRect().width,
 		bossHealthTileSize / _bossHealthTileSprite.getTextureRect().height
 	);
 	_bossHealthTileSprite.setPosition(35, 35);
@@ -45,18 +45,18 @@ void LevelScreen::onEnter() {
 	
 	auto player = game->_player;
 	player->initializeJson();
-	for (int i = 0; i < player->_maxLife; i++) {
+	for (int i = 0; i < player->getPlayerInfo().maxLife; i++) {
 		_playerLife.push_back(sf::RectangleShape());
 		_playerLife[i].setOutlineColor(sf::Color(10, 10, 30));
 		_playerLife[i].setSize({ 40, 40 });
 		_playerLife[i].setOutlineThickness(2);
 		_playerLife[i].setFillColor(
-			i < player->_life 
-				? sf::Color(180, 50, 50) 
+			i < player->getLife()
+				? sf::Color(180, 50, 50)
 				: sf::Color(90, 20, 20)
 		);
 		_playerLife[i].setPosition(
-			10 + i * (_playerLife[i].getSize().x + 5), 
+			10 + i * (_playerLife[i].getSize().x + 5),
 			(C::HEIGHT - 10) - _playerLife[i].getSize().y
 		);
 	}
@@ -77,9 +77,9 @@ void LevelScreen::update(double dt) {
 
 	auto player = game->_player;
 
-	for (int i = 0; i < player->_maxLife; i++) {
+	for (int i = 0; i < player->getPlayerInfo().maxLife; i++) {
 		_playerLife[i].setFillColor(
-			i < player->_life 
+			i < player->getLife()
 				? sf::Color(180, 50, 50) 
 				: sf::Color(90, 20, 20)
 		);

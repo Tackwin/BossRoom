@@ -44,13 +44,16 @@ Player::Player(const nlohmann::json& json) :
 
 void Player::initializeJson() {
 	_life = _json["life"];
-	_maxLife = _life;
-	_speed = _json["speed"];
-	_radius = _json["radius"];
-	_dashRange = _json["dash"];
+	_info.maxLife = _life;
+	_info.speed = _json["speed"];
+	_info.radius = _json["radius"];
+	_info.dashRange = _json["dash"];
+	_info.specialSpeed= _json["specialSpeed"];
+	_info.jumpHeight = getJsonValue<float>(_json, "jumpHeight");
+	_info.invincibilityTime = _json["invincibilityTime"].get<float>();
+
 	pos.x = _json["startpos"]["x"];
 	pos.y = _json["startpos"]["y"];
-	_slowSpeed = _json["specialSpeed"];
 	_AK = _json["actionButton"];
 	_upK = _json["upKey"];
 	_leftK = _json["leftKey"];
@@ -59,9 +62,6 @@ void Player::initializeJson() {
 	_slowK = _json["slowKey"];
 	_dashK = _json["dashKey"];
 	_jumpK = _json["jumpKey"];
-	_jumpHeight = getJsonValue<float>(_json, "jumpHeight");
-
-	_invincibilityTime = _json["invincibilityTime"].get<float>();
 	
 	_sprite = AnimatedSprite(_json["sprite"]);
 	_sprite.pushAnim("idle");
@@ -72,7 +72,7 @@ void Player::initializeJson() {
 	);
 	_sprite.getSprite().setPosition(pos);
 
-	_hitBox.r = _radius;
+	_hitBox.r = _info.radius;
 }
 
 
@@ -109,8 +109,8 @@ void Player::update(double dt) {
 
 		_dir.normalize();
 		if (tryingToShoot)							_dir.x *= 0.2f;
-		if (InputsManager::isKeyPressed(_slowK))	_dir.x *= _slowSpeed;
-		else										_dir.x *= _speed;
+		if (InputsManager::isKeyPressed(_slowK))	_dir.x *= _info.specialSpeed;
+		else										_dir.x *= _info.speed;
 
 		flatForces.push_back({ 0, G });
 		flatVelocities.push_back(_dir);
@@ -235,7 +235,7 @@ void Player::jumpKeyPressed() {
 
 		_jumping = true;
 
-		velocity.y = -sqrtf(G * 2.f * _jumpHeight); // derived from equation of motion, thanks Newton
+		velocity.y = -sqrtf(G * 2.f * _info.jumpHeight); // derived from equation of motion, thanks Newton
 		_nJumpsLeft--;
 	}
 }
@@ -296,3 +296,19 @@ void Player::clearZonesToApply() {
 void Player::applyVelocity(Vector2f v) {
 	velocity += v;
 }
+
+PlayerInfo Player::getPlayerInfo() const {
+	return _info;
+}
+PlayerInfo& Player::getPlayerInfo() {
+	return _info;
+}
+
+bool Player::isAlive() const {
+	return _life > 0;
+}
+
+float Player::getLife() const {
+	return _life;
+}
+

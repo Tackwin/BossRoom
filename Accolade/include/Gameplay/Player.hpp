@@ -16,6 +16,17 @@
 #include "Graphics/AnimatedSprite.hpp"
 #include "Gameplay/Weapon.hpp"
 
+struct PlayerInfo {
+	float maxLife;
+	float speed;
+	float radius;
+	float dashRange;
+	float specialSpeed;
+	float invincibilityTime;
+	float jumpHeight;
+
+	std::string name;
+};
 
 class Zone;
 class Level;
@@ -36,6 +47,9 @@ public:
 	void hit(float damage);
 	void startCaC();
 
+	bool isAlive() const;
+	float getLife() const;
+
 	Vector2f getDirToFire();
 
 	std::shared_ptr<Weapon> getWeapon() const;
@@ -50,7 +64,9 @@ public:
 	Vector2f getPos();
 	void setPos(const Vector2f& v);
 
-	const std::vector<std::shared_ptr<Projectile>>& getProtectilesToShoot() const;
+	const std::vector<std::shared_ptr<Projectile>>& 
+		getProtectilesToShoot() const;
+
 	void clearProtectilesToShoot();
 
 	template<class... Args>
@@ -74,6 +90,9 @@ public:
 	void unEquip();
 
 	void applyVelocity(Vector2f v);
+
+	PlayerInfo getPlayerInfo() const;
+	PlayerInfo& getPlayerInfo();
 public: //TODO: Make private
 
 	void keyPressed(sf::Keyboard::Key key);
@@ -93,15 +112,10 @@ public: //TODO: Make private
 	i32 _jumpK;
 
 	float _life;
-	float _maxLife;
 	Vector2f _dir;
-	float _speed;
-	float _radius;
 	sf::Color _color;
-	float _dashRange;
-	float _slowSpeed;
-	float _invincibilityTime;
-	float _jumpHeight;
+
+	PlayerInfo _info;
 
 	Disk _hitBox;
 
