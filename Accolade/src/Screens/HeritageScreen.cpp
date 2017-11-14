@@ -4,9 +4,14 @@
 
 #include "Common.hpp"
 
+HeritageScreen::HeritageScreen(PlayerInfo& info) :
+	_info(info) {
+
+}
+
 void HeritageScreen::onEnter() {
 	_root = Widget();
-	_playerPanel = PlayerInfo();
+	_playerPanel.populateWith(_info);
 	_root.addChild(&_playerPanel);
 }
 void HeritageScreen::onExit() {
@@ -16,19 +21,22 @@ void HeritageScreen::update(double) {
 }
 
 void HeritageScreen::render(sf::RenderTarget& target) {
-	_root.render(target);
+	_root.propagateRender(target);
 }
 
-HeritageScreen::PlayerPanel::PlayerPanel(PlayerInfo& info) :
-	info(info) 
-{
+HeritageScreen::PlayerPanel::PlayerPanel() {
+}
+
+void HeritageScreen::PlayerPanel::populateWith(PlayerInfo& info_) {
+	info = info_;
+
 	setSprite(sf::Sprite(AM::getTexture("panel_a")));
 	setSize({ WIDTH * 0.33f, HEIGHT * 0.9f });
 	setPosition({ 25.f, HEIGHT * 0.05f });
 	getSprite().setColor(sf::Color(100, 200, 100));
 
 	auto& name = labels["name"];
-	name = MM::make_unique<Label>();
+	name = MM::make_shared<Label>();
 	name->setFont("consola");
 	name->setCharSize(20u);
 	name->setString(std::string("Name: ") + info.name);
@@ -37,7 +45,7 @@ HeritageScreen::PlayerPanel::PlayerPanel(PlayerInfo& info) :
 	name->setParent(this, 1);
 
 	auto& infoPanel = panels["infoPanel"];
-	infoPanel = MM::make_unique<Panel>();
+	infoPanel = MM::make_shared<Panel>();
 	infoPanel->setSprite(sf::Sprite(AM::getTexture("panel_a")));
 	infoPanel->setSize({
 		getSize().x * .8f,
@@ -52,7 +60,7 @@ HeritageScreen::PlayerPanel::PlayerPanel(PlayerInfo& info) :
 	infoPanel->setParent(this, 1);
 
 	auto& speed = labels["speed"];
-	speed = MM::make_unique<Label>();
+	speed = MM::make_shared<Label>();
 	speed->setFont("consola");
 	speed->setCharSize(15u);
 	speed->setString(std::string("Speed: ") + std::to_string(info.speed));
@@ -60,7 +68,7 @@ HeritageScreen::PlayerPanel::PlayerPanel(PlayerInfo& info) :
 	speed->setParent(infoPanel.get(), 1);
 
 	auto& specialSpeed = labels["specialSpeed"];
-	specialSpeed = MM::make_unique<Label>();
+	specialSpeed = MM::make_shared<Label>();
 	specialSpeed->setFont("consola");
 	specialSpeed->setCharSize(15u);
 	specialSpeed->setString(
@@ -71,7 +79,7 @@ HeritageScreen::PlayerPanel::PlayerPanel(PlayerInfo& info) :
 	specialSpeed->setParent(infoPanel.get(), 1);
 
 	auto& jumpHeight = labels["jumpHeight"];
-	jumpHeight = MM::make_unique<Label>();
+	jumpHeight = MM::make_shared<Label>();
 	jumpHeight->setFont("consola");
 	jumpHeight->setCharSize(15u);
 	jumpHeight->setString(
@@ -81,7 +89,7 @@ HeritageScreen::PlayerPanel::PlayerPanel(PlayerInfo& info) :
 	jumpHeight->setParent(infoPanel.get(), 1);
 
 	auto& viewPanel = panels["viewPanel"];
-	viewPanel = MM::make_unique<Panel>();
+	viewPanel = MM::make_shared<Panel>();
 	viewPanel->setSprite(sf::Sprite(AM::getTexture("panel_a")));
 	viewPanel->setSize({
 		getSize().x * .4f,

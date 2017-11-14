@@ -3,7 +3,7 @@
 #include <Managers/AssetsManager.hpp>
 
 Label::Label() :
-Widget() {
+	Widget() {
 	computeSize();
 }
 

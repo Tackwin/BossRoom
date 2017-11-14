@@ -8,6 +8,7 @@
 #include "Managers/TimerManager.hpp"
 
 #include "Screens/RoomSelectorScreen.hpp"
+#include "Screens/HeritageScreen.hpp"
 #include "Screens/LevelScreen.hpp"
 #include "Screens/StartScreen.hpp"
 
@@ -83,6 +84,7 @@ void Game::enterScreen(std::shared_ptr<Screen> s) {
 }
 
 void Game::enterRoom(u32 n) {
+	exitScreen();
 	enterScreen(MM::make_shared<LevelScreen>(n));
 }
 
@@ -121,4 +123,10 @@ void Game::pop() {
 
 Player* Game::getPlayer() const {
 	return _player.get();
+}
+
+void Game::enterHeritage() {
+	exitScreen();
+	auto s = MM::make_shared<HeritageScreen>(_player->getPlayerInfo());
+	enterScreen(s);
 }

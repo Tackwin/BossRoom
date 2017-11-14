@@ -25,7 +25,7 @@ public:
 	Widget();
 	Widget(const Widget& copy) = delete;
 	Widget(Widget* const parent);
-	~Widget();
+	virtual ~Widget();
 
 	Vector2f getSize() const;
 	const Vector2f& getOrigin() const;

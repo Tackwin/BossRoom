@@ -89,8 +89,12 @@ void LevelScreen::update(double dt) {
 		);
 	}
 
-	if (_level) 
+	if (_level) {
 		_level->update(dt);
+		if (_level->lost()) {
+			game->enterHeritage();
+		}
+	}
 }
 
 void LevelScreen::render(sf::RenderTarget& target) {

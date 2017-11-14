@@ -15,6 +15,8 @@ public:
 
 	void start();
 
+	void enterHeritage();
+
 	void enterRoom(u32 n);
 	void nextRoom();
 

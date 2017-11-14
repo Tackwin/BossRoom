@@ -13,6 +13,8 @@
 
 class HeritageScreen : public Screen {
 public:
+	HeritageScreen(PlayerInfo& info);
+
 	virtual void onEnter();
 	virtual void onExit();
 
@@ -21,13 +23,16 @@ public:
 private:
 
 	struct PlayerPanel : public Panel {
-		PlayerPanel(PlayerInfo& info);
+		PlayerPanel();
+
+		void populateWith(PlayerInfo& info_);
 
 		PlayerInfo info;
-		std::map<std::string, MM::unique_ptr<Label>> labels;
-		std::map<std::string, MM::unique_ptr<Panel>> panels;
+		std::map<std::string, std::shared_ptr<Label>> labels;
+		std::map<std::string, std::shared_ptr<Panel>> panels;
 	};
 
 	Widget _root;
 	PlayerPanel _playerPanel;
+	PlayerInfo _info;
 };

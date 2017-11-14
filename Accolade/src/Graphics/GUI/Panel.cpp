@@ -5,6 +5,7 @@ Panel::Panel() :
 	computeSize();
 }
 
+
 sf::Sprite& Panel::getSprite() {
 	return _backSprite;
 }
