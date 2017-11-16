@@ -44,7 +44,6 @@ public:
 		return unique_ptr<T>(
 			ptr,
 			[](T* ptr) {
-				printf("deleted\n");
 				MemoryManager::I().deallocate(ptr);
 			}
 		);

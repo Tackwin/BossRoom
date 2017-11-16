@@ -72,12 +72,6 @@ void startGame() {
 	C::game = MemoryManager::make_shared<Game>();
 	game->start();
 
-	printf("%u KiB\n", MM::I().get_free_size() / 1024);
-	for (size_t i = 0u; i < 100; ++i) {
-		game->enterRoom(i % 2);
-	}
-	printf("%u KiB\n", MM::I().get_free_size() / 1024);
-
 	sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT, 24), "Boss room");
 	window.setKeyRepeatEnabled(false);
 	window.setFramerateLimit(0);
