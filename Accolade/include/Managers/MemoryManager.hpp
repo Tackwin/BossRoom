@@ -44,6 +44,7 @@ public:
 		return unique_ptr<T>(
 			ptr,
 			[](T* ptr) {
+				printf("deleted\n");
 				MemoryManager::I().deallocate(ptr);
 			}
 		);
@@ -140,7 +141,6 @@ public:
 				(std::size_t)free_place.location > sizeof(T) && 
 				(free_place.location - sizeof(T)) == (u08*)ptr
 			) {
-				ptr->~T();
 				_free_memory.erase(_free_memory.begin() + i);
 				_free_memory.insert(
 					_free_memory.begin() + i, 
@@ -158,6 +158,8 @@ public:
 		if (flag) { // else we just push a new memory place
 			_free_memory.push_back({ (u08*)ptr, size });
 		}
+		
+		ptr->~T();
 
 		std::sort(
 			_free_memory.begin(), 

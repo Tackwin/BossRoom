@@ -65,6 +65,7 @@ void LevelScreen::onEnter() {
 void LevelScreen::onExit() {
 	if (_level) 
 		_level->stop();
+	_level.reset();
 
 	_playerLife.clear();
 }
