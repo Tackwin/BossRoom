@@ -1,6 +1,6 @@
-#include <Graphics/GUI/Label.hpp>
+#include "Graphics/GUI/Label.hpp"
 
-#include <Managers/AssetsManager.hpp>
+#include "Managers/AssetsManager.hpp"
 
 Label::Label() :
 	Widget() {
@@ -44,4 +44,12 @@ void Label::render(sf::RenderTarget & target) {
 
 std::string Label::getString() const {
 	return _text.getString();
+}
+
+const sf::Text& Label::getText() const {
+	return _text;
+}
+
+sf::Text& Label::getText() {
+	return _text;
 }

@@ -285,4 +285,17 @@ sf::Music& AssetsManager::getMusic(const std::string &key) {
 	return it->second;
 }
 
+// that's useless there is no information here, 
+// implement this when you have your own library
+size_t AM::getSize() {
+	size_t s = 0u;
 
+	s += _sounds.size() * sizeof(decltype(_sounds)::mapped_type);
+	s += _jsons.size() * sizeof(decltype(_jsons)::mapped_type);
+	s += _textures.size() * sizeof(decltype(_textures)::mapped_type);
+	s += _musics.size() * sizeof(decltype(_musics)::mapped_type);
+	s += _images.size() * sizeof(decltype(_images)::mapped_type);
+	s += _fonts.size() * sizeof(decltype(_fonts)::mapped_type);
+
+	return s;
+}

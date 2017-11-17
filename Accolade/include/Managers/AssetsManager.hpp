@@ -34,6 +34,8 @@ public:
 	static bool openMusic(const std::string& key, const std::string& path);
 	static sf::Music& getMusic(const std::string& key);
 
+	static size_t getSize();
+
 private:
 	static std::unordered_map<std::string, sf::SoundBuffer> _sounds;
 	static std::unordered_map<std::string, nlohmann::json> _jsons;

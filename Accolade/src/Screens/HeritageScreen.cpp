@@ -31,7 +31,7 @@ void HeritageScreen::PlayerPanel::populateWith(PlayerInfo& info_) {
 	info = info_;
 
 	setSprite(sf::Sprite(AM::getTexture("panel_a")));
-	setSize({ WIDTH * 0.33f, HEIGHT * 0.9f });
+	setSize({ (WIDTH - 50.f) * 0.33f, HEIGHT * 0.9f });
 	setPosition({ 25.f, HEIGHT * 0.05f });
 	getSprite().setColor(sf::Color(100, 200, 100));
 
@@ -41,8 +41,8 @@ void HeritageScreen::PlayerPanel::populateWith(PlayerInfo& info_) {
 	name->setCharSize(20u);
 	name->setString(std::string("Name: ") + info.name);
 	name->setOrigin({ 0.5f, 0.f });
-	name->setPosition({ getSize().x * 0.5f, 20.f });
-	name->setParent(this, 1);
+	name->setPosition({ getSize().x * 0.5f, 10.f });
+	name->setParent(this, 2);
 
 	auto& infoPanel = panels["infoPanel"];
 	infoPanel = MM::make_shared<Panel>();
@@ -54,17 +54,20 @@ void HeritageScreen::PlayerPanel::populateWith(PlayerInfo& info_) {
 	infoPanel->setOrigin({ 0.5f, 0.f });
 	infoPanel->setPosition({
 		name->getPosition().x,
-		name->getPosition().y - 20.f
+		name->getPosition().y + name->getSize().y + 15.f
 	});
-	infoPanel->getSprite().setColor(sf::Color(100, 200, 100));
+	infoPanel->getSprite().setColor(sf::Color(80, 160, 80));
 	infoPanel->setParent(this, 1);
 
 	auto& speed = labels["speed"];
 	speed = MM::make_shared<Label>();
 	speed->setFont("consola");
 	speed->setCharSize(15u);
-	speed->setString(std::string("Speed: ") + std::to_string(info.speed));
-	speed->setPosition({ 15.f, 10.f });
+	speed->setString(std::string("Speed: ") + std::to_string((u32)info.speed));
+	speed->setPosition({ 
+		15.f - infoPanel->getSize().x / 2.f, 
+		10.f 
+	});
 	speed->setParent(infoPanel.get(), 1);
 
 	auto& specialSpeed = labels["specialSpeed"];
@@ -72,20 +75,26 @@ void HeritageScreen::PlayerPanel::populateWith(PlayerInfo& info_) {
 	specialSpeed->setFont("consola");
 	specialSpeed->setCharSize(15u);
 	specialSpeed->setString(
-		std::string("Speed: ") + std::to_string(info.specialSpeed)
+		std::string("Special speed: ") + std::to_string((u32)info.specialSpeed)
 	);
 	specialSpeed->setOrigin({ 1.f, 0.f });
-	specialSpeed->setPosition({ infoPanel->getSize().x - 15.f, 10.f });
-	specialSpeed->setParent(infoPanel.get(), 1);
+	specialSpeed->setPosition({
+		infoPanel->getSize().x / 2.f - 15, 
+		10.f 
+	});
+	specialSpeed->setParent(infoPanel.get(), 2);
 
 	auto& jumpHeight = labels["jumpHeight"];
 	jumpHeight = MM::make_shared<Label>();
 	jumpHeight->setFont("consola");
 	jumpHeight->setCharSize(15u);
 	jumpHeight->setString(
-		std::string("Speed: ") + std::to_string(info.jumpHeight)
+		std::string("Jump: ") + std::to_string((u32)info.jumpHeight)
 	);
-	jumpHeight->setPosition({ 15.f, speed->getPosition().y + 10.f });
+	jumpHeight->setPosition({ 
+		15.f - infoPanel->getSize().x / 2.f, 
+		speed->getPosition().y + speed->getSize().y + 5
+	});
 	jumpHeight->setParent(infoPanel.get(), 1);
 
 	auto& viewPanel = panels["viewPanel"];
@@ -93,13 +102,23 @@ void HeritageScreen::PlayerPanel::populateWith(PlayerInfo& info_) {
 	viewPanel->setSprite(sf::Sprite(AM::getTexture("panel_a")));
 	viewPanel->setSize({
 		getSize().x * .4f,
-		(getSize().y - 40.f - name->getSize().y) * .4f
+		(getSize().y - 40.f - name->getSize().y) * .45f
 	});
 	viewPanel->setOrigin({ 0.5f, 0.f });
 	viewPanel->setPosition({
 		name->getPosition().x,
-		infoPanel->getPosition().y - 20.f
+		infoPanel->getPosition().y + infoPanel->getSize().y + 20.f
 	});
 	viewPanel->getSprite().setColor(sf::Color(80, 160, 80));
 	viewPanel->setParent(this, 1);
+
+	auto& playerViewPanel = panels["playerViewPanel"];
+	playerViewPanel = MM::make_shared<Panel>();
+	playerViewPanel->setSprite(sf::Sprite(AM::getTexture(info.sprite)));
+	playerViewPanel->setOrigin({ 0.5f, 1.f });
+	playerViewPanel->setPosition({
+		0,
+		viewPanel->getSize().y - 5
+	});
+	playerViewPanel->setParent(viewPanel.get(), 1);
 }

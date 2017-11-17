@@ -43,14 +43,22 @@ Player::Player(const nlohmann::json& json) :
 }
 
 void Player::initializeJson() {
-	_life = _json["life"];
-	_info.maxLife = _life;
-	_info.speed = _json["speed"];
-	_info.radius = _json["radius"];
-	_info.dashRange = _json["dash"];
-	_info.specialSpeed= _json["specialSpeed"];
-	_info.jumpHeight = getJsonValue<float>(_json, "jumpHeight");
-	_info.invincibilityTime = _json["invincibilityTime"].get<float>();
+	const auto& jsonInfo = 
+		AM::getJson(JSON_KEY)
+		["characters"]
+		[_json["character"].get<std::string>()];
+
+	_info.maxLife = jsonInfo["life"];
+	_info.speed = jsonInfo["speed"];
+	_info.radius = jsonInfo["radius"];
+	_info.dashRange = jsonInfo["dash"];
+	_info.specialSpeed = jsonInfo["specialSpeed"];
+	_info.name = jsonInfo["name"].get<std::string>();
+	_info.jumpHeight = getJsonValue<float>(jsonInfo, "jumpHeight");
+	_info.invincibilityTime = jsonInfo["invincibilityTime"].get<float>();
+	_info.sprite = jsonInfo["sprite"].get<std::string>();
+
+	_life = _info.maxLife;
 
 	pos.x = _json["startpos"]["x"];
 	pos.y = _json["startpos"]["y"];
@@ -63,7 +71,7 @@ void Player::initializeJson() {
 	_dashK = _json["dashKey"];
 	_jumpK = _json["jumpKey"];
 	
-	_sprite = AnimatedSprite(_json["sprite"]);
+	_sprite = AnimatedSprite(_info.sprite);
 	_sprite.pushAnim("idle");
 
 	_sprite.getSprite().setOrigin(

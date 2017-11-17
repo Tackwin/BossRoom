@@ -26,6 +26,7 @@ struct PlayerInfo {
 	float jumpHeight;
 
 	std::string name;
+	std::string sprite;
 };
 
 class Zone;

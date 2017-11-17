@@ -29,6 +29,14 @@ struct Rectangle {
 			);
 	}
 
+	Vector<2, T> center() const {
+		return pos + size / 2;
+	}
+
+	T bot() const {
+		return pos.y + size.y;
+	}
+
 	template<typename U>
 	bool in(const Vector<2, U>& p) const {
 		return p.inRect(pos, size);

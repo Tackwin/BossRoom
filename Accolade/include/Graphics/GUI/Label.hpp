@@ -16,6 +16,9 @@ public:
 	void setTextColor(const sf::Color& color);
 	void setCharSize(const u32& size);
 
+	const sf::Text& getText() const;
+	sf::Text& getText();
+
 	std::string getString() const;
 
 	void computeSize();

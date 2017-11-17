@@ -94,6 +94,7 @@ void startGame() {
 			const auto free_size = MM::I().get_free_size();
 			printf("Size of MM's buffer: %u \t bytes\n", buffer_size);
 			printf("Size used by MM:     %u \t bytes\n", buffer_size - free_size);
+			printf("Size used by AM:     %u \t bytes\n", AM::getSize());
 			return false;
 		}
 	);
