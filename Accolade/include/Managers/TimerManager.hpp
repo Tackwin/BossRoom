@@ -41,7 +41,6 @@ public:
 	static std::string addFunction(double timer, const std::string& key, const Function::Callback& f);
 	static std::string addFunction(double timer, const Function::Callback&& f);
 	static std::string addFunction(double timer, const Function::Callback& f);
-	static std::string cloneFunction(const std::string& key);
 	static void resetTimerFunction(const std::string& key);
 	static void restartFunction(const std::string& key);
 	static void removeFunction(const std::string& key);
@@ -123,3 +122,4 @@ std::string TimerManager::addCustomEase(double t, std::string key, T* v, T min, 
 	return TimerManager::addFunction(0., key, f);
 }
 
+using TM = TimerManager;

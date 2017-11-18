@@ -74,18 +74,6 @@ void TimerManager::resumeFunction(const std::string& key) {
 	it->second->clock.resume();
 	it->second->paused = false;
 }
-std::string TimerManager::cloneFunction(const std::string& key) {
-	auto it = _functions.find(key);
-	assert(it != std::end(_functions) && "Can't find the function");
-	std::string candidate = key; 
-	static unsigned int i;
-	i = 0;
-	while (_functions.find(candidate) != _functions.end()) {
-		candidate = key + std::to_string(i++);
-	}
-	_functions[candidate] = std::make_shared<Function>(static_cast<float>(_functions[key]->clock.timer), _functions[key]->f);
-	return candidate;
-}
 
 void TimerManager::update(double dt) {
 	for (auto it = std::begin(_functions); it != std::end(_functions);) {

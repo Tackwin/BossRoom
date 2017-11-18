@@ -12277,7 +12277,7 @@ T getJsonValue(nlohmann::json json_, std::string key) {
 	assert(json_.find(key) != json_.end());
 	auto j = json_[key];
 
-	if (j.is_primitive())
+	if (j.is_primitive() || std::is_same<T, nlohmann::json>::value)
 		return j;
 	if (j.find("type") == j.end())
 		j["type"] = "uniform";

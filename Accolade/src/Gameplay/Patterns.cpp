@@ -12,20 +12,33 @@
 #include "Gameplay/Player.hpp"
 #include "Game.hpp"
 
-auto Patterns::getValue(std::string pattern, nlohmann::json json, std::string str) {
-	return json[str].is_null() ? _json[pattern][str] : json[str];
+template<typename T>
+T Patterns::getValue(
+	std::string pattern, nlohmann::json json, std::string str
+) {
+	if constexpr (std::is_same<T, nlohmann::json>::value) {
+		return json[str].is_null()
+			? _json[pattern][str]
+			: json[str];
+	}
+	else {
+		return json[str].is_null()
+			? getJsonValue<T>(_json[pattern], str) 
+			: getJsonValue<T>(json, str);
+	}
 }
+
 
 nlohmann::json Patterns::_json;
 
 void Patterns::randomFire(Boss& boss, nlohmann::json json) {
 	randomFire(
 		boss,
-		getValue("randomFire", json, "nOrbs"),
-		getValue("randomFire", json, "a"),
-		getValue("randomFire", json, "dtA"),
-		getValue("randomFire", json, "eTime"),
-		getValue("randomFire", json, "projectile")
+		getValue<u32>("randomFire", json, "nOrbs"),
+		getValue<float>("randomFire", json, "a"),
+		getValue<float>("randomFire", json, "dtA"),
+		getValue<float>("randomFire", json, "eTime"),
+		getValue<nlohmann::json>("randomFire", json, "projectile")
 	);
 }
 void Patterns::randomFire(
@@ -58,9 +71,9 @@ void Patterns::randomFire(
 std::string Patterns::directionalFire(Boss& boss, nlohmann::json json) {
 	return directionalFire(
 		boss,
-		getValue("directionalFire", json, "fireRate"),
-		getValue("directionalFire", json, "time"),
-		getValue("directionalFire", json, "projectile")
+		getValue<float>("directionalFire", json, "fireRate"),
+		getValue<float>("directionalFire", json, "time"),
+		getValue<nlohmann::json>("directionalFire", json, "projectile")
 	);
 }
 std::string Patterns::directionalFire(
@@ -69,35 +82,37 @@ std::string Patterns::directionalFire(
 	float time, 
 	nlohmann::json projectile
 ) {
-	const auto& lambda = 
-		[&boss, projectile, N = time * fireRate](double)mutable->bool {
-			float a = (float)boss.getPos().angleTo(boss.getLevel()->getPlayerPos());
+	return TimerManager::addFunction(1 / fireRate, "directive fire", 
+		[&boss, projectile, N = time * fireRate](double) mutable -> bool {
+			float a = 
+				(float)boss.getPos().angleTo(boss.getLevel()->getPlayerPos());
 
 			Vector2f dir = Vector2f::createUnitVector(a);
 
-			Vector2f pos = 
-				boss.getPos() + 
-				Vector2f::createUnitVector(a + PIf / 9) * (boss.getRadius() + 10);
+			Vector2f pos =
+				boss.getPos() +
+				Vector2f::createUnitVector(a + PIf / 9) * 
+				(boss.getRadius() + 10);
 			boss.shoot(projectile, pos, dir);
 
-			pos = 
-				boss.getPos() + 
-				Vector2f::createUnitVector(a - PIf / 9) * (boss.getRadius() + 10);
+			pos =
+				boss.getPos() +
+				Vector2f::createUnitVector(a - PIf / 9) * 
+				(boss.getRadius() + 10);
 			boss.shoot(projectile, pos, dir);
 
 			return --N <= 0;
-	};
-
-	return TimerManager::addFunction(1 / fireRate, "directive fire", lambda);
+		}
+	);
 }
 
 std::string Patterns::barage(Boss& boss, nlohmann::json json) {
 	return barage(
 		boss,
-		getValue("barage", json, "nOrbs"),
-		getValue("barage", json, "nWaves"),
-		getValue("barage", json, "iTime"),
-		getValue("barage", json, "projectile")
+		getValue<u32>("barage", json, "nOrbs"),
+		getValue<u32>("barage", json, "nWaves"),
+		getValue<float>("barage", json, "iTime"),
+		getValue<nlohmann::json>("barage", json, "projectile")
 	);
 }
 std::string Patterns::barage(
@@ -126,10 +141,10 @@ std::string Patterns::barage(
 std::string Patterns::snipe(Boss& boss, nlohmann::json json) {
 	return snipe(
 		boss,
-		getValue("snipe", json, "nShots"),
-		getValue("snipe", json, "aimTime"),
-		getValue("snipe", json, "iTime"),
-		getValue("snipe", json, "projectile")
+		getValue<u32>("snipe", json, "nShots"),
+		getValue<float>("snipe", json, "aimTime"),
+		getValue<float>("snipe", json, "iTime"),
+		getValue<nlohmann::json>("snipe", json, "projectile")
 	);
 }
 std::string Patterns::snipe(
@@ -139,44 +154,33 @@ std::string Patterns::snipe(
 	float iTime, 
 	nlohmann::json projectile
 ) {
-	auto lambda = 
-		std::shared_ptr<std::function<void()>>(new std::function<void()>);
+	return TM::addFunction(aimTime + iTime, 
+		[&boss, aimTime, projectile, nShots](double) mutable -> bool {
+			boss.getLevel()->startAim();
 
-	*lambda = 
-	[&boss, aimTime, projectile, nShots, iTime, lambda]()mutable->void {
-		boss.getLevel()->startAim();
-		TimerManager::addFunction(
-			aimTime, 
-			"delay", 
-			[&boss, projectile, nShots, iTime, lambda](double)mutable->bool {
-				boss.getLevel()->stopAim();
+			TM::addFunction(aimTime, 
+				[&boss, projectile](double) mutable -> bool {
+					boss.getLevel()->stopAim();
 
-				Vector2f pos = boss.getPos();
-				Vector2f dir = Vector2f::createUnitVector(
-					(float)pos.angleTo(game->_player->getPos())
-				);
-				pos = pos + 
-					dir * 
-					(boss.getRadius() + projectile["radius"].get<float>() + 1);
-
-				boss.shoot(projectile, pos, dir);
-
-				if (--nShots != 0) {
-					TimerManager::addFunction(
-						iTime, 
-						"snipe", 
-						[lambda](double)mutable->bool {
-							(*lambda)();
-							return true;
-						}
+					Vector2f pos = boss.getPos();
+					Vector2f dir = Vector2f::createUnitVector(
+						(float)pos.angleTo(game->_player->getPos())
 					);
+					pos = pos + dir *
+						(
+							boss.getRadius() + 
+							projectile["radius"].get<float>() + 
+							1
+						);
+
+					boss.shoot(projectile, pos, dir);
+					return true;
 				}
-				return true;
-			}
-		);
-	};
-	(*lambda)();
-	return "nil";
+			);
+
+			return --nShots == 0;
+		}
+	);
 }
 /*
 

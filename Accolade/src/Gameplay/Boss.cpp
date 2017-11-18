@@ -76,12 +76,11 @@ void Boss::enterLevel(Level* level) {
 	_init(*this);
 }
 void Boss::exitLevel() {
-	for (u32 i = _keyPatterns.size(); i != 0; --i) {
-		auto& k = _keyPatterns[i - 1];
+	for (auto& k : _keyPatterns) {
 		TimerManager::removeFunction(k);
-
-		_keyPatterns.erase(_keyPatterns.begin() + i - 1);
 	}
+	_keyPatterns.clear();
+	
 	_unInit(*this);
 	_level = nullptr;
 }

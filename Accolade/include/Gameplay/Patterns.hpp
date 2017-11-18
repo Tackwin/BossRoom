@@ -7,7 +7,9 @@
 #pragma warning(disable:4100)
 class Patterns {
 private:
-	static auto getValue(std::string pattern, nlohmann::json json, std::string str);
+
+	template<typename T>
+	static T getValue(std::string pattern, nlohmann::json json, std::string str);
 
 public:
 
