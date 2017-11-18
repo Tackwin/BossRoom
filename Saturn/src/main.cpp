@@ -22,14 +22,25 @@ int main(int, char**) {
 	Shader shader;
 
 	float vertices[] = {
-		-0.5f, -0.5f, +0.0f,
-		+0.5f, -0.5f, +0.0f,
-		+0.0f, +0.5f, +0.0f
+		+0.5f, +0.5f, 0.0f,
+		+0.5f, -0.5f, 0.0f,
+		-0.5f, -0.5f, 0.0f,
+		-0.5f, +0.5f, 0.0f
+	};
+
+	u32 indices[] = {
+		0, 1, 3,
+		1, 2, 3
 	};
 
 	u32 VAO = 0u;
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
+
+	u32 EBO = 0u;
+	glGenBuffers(1, &EBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	u32 VBO = 0u;
 	glGenBuffers(1, &VBO);
@@ -52,7 +63,9 @@ int main(int, char**) {
 		window.clear();
 
 		shader.use();
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+
+		glBindVertexArray(VAO);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		window.swap_buffers();
 	}
