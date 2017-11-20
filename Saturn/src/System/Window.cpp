@@ -25,8 +25,9 @@ void Window::process_inputs() {
 	}
 }
 
-void Window::clear() {
-	glClearColor(0.1f, 0.1f, 0.1f, 1.f);
+void Window::clear(Vector4f color) {
+
+	glClearColor(COLOR_UNROLL(color));
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 

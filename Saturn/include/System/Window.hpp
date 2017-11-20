@@ -3,6 +3,8 @@
 
 #include <GLFW/glfw3.h>
 
+#include "Math/Vector.hpp"
+
 #include "Common.hpp"
 
 struct WindowInfo {
@@ -17,7 +19,7 @@ public:
 	Window(u32 width, u32 height, std::string_view title);
 
 	void process_inputs();
-	void clear();
+	void clear(Vector4f color = {0.f, 0.f, 0.f, 0.f});
 
 	bool should_close() const;
 	void swap_buffers() const;

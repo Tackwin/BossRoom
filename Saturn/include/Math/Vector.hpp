@@ -186,7 +186,7 @@ struct Vector : public __vec_member<D, T> {
 	}
 
 	template<typename U, size_t Dp = D>
-	std::enable_if_t<Dp == 2, double> angleTo(const Vector<2U, U>& other) const {
+	std::enable_if<Dp == 2, double> angleTo(const Vector<2U, U>& other) const {
 		return std::atan2(other.y - y, other.x - x);
 	}
 
