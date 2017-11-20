@@ -88,3 +88,10 @@ void Shader::check_program_error(u32 program) {
 		std::cout << "Error compilation shader" << std::endl << log << std::endl;
 	}
 }
+
+void Shader::setUniform4f(const std::string& name, Vector4f uni) const {
+	glUniform4f(
+		glGetUniformLocation(_shaderInfo.programId, name.c_str()),
+		XYZW_UNROLL(uni)
+	);
+}

@@ -5,6 +5,7 @@
 
 #include "System/Window.hpp"
 #include "Graphics/Shader.hpp"
+#include "Graphics/VAO.hpp"
 
 int main(int, char**) {
 	glfwInit();
@@ -22,10 +23,10 @@ int main(int, char**) {
 	Shader shader;
 
 	float vertices[] = {
-		+0.5f, +0.5f, 0.0f,
-		+0.5f, -0.5f, 0.0f,
-		-0.5f, -0.5f, 0.0f,
-		-0.5f, +0.5f, 0.0f
+		+0.5f, +0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+		+0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+		-0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f,
+		-0.5f, +0.5f, 0.0f, 0.0f, 0.0f, 1.0f
 	};
 
 	u32 indices[] = {
@@ -33,23 +34,14 @@ int main(int, char**) {
 		1, 2, 3
 	};
 
-	u32 VAO = 0u;
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-
-	u32 EBO = 0u;
-	glGenBuffers(1, &EBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	u32 VBO = 0u;
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-
+	VAO v;
+	v.set_element_data(indices, 6u);
+	v.set_vertex_data(vertices, 24u);
+	v.set_vertex_attrib(0u, 3u, false, 6u, 0u);
+	v.set_vertex_attrib(1u, 3u, false, 6u, 3u);
+	v.enable_vertex_attrib(0u);
+	v.enable_vertex_attrib(1u);
+	
 	shader.load_vertex("res/shaders/vertex.shader");
 	shader.load_fragment("res/shaders/fragment.shader");
 	
@@ -60,12 +52,12 @@ int main(int, char**) {
 
 		window.process_inputs();
 
-		window.clear();
+		window.clear({0.1f, 0.15f, 0.2f, 1.f});
 
 		shader.use();
 
-		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		v.bind();
+		v.render(6);
 
 		window.swap_buffers();
 	}

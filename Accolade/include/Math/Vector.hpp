@@ -14,6 +14,9 @@ struct __vec_member<1, T> {
 		};
 		T components[1];
 	};
+
+	__vec_member() : x(0)) {}
+	__vec_member(T x) : x(x) {}
 };
 template<typename T>
 struct __vec_member<2, T> {
@@ -38,6 +41,9 @@ struct __vec_member<3, T> {
 		};
 		T components[3];
 	};
+
+	__vec_member() : x(0), y(0), z(0) {}
+	__vec_member(T x, T y, T z) : x(x), y(y), z(z) {}
 };
 template<typename T>
 struct __vec_member<4, T> {
@@ -302,7 +308,7 @@ struct Vector : public __vec_member<D, T> {
 	template<typename U>
 	bool operator!=(const sf::Vector2<U>& other) const {
 		static_assert(D == 2);
-		return !(components[0] == other.x && components[1] == other.y);
+		return !this->operator==(other);
 	}
 #endif
 };
@@ -314,6 +320,5 @@ Vector<D, T> operator*(U scalar, const Vector<D, T>& vec) {
 	return vec * scalar;
 }
 
-#ifndef COLOR_UNROLL
 #define COLOR_UNROLL(x) x.r, x.g, x.b, x.a
-#endif
+#define XYZW_UNROLL(v) v.x, v.y, v.z, v.w

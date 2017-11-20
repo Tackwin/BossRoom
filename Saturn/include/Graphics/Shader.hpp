@@ -3,6 +3,7 @@
 #include <string>
 
 #include "Common.hpp"
+#include "Math/Vector.hpp"
 
 struct ShaderInfo {
 	u32 vertexId = 0u;
@@ -25,6 +26,8 @@ public:
 	void build_shaders();
 
 	void use() const;
+
+	void setUniform4f(const std::string& name, Vector4f uni) const;
 
 private:
 

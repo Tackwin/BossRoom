@@ -314,6 +314,5 @@ Vector<D, T> operator*(U scalar, const Vector<D, T>& vec) {
 	return vec * scalar;
 }
 
-#ifndef COLOR_UNROLL
 #define COLOR_UNROLL(x) x.r, x.g, x.b, x.a
-#endif
+#define XYZW_UNROLL(v) v.x, v.y, v.z, v.w
