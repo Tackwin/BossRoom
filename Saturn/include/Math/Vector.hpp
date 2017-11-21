@@ -38,6 +38,8 @@ struct __vec_member<3, T> {
 		};
 		T components[3];
 	};
+	__vec_member() : x(0), y(0), z(0) {}
+	__vec_member(T x, T y, T z) : x(x), y(y), z(z) {}
 };
 template<typename T>
 struct __vec_member<4, T> {
@@ -128,6 +130,11 @@ struct Vector : public __vec_member<D, T> {
 	{}
 
 	template<size_t Dp = D>
+	Vector(T x, T y, std::enable_if_t<Dp == 3, T> z) :
+		__vec_member<3, T>(x, y, z)
+	{}
+
+	template<size_t Dp = D>
 	Vector(T x, T y, T z, std::enable_if_t<Dp == 4, T> w) :
 		__vec_member<4, T>(x, y, z, w)
 	{}
@@ -199,7 +206,37 @@ struct Vector : public __vec_member<D, T> {
 		return *this;
 	}
 
+	void print() {
+		for (size_t i = 0u; i < D; ++i) {
+			std::cout << components[i];
+			if (i != D - 1)
+				std::cout << ", ";
+		}
+		std::cout << std::endl;
+	}
 
+	// this is standard notation for scalar product
+	// no i don't abuse operator overloading. fuck you
+	template<typename U>
+	T operator|(const Vector<D, U>& other) const {
+		T result = 0;
+		for (size_t i = 0u; i < D; ++i) {
+			result += components[i] * other[i];
+		}
+		return result;
+	}
+
+	// and this for cross product
+	// yeah i know but the syntax sugar is soooooo sweet
+	template<typename U, size_t Dp = D>
+	std::enable_if_t<Dp == 3, Vector<3U, T>> 
+		operator^(const Vector<D, U>& other) const {
+		return {
+			y * other.z - z * other.y,
+			z * other.x - x * other.z,
+			x * other.y - y * other.x
+		};
+	}
 
 	template<typename U>
 	Vector<D, T> operator*(const U& scalaire) const {

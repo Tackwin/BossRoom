@@ -3,11 +3,12 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-
 #include "System/Window.hpp"
 #include "Graphics/Shader.hpp"
 #include "Graphics/Texture.hpp"
 #include "Graphics/VAO.hpp"
+
+#include "Math/Matrix.hpp"
 
 int main(int, char**) {
 	glfwInit();

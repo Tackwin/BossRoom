@@ -15,7 +15,7 @@ struct __vec_member<1, T> {
 		T components[1];
 	};
 
-	__vec_member() : x(0)) {}
+	__vec_member() : x(0) {}
 	__vec_member(T x) : x(x) {}
 };
 template<typename T>
