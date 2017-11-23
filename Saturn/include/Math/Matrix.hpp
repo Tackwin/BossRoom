@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Vector.hpp"
 
 template<size_t R, size_t C, typename T = float>
@@ -14,8 +14,10 @@ struct Matrix {
 		return matrix;
 	}
 
-	template<size_t N, typename T = float>
-	static Matrix<N, N, T> scalar(Vector<N, T> scalar) {
+	template<size_t N = R, typename T = float>
+	static std::enable_if_t<N == C, Matrix<N, N, T>> 
+		scalar(Vector<N, T> scalar) 
+	{
 		Matrix<N, N, T> matrix;
 		for (size_t i = 0u; i < N; ++i) {
 			matrix[i][i] = scalar[i];
@@ -23,15 +25,40 @@ struct Matrix {
 		return matrix;
 	}
 
-	template<size_t N, typename T = float>
-	static Matrix<N, N, T> translation(Vector<N, T> vec) {
+	template<size_t N = R, typename T = float>
+	static std::enable_if_t<N == C, Matrix<N, N, T>> 
+		translation(Vector<N - 1, T> vec) 
+	{
 		Matrix<N, N, T> matrix;
-		for (size_t i = 0u; i < N; ++i) {
-			matrix[i][i] = (T)1;
+		for (size_t i = 0u; i < N - 1; ++i) {
 			matrix[i][N - 1] = vec[i];
+			matrix[i][i] = (T)1;
 		}
+		matrix[N - 1][N - 1] = (T)1;
 		return matrix;
 	}
+
+	template<size_t N = R>
+	static std::enable_if_t<N == C && C == 4, Matrix<N, N, T>>
+		rotation(Vector<3, T> a, T θ)
+	{
+		auto c = cosf(θ);
+		auto s = sinf(θ);
+
+		auto x = a.x;
+		auto y = a.y;
+		auto z = a.z;
+
+		return {
+
+	x * x * (1 - c) + c    , x * y * (1 - c) - z * s, x * z * (1 - c) + y * s, 0,
+	y * x * (1 - c) + z * s, y * y * (1 - c) + c    , y * z * (1 - c) - x * s, 0,
+	z * x * (1 - c) - y * s, z * x * (1 - c) + x * s, c + z * z * (1 - c)    , 0,
+	0					   , 0						, 0						 , 1
+
+		};
+	}
+
 
 	Matrix() {
 		for (size_t i = 0u; i < R; ++i) {
@@ -243,3 +270,7 @@ struct Matrix {
 		return rows[idx.x][idx.y];
 	}
 };
+
+template<typename T>
+using Mat4 = Matrix<4, 4, T>;
+using Mat4f = Mat4<float>;

@@ -24,6 +24,8 @@ public:
 	bool should_close() const;
 	void swap_buffers() const;
 
+	void close() const;
+
 private:
 
 	static void framebuffer_size_callback(

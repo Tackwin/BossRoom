@@ -89,9 +89,30 @@ void Shader::check_program_error(u32 program) {
 	}
 }
 
-void Shader::setUniform4f(const std::string& name, Vector4f uni) const {
+void Shader::set_uni_4f(const std::string& name, Vector4f uni) const {
+	use();
 	glUniform4f(
 		glGetUniformLocation(_shaderInfo.programId, name.c_str()),
 		XYZW_UNROLL(uni)
+	);
+}
+
+void Shader::set_uni_mat4f(const std::string& name, const Mat4f& mat) const {
+	use();
+	glUniformMatrix4fv(
+		glGetUniformLocation(_shaderInfo.programId, name.c_str()),
+		1,
+		GL_TRUE,
+		&(mat.rows[0].x)
+	);
+}
+
+void Shader::set_uni_mat4f(const std::string& name, const float* mat) const {
+	use();
+	glUniformMatrix4fv(
+		glGetUniformLocation(_shaderInfo.programId, name.c_str()),
+		1,
+		GL_TRUE,
+		mat
 	);
 }

@@ -10,4 +10,9 @@ using u32 = std::uint32_t;
 using i64 = std::int64_t;
 using u64 = std::uint64_t;
 
+namespace COMMON {
+	constexpr float pi = 3.1415926f;
+};
+using namespace COMMON;
+
 #define LOG_PLACE std::cout << __LINE__ << "; " << __FILE__ << std::endl

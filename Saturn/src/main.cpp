@@ -10,19 +10,26 @@
 
 #include "Math/Matrix.hpp"
 
+void play();
+
 int main(int, char**) {
+	play();
+	return 0;
+}
+
+void play() {
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	Window window(800u, 600u, "Saturn is up and running");
+	Window window(700u, 700u, "Saturn is up and running");
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		LOG_PLACE;
-		return -1;
+		return;
 	}
-	
+
 	Shader shader;
 	Texture texture;
 	texture.set_parameteri(GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -52,20 +59,28 @@ int main(int, char**) {
 	vao.enable_vertex_attrib(0u);
 	vao.enable_vertex_attrib(1u);
 	vao.enable_vertex_attrib(2u);
-	
+
 	shader.load_vertex("res/shaders/vertex.shader");
 	shader.load_fragment("res/shaders/fragment.shader");
-	
+
 	shader.build_shaders();
 
 	while (!window.should_close()) {
+		static float a = 0.f;
+		a += 0.003f;
 		glfwPollEvents();
 
 		window.process_inputs();
 
-		window.clear({0.1f, 0.15f, 0.2f, 1.f});
+		window.clear({ 0.1f, 0.15f, 0.2f, 1.f });
 
 		shader.use();
+		shader.set_uni_mat4f(
+			"t",
+			Mat4f::rotation({ 0, 0, 1 }, pi * a) *
+			Mat4f::translation({cosf(pi * a) / 2.f, sinf(pi * a) / 2.f, 0})
+		);
+
 
 		texture.bind();
 		vao.bind();
@@ -75,5 +90,4 @@ int main(int, char**) {
 	}
 
 	glfwTerminate();
-	return 0;
 }

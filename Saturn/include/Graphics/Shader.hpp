@@ -4,6 +4,7 @@
 
 #include "Common.hpp"
 #include "Math/Vector.hpp"
+#include "Math/Matrix.hpp"
 
 struct ShaderInfo {
 	u32 vertexId = 0u;
@@ -27,7 +28,9 @@ public:
 
 	void use() const;
 
-	void setUniform4f(const std::string& name, Vector4f uni) const;
+	void set_uni_4f(const std::string& name, Vector4f uni) const;
+	void set_uni_mat4f(const std::string& name, const Mat4f& mat) const;
+	void set_uni_mat4f(const std::string& name, const float* mat) const;
 
 private:
 

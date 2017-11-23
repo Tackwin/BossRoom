@@ -44,3 +44,7 @@ void Window::framebuffer_size_callback(
 ) {
 	glViewport(0, 0, width, height);
 }
+
+void Window::close() const {
+	glfwSetWindowShouldClose(_window, true);
+}
