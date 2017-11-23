@@ -5,6 +5,7 @@
 
 #include "System/Window.hpp"
 #include "Graphics/Shader.hpp"
+#include "Graphics/Transform.hpp"
 #include "Graphics/Texture.hpp"
 #include "Graphics/VAO.hpp"
 
@@ -32,6 +33,7 @@ void play() {
 
 	Shader shader;
 	Texture texture;
+	Transform transform;
 	texture.set_parameteri(GL_TEXTURE_WRAP_S, GL_REPEAT);
 	texture.set_parameteri(GL_TEXTURE_WRAP_T, GL_REPEAT);
 	texture.set_parameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -65,22 +67,26 @@ void play() {
 
 	shader.build_shaders();
 
+	transform.set_position({ 0, 0 });
+	transform.set_rotation(0);
+	transform.set_size({ 1, 1 });
+	transform.set_scale({ 1, 1 });
+
 	while (!window.should_close()) {
 		static float a = 0.f;
-		a += 0.003f;
+		a += 0.0001f;
 		glfwPollEvents();
 
 		window.process_inputs();
 
 		window.clear({ 0.1f, 0.15f, 0.2f, 1.f });
 
-		shader.use();
-		shader.set_uni_mat4f(
-			"t",
-			Mat4f::translation({cosf(pi * a) / 2.f, sinf(pi * a) / 2.f, 0}) *
-			Mat4f::rotation({ 0, 0, 1 }, pi * a * 3)
-		);
+		transform.set_position({ a, a });
+		transform.set_scale(Vector2f::createUnitVector(a * pi));
+		transform.set_rotation(a * pi);
 
+		shader.use();
+		shader.set_uni_mat4f("t", transform.apply(Matrix4f::diagonal(1)));
 
 		texture.bind();
 		vao.bind();

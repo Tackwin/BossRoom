@@ -29,7 +29,7 @@ public:
 	void use() const;
 
 	void set_uni_4f(const std::string& name, Vector4f uni) const;
-	void set_uni_mat4f(const std::string& name, const Mat4f& mat) const;
+	void set_uni_mat4f(const std::string& name, const Matrix4f& mat) const;
 	void set_uni_mat4f(const std::string& name, const float* mat) const;
 
 private:

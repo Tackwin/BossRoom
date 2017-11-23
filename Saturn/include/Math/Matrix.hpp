@@ -272,5 +272,5 @@ struct Matrix {
 };
 
 template<typename T>
-using Mat4 = Matrix<4, 4, T>;
-using Mat4f = Mat4<float>;
+using Matrix4 = Matrix<4, 4, T>;
+using Matrix4f = Matrix4<float>;

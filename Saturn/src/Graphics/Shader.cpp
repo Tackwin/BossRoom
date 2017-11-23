@@ -97,7 +97,9 @@ void Shader::set_uni_4f(const std::string& name, Vector4f uni) const {
 	);
 }
 
-void Shader::set_uni_mat4f(const std::string& name, const Mat4f& mat) const {
+void Shader::set_uni_mat4f(
+	const std::string& name, const Matrix4f& mat
+) const {
 	use();
 	glUniformMatrix4fv(
 		glGetUniformLocation(_shaderInfo.programId, name.c_str()),
