@@ -77,8 +77,8 @@ void play() {
 		shader.use();
 		shader.set_uni_mat4f(
 			"t",
-			Mat4f::rotation({ 0, 0, 1 }, pi * a) *
-			Mat4f::translation({cosf(pi * a) / 2.f, sinf(pi * a) / 2.f, 0})
+			Mat4f::translation({cosf(pi * a) / 2.f, sinf(pi * a) / 2.f, 0}) *
+			Mat4f::rotation({ 0, 0, 1 }, pi * a * 3)
 		);
 
 
