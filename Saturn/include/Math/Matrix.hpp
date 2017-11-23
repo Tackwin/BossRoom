@@ -5,8 +5,17 @@ template<size_t R, size_t C, typename T = float>
 struct Matrix {
 	Vector<C, T> rows[R];
 
+	template<size_t N = R>
+	static constexpr std::enable_if_t<N == C, Matrix<N, N, T>> identity() {
+		Matrix<N, N, T> m;
+		for (size_t i = 0u; i < N; ++i) {
+			m[i][i] = (T)1;
+		}
+		return m;
+	}
+
 	template<size_t Rp = R, size_t Cp = C>
-	static std::enable_if_t<Rp == Cp, Matrix<Rp, Cp, T>> diagonal(T scalar) {
+	static constexpr std::enable_if_t<Rp == Cp, Matrix<Rp, Cp, T>> diagonal(T scalar) {
 		Matrix<Rp, Cp, T> matrix;
 		for (size_t i = 0u; i < Rp; ++i) {
 			matrix[i][i] = scalar;
@@ -15,7 +24,7 @@ struct Matrix {
 	}
 
 	template<size_t N = R, typename T = float>
-	static std::enable_if_t<N == C, Matrix<N, N, T>> 
+	static constexpr std::enable_if_t<N == C, Matrix<N, N, T>> 
 		scalar(Vector<N, T> scalar) 
 	{
 		Matrix<N, N, T> matrix;
@@ -26,7 +35,7 @@ struct Matrix {
 	}
 
 	template<size_t N = R, typename T = float>
-	static std::enable_if_t<N == C, Matrix<N, N, T>> 
+	static constexpr std::enable_if_t<N == C, Matrix<N, N, T>> 
 		translation(Vector<N - 1, T> vec) 
 	{
 		Matrix<N, N, T> matrix;
@@ -39,7 +48,7 @@ struct Matrix {
 	}
 
 	template<size_t N = R>
-	static std::enable_if_t<N == C && C == 4, Matrix<N, N, T>>
+	static constexpr std::enable_if_t<N == C && C == 4, Matrix<N, N, T>>
 		rotation(Vector<3, T> a, T θ)
 	{
 		auto c = cosf(θ);

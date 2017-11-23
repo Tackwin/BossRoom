@@ -44,3 +44,27 @@ Matrix4f Transform::apply(const Matrix4f& model) const {
 	}) * result;
 	return model * result;
 }
+
+void Transform::apply_to_shader(const Shader& shader) const {
+	shader.use();
+	shader.set_uni_mat4f("origin", Matrix4f::translation({
+		_info.origin.x,
+		_info.origin.y,
+		0
+	}));
+	shader.set_uni_mat4f("size", Matrix4f::scalar({
+		_scale.x * _info.size.x,
+		_scale.y * _info.size.y,
+		1,
+		1
+	}));
+	shader.set_uni_mat4f(
+		"rotation", 
+		Matrix4f::rotation({ 0, 0, 1 }, _info.theta)
+	);
+	shader.set_uni_mat4f("translation", Matrix4f::translation({
+		_info.pos.x,
+		_info.pos.y,
+		0 
+	}));
+}

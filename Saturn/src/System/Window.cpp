@@ -17,6 +17,8 @@ Window::Window(u32 width, u32 height, std::string_view title) {
 	glViewport(0, 0, width, height);
 
 	glfwSetFramebufferSizeCallback(_window, framebuffer_size_callback);
+
+	glEnable(GL_DEPTH_TEST);
 }
 
 void Window::process_inputs() {
@@ -28,7 +30,7 @@ void Window::process_inputs() {
 void Window::clear(Vector4f color) {
 
 	glClearColor(COLOR_UNROLL(color));
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Graphics/Shader.hpp"
+
 #include "Math/Vector.hpp"
 #include "Math/Matrix.hpp"
 
@@ -22,7 +24,8 @@ public:
 	TransformInfo get_info() const;
 	Vector2f get_scale() const;
 
-	Matrix4f apply(const Matrix4f& model) const;
+	Matrix4f apply(const Matrix4f& model = Matrix4f::identity()) const;
+	void apply_to_shader(const Shader& shader) const;
 
 private:
 
