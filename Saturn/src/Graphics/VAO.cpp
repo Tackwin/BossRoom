@@ -1,5 +1,28 @@
 #include "Graphics/VAO.hpp"
 
+VAO VAO::create_plane(const Vector2f& size) {
+	float vertices[] = {
+		+size.x * 0.5f, +size.y * 0.5f, 0.0f, 1.0f, 1.0f,
+		+size.x * 0.5f, -size.y * 0.5f, 0.0f, 1.0f, 0.0f,
+		-size.x * 0.5f, -size.y * 0.5f, 0.0f, 0.0f, 0.0f,
+		-size.x * 0.5f, +size.y * 0.5f, 0.0f, 0.0f, 1.0f
+	};
+
+	u32 indices[] = {
+		0, 1, 3,
+		1, 2, 3
+	};
+
+	VAO vao;
+	vao.set_element_data(indices, 6u);
+	vao.set_vertex_data(vertices, 20u);
+	vao.set_vertex_attrib(0u, 3u, false, 5u, 0u);
+	vao.set_vertex_attrib(1u, 2u, false, 5u, 3u);
+	vao.enable_vertex_attrib(0u);
+	vao.enable_vertex_attrib(1u);
+	return vao;
+}
+
 
 VAO::VAO() {
 	glGenVertexArrays(1, &_vaoInfo.vaoId);

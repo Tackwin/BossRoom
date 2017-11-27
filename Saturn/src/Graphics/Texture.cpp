@@ -8,7 +8,7 @@ Texture::Texture() {
 	glGenTextures(1, &_info.id);
 }
 
-void Texture::load_file(const std::string& path) {
+bool Texture::load_file(const std::string& path) {
 	i32 comp = 0;
 
 	stbi_set_flip_vertically_on_load(true);
@@ -19,7 +19,7 @@ void Texture::load_file(const std::string& path) {
 	if (!data) {
 		std::cerr << "Can't load file: " << path << std::endl;
 		LOG_PLACE;
-		return;
+		return false;
 	}
 
 	bind();
@@ -37,7 +37,40 @@ void Texture::load_file(const std::string& path) {
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	stbi_image_free(data);
+	return true;
 }
+void Texture::create_rgb_null(const Vector2f& size) const {
+	bind();
+	glTexImage2D(
+		GL_TEXTURE_2D,
+		0,
+		GL_RGB,
+		size.x,
+		size.y,
+		0,
+		GL_RGB,
+		GL_UNSIGNED_BYTE,
+		NULL
+	);
+	glGenerateMipmap(GL_TEXTURE_2D);
+}
+
+void Texture::create_depth_null(const Vector2f& size) const {
+	bind();
+	glTexImage2D(
+		GL_TEXTURE_2D,
+		0,
+		GL_DEPTH24_STENCIL8,
+		size.x,
+		size.y,
+		0,
+		GL_DEPTH_STENCIL,
+		GL_UNSIGNED_BYTE,
+		NULL
+	);
+	glGenerateMipmap(GL_TEXTURE_2D);
+}
+
 
 void Texture::set_parameteri(i32 parameter, i32 value) const {
 	bind();
@@ -51,4 +84,8 @@ void Texture::set_parameterfv(i32 parameter, float* value) const {
 void Texture::bind(u32 unit) const {
 	glActiveTexture(GL_TEXTURE0 + unit);
 	glBindTexture(GL_TEXTURE_2D, _info.id);
+}
+
+u32 Texture::get_texture_id() const {
+	return _info.id;
 }

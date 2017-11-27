@@ -1,7 +1,9 @@
 #pragma once
 
-#include "Common.hpp"
 #include <glad/glad.h>
+
+#include "Common.hpp"
+#include "Math/Vector.hpp"
 
 struct VAOInfo {
 	u32 vaoId = 0u;
@@ -11,6 +13,8 @@ struct VAOInfo {
 
 class VAO {
 public:
+
+	static VAO create_plane(const Vector2f& size);
 
 	VAO();
 
