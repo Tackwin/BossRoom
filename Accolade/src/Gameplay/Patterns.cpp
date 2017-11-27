@@ -59,30 +59,31 @@ void Patterns::randomFire(
 		Vector2f dir = Vector2f::createUnitVector(ca);
 		Vector2f pos = boss.getPos() + dir * (boss.getRadius() + 10);
 
-		TimerManager::addFunction(sumDelay, "random fire_", 
-			[&boss, projectile, pos, dir](double) -> bool {
+		const auto& key = TimerManager::addFunction(sumDelay, "random fire_", 
+			[&boss, projectile, pos, dir](double) mutable -> bool {
 				boss.shoot(projectile, pos, dir);
 				return true;
 			}
 		);
+		boss.addKeyTimer(key);
 		sumDelay += rngDelay(RD);
 	}
 }
-std::string Patterns::directionalFire(Boss& boss, nlohmann::json json) {
-	return directionalFire(
+void Patterns::directionalFire(Boss& boss, nlohmann::json json) {
+	directionalFire(
 		boss,
 		getValue<float>("directionalFire", json, "fireRate"),
 		getValue<float>("directionalFire", json, "time"),
 		getValue<nlohmann::json>("directionalFire", json, "projectile")
 	);
 }
-std::string Patterns::directionalFire(
+void Patterns::directionalFire(
 	Boss& boss, 
 	float fireRate, 
 	float time, 
 	nlohmann::json projectile
 ) {
-	return TimerManager::addFunction(1 / fireRate, "directive fire", 
+	const auto& key = TimerManager::addFunction(1 / fireRate, "directive fire", 
 		[&boss, projectile, N = time * fireRate](double) mutable -> bool {
 			float a = 
 				(float)boss.getPos().angleTo(boss.getLevel()->getPlayerPos());
@@ -104,10 +105,11 @@ std::string Patterns::directionalFire(
 			return --N <= 0;
 		}
 	);
+	boss.addKeyTimer(key);
 }
 
-std::string Patterns::barage(Boss& boss, nlohmann::json json) {
-	return barage(
+void Patterns::barage(Boss& boss, nlohmann::json json) {
+	barage(
 		boss,
 		getValue<u32>("barage", json, "nOrbs"),
 		getValue<u32>("barage", json, "nWaves"),
@@ -115,7 +117,7 @@ std::string Patterns::barage(Boss& boss, nlohmann::json json) {
 		getValue<nlohmann::json>("barage", json, "projectile")
 	);
 }
-std::string Patterns::barage(
+void Patterns::barage(
 	Boss& boss, 
 	u32 nOrbs, 
 	u32 nWaves, 
@@ -128,17 +130,18 @@ std::string Patterns::barage(
 			Vector2f pos((float)WIDTH, (float)HEIGHT * i / nOrbs);
 			Vector2f dir = Vector2f::createUnitVector(PIf);
 
-			const auto& pr = MM::make_shared<Projectile>(projectile, pos, dir, false);
+			const auto& pr = 
+				MM::make_shared<Projectile>(projectile, pos, dir, false);
 			boss.addProjectile(pr);
 		}
 
 		return --nWaves == 0;
 	};
 	
-	return TimerManager::addFunction(iTime, "barage", barage);
+	boss.addKeyTimer(TimerManager::addFunction(iTime, "barage", barage));
 }
 
-std::string Patterns::snipe(Boss& boss, nlohmann::json json) {
+void Patterns::snipe(Boss& boss, nlohmann::json json) {
 	return snipe(
 		boss,
 		getValue<u32>("snipe", json, "nShots"),
@@ -147,18 +150,18 @@ std::string Patterns::snipe(Boss& boss, nlohmann::json json) {
 		getValue<nlohmann::json>("snipe", json, "projectile")
 	);
 }
-std::string Patterns::snipe(
+void Patterns::snipe(
 	Boss& boss, 
 	u32 nShots, 
 	float aimTime, 
 	float iTime, 
 	nlohmann::json projectile
 ) {
-	return TM::addFunction(aimTime + iTime, 
+	const auto& key = TM::addFunction(aimTime + iTime, 
 		[&boss, aimTime, projectile, nShots](double) mutable -> bool {
 			boss.getLevel()->startAim();
 
-			TM::addFunction(aimTime, 
+			const auto& key = TM::addFunction(aimTime, 
 				[&boss, projectile](double) mutable -> bool {
 					boss.getLevel()->stopAim();
 
@@ -177,10 +180,12 @@ std::string Patterns::snipe(
 					return true;
 				}
 			);
+			boss.addKeyTimer(key);
 
 			return --nShots == 0;
 		}
 	);
+	boss.addKeyTimer(key);
 }
 /*
 

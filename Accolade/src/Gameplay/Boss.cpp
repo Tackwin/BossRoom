@@ -104,6 +104,14 @@ void Boss::update(double dt) {
 			_particleEffects.erase(_particleEffects.begin() + i - 1);
 		}
 	}
+
+	for (size_t i = 0u; i < _keyPatterns.size();) {
+		if (TM::functionsExist(_keyPatterns[i])) {
+			++i;
+			continue;
+		}
+		_keyPatterns.erase(_keyPatterns.begin() + i);
+	}
 }
 
 void Boss::render(sf::RenderTarget &target) {
@@ -212,4 +220,11 @@ float Boss::getMaxLife() const {
 }
 Level* Boss::getLevel() const {
 	return _level;
+}
+
+void Boss::addKeyTimer(std::string_view key) {
+	_keyPatterns.push_back(std::string(key));
+}
+void Boss::delKeyTimer(std::string_view key) {
+	_keyPatterns.erase(std::find(_keyPatterns.begin(), _keyPatterns.end(), key));
 }

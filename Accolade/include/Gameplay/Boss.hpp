@@ -54,6 +54,9 @@ public:
 
 	Level* getLevel() const;
 
+	void addKeyTimer(std::string_view key);
+	void delKeyTimer(std::string_view key);
+
 	const std::vector<std::shared_ptr<Projectile>>& getProtectilesToShoot() const;
 	void clearProtectilesToShoot();
 

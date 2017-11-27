@@ -9,11 +9,20 @@
 #include "Graphics/Texture.hpp"
 #include "Graphics/VAO.hpp"
 
+#include "Managers/TimerManager.hpp"
+
 #include "Math/Matrix.hpp"
 
 void play();
 
 int main(int, char**) {
+	for (size_t i = 0; i < 1.f; ++i) {
+		float a = 50 * rand() / (float)RAND_MAX;
+		TM::set_timeout([a]() -> bool {
+			std::cout << a << " seconds" << std::endl;
+			return false;
+		}, a);
+	}
 	play();
 	return 0;
 }
@@ -82,10 +91,10 @@ void play() {
 
 		window.clear({ 0.1f, 0.15f, 0.2f, 1.f });
 
-		//transform.set_origin({ cosf(a * pi) / 2.f, sinf(a * pi) / 2.f });
-		//transform.set_position({ cosf(a * pi) / 2.f, sinf(a * pi) / 2.f });
-		//transform.set_scale(Vector2f::createUnitVector(a * pi));
-		//transform.set_rotation(a * pi);
+		transform.set_origin({ cosf(a * pi) / 2.f, sinf(a * pi) / 2.f });
+		transform.set_position({ cosf(a * pi) / 2.f, sinf(a * pi) / 2.f });
+		transform.set_scale(Vector2f::createUnitVector(a * pi));
+		transform.set_rotation(a * pi);
 
 		transform.apply_to_shader(shader);
 

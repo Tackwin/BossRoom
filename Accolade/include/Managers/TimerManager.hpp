@@ -32,7 +32,10 @@ private:
 		};
 	};
 
-	static std::unordered_map<std::string, std::shared_ptr<Function>> _functions;
+	static std::unordered_map<
+		std::string, 
+		std::shared_ptr<Function>
+	> _functions;
 
 public:
 	static u32 getNFunction();
