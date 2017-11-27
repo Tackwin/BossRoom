@@ -9,20 +9,12 @@
 #include "Graphics/Texture.hpp"
 #include "Graphics/VAO.hpp"
 
-#include "Managers/TimerManager.hpp"
-
 #include "Math/Matrix.hpp"
 
 void play();
 
 int main(int, char**) {
-	for (size_t i = 0; i < 1.f; ++i) {
-		float a = 50 * rand() / (float)RAND_MAX;
-		TM::set_timeout([a]() -> bool {
-			std::cout << a << " seconds" << std::endl;
-			return false;
-		}, a);
-	}
+
 	play();
 	return 0;
 }
