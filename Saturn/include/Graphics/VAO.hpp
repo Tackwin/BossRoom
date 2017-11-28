@@ -14,9 +14,14 @@ struct VAOInfo {
 class VAO {
 public:
 
-	static VAO create_plane(const Vector2f& size);
+	static void create_quad(VAO& vao, const Vector2f& size);
 
 	VAO();
+
+	VAO(const VAO&) = delete;
+	VAO(const VAO&&) = delete;
+	VAO& operator=(const VAO&) = delete;
+	VAO& operator=(const VAO&&) = delete;
 
 	void set_element_data(
 		u32* indices, u32 size, i32 usage = GL_STATIC_DRAW

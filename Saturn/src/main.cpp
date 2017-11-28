@@ -43,7 +43,8 @@ void play() {
 	texture.set_parameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	texture.load_file("res/images/wall.png");
 
-	VAO vao = VAO::create_plane({ 1, 1 });
+	VAO vao;
+	VAO::create_quad(vao, { 1, 1 });
 
 	shader.load_vertex("res/shaders/vertex.shader");
 	shader.load_fragment("res/shaders/fragment.shader");
