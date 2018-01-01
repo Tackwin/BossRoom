@@ -2,7 +2,10 @@
 
 #include <glad/glad.h>
 
+#include "Concepts/Delete.hpp"
+
 #include "VAO.hpp"
+#include "Texture.hpp"
 
 #include "Math/Vector.hpp"
 
@@ -11,21 +14,23 @@
 struct FrameBufferInfo {
 	u32 id = 0u;
 	u32 rbo = 0u;
-	u32 texture = 0u;
+
+	Vector2u size = { 0u, 0u };
 
 	VAO quad;
+	Texture color_texture;
 };
 
-class FrameBuffer {
+class FrameBuffer : NoCopy, NoMove {
 public:
-	FrameBuffer(u32 width, u32 height);
+	FrameBuffer(Vector2u size);
 
 	void bind() const;
 
 	void clear(Vector4f color = { 0, 0, 0, 1 }) const;
-	void clearBuffer(u32 bitfield) const;
+	void clear_buffer(u32 bitfield) const;
 
-	void render() const;
+	void render_texture() const;
 private:
 	FrameBufferInfo _info;
 };

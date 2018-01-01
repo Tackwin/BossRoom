@@ -7,14 +7,21 @@
 #include <glad/glad.h>
 
 Shader::Shader() {
-	_shaderInfo.vertexId = glCreateShader(GL_VERTEX_SHADER);
-	_shaderInfo.fragmentId = glCreateShader(GL_FRAGMENT_SHADER);
+	_info.vertexId = glCreateShader(GL_VERTEX_SHADER);
+	_info.fragmentId = glCreateShader(GL_FRAGMENT_SHADER);
 }
 
 Shader::~Shader() {
-	glDeleteShader(_shaderInfo.vertexId);
-	glDeleteShader(_shaderInfo.fragmentId);
-	glDeleteProgram(_shaderInfo.programId);
+	glDeleteShader(_info.vertexId);
+	glDeleteShader(_info.fragmentId);
+	glDeleteProgram(_info.programId);
+}
+
+
+Shader::Shader(const Shader&& that) : _info(that._info) {}
+Shader& Shader::operator=(const Shader&& that) {
+	_info = that._info;
+	return *this;
 }
 
 void Shader::load_vertex(const std::string& path) {
@@ -26,8 +33,8 @@ void Shader::load_vertex(const std::string& path) {
 	size_t size = (size_t)file.tellg();
 	file.seekg(0, file.beg);
 
-	_shaderInfo.vertexSource.resize(size);
-	file.read(_shaderInfo.vertexSource.data(), size);
+	_info.vertexSource.resize(size);
+	file.read(_info.vertexSource.data(), size);
 }
 void Shader::load_fragment(const std::string& path) {
 	std::ifstream file(path);
@@ -38,35 +45,35 @@ void Shader::load_fragment(const std::string& path) {
 	size_t size = (size_t)file.tellg();
 	file.seekg(0, file.beg);
 
-	_shaderInfo.fragmentSource.resize(size);
-	file.read(_shaderInfo.fragmentSource.data(), size);
+	_info.fragmentSource.resize(size);
+	file.read(_info.fragmentSource.data(), size);
 }
 
 void Shader::build_shaders() {
-	auto vertexSource = _shaderInfo.vertexSource.data();
-	auto fragmentSource = _shaderInfo.fragmentSource.data();
+	auto vertexSource = _info.vertexSource.data();
+	auto fragmentSource = _info.fragmentSource.data();
 
-	glShaderSource(_shaderInfo.vertexId, 1, &vertexSource, nullptr);
-	glCompileShader(_shaderInfo.vertexId);
+	glShaderSource(_info.vertexId, 1, &vertexSource, nullptr);
+	glCompileShader(_info.vertexId);
 	
-	check_shader_error(_shaderInfo.vertexId);
+	check_shader_error(_info.vertexId);
 
-	glShaderSource(_shaderInfo.fragmentId, 1, &fragmentSource, nullptr);
-	glCompileShader(_shaderInfo.fragmentId);
+	glShaderSource(_info.fragmentId, 1, &fragmentSource, nullptr);
+	glCompileShader(_info.fragmentId);
 
-	check_shader_error(_shaderInfo.fragmentId);
+	check_shader_error(_info.fragmentId);
 
-	_shaderInfo.programId = glCreateProgram();
-	glAttachShader(_shaderInfo.programId, _shaderInfo.vertexId);
-	glAttachShader(_shaderInfo.programId, _shaderInfo.fragmentId);
-	glLinkProgram(_shaderInfo.programId);
+	_info.programId = glCreateProgram();
+	glAttachShader(_info.programId, _info.vertexId);
+	glAttachShader(_info.programId, _info.fragmentId);
+	glLinkProgram(_info.programId);
 
-	glDeleteShader(_shaderInfo.vertexId);
-	glDeleteShader(_shaderInfo.fragmentId);
+	glDeleteShader(_info.vertexId);
+	glDeleteShader(_info.fragmentId);
 }
 
 void Shader::use() const {
-	glUseProgram(_shaderInfo.programId);
+	glUseProgram(_info.programId);
 }
 
 void Shader::check_shader_error(u32 shader) {
@@ -92,7 +99,7 @@ void Shader::check_program_error(u32 program) {
 void Shader::set_uni_4f(const std::string& name, Vector4f uni) const {
 	use();
 	glUniform4f(
-		glGetUniformLocation(_shaderInfo.programId, name.c_str()),
+		glGetUniformLocation(_info.programId, name.c_str()),
 		XYZW_UNROLL(uni)
 	);
 }
@@ -102,7 +109,7 @@ void Shader::set_uni_mat4f(
 ) const {
 	use();
 	glUniformMatrix4fv(
-		glGetUniformLocation(_shaderInfo.programId, name.c_str()),
+		glGetUniformLocation(_info.programId, name.c_str()),
 		1,
 		GL_TRUE,
 		&(mat.rows[0].x)
@@ -112,7 +119,7 @@ void Shader::set_uni_mat4f(
 void Shader::set_uni_mat4f(const std::string& name, const float* mat) const {
 	use();
 	glUniformMatrix4fv(
-		glGetUniformLocation(_shaderInfo.programId, name.c_str()),
+		glGetUniformLocation(_info.programId, name.c_str()),
 		1,
 		GL_TRUE,
 		mat

@@ -8,6 +8,12 @@ Texture::Texture() {
 	glGenTextures(1, &_info.id);
 }
 
+Texture::Texture(const Texture&& that) : _info(that._info) {}
+Texture& Texture::operator=(const Texture&& that) {
+	_info = that._info;
+	return *this;
+}
+
 bool Texture::load_file(const std::string& path) {
 	i32 comp = 0;
 
@@ -39,7 +45,7 @@ bool Texture::load_file(const std::string& path) {
 	stbi_image_free(data);
 	return true;
 }
-void Texture::create_rgb_null(const Vector2f& size) const {
+void Texture::create_rgb_null(const Vector<2, u32>& size) const {
 	bind();
 	glTexImage2D(
 		GL_TEXTURE_2D,
@@ -54,8 +60,7 @@ void Texture::create_rgb_null(const Vector2f& size) const {
 	);
 	glGenerateMipmap(GL_TEXTURE_2D);
 }
-
-void Texture::create_depth_null(const Vector2f& size) const {
+void Texture::create_depth_null(const Vector<2, u32>& size) const {
 	bind();
 	glTexImage2D(
 		GL_TEXTURE_2D,
@@ -70,7 +75,6 @@ void Texture::create_depth_null(const Vector2f& size) const {
 	);
 	glGenerateMipmap(GL_TEXTURE_2D);
 }
-
 
 void Texture::set_parameteri(i32 parameter, i32 value) const {
 	bind();

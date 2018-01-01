@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include "Concepts/Delete.hpp"
+
 #include "Common.hpp"
 #include "Math/Vector.hpp"
 #include "Math/Matrix.hpp"
@@ -15,11 +17,14 @@ struct ShaderInfo {
 	std::string fragmentSource = "";
 };
 
-class Shader {
+class Shader : NoCopy {
 public:
 
 	Shader();
 	~Shader();
+
+	Shader(const Shader&& that);
+	Shader& operator=(const Shader&& that);
 
 	void load_vertex(const std::string& path);
 	void load_fragment(const std::string& path);
@@ -37,5 +42,5 @@ private:
 	void check_shader_error(u32 shader);
 	void check_program_error(u32 program);
 
-	ShaderInfo _shaderInfo;
+	ShaderInfo _info;
 };

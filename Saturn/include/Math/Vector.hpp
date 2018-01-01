@@ -344,7 +344,11 @@ struct Vector : public __vec_member<D, T> {
 #endif
 };
 using Vector2f = Vector<2U, float>;
+using Vector2u = Vector<2U, unsigned>;
+using Vector2i = Vector<2U, int>;
 using Vector4f = Vector<4U, float>;
+using Vector4u = Vector<4U, unsigned>;
+using Vector4i = Vector<4U, int>;
 
 template<size_t D, typename T, typename U>
 Vector<D, T> operator*(U scalar, const Vector<D, T>& vec) {
