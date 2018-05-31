@@ -3,15 +3,22 @@
 #include <string>
 #include <iostream>
 
-std::unordered_map<std::string, Texture> AM::_textures;
+AssetManager& AssetManager::I() noexcept {
+	static AM assetManager;
+	return assetManager;
+}
 
 bool AssetManager::add_texture(const std::string& key, const std::string& path) {
 	std::cout << "Loading " << key << " from " << path << "... ";
-	if (!_textures[std::string(key)].load_file(path)) {
-		std::cout << "success :)" << std::endl;
+	if (auto& it = _textures[key]; it.load_file(path)) {
+		it.set_filter(Texture::Filter::Linear);
+		it.set_wrap(Texture::Wrap::Repeat);
+
+		std::cout << "success" << std::endl;
 		return false;
 	} 
-	std::cout << "failure :(" << std::endl;
+	_textures.erase(key);
+	std::cout << "failure" << std::endl;
 	return true;
 }
 

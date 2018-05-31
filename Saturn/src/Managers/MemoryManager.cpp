@@ -4,7 +4,7 @@
 MemoryManager::MemoryManager() {
 }
 MemoryManager::~MemoryManager() {
-	if (!_main_buffer)
+	if (_main_buffer)
 		delete[] _main_buffer;
 }
 

@@ -15,14 +15,27 @@ struct TextureInfo {
 class Texture {
 public:
 
+	enum Wrap {
+		Repeat = GL_REPEAT
+	};
+	enum Filter {
+		Linear = GL_LINEAR
+	};
+
 	Texture();
 
-	bool load_file(const std::string& path);
-	void create_rgb_null(const Vector2f& size) const;
-	void create_depth_null(const Vector2f& size) const;
+	void set_wrap(Wrap wrap) const noexcept;
+	void set_wrap(Wrap s, Wrap t) const noexcept;
 
-	void set_parameteri(i32 parameter, i32 value) const;
-	void set_parameterfv(i32 parameter, float* value) const;
+	void set_filter(Filter filter) const noexcept;
+	void set_filter(Filter min, Filter mag) const noexcept;
+
+	bool load_file(const std::string& path);
+	void create_rgb_null(const Vector2u& size) const;
+	void create_depth_null(const Vector2u& size) const;
+
+	void set_parameteri(i32 parameter, i32 value) const noexcept;
+	void set_parameterfv(i32 parameter, float* value) const noexcept;
 	void bind(u32 unit = 0u) const;
 
 	u32 get_texture_id() const;

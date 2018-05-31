@@ -3,7 +3,11 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "Managers/MemoryManager.hpp"
+#include "Managers/AssetManager.hpp"
+
 #include "System/Window.hpp"
+
 #include "Graphics/Shader.hpp"
 #include "Graphics/Transform.hpp"
 #include "Graphics/Texture.hpp"
@@ -11,9 +15,11 @@
 
 #include "Math/Matrix.hpp"
 
+
 void play();
 
 int main(int, char**) {
+	MemoryManager::I().initialize_buffer(50'000'000);
 
 	play();
 	return 0;
@@ -34,14 +40,11 @@ void play() {
 		return;
 	}
 
+	AM::I().add_texture("wall", "res/images/wall.png");
+	auto& texture = AM::I().get_texture("wall");
+
 	Shader shader;
-	Texture texture;
 	Transform transform;
-	texture.set_parameteri(GL_TEXTURE_WRAP_S, GL_REPEAT);
-	texture.set_parameteri(GL_TEXTURE_WRAP_T, GL_REPEAT);
-	texture.set_parameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	texture.set_parameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	texture.load_file("res/images/wall.png");
 
 	VAO vao;
 	VAO::create_quad(vao, { 1, 1 });
@@ -65,9 +68,6 @@ void play() {
 
 		window.clear({ 0.1f, 0.15f, 0.2f, 1.f });
 
-		transform.set_origin({ cosf(a * pi) / 2.f, sinf(a * pi) / 2.f });
-		transform.set_position({ cosf(a * pi) / 2.f, sinf(a * pi) / 2.f });
-		transform.set_scale(Vector2f::createUnitVector(a * pi));
 		transform.set_rotation(a * pi);
 
 		transform.apply_to_shader(shader);

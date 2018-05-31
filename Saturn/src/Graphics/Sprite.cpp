@@ -6,9 +6,9 @@ Sprite::Sprite() {
 }
 
 void Sprite::set_texture(const std::string& key) {
-	if (!AM::find_texture(key)) return;
+	if (!AM::I().find_texture(key)) return;
 
-	_info.texture = &AM::get_texture(key);
+	_info.texture = &AM::I().get_texture(key);
 }
 
 void Sprite::render() const {
