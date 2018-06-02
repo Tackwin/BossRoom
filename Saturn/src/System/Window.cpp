@@ -3,6 +3,7 @@
 #include <iostream>
 
 Window::Window(u32 width, u32 height, std::string_view title) {
+	
 	_windowInfo.width = width;
 	_windowInfo.height = height;
 	_windowInfo.title = title;

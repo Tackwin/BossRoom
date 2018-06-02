@@ -1,4 +1,5 @@
 #include <iostream>
+#include <filesystem>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -11,6 +12,7 @@
 #include "Graphics/Shader.hpp"
 #include "Graphics/Transform.hpp"
 #include "Graphics/Texture.hpp"
+#include "Graphics/Sprite.hpp"
 #include "Graphics/VAO.hpp"
 
 #include "Math/Matrix.hpp"
@@ -40,24 +42,13 @@ void play() {
 		return;
 	}
 
-	AM::I().add_texture("wall", "res/images/wall.png");
-	auto& texture = AM::I().get_texture("wall");
+	AM::I().load_texture("wall", "res/images/wall.png");
+	AM::I().load_shader("default", "res/shaders/shader");
 
-	Shader shader;
-	Transform transform;
+	Sprite wall;
+	wall.set_texture("wall");
+	wall.set_shader("default");
 
-	VAO vao;
-	VAO::create_quad(vao, { 1, 1 });
-
-	shader.load_vertex("res/shaders/vertex.shader");
-	shader.load_fragment("res/shaders/fragment.shader");
-
-	shader.build_shaders();
-
-	transform.set_position({ 0, 0 });
-	transform.set_rotation(0);
-	transform.set_size({ 1, 1 });
-	transform.set_scale({ 1, 1 });
 
 	while (!window.should_close()) {
 		static float a = 0.f;
@@ -68,13 +59,8 @@ void play() {
 
 		window.clear({ 0.1f, 0.15f, 0.2f, 1.f });
 
-		transform.set_rotation(a * pi);
-
-		transform.apply_to_shader(shader);
-
-		texture.bind();
-		vao.bind();
-		vao.render(6);
+		wall.get_transform().set_rotation(a * pi);
+		wall.render();
 
 		window.swap_buffers();
 	}

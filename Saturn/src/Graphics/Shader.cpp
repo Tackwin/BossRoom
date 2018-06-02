@@ -17,10 +17,11 @@ Shader::~Shader() {
 	glDeleteProgram(_shaderInfo.programId);
 }
 
-void Shader::load_vertex(const std::string& path) {
+bool Shader::load_vertex(const std::string& path) {
 	std::ifstream file(path);
 
 	_ASSERT_EXPR(file.is_open(), ("Can't find shader: " + path).c_str());
+	if (!file.is_open()) return false;
 
 	file.seekg(0, file.end);
 	size_t size = (size_t)file.tellg();
@@ -28,11 +29,14 @@ void Shader::load_vertex(const std::string& path) {
 
 	_shaderInfo.vertexSource.resize(size);
 	file.read(_shaderInfo.vertexSource.data(), size);
+
+	return true;
 }
-void Shader::load_fragment(const std::string& path) {
+bool Shader::load_fragment(const std::string& path) {
 	std::ifstream file(path);
 
 	_ASSERT_EXPR(file.is_open(), ("Can't find shader: " + path).c_str());
+	if (!file.is_open()) return false;
 
 	file.seekg(0, file.end);
 	size_t size = (size_t)file.tellg();
@@ -40,21 +44,23 @@ void Shader::load_fragment(const std::string& path) {
 
 	_shaderInfo.fragmentSource.resize(size);
 	file.read(_shaderInfo.fragmentSource.data(), size);
+
+	return true;
 }
 
-void Shader::build_shaders() {
+bool Shader::build_shaders() {
 	auto vertexSource = _shaderInfo.vertexSource.data();
 	auto fragmentSource = _shaderInfo.fragmentSource.data();
 
 	glShaderSource(_shaderInfo.vertexId, 1, &vertexSource, nullptr);
 	glCompileShader(_shaderInfo.vertexId);
 	
-	check_shader_error(_shaderInfo.vertexId);
+	if (check_shader_error(_shaderInfo.vertexId)) return false;
 
 	glShaderSource(_shaderInfo.fragmentId, 1, &fragmentSource, nullptr);
 	glCompileShader(_shaderInfo.fragmentId);
 
-	check_shader_error(_shaderInfo.fragmentId);
+	if (check_shader_error(_shaderInfo.fragmentId)) return false;
 
 	_shaderInfo.programId = glCreateProgram();
 	glAttachShader(_shaderInfo.programId, _shaderInfo.vertexId);
@@ -63,30 +69,36 @@ void Shader::build_shaders() {
 
 	glDeleteShader(_shaderInfo.vertexId);
 	glDeleteShader(_shaderInfo.fragmentId);
+
+	return true;
 }
 
 void Shader::use() const {
 	glUseProgram(_shaderInfo.programId);
 }
 
-void Shader::check_shader_error(u32 shader) {
+bool Shader::check_shader_error(u32 shader) {
 	i32 success = 0;
 	std::string log(512, 0);
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
 	if (!success) {
 		glGetShaderInfoLog(shader, 512, nullptr, log.data());
 		std::cout << "Error compilation shader" << std::endl << log << std::endl;
+		return true;
 	}
+	return false;
 }
 
-void Shader::check_program_error(u32 program) {
+bool Shader::check_program_error(u32 program) {
 	i32 success = 0;
 	std::string log(512, 0);
 	glGetProgramiv(program, GL_COMPILE_STATUS, &success);
 	if (!success) {
 		glGetProgramInfoLog(program, 512, nullptr, log.data());
 		std::cout << "Error compilation shader" << std::endl << log << std::endl;
+		return true;
 	}
+	return false;
 }
 
 void Shader::set_uni_4f(const std::string& name, Vector4f uni) const {

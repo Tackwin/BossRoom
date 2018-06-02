@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <string>
 
 using i08 = std::int8_t;
 using u08 = std::uint8_t;
@@ -12,6 +13,8 @@ using u64 = std::uint64_t;
 
 namespace COMMON {
 	constexpr float pi = 3.1415926f;
+
+	constexpr u32 seed = 123456789;
 };
 using namespace COMMON;
 

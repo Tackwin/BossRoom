@@ -21,10 +21,10 @@ public:
 	Shader();
 	~Shader();
 
-	void load_vertex(const std::string& path);
-	void load_fragment(const std::string& path);
+	bool load_vertex(const std::string& path);
+	bool load_fragment(const std::string& path);
 
-	void build_shaders();
+	bool build_shaders();
 
 	void use() const;
 
@@ -34,8 +34,8 @@ public:
 
 private:
 
-	void check_shader_error(u32 shader);
-	void check_program_error(u32 program);
+	bool check_shader_error(u32 shader);
+	bool check_program_error(u32 program);
 
 	ShaderInfo _shaderInfo;
 };
