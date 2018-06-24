@@ -2,26 +2,28 @@
 #include "Managers/AssetManager.hpp"
 
 Sprite::Sprite() {
-	VAO::create_quad(_info.mesh, { 1.f, 1.f });
+	_info.mesh = VAO::create_quad({ 1, 1 });
 }
 
-void Sprite::set_shader(const std::string& key) noexcept {
-	_info.shaderKey = key;
+Sprite::Sprite(const Sprite&& that) {
+	this->operator=(std::move(that));
 }
-void Sprite::set_texture(const std::string& key) noexcept {
-	_info.textureKey = key;
-}
-Transform& Sprite::get_transform() noexcept {
-	return _info.transform;
+Sprite& Sprite::operator=(const Sprite&& that) {
+	_info.texture = that._info.texture;
+	_info.transform = that._info.transform;
+	_info.mesh = std::move(that._info.mesh);
+	return *this;
 }
 
-void Sprite::render() const {
-	auto& am = AM::I();
 
-	_info.transform.apply_to_shader(am.get_shader(_info.shaderKey));
+void Sprite::set_texture(const std::string& key) {
+	if (!AM::find_texture(key)) return;
 
-	am.get_shader(_info.shaderKey).use();
-	am.get_texture(_info.textureKey).bind();
-	_info.mesh.bind();
+	_info.texture = &AM::get_texture(key);
+}
+
+void Sprite::render(const FrameBuffer& target) const {
+	target.bind();
+	_info.texture->bind();
 	_info.mesh.render(6);
 }

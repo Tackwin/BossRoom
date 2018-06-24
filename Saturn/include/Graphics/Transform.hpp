@@ -6,10 +6,10 @@
 #include "Math/Matrix.hpp"
 
 struct TransformInfo {
-	Vector2f origin{ 0.f, 0.f };
-	Vector2f size{ 1.f, 1.f };
-	Vector2f pos{ 0.f, 0.f };
-	float theta{ 0.f };
+	Vector2f origin = { 0, 0 };
+	Vector2f size = { 1, 1 };
+	Vector2f pos = { 0, 0 };
+	float theta = 0.f;
 };
 
 class Transform {
@@ -30,6 +30,6 @@ public:
 private:
 
 	TransformInfo _info;
-	Vector2f _scale{ 1.f, 1.f };
+	Vector2f _scale = { 1, 1 };
 };
 

@@ -2,7 +2,10 @@
 
 #include <glad/glad.h>
 
+#include "Concepts/Delete.hpp"
+
 #include "Common.hpp"
+
 #include "Math/Vector.hpp"
 
 struct VAOInfo {
@@ -11,17 +14,15 @@ struct VAOInfo {
 	u32 vboId = 0u;
 };
 
-class VAO {
+class VAO : NoCopy {
 public:
 
-	static void create_quad(VAO& vao, const Vector2f& size);
+	static VAO create_quad(const Vector2f& size);
 
 	VAO();
 
-	VAO(const VAO&) = delete;
-	VAO(const VAO&&) = delete;
-	VAO& operator=(const VAO&) = delete;
-	VAO& operator=(const VAO&&) = delete;
+	VAO(const VAO&& that);
+	VAO& operator=(const VAO&& that);
 
 	void set_element_data(
 		u32* indices, u32 size, i32 usage = GL_STATIC_DRAW
@@ -41,6 +42,6 @@ public:
 	void render(u32 size, i32 mode = GL_TRIANGLES) const;
 private:
 
-	VAOInfo _vaoInfo;
+	VAOInfo _info;
 
 };

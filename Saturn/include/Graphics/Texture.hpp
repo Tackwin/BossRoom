@@ -3,6 +3,7 @@
 #include <string>
 #include <glad/glad.h>
 
+#include "Concepts/Delete.hpp"
 #include "Common.hpp"
 #include "Math/Vector.hpp"
 
@@ -12,30 +13,20 @@ struct TextureInfo {
 	i32 height = 0u;
 };
 
-class Texture {
+class Texture : NoCopy {
 public:
-
-	enum Wrap {
-		Repeat = GL_REPEAT
-	};
-	enum Filter {
-		Linear = GL_LINEAR
-	};
 
 	Texture();
 
-	void set_wrap(Wrap wrap) const noexcept;
-	void set_wrap(Wrap s, Wrap t) const noexcept;
-
-	void set_filter(Filter filter) const noexcept;
-	void set_filter(Filter min, Filter mag) const noexcept;
+	Texture(const Texture&& that);
+	Texture& operator=(const Texture&& that);
 
 	bool load_file(const std::string& path);
-	void create_rgb_null(const Vector2u& size) const;
-	void create_depth_null(const Vector2u& size) const;
+	void create_rgb_null(const Vector<2, u32>& size) const;
+	void create_depth_null(const Vector<2, u32>& size) const;
 
-	void set_parameteri(i32 parameter, i32 value) const noexcept;
-	void set_parameterfv(i32 parameter, float* value) const noexcept;
+	void set_parameteri(i32 parameter, i32 value) const;
+	void set_parameterfv(i32 parameter, float* value) const;
 	void bind(u32 unit = 0u) const;
 
 	u32 get_texture_id() const;

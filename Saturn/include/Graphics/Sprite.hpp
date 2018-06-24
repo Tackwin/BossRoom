@@ -1,28 +1,28 @@
 #pragma once
 
-#include <memory>
+#include "Concepts/Delete.hpp"
 
+#include "FrameBuffer.hpp"
 #include "Transform.hpp"
 #include "Texture.hpp"
 #include "VAO.hpp"
 
+struct SpriteInfo {
+	Texture* texture;
+	Transform transform;
+	VAO mesh;
+};
 
-class Sprite {
-	struct SpriteInfo {
-		std::string textureKey;
-		std::string shaderKey;
-		Transform transform;
-		VAO mesh;
-	};
-
+class Sprite : NoCopy {
 public:
 	Sprite();
 
-	void set_shader(const std::string& shader) noexcept;
-	void set_texture(const std::string& key) noexcept;
-	Transform& get_transform() noexcept;
+	Sprite(const Sprite&& that);
+	Sprite& operator=(const Sprite&& that);
 
-	void render() const;
+	void set_texture(const std::string& key);
+
+	void render(const FrameBuffer& target) const;
 
 private:
 	SpriteInfo _info;

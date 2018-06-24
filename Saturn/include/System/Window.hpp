@@ -1,11 +1,13 @@
 #pragma once
 #include <string_view>
 
-#include <GLFW/glfw3.h>
+#include "Concepts/Delete.hpp"
 
 #include "Math/Vector.hpp"
 
 #include "Common.hpp"
+
+struct GLFWwindow;
 
 struct WindowInfo {
 	u32 width = 0u;
@@ -13,13 +15,15 @@ struct WindowInfo {
 	std::string title = "";
 };
 
-class Window {
+class Window : NoCopy, NoMove {
 public:
 
 	Window(u32 width, u32 height, std::string_view title);
 
-	void process_inputs();
-	void clear(Vector4f color = {0.f, 0.f, 0.f, 0.f});
+	void set_viewport() const;
+
+	void process_inputs() const;
+	void clear(Vector4f color = {0.f, 0.f, 0.f, 0.f}) const;
 
 	bool should_close() const;
 	void swap_buffers() const;
@@ -34,5 +38,5 @@ private:
 
 	GLFWwindow* _window;
 
-	WindowInfo _windowInfo;
+	WindowInfo _info;
 };
