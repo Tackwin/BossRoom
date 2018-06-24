@@ -1,8 +1,7 @@
-#include <Physics/Object.hpp>
+#include "Object.hpp"
 
 u64 Object::N = 0u;
 
-Object::Object() :
-id(N++) {
-
+Object::Object() : uuid() {
+	N++;
 }

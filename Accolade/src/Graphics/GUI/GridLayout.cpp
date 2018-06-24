@@ -1,4 +1,4 @@
-#include <Graphics/GUI/GridLayout.hpp>
+#include "GridLayout.hpp"
 
 GridLayout::GridLayout() {
 }

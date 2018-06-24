@@ -1,0 +1,10 @@
+{
+  "move_up": 25,
+  "move_left": 16,
+  "move_down": 18,
+  "move_right": 3,
+  "dash": -1,
+  "slow": 38,
+  "jump": 57,
+  "action": 0
+}

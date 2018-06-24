@@ -1,4 +1,4 @@
-#include "Managers/EventManager.hpp"
+#include "EventManager.hpp"
 
 std::unordered_map<std::string, std::unordered_map<u32, EventManager::EventCallback>> EventManager::_callbacks;
 
@@ -40,7 +40,7 @@ void EventManager::fire(std::string key, EventCallbackParameter args) {
 		return;
 
 	auto& map = it->second;
-	for (auto& [_, i] : map) {
+	for (auto& [_, i] : map) {_;
 		i(args);
 	}
 }

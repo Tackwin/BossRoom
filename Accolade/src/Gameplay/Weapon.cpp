@@ -1,23 +1,22 @@
-#include "Gameplay/Weapon.hpp"
+#include "Weapon.hpp"
 
-#include "Game.hpp"
-#include "Common.hpp"
+#include "./../Game.hpp"
+#include "./../Common.hpp"
 
-#include "Managers/AssetsManager.hpp"
-#include "Managers/InputsManager.hpp"
-#include "Managers/TimerManager.hpp"
+#include "./../Managers/AssetsManager.hpp"
+#include "./../Managers/InputsManager.hpp"
+#include "./../Managers/TimerManager.hpp"
 
-#include "Physics/Collider.hpp"
+#include "./../Physics/Collider.hpp"
 
-#include "Gameplay/Projectile.hpp"
-#include "Gameplay/Player.hpp"
-#include "Gameplay/Level.hpp"
+#include "Projectile.hpp"
+#include "Player/Player.hpp"
+#include "Level.hpp"
 
 Weapon::Weapon() {}
 
-Weapon::Weapon(std::shared_ptr<Player> player, nlohmann::json json)
-	: _player(player),
-	_json(json),
+Weapon::Weapon(nlohmann::json json)
+	: _json(json),
 	_radius(json["radius"]),
 	_name(""),
 	_cost(0)
@@ -32,29 +31,21 @@ Weapon::Weapon(std::shared_ptr<Player> player, nlohmann::json json)
 }
 
 Weapon::Weapon(const Weapon& other) :
-	_player(other._player),
 	_json(other._json),
 	_flags(other._flags),
 	_keys(other._keys),
 
-	_radius(other._json["radius"]),
+	_radius(other._radius),
 	_equip(other._equip),
 	_unEquip(other._unEquip),
 	_active(other._active),
 	_passive(other._passive),
 	_update(other._update),
 	
-	_activeSounds(other._activeSounds)
-{
-	const std::string& str = _json["sprite"];
+	_activeSounds(other._activeSounds),
 
-	_uiSprite = sf::Sprite(AssetsManager::getTexture(str));
-	_uiSprite.setOrigin(
-		_uiSprite.getTextureRect().width * 0.5f,
-		_uiSprite.getTextureRect().height * 0.5f
-	);
-	setUiSpriteSize({ 100.f, 100.f });
-	_uiSprite.setPosition((float)WIDTH, (float)HEIGHT);
+	_uiSprite(other._uiSprite)
+{
 }
 
 void Weapon::render(sf::RenderTarget&) {
@@ -63,22 +54,22 @@ void Weapon::renderGui(sf::RenderTarget& target) {
 	target.draw(_uiSprite);
 }
 
-void Weapon::equip() {
-	_equip(*this);
+void Weapon::equip(Player& player) {
+	_equip(*this, player);
 }
-void Weapon::unEquip() {
-	_unEquip(*this);
-}
-
-void Weapon::active(u32 id_) {
-	_active(*this, id_);
-}
-void Weapon::passive(u32 id_) {
-	_passive(*this, id_);
+void Weapon::unEquip(Player& player) {
+	_unEquip(*this, player);
 }
 
-void Weapon::update(float dt) {
-	_update(*this, dt);
+void Weapon::active(Player& player, u32 id_) {
+	_active(*this, player, id_);
+}
+void Weapon::passive(Player& player, u32 id_) {
+	_passive(*this, player, id_);
+}
+
+void Weapon::update(Player& player, float dt) {
+	_update(*this, player, dt);
 }
 
 const sf::Sprite& Weapon::getUiSprite() const {
@@ -123,13 +114,6 @@ u32 Weapon::getCost() const {
 	return _cost;
 }
 
-void Weapon::setPlayer(const std::shared_ptr<Player>& player) {
-	_player = player;
-}
-const std::shared_ptr<Player> Weapon::getPlayer() const {
-	return _player;
-}
-
 const nlohmann::json& Weapon::getJson() const {
 	return _json;
 }
@@ -137,7 +121,6 @@ const nlohmann::json& Weapon::getJson() const {
 void Weapon::swap(Weapon& other) {
 	std::swap(_name, other._name);
 	std::swap(_cost, other._cost);
-	std::swap(_player, other._player);
 	std::swap(_uiSprite, other._uiSprite);
 	std::swap(_radius, other._radius);
 	std::swap(_keys, other._keys);
@@ -156,4 +139,8 @@ Weapon& Weapon::operator=(const Weapon& other) {
 	Weapon tmp(other);
 	swap(tmp);
 	return *this;
+}
+
+const UUID& Weapon::getUUID() const noexcept {
+	return _uuid;
 }

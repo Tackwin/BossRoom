@@ -1,12 +1,12 @@
-#include "Graphics/ParticleGenerator.hpp"
+#include "ParticleGenerator.hpp"
 #include <functional>
 #include <algorithm>
 
-#include "Common.hpp"
+#include "./../Common.hpp"
 
-#include "Managers/TimerManager.hpp"
+#include "./../Managers/TimerManager.hpp"
 
-#include "Graphics/Particle.hpp"
+#include "./../Graphics/Particle.hpp"
 
 ParticleGenerator::ParticleGenerator() {}
 
@@ -62,7 +62,9 @@ void ParticleGenerator::restart() {
 void ParticleGenerator::start() {
 	_remain = _nParticles;
 	_ended = false;
+
 	_lambda(0);
+	
 }
 
 void ParticleGenerator::loadJson(const nlohmann::json& json) {
@@ -71,7 +73,7 @@ void ParticleGenerator::loadJson(const nlohmann::json& json) {
 	_remain = getJsonValue<u32>(_json, "nParticles");
 	_nParticles = _remain;
 
-	_lambda = [&](double)mutable -> bool {
+	/*_lambda = [&](double)mutable -> bool {
 		float timer = getJsonValue<float>(_json, "iTime");
 
 		//_particles.push_back(std::make_shared<Particle>(_json["particle"], _pos, Vector2f::createUnitVector(unitaryRng(RD) * 2 * PIf)));
@@ -82,7 +84,7 @@ void ParticleGenerator::loadJson(const nlohmann::json& json) {
 			_ended = true;
 		}
 		return true;
-	};
+	};*/
 }
 
 void ParticleGenerator::setPos(const Vector2f& pos) {

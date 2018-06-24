@@ -1,6 +1,6 @@
-#include "Graphics/GUI/Label.hpp"
+#include "Label.hpp"
 
-#include "Managers/AssetsManager.hpp"
+#include "./../../Managers/AssetsManager.hpp"
 
 Label::Label() :
 	Widget() {

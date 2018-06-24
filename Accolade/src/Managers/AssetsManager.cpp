@@ -1,4 +1,4 @@
-#include "Managers/AssetsManager.hpp"
+#include "AssetsManager.hpp"
 
 #include <cassert>
 #include <fstream>
@@ -30,7 +30,10 @@ AssetsManager::AssetsManager() {
 AssetsManager::~AssetsManager() {
 }
 
-bool AssetsManager::loadTexture(const std::string &key, const std::string &path) {
+bool AssetsManager::haveTexture(const std::string& key) {
+	return _textures.find(key) != std::end(_textures);
+}
+bool AssetsManager::loadTexture(const std::string& key, const std::string &path) {
 	if (_textures.find(key) != std::end(_textures))
 		return true;
 
@@ -75,6 +78,9 @@ bool AssetsManager::loadTexture(const std::string &key, const std::string &path)
 	return it->second;
 }
 
+bool AssetsManager::haveImage(const std::string& key) {
+	return _images.find(key) != std::end(_images);
+}
 bool AssetsManager::loadImage(const std::string &key, const std::string &path) {
 	if (_images.find(key) != std::end(_images))
 		return true;
@@ -118,6 +124,9 @@ const sf::Image& AssetsManager::getImage(const std::string &key) {
 	return it->second;
 }
 
+bool AssetsManager::haveFont(const std::string& key) {
+	return _fonts.find(key) != std::end(_fonts);
+}
 bool AssetsManager::loadFont(const std::string &key, const std::string &path) {
 	if (_fonts.find(key) != std::end(_fonts))
 		return true;
@@ -161,6 +170,9 @@ const sf::Font& AssetsManager::getFont(const std::string &key) {
 	return it->second;
 }
 
+bool AssetsManager::haveSound(const std::string& key) {
+	return _sounds.find(key) != std::end(_sounds);
+}
 bool AssetsManager::loadSound(const std::string &key, const std::string &path) {
 	if (_sounds.find(key) != std::end(_sounds))
 		return true;
@@ -190,6 +202,9 @@ const sf::SoundBuffer& AssetsManager::getSound(const std::string &key) {
 	return it->second;
 }
 
+bool AssetsManager::haveJson(const std::string& key) {
+	return _jsons.find(key) != std::end(_jsons);
+}
 bool AssetsManager::loadJson(const std::string &key, const std::string &path) {
 	if (_jsons.find(key) != std::end(_jsons))
 		return true;
@@ -240,8 +255,9 @@ const nlohmann::json& AssetsManager::getJson(const std::string &key) {
 	return it->second;
 }
 
-
-
+bool AssetsManager::haveMusic(const std::string& key) {
+	return _musics.find(key) != std::end(_musics);
+}
 bool AssetsManager::openMusic(const std::string &key, const std::string &path) {
 	if (_musics.find(key) != std::end(_musics))
 		return true;

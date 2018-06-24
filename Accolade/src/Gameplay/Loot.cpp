@@ -1,9 +1,10 @@
-#include "Gameplay/Loot.hpp"
+#include "Loot.hpp"
 
 #include <functional>
 
-#include "Gameplay/Player.hpp"
-#include "Managers/TimerManager.hpp"
+#include "Player/Player.hpp"
+
+#include "./../Managers/TimerManager.hpp"
 
 Loot::Loot(float r) :
 	Zone(r) 
@@ -21,12 +22,12 @@ Loot::LOOT_TYPE Loot::getLootType() const {
 	return _lootType;
 }
 
-void Loot::setWeapon(std::shared_ptr<Weapon> weapon) {
+void Loot::setWeapon(UUID weapon) {
 	_weapon = weapon;
 	cleanSprites();
-	addSprite("icon", _weapon->getUiSprite());
+	addSprite("icon", Weapon::_weapons[weapon].getUiSprite());
 }
-std::shared_ptr<Weapon> Loot::getWeapon() const {
+UUID Loot::getWeapon() const {
 	return _weapon;
 }
 
@@ -52,7 +53,7 @@ void Loot::onEnter(Object* obj) { // we know typeof(obj) is necessarly Player*
 	case LOOT_TYPE::WEAPON :
 		Player* player = static_cast<Player*>(obj);
 	
-		auto player_weapon = player->getWeapon();
+		auto& player_weapon = player->getWeapon().getUUID();
 		player->swapWeapon(_weapon);
 
 		setWeapon(player_weapon);

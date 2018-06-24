@@ -131,9 +131,12 @@
 		"hit": "sounds/hit.wav",
 		"sword": "sounds/sword.wav"
 	},
-	"fonts": {
-		"consola": "fonts/consola.ttf"
-	},
+  "fonts": {
+    "consola": "fonts/consola.ttf"
+  },
+  "jsons": {
+    "default_key": "keys/default.json"
+  },
 	"bosses": [
 		{
 			"name": "boss 0",
@@ -202,35 +205,13 @@
 		}
 	],
   "player": {
-    "upKey": 25,
-    "leftKey": 16,
-    "downKey": 18,
-    "rightKey": 3,
-    "dashKey": -1,
-    "slowKey": 38,
-    "jumpKey": 57,
-    "actionButton": 0,
-
-    "character": "Boloss",
+    "characters": {
+      "char_boloss": "characters/boloss.json"
+    },
 
     "startpos": {
       "x": 200,
       "y": 360
-    }
-  },
-  "characters": {
-    "Boloss": {
-      "name": "Boloss",
-      "life": 3,
-      "dash": 150,
-      "speed": 500,
-      "radius": 25,
-      "specialSpeed": 800,
-      "invincibilityTime": 0.2,
-      "jumpHeight": 300,
-      "jumpBoostMultiplier": 1.3,
-      "jumpBoostTime": 0.2,
-      "sprite": "player"
     }
   },
 	"patterns": {
@@ -422,7 +403,7 @@
 			}
 		},
 		{
-			"cooldowns": [ 0.1 ],
+			"cooldowns": [ 0.001 ],
 			"radius": 30,
 			"sprite": "weapon1",
 			"sounds": {

@@ -1,9 +1,9 @@
-#include <Graphics/GUI/Widget.hpp>
+#include "Widget.hpp"
 
 #include <queue>
 #include <stack>
 
-#include <Managers/InputsManager.hpp>
+#include "./../../Managers/InputsManager.hpp"
 
 const Widget::Callback::type Widget::Callback::ZERO = []() { return false; };
 
@@ -150,7 +150,7 @@ void Widget::propagateRender(sf::RenderTarget& target) {
 		w->render(target);
 		auto child = w->getChilds();
 
-		for (auto& [_, c] : child) {
+		for (auto& [_, c] : child) { _;
 			open.push(c);
 		}
 	}

@@ -1,9 +1,9 @@
-#include "Graphics/AnimatedSprite.hpp"
+#include "AnimatedSprite.hpp"
 
-#include "Common.hpp"
+#include "./../Common.hpp"
 
-#include "Managers/TimerManager.hpp"
-#include "Managers/AssetsManager.hpp"
+#include "./../Managers/TimerManager.hpp"
+#include "./../Managers/AssetsManager.hpp"
 
 AnimatedSprite::AnimatedSprite() {
 
@@ -20,8 +20,8 @@ AnimatedSprite::AnimatedSprite(const std::string& json_) :
 }
 
 
-void AnimatedSprite::pushAnim(const std::string& key_, u32 offset_) {
-	if (!_stackAnim.empty()) {
+void AnimatedSprite::pushAnim(const std::string&, u32) {
+	/*if (!_stackAnim.empty()) {
 		const auto& anim = _stackAnim.top();
 		TimerManager::pauseFunction(anim.keyCallback);
 	}
@@ -39,8 +39,11 @@ void AnimatedSprite::pushAnim(const std::string& key_, u32 offset_) {
 	anim.row = json["row"].is_null() ? 0 : json["row"].get<u32>();
 	anim.col = json["col"].is_null() ? 0 : json["col"].get<u32>();
 	anim.keyCallback = TimerManager::addFunction(time / frames, key_, 
-		[&, row = anim.row, col = anim.col, frames, 
-			w = anim.w, h = anim.h, loop, n = offset_](double) mutable -> bool{
+		[
+			&, row = anim.row, col = anim.col, frames,
+			w = anim.w, h = anim.h, loop, n = offset_
+		]
+		(double) mutable -> bool {
 			if (!loop && n >= frames) {
 				popAnim();
 				return true;
@@ -62,7 +65,7 @@ void AnimatedSprite::pushAnim(const std::string& key_, u32 offset_) {
 	);
 	_stackAnim.push(anim);
 	
-	TimerManager::callFunction(anim.keyCallback);
+	TimerManager::callFunction(anim.keyCallback);*/
 }
 void AnimatedSprite::popAnim() {
 	TimerManager::removeFunction(_stackAnim.top().keyCallback);

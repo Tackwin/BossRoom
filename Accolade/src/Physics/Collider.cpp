@@ -1,6 +1,6 @@
-#include "Physics/Collider.hpp"
+#include "Collider.hpp"
 
-#include "Math/Rectangle.hpp"
+#include "./../Math/Rectangle.hpp"
 
 bool DiskRect(Vector2f circle, float r, Rectangle2f rect) {
 	Vector2f closest = Vector2f::clamp(circle, rect.pos, rect.pos + rect.size);

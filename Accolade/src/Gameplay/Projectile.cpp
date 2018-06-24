@@ -1,9 +1,9 @@
-#include "Gameplay/Projectile.hpp"
+#include "Projectile.hpp"
 
-#include "Common.hpp"
+#include "./../Common.hpp"
 
-#include "Managers/AssetsManager.hpp"
-#include "Managers/TimerManager.hpp"
+#include "./../Managers/AssetsManager.hpp"
+#include "./../Managers/TimerManager.hpp"
 
 Projectile::Projectile() : 
 	Object()
@@ -18,6 +18,13 @@ Projectile::Projectile(nlohmann::json json,
 	_json(json),
 	_update([](Projectile&, double) {}) 
 {
+	static int i = 0;
+
+	i++;
+
+	if (i == 7) {
+		printf("debug");
+	}
 	_speed = getJsonValue<float>(json, "speed");
 	_damage = getJsonValue<float>(json, "damage");
 	_radius = getJsonValue<float>(json, "radius");
@@ -27,14 +34,10 @@ Projectile::Projectile(nlohmann::json json,
 	
 	this->pos = pos;
 
-	collider = &_disk;
-	collider->onEnter = [&](Object* obj) {
-		if (obj->idMask[(size_t)Object::BIT_TAGS::FLOOR]) {
-			_exploded = true;
-		}
-	};
-	_disk.userPtr = this;
-	_disk.r = _radius;
+	collider = std::make_unique<Disk>();
+	_disk = (Disk*)collider.get();
+	_disk->userPtr = this;
+	_disk->r = _radius;
 
 	idMask.set((size_t)BIT_TAGS::PROJECTILE);
 	collisionMask.set((size_t)(player ? BIT_TAGS::BOSS : BIT_TAGS::PLAYER));
@@ -56,7 +59,6 @@ Projectile::Projectile(nlohmann::json json,
 }
 Projectile::Projectile(nlohmann::json json, Vector2f pos, Vector2f dir, 
 	bool player, std::function<void(Projectile&, double)> update) :
-
 	Projectile(json, pos, dir, player)
 {
 	_update = update;
@@ -78,7 +80,10 @@ void Projectile::render(sf::RenderTarget &target) {
 void Projectile::changeLifespan(float) {
 }
 
-bool Projectile::toExplode() {
+void Projectile::explode(bool v) {
+	_exploded = v;
+}
+bool Projectile::toExplode() const {
 	return _exploded;
 }
 

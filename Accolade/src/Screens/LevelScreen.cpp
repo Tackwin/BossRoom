@@ -1,19 +1,20 @@
-#include "Screens/LevelScreen.hpp"
+#include "LevelScreen.hpp"
 
 #include <tuple>
 
-#include "Game.hpp"
-#include "Common.hpp"
+#include "./../Game.hpp"
 
-#include "Managers/AssetsManager.hpp"
-#include "Managers/TimerManager.hpp"
+#include "./../Common.hpp"
 
-#include "Graphics/GUI/Panel.hpp"
+#include "./../Managers/AssetsManager.hpp"
+#include "./../Managers/TimerManager.hpp"
 
-#include "Gameplay/Projectile.hpp"
-#include "Gameplay/Weapon.hpp"
-#include "Gameplay/Player.hpp"
-#include "Gameplay/Level.hpp"
+#include "./../Graphics/GUI/Panel.hpp"
+
+#include "./../Gameplay/Projectile.hpp"
+#include "./../Gameplay/Weapon.hpp"
+#include "./../Gameplay/Player/Player.hpp"
+#include "./../Gameplay/Level.hpp"
 
 LevelScreen::LevelScreen(u32 n) :
 	_n(n),
@@ -22,7 +23,7 @@ LevelScreen::LevelScreen(u32 n) :
 	_gameViewSize({ (float)WIDTH, (float)HEIGHT }),
 	_guiView(_gameViewPos, _gameViewSize),
 	_gameView(_gameViewPos, _gameViewSize),
-	_level(MM::make_unique<Level>(*Level::levels[_n]))
+	_level(std::make_unique<Level>(*Level::levels[_n]))
 {
 	constexpr float bossHealthTileSize = 60;
 	AssetsManager::getTexture("health_tile").setSmooth(true);
@@ -41,17 +42,16 @@ LevelScreen::~LevelScreen() {
 }
 
 void LevelScreen::onEnter() {
+	_player = std::make_shared<Player>();
 	_level->start(this);
-	
-	auto player = game->_player;
-	player->initializeJson();
-	for (int i = 0; i < player->getPlayerInfo().maxLife; i++) {
+
+	for (int i = 0; i < _player->getPlayerInfo().maxLife; i++) {
 		_playerLife.push_back(sf::RectangleShape());
 		_playerLife[i].setOutlineColor(sf::Color(10, 10, 30));
 		_playerLife[i].setSize({ 40, 40 });
 		_playerLife[i].setOutlineThickness(2);
 		_playerLife[i].setFillColor(
-			i < player->getLife()
+			i < _player->getLife()
 				? sf::Color(180, 50, 50)
 				: sf::Color(90, 20, 20)
 		);
@@ -75,11 +75,9 @@ void LevelScreen::update(double dt) {
 	if (_gameViewSize != _gameView.getSize())
 		_gameView.setSize(_gameViewSize);
 
-	auto player = game->_player;
-
-	for (int i = 0; i < player->getPlayerInfo().maxLife; i++) {
+	for (int i = 0; i < _player->getPlayerInfo().maxLife; i++) {
 		_playerLife[i].setFillColor(
-			i < player->getLife()
+			i < _player->getLife()
 				? sf::Color(180, 50, 50) 
 				: sf::Color(90, 20, 20)
 		);
@@ -155,8 +153,7 @@ void LevelScreen::renderGui(sf::RenderTarget& target) {
 	}
 	_bossHealthTileSprite.setPosition(pos);
 	
-
-	sf::Sprite weaponGuiSprite = game->_player->_weapon->getUiSprite();
+	sf::Sprite weaponGuiSprite = _player->_weapon.getUiSprite();
 	weaponGuiSprite.setPosition({ WIDTH - 50.f, HEIGHT - 50.f });
 	target.draw(weaponGuiSprite);
 }
@@ -194,4 +191,8 @@ void LevelScreen::shakeScreen(float power) {
 
 u32 LevelScreen::getIndex() const {
 	return _n;
+}
+
+std::shared_ptr<Player> LevelScreen::getPlayer() const noexcept {
+	return _player;
 }

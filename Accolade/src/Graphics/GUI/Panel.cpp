@@ -1,4 +1,4 @@
-#include <Graphics/GUI/Panel.hpp>
+#include "Panel.hpp"
 
 Panel::Panel() :
 	Widget() {

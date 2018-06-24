@@ -1,13 +1,13 @@
-#include "Gameplay/Zone.hpp"
+#include "Zone.hpp"
 
-#include "Managers/TimerManager.hpp"
-#include "Managers/MemoryManager.hpp"
-#include "Managers/AssetsManager.hpp"
+#include "./../Managers/TimerManager.hpp"
+#include "./../Managers/MemoryManager.hpp"
+#include "./../Managers/AssetsManager.hpp"
 
-#include "Common.hpp"
+#include "./../Common.hpp"
 
-#include "Gameplay/Projectile.hpp"
-#include "Gameplay/Player.hpp"
+#include "Projectile.hpp"
+#include "Player/Player.hpp"
 
 std::shared_ptr<Zone> Zone::buildExplosion(
 	const std::shared_ptr<Projectile>& p
@@ -17,7 +17,7 @@ std::shared_ptr<Zone> Zone::buildExplosion(
 	}
 	auto json = p->getJson()["explosion"];
 
-	auto z = MM::make_shared<Zone>(
+	auto z = std::make_shared<Zone>(
 		getJsonValue<float>(json, "radius")
 	);
 
@@ -52,22 +52,16 @@ Zone::Zone(float r) :
 	Object(),
 	_radius(r) 
 {
-	_disk = std::make_shared<Disk>();
+
+	collider = std::make_unique<Disk>();
+	_disk = (Disk*)collider.get();
 	_disk->r = r;
 	_disk->sensor = true;
-
-	collider = _disk.get();
 	collider->onEnter = [&](Object* obj) mutable { entered(obj); };
 	collider->onExit = [&](Object* obj) mutable { exited(obj); };
 	
 	idMask.set((size_t)BIT_TAGS::ZONE);
 }
-Zone::Zone(const Zone& other) : 
-	Object(other) 
-{
-	this->operator=(other);
-}
-
 void Zone::render(sf::RenderTarget& target) {
 	for (auto& p : _sprites) {
 		auto s = p.second;
@@ -90,28 +84,11 @@ void Zone::collision(Object* obj) {
 }
 
 void Zone::setRadius(float r) {
-	reinterpret_cast<Disk*>(collider)->r = r;
+	reinterpret_cast<Disk*>(collider.get())->r = r;
 }
 
 float Zone::getRadius() const {
-	return reinterpret_cast<Disk*>(collider)->r;
-}
-
-Zone& Zone::operator=(const Zone& other) {
-	this->Object::operator=(other);
-
-	_disk = std::make_shared<Disk>();
-	_disk->r = other._disk->r;
-	_disk->r = other._disk->sensor;
-
-	collider = _disk.get();
-	collider->onEnter = [&](Object* obj) mutable { entered(obj); };
-	collider->onExit = [&](Object* obj) mutable { exited(obj); };
-
-	idMask = other.idMask;
-	collisionMask = other.collisionMask;
-
-	return *this;
+	return reinterpret_cast<Disk*>(collider.get())->r;
 }
 
 void Zone::setRemove(bool remove) {

@@ -1,16 +1,17 @@
-#include "Gameplay/Patterns.hpp"
+#include "Patterns.hpp"
 
-#include "Common.hpp"
+#include "./../Common.hpp"
 
-#include "Math/Vector.hpp"
+#include "./../Math/Vector.hpp"
 
-#include "Managers/TimerManager.hpp"
-#include "Managers/MemoryManager.hpp"
+#include "./../Managers/TimerManager.hpp"
+#include "./../Managers/MemoryManager.hpp"
 
-#include "Gameplay/Level.hpp"
-#include "Gameplay/Projectile.hpp"
-#include "Gameplay/Player.hpp"
-#include "Game.hpp"
+#include "./../Game.hpp"
+
+#include "Level.hpp"
+#include "Projectile.hpp"
+#include "Player/Player.hpp"
 
 template<typename T>
 T Patterns::getValue(
@@ -131,8 +132,8 @@ void Patterns::barage(
 			Vector2f dir = Vector2f::createUnitVector(PIf);
 
 			const auto& pr = 
-				MM::make_shared<Projectile>(projectile, pos, dir, false);
-			boss.addProjectile(pr);
+				std::make_shared<Projectile>(projectile, pos, dir, false);
+			boss.shoot(pr);
 		}
 
 		return --nWaves == 0;
@@ -166,9 +167,10 @@ void Patterns::snipe(
 					boss.getLevel()->stopAim();
 
 					Vector2f pos = boss.getPos();
-					Vector2f dir = Vector2f::createUnitVector(
-						(float)pos.angleTo(game->_player->getPos())
-					);
+					auto dir = 
+						Vector2f::createUnitVector(
+							(float)boss.getPos().angleTo(boss.getLevel()->getPlayerPos())
+						);
 					pos = pos + dir *
 						(
 							boss.getRadius() + 

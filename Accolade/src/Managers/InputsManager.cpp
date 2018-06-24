@@ -1,8 +1,8 @@
-#include "Managers/InputsManager.hpp"
+#include "InputsManager.hpp"
 
-#include "Managers/EventManager.hpp"
+#include "EventManager.hpp"
 
-#include "Common.hpp"
+#include "./../Common.hpp"
 
 bool InputsManager::keyPressed[sf::Keyboard::KeyCount];
 bool InputsManager::keyJustPressed[sf::Keyboard::KeyCount];

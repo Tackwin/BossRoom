@@ -28,6 +28,7 @@ void loadRessources();
 void loadSpriteFromJson(const nlohmann::json& json);
 void loadSoundsFromJson(const nlohmann::json& json);
 void loadFontsFromJson(const nlohmann::json& json);
+void loadJsonsFromJson(const nlohmann::json& json);
 
 bool update(sf::RenderWindow& window, double dt) {
 	InputsManager::update(window);
@@ -59,7 +60,7 @@ int main(int, char**) {
 	}*/
 
 	//let's try to fit our game into 16MiB
-	MemoryManager::I().initialize_buffer(1024 * 1024 * 16);
+	//MemoryManager::I().initialize_buffer(1024 * 1024 * 16);
 	loadRessources();
 	startGame();
 
@@ -69,7 +70,7 @@ int main(int, char**) {
 
 void startGame() {
 	Patterns::_json = AssetsManager::getJson(JSON_KEY)["patterns"];
-	C::game = MemoryManager::make_shared<Game>();
+	C::game = std::make_shared<Game>();
 	game->start();
 
 	sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT, 24), "Boss room");
@@ -95,6 +96,7 @@ void startGame() {
 			printf("Size of MM's buffer: %u \t bytes\n", buffer_size);
 			printf("Size used by MM:     %u \t bytes\n", buffer_size - free_size);
 			printf("Size used by AM:     %u \t bytes\n", AM::getSize());
+			printf("# functions          %u\n", TimerManager::getNFunction());
 			return false;
 		}
 	);
@@ -121,6 +123,7 @@ void loadRessources() {
 	loadSpriteFromJson(AssetsManager::getJson(JSON_KEY));
 	loadSoundsFromJson(AssetsManager::getJson(JSON_KEY));
 	loadFontsFromJson(AssetsManager::getJson(JSON_KEY));
+	loadJsonsFromJson(AM::getJson(JSON_KEY));
 }
 void loadSpriteFromJson(const nlohmann::json& json) {
 	assert(!json["sprites"].is_null());
@@ -170,5 +173,22 @@ void loadFontsFromJson(const nlohmann::json& json) {
 		const std::string& key = it.key();
 		const std::string& path = it.value();
 		AssetsManager::loadFont(key, ASSETS_PATH + path);
+	}
+}
+
+void loadJsonsFromJson(const nlohmann::json& json) {
+	assert(!json["jsons"].is_null());
+	const auto& j = json["jsons"];
+	const u32 n = j.size();
+
+	printf("Loading %u jsons from json...\n", n);
+
+	u32 i = 1u;
+	for (auto it = j.begin(); it != j.end(); ++it, ++i) {
+		printf("\t%u/%u ", i, n);
+
+		const std::string& key = it.key();
+		const std::string& path = it.value();
+		AssetsManager::loadJson(key, ASSETS_PATH + path);
 	}
 }

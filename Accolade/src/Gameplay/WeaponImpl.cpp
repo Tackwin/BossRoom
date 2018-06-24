@@ -1,27 +1,29 @@
-#include "Gameplay/Weapon.hpp"
+#include "Weapon.hpp"
 
-#include "Game.hpp"
-#include "Common.hpp"
+#include <map>
 
-#include "Managers/AssetsManager.hpp"
-#include "Managers/InputsManager.hpp"
-#include "Managers/MemoryManager.hpp"
-#include "Managers/TimerManager.hpp"
+#include "./../Game.hpp"
+#include "./../Common.hpp"
 
-#include "Physics/Collider.hpp"
+#include "./../Managers/AssetsManager.hpp"
+#include "./../Managers/InputsManager.hpp"
+#include "./../Managers/MemoryManager.hpp"
+#include "./../Managers/TimerManager.hpp"
 
-#include "Gameplay/Projectile.hpp"
-#include "Gameplay/Player.hpp"
-#include "Gameplay/Level.hpp"
-#include "Gameplay/Boss.hpp"
+#include "./../Physics/Collider.hpp"
 
-std::array<Weapon, 4> Weapon::_weapons;
+#include "Projectile.hpp"
+#include "Player/Player.hpp"
+#include "Level.hpp"
+#include "Boss.hpp"
 
-void Weapon::createWeapons(std::shared_ptr<Player> player) {
+std::map<UUID, Weapon> Weapon::_weapons;
+
+void Weapon::createWeapons() {
 	{
-		_weapons[0] = Weapon(player, AssetsManager::getJson(JSON_KEY)["weapons"][0]);
+		auto weapon = Weapon(AssetsManager::getJson(JSON_KEY)["weapons"][0]);
 
-		_weapons[0]._equip = [](Weapon& me)mutable->void {
+		weapon._equip = [](Weapon& me, Player&)mutable->void {
 			me._keys.push_back(
 				TimerManager::addFunction(me._json["cooldowns"][0], "1-cd", [&me](double)mutable->bool {
 					me._flags.set(0);
@@ -30,7 +32,7 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 				}
 			));
 		};
-		_weapons[0]._unEquip = [](Weapon& me)mutable->void {
+		weapon._unEquip = [](Weapon& me, Player&)mutable->void {
 			for (auto& k : me._keys) {
 				if (TimerManager::functionsExist(k))
 					TimerManager::removeFunction(k);
@@ -38,51 +40,53 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 			me._keys.clear();
 		};
 
-		_weapons[0]._active = [](Weapon& me, u32)mutable->void {
+		weapon._active = [](Weapon& me, Player& player, u32)mutable->void {
 			static bool evenShot = false;
 			
 			if (me._flags[0]) {
 				me._flags.reset(0);
-				me._player->shoot();
+				player.shoot();
 				//TimerManager::resumeFunction(me._keys[0]);
 
 				Vector2f dir = 
-					(InputsManager::getMouseWorldPos() - me._player->getPos())
+					(InputsManager::getMouseWorldPos() - player.getPos())
 					.normalize();
 			
 				float a = (float)dir.angleX();
 				a += static_cast<float>((evenShot ? -1 : 1) * PIf / 6);
 				Vector2f pos = 
-					me._player->getPos() + 
+					player.getPos() + 
 					Vector2f(cos(a), sin(a)) * 
-					(me._player->getPlayerInfo().radius + 5);
+					(player.getPlayerInfo().radius + 5);
 
 				evenShot = !evenShot;
 
 				me._activeSounds[0].play();
 
-				me.addProjectile(MM::make_shared<Projectile>(me._json["projectile"], pos, dir, true));
+				me.addProjectile(std::make_shared<Projectile>(me._json["projectile"], pos, dir, true));
 			}
 		};
 
-		auto sound = sf::Sound(AssetsManager::getSound(_weapons[0].getStringSoundActive(0)));
+		auto sound = sf::Sound(AssetsManager::getSound(weapon.getStringSoundActive(0)));
 		sound.setVolume(SOUND_LEVEL);
 		
-		_weapons[0]._activeSounds.push_back(sound);
-		_weapons[0].setName("La sulfateuse");
-		_weapons[0].setCost(1u);
+		weapon._activeSounds.push_back(sound);
+		weapon.setName("La sulfateuse");
+		weapon.setCost(1u);
+
+		_weapons[weapon.getUUID()] = weapon;
 	}
 	{
-		_weapons[1] = Weapon(player, AssetsManager::getJson(JSON_KEY)["weapons"][1]);
+		auto weapon = Weapon(AssetsManager::getJson(JSON_KEY)["weapons"][1]);
 
-		_weapons[1]._equip = [](Weapon& me)mutable->void {
+		weapon._equip = [](Weapon& me, Player&)mutable->void {
 			me._keys.push_back(TimerManager::addFunction(me._json["cooldowns"][0], "1-cd", [&me](double)mutable->bool {
 				me._flags.set(0);
 				TimerManager::pauseFunction(me._keys[0]);
 				return false;
 			}));
 		};
-		_weapons[1]._unEquip = [](Weapon& me)mutable->void {
+		weapon._unEquip = [](Weapon& me, Player&)mutable->void {
 			for (auto& k : me._keys) {
 				if (TimerManager::functionsExist(k))
 					TimerManager::removeFunction(k);
@@ -90,7 +94,7 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 			me._keys.clear();
 		};
 
-		_weapons[1]._active = [](Weapon& me, u32)mutable->void {
+		weapon._active = [](Weapon& me, Player& player, u32)mutable->void {
 			static bool evenShot = false;
 			
 			if (me._flags[0]) {
@@ -98,21 +102,21 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 				TimerManager::resumeFunction(me._keys[0]);
 
 				Vector2f dir = 
-					(InputsManager::getMouseWorldPos() - me._player->getPos())
+					(InputsManager::getMouseWorldPos() - player.getPos())
 					.normalize();
 			
 				float a = (float)dir.angleX();
 				a += static_cast<float>((evenShot ? -1 : 1) * PIf / 6);
 				Vector2f pos = 
-					me._player->getPos() +
+					player.getPos() +
 					Vector2f(cos(a), sin(a)) * 
-					(me._player->getPlayerInfo().radius + 5);
+					(player.getPlayerInfo().radius + 5);
 
 				evenShot = !evenShot;
 				
 				me._activeSounds[0].play();
-				me._player->addProjectile(
-					MM::make_shared<Projectile>(
+				player.addProjectile(
+					std::make_shared<Projectile>(
 						me._json["projectile"], 
 						pos, 
 						dir, 
@@ -122,24 +126,26 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 			}
 		};
 		
-		auto sound = sf::Sound(AssetsManager::getSound(_weapons[1].getStringSoundActive(0)));
+		auto sound = sf::Sound(AssetsManager::getSound(weapon.getStringSoundActive(0)));
 		sound.setVolume(SOUND_LEVEL);
 
-		_weapons[1]._activeSounds.push_back(sound);
-		_weapons[1].setName("La sulfateuse excité");
-		_weapons[1].setCost(5u);
+		weapon._activeSounds.push_back(sound);
+		weapon.setName("La sulfateuse excité");
+		weapon.setCost(5u);
+
+		_weapons[weapon.getUUID()] = weapon;
 	}
 	{
-		_weapons[2] = Weapon(player, AssetsManager::getJson(JSON_KEY)["weapons"][2]);
-		auto& weapon = _weapons[2];
-		weapon._equip = [](Weapon& me)mutable->void {
+		auto weapon = Weapon(AssetsManager::getJson(JSON_KEY)["weapons"][2]);
+
+		weapon._equip = [](Weapon& me, Player&)mutable->void {
 			me._keys.push_back(TimerManager::addFunction(me._json["cooldowns"][0], "1-cd", [&me](double)mutable->bool {
 				me._flags.set(0);
 				TimerManager::pauseFunction(me._keys[0]);
 				return false;
 			}));
 		};
-		weapon._unEquip = [](Weapon& me)mutable->void {
+		weapon._unEquip = [](Weapon& me, Player&)mutable->void {
 			for (auto& k : me._keys) {
 				if (TimerManager::functionsExist(k))
 					TimerManager::removeFunction(k);
@@ -147,39 +153,41 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 			me._keys.clear();
 		};
 
-		weapon._active = [](Weapon& me, u32)mutable->void {
+		weapon._active = [](Weapon& me, Player& player, u32)mutable->void {
 			if (me._flags[0]) {
 				me._flags.reset(0);
 				TimerManager::resumeFunction(me._keys[0]);
 
-				float A = (float)me.getPlayer()->getDirToFire().angleX();
+				float A = (float)player.getDirToFire().angleX();
 				float spray = me._json["spray"];
 				for (u32 i = 0; i < 3; ++i) {
 					float dtA = spray * (i / 2.f - 0.5f);
 					float a = A + dtA;
 					Vector2f dir = Vector2f::createUnitVector(a);
-					Vector2f pos = me._player->getPos();
+					Vector2f pos = player.getPos();
 
 					auto projectile = me._json["projectile"];
 					projectile["speed"] = projectile["speed"].get<float>() * ((i == 1) ? 1 : tanf(dtA) / sinf(dtA));
-					me._player->addProjectile(MM::make_shared<Projectile>(projectile, pos, dir, true));
+					player.addProjectile(std::make_shared<Projectile>(projectile, pos, dir, true));
 				}
 			}
 		};
-		auto sound = sf::Sound(AssetsManager::getSound(_weapons[2].getStringSoundActive(0)));
+		auto sound = sf::Sound(AssetsManager::getSound(weapon.getStringSoundActive(0)));
 		sound.setVolume(SOUND_LEVEL);
 
-		_weapons[2]._activeSounds.push_back(sound);
-		_weapons[2].setName("l'éclabousseur");
-		_weapons[2].setCost(10u);
+		weapon._activeSounds.push_back(sound);
+		weapon.setName("l'éclabousseur");
+		weapon.setCost(10u);
+
+		_weapons[weapon.getUUID()] = weapon;
 	}
 	{
-		_weapons[3] = Weapon(player, AssetsManager::getJson(JSON_KEY)["weapons"][3]);
-		auto& weapon = _weapons[3];
-		weapon._equip = [](Weapon& me)mutable->void {
+		auto weapon = Weapon(AssetsManager::getJson(JSON_KEY)["weapons"][3]);
+
+		weapon._equip = [](Weapon& me, Player&)mutable->void {
 			me._flags.set();
 		};
-		weapon._unEquip = [](Weapon& me)mutable->void {
+		weapon._unEquip = [](Weapon& me, Player&)mutable->void {
 			for (auto& k : me._keys) {
 				if (TimerManager::functionsExist(k))
 					TimerManager::removeFunction(k);
@@ -187,7 +195,7 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 			me._keys.clear();
 		};
 
-		weapon._active = [](Weapon& me, u32 id)mutable->void {
+		weapon._active = [](Weapon& me, Player& player, u32 id)mutable->void {
 			switch (id) {
 			case 0:
 				if (me._flags[0]) {
@@ -204,11 +212,10 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 				}
 
 				float r = getJsonValue<float>(me.getJson(), "radius");
-				std::shared_ptr<Player> player = me.getPlayer();
-				std::shared_ptr<Zone> zone = MM::make_shared<Zone>(r);
+				std::shared_ptr<Zone> zone = std::make_shared<Zone>(r);
 
 				zone->pos = 
-					player->getPos() + 
+					player.getPos() + 
 					Vector2f(
 						getJsonValue<float>(me.getJson(), "offsetX"),
 						0
@@ -223,7 +230,7 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 					boss->hit(getJsonValue<float>(me.getJson(), "damage"));
 				};
 
-				player->addZone(zone);
+				player.addZone(zone);
 
 				TimerManager::addFunction(
 					getJsonValue<float>(me.getJson(), "remainTime"), 
@@ -237,9 +244,10 @@ void Weapon::createWeapons(std::shared_ptr<Player> player) {
 			}
 		};
 
-		auto sound = sf::Sound(AssetsManager::getSound(_weapons[3].getStringSoundActive(0)));
+		auto sound = sf::Sound(AssetsManager::getSound(weapon.getStringSoundActive(0)));
 		sound.setVolume(SOUND_LEVEL);
 
-		_weapons[3]._activeSounds.push_back(sound);
+		weapon._activeSounds.push_back(sound);
+		_weapons[weapon.getUUID()] = weapon;
 	}
 }

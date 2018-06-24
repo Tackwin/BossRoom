@@ -1,16 +1,16 @@
-#include "GUI/Shop.hpp"
+#include "Shop.hpp"
 
 #include <string>
 
-#include "Game.hpp"
-#include "Common.hpp"
+#include "./../Game.hpp"
+#include "./../Common.hpp"
 
-#include "Math/Rectangle.hpp"
+#include "./../Math/Rectangle.hpp"
 
-#include "Managers/AssetsManager.hpp"
-#include "Managers/InputsManager.hpp"
+#include "./../Managers/AssetsManager.hpp"
+#include "./../Managers/InputsManager.hpp"
 
-#include "Gameplay/Player.hpp"
+#include "./../Gameplay/Player/Player.hpp"
 
 Shop::Shop() : 
 	Widget(),
@@ -26,9 +26,9 @@ Shop::Shop() :
 		std::bind(&Shop::onClickEnded, this),
 		std::bind(&Shop::onClickGoing, this)
 	});
-	_merchantPanel.setParent(this, 0);
 	_merchantPanel.getSprite().setColor(sf::Color(100, 100, 100));
-
+	_merchantPanel.setParent(this, 0);
+	
 	_quitPanel.setSprite(sf::Sprite(AssetsManager::getTexture("quit")));
 	_quitPanel.setSize({ 20, 20 });
 	_quitPanel.setOrigin({ 1, 0 });
@@ -39,6 +39,7 @@ Shop::Shop() :
 	_quitPanel.setParent(&_merchantPanel, 2);
 
 	_infoPanel.setParent(&_merchantPanel, 2);
+	
 
 	_focusPanel.setSprite(sf::Sprite(AssetsManager::getTexture("panel_a")));
 	_focusPanel.setSize({ _ItemPanel::PANEL_SIZE + 2, _ItemPanel::PANEL_SIZE + 2 });
@@ -51,7 +52,12 @@ Shop::~Shop() {
 	Widget::~Widget();
 }
 
-void Shop::addWeapon(std::shared_ptr<Weapon> weapon) {
+void Shop::setPlayer(std::weak_ptr<Player> player) {
+	_player = player;
+}
+
+
+void Shop::addWeapon(UUID weapon) {
 	constexpr u32 itemPerRow = 7;
 
 	u32 size = _itemPanels.size();
@@ -68,14 +74,12 @@ void Shop::addWeapon(std::shared_ptr<Weapon> weapon) {
 		}
 	} while (flag);
 
-	auto item = std::make_unique<_ItemPanel>(this, weapon, nId);
-	item->setPosition({ 
+	_itemPanels[nId] = std::make_unique<_ItemPanel>(this, weapon, nId);
+	_itemPanels[nId]->setPosition({
 		(size % itemPerRow) * (_ItemPanel::PANEL_SIZE + 5.f) + 10,
 		(size / itemPerRow) * (_ItemPanel::PANEL_SIZE + 5.f) + 30
 	});
-	item->setParent(&_merchantPanel, 1);
-
-	_itemPanels[nId].swap(item);
+	_itemPanels[nId]->setParent(&_merchantPanel, 1);
 }
 
 void Shop::enter() {
@@ -134,14 +138,14 @@ bool Shop::onClickGoing() {
 }
 
 void Shop::focusItem(u32 i) {
-	focused = i;
+	_focused = i;
 	_focusPanel.setParent(&_itemPanels[i]->sprite, 1);
 	
 	_infoPanel.populateBy(_itemPanels[i]->weapon);
 	_infoPanel.setVisible(true);
 }
 void Shop::unFocus() {
-	focused = 0u;
+	_focused = 0u;
 	_focusPanel.emancipate();
 
 	_infoPanel.setVisible(false);
@@ -152,7 +156,7 @@ bool Shop::isIn() const {
 }
 
 
-Shop::_ItemPanel::_ItemPanel(Shop* shop, std::shared_ptr<Weapon> weapon, u32 id) :
+Shop::_ItemPanel::_ItemPanel(Shop* shop, UUID weapon, u32 id) :
 	_shop(shop),
 	weapon(weapon),
 	_id(id)
@@ -162,7 +166,7 @@ Shop::_ItemPanel::_ItemPanel(Shop* shop, std::shared_ptr<Weapon> weapon, u32 id)
 	getSprite().setColor({ 80, 80, 80 });
 	setSize({ PANEL_SIZE, PANEL_SIZE });
 
-	sprite.setSprite(weapon->getUiSprite());
+	sprite.setSprite(Weapon::_weapons[weapon].getUiSprite());
 	sprite.setSize({ PANEL_SIZE - 4, PANEL_SIZE - 4 });
 	sprite.setPosition({ 2, 2 });
 	sprite.setOnClick({
@@ -235,19 +239,20 @@ Shop::_InfoPanel::_InfoPanel(Shop* shop) :
 		std::bind(&Shop::_InfoPanel::onClickGoing, this)
 	});
 }
-void Shop::_InfoPanel::populateBy(std::shared_ptr<Weapon> weapon) {
-	using namespace std::literals;
+void Shop::_InfoPanel::populateBy(UUID weapon) {
+
+	const auto& w = Weapon::_weapons[weapon];
 
 	auto& icon = panels["icon"];
-	icon.setSprite(weapon->getUiSprite());
+	icon.setSprite(w.getUiSprite());
 	icon.setSize({ 150, 150 });
 	icon.setPosition({ 50, 120 });
 
 	auto& name = labels["name"];
-	name.setString("Name: "s + weapon->getName());
+	name.setString("Name: " + w.getName());
 
 	auto& cost = labels["cost"];
-	cost.setString("Cost: "s + std::to_string(weapon->getCost()));
+	cost.setString("Cost: " + std::to_string(w.getCost()));
 
 	_weapon = weapon;
 }
@@ -256,7 +261,8 @@ bool Shop::_InfoPanel::onClickBegan() {
 	return true;
 }
 bool Shop::_InfoPanel::onClickEnded() {
-	game->getPlayer()->swapWeapon(_weapon);
+	if (!_shop->_player.expired())
+		_shop->_player.lock()->swapWeapon(_weapon);
 	return true;
 }
 bool Shop::_InfoPanel::onClickGoing() {

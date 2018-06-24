@@ -1,18 +1,19 @@
-#include "Gameplay/Boss.hpp"
+#include "Boss.hpp"
 
-#include "Game.hpp"
-#include "Common.hpp"
+#include "./../Game.hpp"
+#include "./../Common.hpp"
 
-#include "Managers/AssetsManager.hpp"
-#include "Managers/MemoryManager.hpp"
-#include "Managers/TimerManager.hpp"
+#include "./../Managers/AssetsManager.hpp"
+#include "./../Managers/MemoryManager.hpp"
+#include "./../Managers/TimerManager.hpp"
 
-#include "Gameplay/Projectile.hpp"
-#include "Gameplay/Patterns.hpp"
-#include "Gameplay/Player.hpp"
+#include "Projectile.hpp"
+#include "Patterns.hpp"
+#include "Player/Player.hpp"
+#include "Level.hpp"
 
 void Boss::createBosses() {
-	bosses[0] = MM::make_shared<Boss>(
+	bosses[0] = std::make_shared<Boss>(
 		AssetsManager::getJson(JSON_KEY)["bosses"][0],
 		[](double, Boss&) {}, //update function
 
@@ -54,9 +55,8 @@ void Boss::createBosses() {
 						auto randomFireInfo = Patterns::_json["randomFire"];
 						randomFireInfo["nOrbs"] = 30;
 						randomFireInfo["eTime"] = 1.5f;
-						randomFireInfo["a"] = boss.getPos().angleTo(
-							game->_player->getPos()
-						);
+						randomFireInfo["a"] =
+							(float)boss.getPos().angleTo(boss.getLevel()->getPlayerPos());
 						randomFireInfo["dtA"] = PIf / 1.5f;
 
 						Patterns::randomFire(
@@ -78,7 +78,7 @@ void Boss::createBosses() {
 		}
 	);
 
-	bosses[1] = MM::make_shared<Boss>(
+	bosses[1] = std::make_shared<Boss>(
 		AssetsManager::getJson(JSON_KEY)["bosses"][1],
 		[](double, Boss&) {},
 		[](Boss& boss) { // Init function

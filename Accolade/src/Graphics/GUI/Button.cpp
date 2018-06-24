@@ -1,4 +1,4 @@
-#include <Graphics/GUI/Button.hpp>
+#include "Button.hpp"
 
 Button::Button() : 
 	Widget() 

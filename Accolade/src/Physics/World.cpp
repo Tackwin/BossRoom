@@ -1,4 +1,4 @@
-#include "Physics/World.hpp"
+#include "World.hpp"
 
 #include <algorithm>
 #include <numeric>
@@ -8,8 +8,7 @@ void World::updateInc(double dt, u32 itLevel) {
 		update(dt / itLevel);
 	}
 
-	// pls fix this intellisense bug soon ;(
-	for (auto& [_, wobj1] : _objectsMap) { 
+	for (auto& [_, wobj1] : _objectsMap) {_;
 		auto obj1 = wobj1.lock();
 
 		obj1->flatVelocities.clear();
@@ -57,7 +56,7 @@ void World::update(double dt) {
 				obj1->pos.x = nPos.x;
 				obj1->collider->setPos({ nPos.x, pos.y });
 
-				if (obj1->collider->collideWith(obj2->collider)) {
+				if (obj1->collider->collideWith(obj2->collider.get())) {
 					if (!obj2->collider->sensor) {
 						nVel.x = 0;
 						obj1->pos.x = pos.x;
@@ -73,7 +72,7 @@ void World::update(double dt) {
 				obj1->pos.y = nPos.y;
 				obj1->collider->setPos({ pos.x, nPos.y });
 
-				if (obj1->collider->collideWith(obj2->collider)) {
+				if (obj1->collider->collideWith(obj2->collider.get())) {
 					if (!obj2->collider->sensor){
 						nVel.y = 0;
 						obj1->pos.y = pos.y;
@@ -118,7 +117,7 @@ void World::update(double dt) {
 }
 
 void World::render(sf::RenderTarget& target) {
-	for (auto& [_, obj] : _objectsMap) {
+	for (auto& [_, obj] : _objectsMap) {_;
 		if (obj.expired()) continue;
 
 		obj.lock()->collider->render(target);
@@ -126,10 +125,10 @@ void World::render(sf::RenderTarget& target) {
 }
 
 void World::addObject(std::weak_ptr<Object> obj) {
-	u32 id = getUID();
+	auto id = obj.lock()->uuid;
 	_objectsMap[id] = obj;
 
-	for (u32 i = 0u; i < Object::BITSET_SIZE; ++i) {
+	for (u32 i = 0u; i < Object::SIZE; ++i) {
 		if (!obj.lock()->idMask[i]) continue;
 
 		_objectsPool[i].push_back(id);
@@ -139,26 +138,22 @@ void World::addObject(std::weak_ptr<Object> obj) {
 	buildUnionCache();
 }
 
-void World::delObject(std::weak_ptr<Object> obj_) {
-	using map_pair = std::pair<u32, std::weak_ptr<Object>>;
+void World::delObject(UUID uuid) {
+	using map_pair = std::pair<UUID, std::weak_ptr<Object>>;
 	auto object_map_it = std::find_if(
 		_objectsMap.begin(),
 		_objectsMap.end(),
-		[ptr = obj_.lock()](const map_pair& A) -> bool {
-			return A.second.lock() == ptr;
+		[uuid](const map_pair& A) -> bool {
+			return A.first == uuid;
 		}
 	);
 
-	u32 id = object_map_it->first;
+	assert(object_map_it != _objectsMap.end() && "Object to delete isn't present.");
 
-	_collisionStates.erase(id);
-	for (auto& c : _collisionStates) {
-		c.second.erase(id);
-	}
-	_objectsMap.erase(object_map_it);
+	auto id = object_map_it->first;
 
-	for (size_t i = 0u; i < Object::BITSET_SIZE; ++i) {
-		if (!obj_.lock()->idMask[i]) continue;
+	for (size_t i = 0u; i < Object::SIZE; ++i) {
+		if (!object_map_it->second.lock()->idMask[i]) continue;
 
 		auto& object_pool_it = 
 			std::find(_objectsPool[i].cbegin(), _objectsPool[i].cend(), id);
@@ -167,11 +162,17 @@ void World::delObject(std::weak_ptr<Object> obj_) {
 		std::sort(_objectsPool[i].begin(), _objectsPool[i].end());
 	}
 
+	_collisionStates.erase(id);
+	for (auto& c : _collisionStates) {
+		c.second.erase(id);
+	}
+	_objectsMap.erase(object_map_it);
+
 	buildUnionCache();
 }
 
 void World::removeNeeded() {
-	std::vector<u32> toRemove;
+	std::vector<UUID> toRemove;
 
 	for (auto& it : _objectsMap) {
 		auto& id = it.first;
@@ -181,7 +182,7 @@ void World::removeNeeded() {
 			continue;
 		}
 
-		for (u32 j = 0u; j < Object::BITSET_SIZE; ++j) {
+		for (u32 j = 0u; j < Object::SIZE; ++j) {
 			auto& jt = 
 				std::find(_objectsPool[j].cbegin(), _objectsPool[j].cend(), id);
 			if (jt == _objectsPool[j].end()) continue;
@@ -200,32 +201,17 @@ void World::removeNeeded() {
 
 void World::purge() {
 	_objectsMap.clear();
-	for (u32 i = 0u; i < Object::BITSET_SIZE; ++i) 
+	for (u32 i = 0u; i < Object::SIZE; ++i)
 		_objectsPool[i].clear();
 }
 
-u32 World::getUID() const {
-	u32 n_id = 0u;
-	bool flag = false;
-	do {
-		flag = false;
-		for (auto& [id, _] : _objectsMap) {
-			if (n_id == id) {
-				n_id++;
-				flag = true;
-			}
-		}
-	} while (flag);
-	return n_id;
-}
-
-std::vector<u32> 
-	World::getUnionOfMask(const std::bitset<Object::BITSET_SIZE>& mask) 
+std::vector<UUID>
+	World::getUnionOfMask(const std::bitset<Object::SIZE>& mask)
 {
-	std::vector<u32> result;
-	result.reserve(_objectsMap.size() * Object::BITSET_SIZE);
+	std::vector<UUID> result;
+	result.reserve(_objectsMap.size() * Object::SIZE);
 
-	for (size_t i = 0u; i < Object::BITSET_SIZE; ++i) {
+	for (size_t i = 0u; i < Object::SIZE; ++i) {
 		if (!mask[i]) continue;
 
 		std::set_union(	_objectsPool[i].begin()	, _objectsPool[i].end(),

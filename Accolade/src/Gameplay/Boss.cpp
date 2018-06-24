@@ -1,15 +1,15 @@
-#include "Gameplay/Boss.hpp"
+#include "Boss.hpp"
 
-#include "Game.hpp"
-#include "Common.hpp"
+#include "./../Game.hpp"
+#include "./../Common.hpp"
 
-#include "Managers/AssetsManager.hpp"
-#include "Managers/TimerManager.hpp"
-#include "Managers/MemoryManager.hpp"
+#include "./../Managers/AssetsManager.hpp"
+#include "./../Managers/TimerManager.hpp"
+#include "./../Managers/MemoryManager.hpp"
 
-#include "Gameplay/Projectile.hpp"
-#include "Gameplay/Patterns.hpp"
-#include "Gameplay/Player.hpp"
+#include "Player/Player.hpp"
+#include "Projectile.hpp"
+#include "Patterns.hpp"
 
 using namespace nlohmann;
 
@@ -48,6 +48,10 @@ Boss::Boss(const basic_json<>& json,
 	collisionMask.set((size_t)Object::BIT_TAGS::PROJECTILE);
 }
 
+Boss::Boss(Boss& other) :
+	Boss(other._json, other._update, other._init, other._unInit) {}
+
+
 void Boss::enterLevel(Level* level) {
 	_level = level;
 
@@ -68,10 +72,11 @@ void Boss::enterLevel(Level* level) {
 		(4 * _radius) / _sprite.getSize().y
 	);
 
-	collider = &_disk;
-	_disk.userPtr = this;
-	_disk.r = _radius;
-	_disk.onEnter = [&](Object* obj) { collision(obj); };
+	collider = std::make_unique<Disk>();
+	_disk = (Disk*)collider.get();
+	_disk->userPtr = this;
+	_disk->r = _radius;
+	_disk->onEnter = [&](Object* obj) { collision(obj); };
 
 	_init(*this);
 }
@@ -148,11 +153,6 @@ void Boss::hit(u32 d) {
 	_color = hexToColor(_json["blinkColor"]);
 }
 
-void Boss::addProjectile(const std::shared_ptr<Projectile>& projectile) {
-	if ((_level) && (_life != 0))
-		_projectilesToShoot.push_back(projectile);//TODO: debug why the callbacks doesn't delete when the boss die
-}
-
 void Boss::shoot(const std::shared_ptr<Projectile>& projectile) {
 	if (_level && _life > 0) {
 		_projectilesToShoot.push_back(projectile);
@@ -164,20 +164,16 @@ void Boss::shoot(const nlohmann::json& json,
 {
 	if (_level && _life > 0) {
 		_projectilesToShoot.push_back(
-			MM::make_unique<Projectile>(json, pos_, dir, false)
+			std::make_shared<Projectile>(json, pos_, dir, false)
 		);
 	}
 }
 
-Vector2f Boss::getDirToFire() const {
-	return (game->_player->getPos() - getPos()).normalize();
-}
 Vector2f Boss::getPos() const {
 	return pos;
 }
 
-const std::vector<std::shared_ptr<Projectile>>& 
-	Boss::getProtectilesToShoot() const {
+const std::vector<std::shared_ptr<Projectile>>& Boss::getProtectilesToShoot() const {
 	return _projectilesToShoot;
 }
 void Boss::clearProtectilesToShoot() {

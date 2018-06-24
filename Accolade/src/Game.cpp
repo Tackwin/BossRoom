@@ -13,12 +13,14 @@
 #include "Screens/StartScreen.hpp"
 
 #include "Gameplay/Weapon.hpp"
-#include "Gameplay/Player.hpp"
+#include "Gameplay/Player/Player.hpp"
 #include "Gameplay/Level.hpp"
 #include "Gameplay/Boss.hpp"
 
+#include "Options/KeyBindings.hpp"
+
 void Game::start() {
-	enterScreen(MM::make_shared<StartScreen>());
+	enterScreen(std::make_shared<StartScreen>());
 }
 
 void Game::enterDungeon() {
@@ -39,7 +41,7 @@ void Game::render(sf::RenderTarget& target) {
 
 	_screens.top()->render(target);
 	target.setView(initialView);
-	for (auto& [_, v] : _debugText) {
+	for (auto& [_, v] : _debugText) {_;
 		target.draw(v);
 	}
 
@@ -85,7 +87,7 @@ void Game::enterScreen(std::shared_ptr<Screen> s) {
 
 void Game::enterRoom(u32 n) {
 	exitScreen();
-	enterScreen(MM::make_shared<LevelScreen>(n));
+	enterScreen(std::make_shared<LevelScreen>(n));
 }
 
 Game::~Game() {
@@ -97,21 +99,21 @@ Game::~Game() {
 	Boss::destroyBosses();
 }
 
-Game::Game() : 
-	_player(
-		MM::make_shared<Player>(AssetsManager::getJson(JSON_KEY)["player"])
-	)
+Game::Game()
 {
-	Weapon::createWeapons(_player);
+	Weapon::createWeapons();
 	Boss::createBosses();
 	Level::createLevels();
-
-	_player->swapWeapon(MM::make_shared<Weapon>(Weapon::_weapons[0]));
 
 	_debugText["ups"].setFont(AssetsManager::getFont("consola"));
 	_debugText["ups"].setCharacterSize(20);
 	_debugText["ups"].setPosition(5, 5);
 	_debugText["ups"].setFillColor(sf::Color(100, 100, 100));
+
+	_keyBindings.emplace_back(AM::getJson("default_key"));
+	_currentKeyBindings = 0;
+
+	_playerInfo = loadPlayerInfo(PlayerInfo::BOLOSS);
 }
 
 void Game::pop() {
@@ -121,12 +123,32 @@ void Game::pop() {
 	_screens.pop();
 }
 
-Player* Game::getPlayer() const {
-	return _player.get();
-}
-
 void Game::enterHeritage() {
 	exitScreen();
-	auto s = MM::make_shared<HeritageScreen>(_player->getPlayerInfo());
+	auto s = std::make_shared<HeritageScreen>(getPlayerInfo());
 	enterScreen(s);
+}
+
+const PlayerInfo& Game::getPlayerInfo() const noexcept {
+	return _playerInfo;
+}
+
+void Game::setPlayerInfo(const PlayerInfo& playerInfo) noexcept {
+	_playerInfo = playerInfo;
+}
+const KeyBindings& Game::getCurrentKeyBindings() const noexcept {
+	return _keyBindings[_currentKeyBindings];
+}
+
+PlayerInfo Game::loadPlayerInfo(std::string character) const noexcept {
+	auto characters = AM::getJson(JSON_KEY)["player"]["characters"];
+	auto characterPath = characters.at(character).get<std::string>();
+
+	if (!AM::haveJson(character)) {
+		auto b = AM::loadJson(character, ASSETS_PATH + characterPath); assert(b);
+	}
+
+	auto json = AM::getJson(character);
+
+	return PlayerInfo(json);
 }

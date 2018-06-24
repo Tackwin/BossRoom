@@ -1,4 +1,4 @@
-#include "Time/Clock.hpp"
+#include "Clock.hpp"
 
 Clock::time_point Clock::now(void) {
 	const auto& nowTimePoint = std::chrono::system_clock::now();

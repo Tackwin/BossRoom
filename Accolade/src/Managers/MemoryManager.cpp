@@ -1,4 +1,4 @@
-#include "Managers/MemoryManager.hpp"
+#include "MemoryManager.hpp"
 
 
 MemoryManager::MemoryManager() {

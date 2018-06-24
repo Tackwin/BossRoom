@@ -1,26 +1,25 @@
-#include "Screens/StartScreen.hpp"
+#include "StartScreen.hpp"
 
 #include <algorithm>
 
-#include "Common.hpp"
-#include "Game.hpp"
+#include "./../Common.hpp"
 
-#include "Managers/AssetsManager.hpp"
-#include "Managers/MemoryManager.hpp"
-#include "Managers/InputsManager.hpp"
+#include "./../Game.hpp"
 
-#include "Graphics/GUI/Button.hpp"
+#include "./../Managers/AssetsManager.hpp"
+#include "./../Managers/InputsManager.hpp"
 
-#include "Gameplay/Projectile.hpp"
-#include "Gameplay/Weapon.hpp"
-#include "Gameplay/Player.hpp"
-#include "Gameplay/Zone.hpp"
+#include "./../Graphics/GUI/Button.hpp"
+
+#include "./../Gameplay/Projectile.hpp"
+#include "./../Gameplay/Weapon.hpp"
+#include "./../Gameplay/Player/Player.hpp"
+#include "./../Gameplay/Zone.hpp"
 
 StartScreen::StartScreen() :
 	_playerView({ WIDTH / 2.f, HEIGHT / 2.f }, { (float)WIDTH, (float)HEIGHT }),
 	_guiView({ WIDTH / 2.f, HEIGHT / 2.f }, { (float)WIDTH, (float)HEIGHT })
 {
-
 	initializeGui();
 }
 
@@ -42,16 +41,19 @@ void StartScreen::initializeGui() {
 	_guiRoot.addChild(&_shop);
 
 	for (u32 i = 0u; i < 10; ++i) {
-		for (u32 j = 0u; j < Weapon::_weapons.size(); ++j) {
-			_shop.addWeapon(MM::make_shared<Weapon>(Weapon::_weapons[j]));
+		for (auto&[k, _] : Weapon::_weapons) {
+			_;
+			printf("%s", _.getName().c_str());
+			_shop.addWeapon(k);
 		}
 	}
 }
 
 void StartScreen::onEnter() {
 	_json = AssetsManager::getJson(JSON_KEY)["startZone"];
-	_player = game->_player;
-	_player->initializeJson();
+	_player = std::make_shared<Player>();
+
+	_shop.setPlayer(_player);
 
 	initializeSprite();
 	initializeWorld();
@@ -60,6 +62,8 @@ void StartScreen::onExit() {
 	if (_enteredShop)
 		unActivateShop();
 
+	_player->collider->onEnter = [](Object*) {};
+	_player->collider->onExit = [](Object*) {};
 	_player->unEquip();
 	_projectiles.clear();
 	_world.purge();
@@ -67,21 +71,22 @@ void StartScreen::onExit() {
 
 void StartScreen::initializeWorld(){
 	_world.addObject(_player);
+	_player->collider->onEnter =
+		std::bind(&StartScreen::playerOnEnter, this, std::placeholders::_1);
+	_player->collider->onExit =
+		std::bind(&StartScreen::playerOnExit, this, std::placeholders::_1);
 
-	_floor = MM::make_shared<Object>();
+	_floor = std::make_shared<Object>();
 	_floor->idMask.set((size_t)Object::BIT_TAGS::FLOOR);
 	_floor->pos = { 0, 600 };
 	Box* box = new Box();
 	box->size = { 3000, 120 };
-	box->onEnter = [p = _player](auto) { 
-		p->floored(); 
-	};
-	_floor->collider = box;
+	_floor->collider = std::unique_ptr<Collider>((Collider*)box);
 
 	_world.addObject(_floor);
 
 	auto& merchant = _zones["merchant"];
-	merchant = MM::make_shared<Zone>();
+	merchant = std::make_shared<Zone>();
 	merchant->setRadius(150.f);
 	merchant->pos.x = _merchantShop.getPosition().x +
 		_merchantShop.getGlobalBounds().width * 0.5f;
@@ -117,7 +122,7 @@ void StartScreen::update(double dt) {
 		unActivateShop();
 	}
 	else if (_isInShop && InputsManager::isKeyJustPressed(sf::Keyboard::E)) {
-		activateShop();
+ 		activateShop();
 	}
 
 	if (_dungeonDoor.getGlobalBounds().contains(_player->pos)) {
@@ -127,6 +132,12 @@ void StartScreen::update(double dt) {
 
 void StartScreen::pullPlayerObjects() {
 	for (auto& p : _player->getProtectilesToShoot()) {
+		p->collider->onEnter = std::bind(
+			&StartScreen::projectileOnEnter, this, std::weak_ptr(p), std::placeholders::_1
+		);
+		p->collider->onExit = std::bind(
+			&StartScreen::projectileOnExit, this, std::weak_ptr(p), std::placeholders::_1
+		);
 		_projectiles.push_back(p);
 		_world.addObject(p);
 	}
@@ -169,7 +180,7 @@ void StartScreen::render(sf::RenderTarget& target) {
 	for (auto& p : _projectiles) {
 		p->render(target);
 	}
-	for (auto& [_, p] : _zones) {
+	for (auto& [_, p] : _zones) {_;
 		p->render(target);
 	}
 	for (auto& p : _playerZones) {
@@ -188,11 +199,10 @@ void StartScreen::renderGui(sf::RenderTarget& target) {
 	target.setView(_guiView);
 	
 
-	_weaponIcon.setVisible((bool)_player->getWeapon());
-	if (_player->getWeapon()) {
-		_weaponIcon.setSprite(_player->getWeapon()->getUiSprite());
-		_weaponLabel.setPosition(_weaponIcon.getSize() * (-1.f));
-	}
+	_weaponIcon.setVisible(_player->isEquiped());
+
+	_weaponIcon.setSprite(_player->getWeapon().getUiSprite());
+	_weaponLabel.setPosition(_weaponIcon.getSize() * (-1.f));
 
 	_guiRoot.propagateRender(target);
 
@@ -260,14 +270,14 @@ void StartScreen::leaveShop() {
 void StartScreen::removeNeeded() {
 	for (size_t i = _projectiles.size(); i > 0; --i) {
 		if (_projectiles[i - 1]->toRemove()) {
-			_world.delObject(_projectiles[i - 1]);
+			_world.delObject(_projectiles[i - 1]->uuid);
 			_projectiles.erase(_projectiles.begin() + i - 1);
 		}
 	}
 
 	for (size_t i = _playerZones.size(); i > 0; --i) {
 		if (_playerZones[i - 1]->toRemove()) {
-			_world.delObject(_playerZones[i - 1]);
+			_world.delObject(_playerZones[i - 1]->uuid);
 			_playerZones.erase(_playerZones.begin() + i - 1);
 		}
 	}
@@ -283,4 +293,21 @@ void StartScreen::unActivateShop() {
 	_enteredShop = false;
 	_player->setFocus(true);
 	_shop.leave();
+}
+
+void StartScreen::playerOnEnter(Object* object) {
+	if (object->idMask.test(Object::FLOOR)) {
+		_player->floored();
+	}
+}
+
+void StartScreen::playerOnExit(Object*) {}
+
+void StartScreen::projectileOnEnter(std::weak_ptr<Projectile> projectile, Object*){
+	if (projectile.expired()) return;
+	projectile.lock()->remove();
+}
+void StartScreen::projectileOnExit(std::weak_ptr<Projectile> projectile, Object*){
+	if (projectile.expired()) return;
+	projectile.lock()->remove();
 }

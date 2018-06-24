@@ -1,10 +1,10 @@
-#include "Screens/RoomSelectorScreen.hpp"
+#include "RoomSelectorScreen.hpp"
 
-#include "Common.hpp"
-#include "Game.hpp"
+#include "./../Common.hpp"
+#include "./../Game.hpp"
 
-#include "Managers/AssetsManager.hpp"
-#include "Managers/InputsManager.hpp"
+#include "./../Managers/AssetsManager.hpp"
+#include "./../Managers/InputsManager.hpp"
 
 RoomSelectorScreen::RoomSelectorScreen(u32 n):
 	_n(n) {
