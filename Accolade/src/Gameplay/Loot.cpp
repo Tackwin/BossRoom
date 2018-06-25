@@ -25,7 +25,7 @@ Loot::LOOT_TYPE Loot::getLootType() const {
 void Loot::setWeapon(UUID weapon) {
 	_weapon = weapon;
 	cleanSprites();
-	addSprite("icon", Weapon::_weapons[weapon].getUiSprite());
+	addSprite("icon", Weapon::_weapons.at(weapon).getUiSprite());
 }
 UUID Loot::getWeapon() const {
 	return _weapon;
@@ -53,7 +53,7 @@ void Loot::onEnter(Object* obj) { // we know typeof(obj) is necessarly Player*
 	case LOOT_TYPE::WEAPON :
 		Player* player = static_cast<Player*>(obj);
 	
-		auto& player_weapon = player->getWeapon().getUUID();
+		auto player_weapon = player->getWeapon();
 		player->swapWeapon(_weapon);
 
 		setWeapon(player_weapon);

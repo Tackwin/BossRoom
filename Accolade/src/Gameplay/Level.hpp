@@ -57,6 +57,9 @@ public:
 	bool lost() const;
 
 private:
+	void subscribeToEvents() noexcept;
+	void unsubscribeToEvents() noexcept;
+	
 	void removeNeeded();
 
 	void pullPlayerObjects();
@@ -76,7 +79,7 @@ private:
 	std::shared_ptr<Boss> _boss = nullptr;
 	std::shared_ptr<Player> _player = nullptr;
 
-	Box _floorHitBox;
+	Box* _floorHitBox;
 
 	LevelScreen* _screen = nullptr; //How the fuck i'm supposed to make LevelScreen pass this as a shared_ptr
 									//(std::enable_shared_from_this has his probleme) anyway, i DON'T have the ownership
@@ -94,5 +97,8 @@ private:
 	bool _ended = false;
 	bool _aiming = false;
 	bool _running = false;
+
+	u32 _keyPressedEvent{ 0u };
+	u32 _keyReleasedEvent{ 0u };
 };
 

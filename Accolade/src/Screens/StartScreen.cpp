@@ -8,6 +8,7 @@
 
 #include "./../Managers/AssetsManager.hpp"
 #include "./../Managers/InputsManager.hpp"
+#include "./../Managers/EventManager.hpp"
 
 #include "./../Graphics/GUI/Button.hpp"
 
@@ -57,8 +58,10 @@ void StartScreen::onEnter() {
 
 	initializeSprite();
 	initializeWorld();
+	subscribeToEvents();
 }
 void StartScreen::onExit() {
+	unsubscribeToEvents();
 	if (_enteredShop)
 		unActivateShop();
 
@@ -79,9 +82,8 @@ void StartScreen::initializeWorld(){
 	_floor = std::make_shared<Object>();
 	_floor->idMask.set((size_t)Object::BIT_TAGS::FLOOR);
 	_floor->pos = { 0, 600 };
-	Box* box = new Box();
-	box->size = { 3000, 120 };
-	_floor->collider = std::unique_ptr<Collider>((Collider*)box);
+	_floor->collider = std::make_unique<Box>();
+	((Box*)_floor->collider.get())->size = { 3000, 120 };
 
 	_world.addObject(_floor);
 
@@ -200,9 +202,10 @@ void StartScreen::renderGui(sf::RenderTarget& target) {
 	
 
 	_weaponIcon.setVisible(_player->isEquiped());
-
-	_weaponIcon.setSprite(_player->getWeapon().getUiSprite());
-	_weaponLabel.setPosition(_weaponIcon.getSize() * (-1.f));
+	if (_player->isEquiped()) {
+		_weaponIcon.setSprite(Weapon::_weapons.at(_player->getWeapon()).getUiSprite());
+		_weaponLabel.setPosition(_weaponIcon.getSize() * (-1.f));
+	}
 
 	_guiRoot.propagateRender(target);
 
@@ -310,4 +313,25 @@ void StartScreen::projectileOnEnter(std::weak_ptr<Projectile> projectile, Object
 void StartScreen::projectileOnExit(std::weak_ptr<Projectile> projectile, Object*){
 	if (projectile.expired()) return;
 	projectile.lock()->remove();
+}
+
+void StartScreen::subscribeToEvents() noexcept {
+	_keyPressedEvent = EventManager::subscribe("keyPressed",
+		[&](EventManager::EventCallbackParameter args) -> void {
+			auto key = std::any_cast<sf::Keyboard::Key>(*args.begin());
+
+			_player->keyPressed(key);
+		}
+	);
+	_keyReleasedEvent = EventManager::subscribe("keyReleased",
+		[&](EventManager::EventCallbackParameter args) -> void {
+			auto key = std::any_cast<sf::Keyboard::Key>(*args.begin());
+			_player->keyReleased(key);
+		}
+	);
+}
+
+void StartScreen::unsubscribeToEvents() noexcept {
+	EventManager::unSubscribe("keyPressed", _keyPressedEvent);
+	EventManager::unSubscribe("keyReleased", _keyReleasedEvent);
 }

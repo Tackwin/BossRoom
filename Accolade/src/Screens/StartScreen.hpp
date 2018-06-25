@@ -39,6 +39,9 @@ public:
 	void leaveShop();
 private:
 
+	void subscribeToEvents() noexcept;
+	void unsubscribeToEvents() noexcept;
+
 	void pullPlayerObjects();
 
 	void initializeWorld();
@@ -84,4 +87,7 @@ private:
 	Label _weaponLabel;
 
 	Shop _shop;
+
+	u32 _keyPressedEvent{ 0u };
+	u32 _keyReleasedEvent{ 0u };
 };

@@ -261,8 +261,9 @@ bool Shop::_InfoPanel::onClickBegan() {
 	return true;
 }
 bool Shop::_InfoPanel::onClickEnded() {
-	if (!_shop->_player.expired())
+	if (!_shop->_player.expired()) {
 		_shop->_player.lock()->swapWeapon(_weapon);
+	}
 	return true;
 }
 bool Shop::_InfoPanel::onClickGoing() {

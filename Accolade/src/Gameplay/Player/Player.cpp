@@ -24,7 +24,6 @@ Player::Player() :
 	);
 	_sprite.getSprite().setPosition(pos);
 
-
 	_hitSound.setVolume(SOUND_LEVEL);
 
 	collider = std::make_unique<Disk>();
@@ -36,21 +35,12 @@ Player::Player() :
 	idMask.set((size_t)Object::BIT_TAGS::PLAYER);
 	collisionMask.set((size_t)Object::BIT_TAGS::FLOOR);
 
-	EventManager::subscribe("keyPressed",
-		[&](EventManager::EventCallbackParameter args) -> void {
-		auto key = std::any_cast<sf::Keyboard::Key>(*args.begin());
+	if (isEquiped()) {
+		swapWeapon(_info.weapon);
+	}
 
-		keyPressed(key);
-	}
-	);
-	EventManager::subscribe("keyReleased",
-		[&](EventManager::EventCallbackParameter args) -> void {
-		auto key = std::any_cast<sf::Keyboard::Key>(*args.begin());
-		keyReleased(key);
-	}
-	);
+
 }
-
 void Player::enterLevel(Level* level) {
  	_level = level;
 
@@ -145,19 +135,22 @@ void Player::startCaC() {
 	_freeze = true;
 }
 
-const Weapon& Player::getWeapon() const noexcept {
-	return _weapon;
+UUID Player::getWeapon() const noexcept {
+	return _info.weapon;
 }
 bool Player::isEquiped() const noexcept {
-	return _isEquiped;
+	return _info.weapon != UUID::null;
 }
 
 
 void Player::swapWeapon(UUID weapon) {
-	if (_isEquiped) _weapon.unEquip(*this);
+	auto info = game->getPlayerInfo();
+	info.weapon = weapon;
+	game->setPlayerInfo(info);
+	if (isEquiped()) _weapon.unEquip(*this);
 	_weapon = Weapon(Weapon::_weapons[weapon]);
 	_weapon.equip(*this);
-	_isEquiped = true;
+	_info.weapon = weapon;
 }
 
 Vector2f Player::getDirToFire() {
@@ -294,5 +287,5 @@ float Player::getLife() const {
 
 void Player::unEquip() {
 	_weapon.unEquip(*this);
-	_isEquiped = false;
+	_info.weapon = UUID::null;
 }

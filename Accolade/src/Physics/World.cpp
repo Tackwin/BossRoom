@@ -201,6 +201,9 @@ void World::removeNeeded() {
 
 void World::purge() {
 	_objectsMap.clear();
+	_unionsCache.clear();
+	_objectsMap.clear();
+	_collisionStates.clear();
 	for (u32 i = 0u; i < Object::SIZE; ++i)
 		_objectsPool[i].clear();
 }

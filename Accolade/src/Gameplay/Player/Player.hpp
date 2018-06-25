@@ -43,7 +43,7 @@ public:
 
 	Vector2f getDirToFire();
 
-	const Weapon& getWeapon() const noexcept;
+	UUID getWeapon() const noexcept;
 	void swapWeapon(UUID weapon);
 	bool isEquiped() const noexcept;
 
@@ -86,10 +86,10 @@ public:
 	PlayerInfo getPlayerInfo() const;
 	PlayerInfo& getPlayerInfo();
 
-public: //TODO: Make private
-
 	void keyPressed(sf::Keyboard::Key key);
 	void keyReleased(sf::Keyboard::Key key);
+public: //TODO: Make private
+
 	void jumpKeyPressed();
 
 	u32 _nJumpsLeft{ 2 };
@@ -101,7 +101,6 @@ public: //TODO: Make private
 	PlayerInfo _info;
 
 	Weapon _weapon;
-	bool _isEquiped{ false };
 
 	Disk* _hitBox;
 

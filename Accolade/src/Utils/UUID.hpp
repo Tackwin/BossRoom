@@ -9,6 +9,9 @@ private:
 	friend std::hash<UUID>;
 
 public:
+
+	static const UUID null;
+
 	UUID() {
 		std::uniform_int_distribution<int> rng{ 
 			(int)std::numeric_limits<char>::min(), 

@@ -5,29 +5,49 @@
 #include "./../Managers/TimerManager.hpp"
 #include "./../Managers/AssetsManager.hpp"
 
-AnimatedSprite::AnimatedSprite() {
+AnimatedSprite::AnimatedSprite() noexcept {
 
 }
-AnimatedSprite::AnimatedSprite(const AnimatedSprite& sprite_) :
-	_sprite(sprite_._sprite),
-	_json(sprite_._json)
-{
-
+AnimatedSprite::AnimatedSprite(AnimatedSprite&& other) noexcept {
+	while (!_stackAnim.empty()) {
+		TM::removeFunction(_stackAnim.top().keyCallback);
+		_stackAnim.pop();
+	}
+	std::swap(_stackAnim, other._stackAnim);
+	std::swap(_sprite, other._sprite);
+	std::swap(_json, other._json);
 }
-AnimatedSprite::AnimatedSprite(const std::string& json_) :
+AnimatedSprite::AnimatedSprite(const std::string& json_) noexcept :
 	_json(AssetsManager::getJson(JSON_KEY)["sprites"][json_]),
 	_sprite(AssetsManager::getTexture(json_)) {
 }
 
+AnimatedSprite::~AnimatedSprite() {
+	while (!_stackAnim.empty()) {
+		TM::removeFunction(_stackAnim.top().keyCallback);
+		_stackAnim.pop();
+	}
+}
 
-void AnimatedSprite::pushAnim(const std::string&, u32) {
-	/*if (!_stackAnim.empty()) {
+AnimatedSprite& AnimatedSprite::operator=(AnimatedSprite&& other) noexcept {
+	while (!_stackAnim.empty()) {
+		TM::removeFunction(_stackAnim.top().keyCallback);
+		_stackAnim.pop();
+	}
+	std::swap(_stackAnim, other._stackAnim);
+	std::swap(_sprite, other._sprite);
+	std::swap(_json, other._json);
+	return *this;
+}
+
+void AnimatedSprite::pushAnim(const std::string& key, u32 offset) noexcept {
+	if (!_stackAnim.empty()) {
 		const auto& anim = _stackAnim.top();
 		TimerManager::pauseFunction(anim.keyCallback);
 	}
 
-	assert(!_json[key_].is_null());
-	auto& json = _json[key_];
+	assert(!_json[key].is_null());
+	auto& json = _json[key];
 
 	const bool loop = json["loop"].is_null() ? false : json["loop"].get<bool>();
 	const u32 frames = json["frames"];
@@ -38,34 +58,36 @@ void AnimatedSprite::pushAnim(const std::string&, u32) {
 	anim.h = json["rect"].is_null() ? _json["rect"][1] : json["rect"][1];
 	anim.row = json["row"].is_null() ? 0 : json["row"].get<u32>();
 	anim.col = json["col"].is_null() ? 0 : json["col"].get<u32>();
-	anim.keyCallback = TimerManager::addFunction(time / frames, key_, 
+
+	anim.keyCallback = TimerManager::addFunction(time / frames, key,
 		[
 			&, row = anim.row, col = anim.col, frames,
-			w = anim.w, h = anim.h, loop, n = offset_
+			w = anim.w, h = anim.h, loop, n = offset
 		]
-		(double) mutable -> bool {
-			if (!loop && n >= frames) {
-				popAnim();
-				return true;
-			}
-			n %= frames;
-			_stackAnim.top().i = n;
-
-			sf::IntRect intRect;
-			intRect.left = (col + n) * w;
-			intRect.top = row * h;
-			intRect.width = w;
-			intRect.height = h;
-
-			_sprite.setTextureRect(intRect);
-			n++;
-
-			return false;
+	(double) mutable -> bool {
+		if (!loop && n >= frames) {
+			popAnim();
+			return true;
 		}
+		n %= frames;
+		_stackAnim.top().i = n;
+
+		sf::IntRect intRect;
+		intRect.left = (col + n) * w;
+		intRect.top = row * h;
+		intRect.width = w;
+		intRect.height = h;
+
+		_sprite.setTextureRect(intRect);
+		n++;
+
+		return false;
+	}
 	);
+
 	_stackAnim.push(anim);
 	
-	TimerManager::callFunction(anim.keyCallback);*/
+	TimerManager::callFunction(anim.keyCallback);
 }
 void AnimatedSprite::popAnim() {
 	TimerManager::removeFunction(_stackAnim.top().keyCallback);
@@ -90,10 +112,4 @@ const Vector2f AnimatedSprite::getSize() {
 }
 sf::Sprite& AnimatedSprite::getSprite() {
 	return _sprite;
-}
-AnimatedSprite& AnimatedSprite::operator=(const AnimatedSprite& other) {
-	_sprite = other._sprite;
-	_json = other._json;
-	//we don't copy the anim Key
-	return *this;
 }

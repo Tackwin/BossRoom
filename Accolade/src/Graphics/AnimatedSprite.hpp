@@ -14,19 +14,23 @@
 
 class AnimatedSprite{
 public:
-	AnimatedSprite();
-	AnimatedSprite(const AnimatedSprite& sprite);
-	AnimatedSprite(const std::string& json);
+	AnimatedSprite() noexcept;
+	AnimatedSprite(const std::string& json) noexcept;
+	~AnimatedSprite();
 
-	void pushAnim(const std::string& key, u32 offset = 0);
+	AnimatedSprite(AnimatedSprite&) = delete;
+	AnimatedSprite& operator=(AnimatedSprite&) = delete;
+
+	AnimatedSprite(AnimatedSprite&& other) noexcept;
+	AnimatedSprite& operator=(AnimatedSprite&& other) noexcept;
+
+	void pushAnim(const std::string& key, u32 offset = 0) noexcept;
 	void popAnim();
 
 	void render(sf::RenderTarget& target);
 
 	sf::Sprite& getSprite();
 	const Vector2f getSize();
-
-	AnimatedSprite& operator=(const AnimatedSprite& other);
 private:
 	struct Animation {
 		std::string keyCallback = "";
