@@ -51,7 +51,10 @@ void Weapon::createWeapons() {
 				Vector2f dir = 
 					(InputsManager::getMouseWorldPos() - player.getPos())
 					.normalize();
-			
+				if (auto json = me.getJson(); json.find("recoil_force") != json.end()) {
+					player.knockBack(dir * -json["recoil_force"].get<float>());
+				}
+
 				float a = (float)dir.angleX();
 				a += static_cast<float>((evenShot ? -1 : 1) * PIf / 6);
 				Vector2f pos = 
@@ -104,6 +107,9 @@ void Weapon::createWeapons() {
 				Vector2f dir = 
 					(InputsManager::getMouseWorldPos() - player.getPos())
 					.normalize();
+				if (auto json = me.getJson(); json.find("recoil_force") != json.end()) {
+					player.knockBack(dir * -json["recoil_force"].get<float>());
+				}
 			
 				float a = (float)dir.angleX();
 				a += static_cast<float>((evenShot ? -1 : 1) * PIf / 6);
@@ -159,11 +165,17 @@ void Weapon::createWeapons() {
 				TimerManager::resumeFunction(me._keys[0]);
 
 				float A = (float)player.getDirToFire().angleX();
+
+				Vector2f dir = Vector2f::createUnitVector(A);
+				if (auto json = me.getJson(); json.find("recoil_force") != json.end()) {
+					player.knockBack(dir * -json["recoil_force"].get<float>());
+				}
+
 				float spray = me._json["spray"];
 				for (u32 i = 0; i < 3; ++i) {
 					float dtA = spray * (i / 2.f - 0.5f);
 					float a = A + dtA;
-					Vector2f dir = Vector2f::createUnitVector(a);
+					dir = Vector2f::createUnitVector(a);
 					Vector2f pos = player.getPos();
 
 					auto projectile = me._json["projectile"];

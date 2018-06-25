@@ -34,7 +34,7 @@ public:
 	void update(double dt);
 	void render(sf::RenderTarget& target);
 
-	void shoot();
+	void shoot() noexcept;
 	void hit(float damage);
 	void startCaC();
 
@@ -85,6 +85,8 @@ public:
 
 	PlayerInfo getPlayerInfo() const;
 	PlayerInfo& getPlayerInfo();
+
+	void knockBack(Vector2f recoil) noexcept;
 
 	void keyPressed(sf::Keyboard::Key key);
 	void keyReleased(sf::Keyboard::Key key);

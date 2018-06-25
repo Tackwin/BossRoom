@@ -18,7 +18,7 @@ public:
 		WEAPON
 	};
 
-	Loot(float r = 0.f);
+	Loot(float r);
 
 	void setLootType(LOOT_TYPE type);
 	LOOT_TYPE getLootType() const;

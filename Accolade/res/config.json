@@ -389,54 +389,57 @@
 			"cooldowns": [ 0.45 ],
 			"radius": 30,
 			"sprite": "weapon0",
-			"sounds": {
-				"active": [ "shoot" ]
-			},
+      "sounds": {
+        "active": [ "shoot" ]
+      },
+      "recoil_force": 100000,
 
 			"projectile": {
 				"damage": 7,
-				"speed": 600,
+				"speed": 1200,
 				"radius": 7,
 				"lifespan": 5,
 				"destroyOthers": false,
 				"sprite": "projectiles-1"
 			}
 		},
-		{
-			"cooldowns": [ 0.001 ],
-			"radius": 30,
-			"sprite": "weapon1",
-			"sounds": {
-				"active": [ "shoot" ]
-			},
+    {
+      "cooldowns": [ 0.1 ],
+      "radius": 30,
+      "sprite": "weapon1",
+      "sounds": {
+        "active": [ "shoot" ]
+      },
+      "recoil_force": 150000,
 
-			"projectile": {
-				"damage": 2,
-				"speed": 700,
-				"radius": 5,
-				"lifespan": 5,
-				"destroyOthers": false,
-				"sprite": "projectiles-1"
-			}
-		},
-		{
-			"cooldowns": [ 0.5 ],
-			"spray": 0.0628318530718,
-			"radius": 10,
-			"sprite": "weapon2",
-			"sounds": {
-				"active": [ "shoot" ]
-			},
+      "projectile": {
+        "damage": 2,
+        "speed": 1500,
+        "radius": 5,
+        "lifespan": 5,
+        "destroyOthers": false,
+        "sprite": "projectiles-1"
+      }
+    },
+    {
+      "cooldowns": [ 0.5 ],
+      "spray": 0.0628318530718,
+      "radius": 10,
+      "sprite": "weapon2",
+      "sounds": {
+        "active": [ "shoot" ]
+      },
+      "recoil_force": 120000,
 
-			"projectile": {
-				"damage": 3,
-				"speed": 700,
-				"radius": 5,
-				"lifespan": 5,
-				"destroyOthers": false,
-				"sprite": "projectiles-1"
-			}
-		},
+      "projectile": {
+        "damage": 3,
+        "speed": 1400,
+        "radius": 5,
+        "lifespan": 5,
+        "destroyOthers": false,
+        "sprite": "projectiles-1"
+      }
+    },
 		{
 			"cooldowns": [ 0.7 ],
 			"sprite": "sword",

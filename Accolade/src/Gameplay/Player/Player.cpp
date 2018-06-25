@@ -73,8 +73,6 @@ void Player::update(double dt) {
 		}
 
 		_dir.normalize();
-		if (tryingToShoot)
-			_dir.x *= 0.2f;
 		if (InputsManager::isKeyPressed(kb.getKey(KeyBindings::JUMP)))
 			_dir.x *= _info.specialSpeed;
 		else
@@ -100,7 +98,7 @@ void Player::render(sf::RenderTarget &target) {
 	_sprite.render(target);
 
 }
-void Player::shoot() {
+void Player::shoot() noexcept {
 	_sprite.pushAnim("action");
 }
 
@@ -288,4 +286,8 @@ float Player::getLife() const {
 void Player::unEquip() {
 	_weapon.unEquip(*this);
 	_info.weapon = UUID::null;
+}
+
+void Player::knockBack(Vector2f recoil) noexcept {
+	flatForces.push_back(recoil);
 }
