@@ -100,5 +100,7 @@ private:
 
 	u32 _keyPressedEvent{ 0u };
 	u32 _keyReleasedEvent{ 0u };
+
+	sf::View _view;
 };
 
