@@ -113,6 +113,8 @@ void StartScreen::update(double dt) {
 
 	pullPlayerObjects();
 
+	auto mouse = InputsManager::getMousePosInView(_playerView);
+	_player->setFacingDir((float)(mouse - _player->getPos()).angleX());
 	_player->update(dt);
 	for (auto& p : _projectiles) {
 		p->update(dt);

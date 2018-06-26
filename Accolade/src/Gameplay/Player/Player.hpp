@@ -41,8 +41,6 @@ public:
 	bool isAlive() const;
 	float getLife() const;
 
-	Vector2f getDirToFire();
-
 	UUID getWeapon() const noexcept;
 	void swapWeapon(UUID weapon);
 	bool isEquiped() const noexcept;
@@ -88,6 +86,9 @@ public:
 
 	void knockBack(Vector2f recoil) noexcept;
 
+	Vector2f getFacingDir() const noexcept;
+	void setFacingDir(float angle) noexcept;
+
 	void keyPressed(sf::Keyboard::Key key);
 	void keyReleased(sf::Keyboard::Key key);
 public: //TODO: Make private
@@ -121,6 +122,8 @@ public: //TODO: Make private
 	bool _boostingJump{ false };
 
 	bool _focus{ true };
+
+	float _facingDir{ 0.f };
 
 	Level* _level{ nullptr };
 

@@ -392,7 +392,7 @@
       "sounds": {
         "active": [ "shoot" ]
       },
-      "recoil_force": 100000,
+      "recoil_force": 1000,
 
 			"projectile": {
 				"damage": 7,
@@ -410,7 +410,7 @@
       "sounds": {
         "active": [ "shoot" ]
       },
-      "recoil_force": 150000,
+      "recoil_force": 1500,
 
       "projectile": {
         "damage": 2,
@@ -429,7 +429,7 @@
       "sounds": {
         "active": [ "shoot" ]
       },
-      "recoil_force": 120000,
+      "recoil_force": 1200,
 
       "projectile": {
         "damage": 3,

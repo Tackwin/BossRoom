@@ -19,6 +19,9 @@ private:
 
 	static Vector2f mouseWorldPos;
 	static Vector2f mouseScreenPos;
+	static Vector2f relativeMouseScreenPos;
+
+	static Vector2u windowsSize;
 
 public:
 	static void update(sf::RenderWindow &window);
@@ -53,7 +56,7 @@ public:
 	};
 	static bool isMouseJustReleased(const sf::Mouse::Button &button);
 
-	static const Vector2f& getMouseWorldPos();
-	static const Vector2f& getMouseScreenPos();
+	static Vector2f getMousePosInView(const sf::View& view);
+	static Vector2f getMouseScreenPos();
 };
 

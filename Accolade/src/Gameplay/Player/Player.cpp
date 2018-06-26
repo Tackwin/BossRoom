@@ -151,9 +151,6 @@ void Player::swapWeapon(UUID weapon) {
 	_info.weapon = weapon;
 }
 
-Vector2f Player::getDirToFire() {
-	return (InputsManager::getMouseWorldPos() - pos).normalize();
-}
 void Player::addProjectile(const std::shared_ptr<Projectile>& projectile) {
 	_projectilesToShoot.push_back(projectile);
 }
@@ -290,4 +287,12 @@ void Player::unEquip() {
 
 void Player::knockBack(Vector2f recoil) noexcept {
 	flatForces.push_back(recoil);
+}
+
+Vector2f Player::getFacingDir() const noexcept {
+	return Vector2f::createUnitVector(_facingDir);
+}
+
+void Player::setFacingDir(float dir) noexcept {
+	_facingDir = dir;
 }

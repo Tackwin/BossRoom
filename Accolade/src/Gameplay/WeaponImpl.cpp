@@ -48,9 +48,8 @@ void Weapon::createWeapons() {
 				player.shoot();
 				//TimerManager::resumeFunction(me._keys[0]);
 
-				Vector2f dir = 
-					(InputsManager::getMouseWorldPos() - player.getPos())
-					.normalize();
+				Vector2f dir = player.getFacingDir();
+
 				if (auto json = me.getJson(); json.find("recoil_force") != json.end()) {
 					player.knockBack(dir * -json["recoil_force"].get<float>());
 				}
@@ -104,9 +103,8 @@ void Weapon::createWeapons() {
 				me._flags.reset(0);
 				TimerManager::resumeFunction(me._keys[0]);
 
-				Vector2f dir = 
-					(InputsManager::getMouseWorldPos() - player.getPos())
-					.normalize();
+				Vector2f dir = player.getFacingDir();
+
 				if (auto json = me.getJson(); json.find("recoil_force") != json.end()) {
 					player.knockBack(dir * -json["recoil_force"].get<float>());
 				}
@@ -164,9 +162,10 @@ void Weapon::createWeapons() {
 				me._flags.reset(0);
 				TimerManager::resumeFunction(me._keys[0]);
 
-				float A = (float)player.getDirToFire().angleX();
+				float A = (float)player.getFacingDir().angleX();
 
-				Vector2f dir = Vector2f::createUnitVector(A);
+				Vector2f dir = player.getFacingDir();
+
 				if (auto json = me.getJson(); json.find("recoil_force") != json.end()) {
 					player.knockBack(dir * -json["recoil_force"].get<float>());
 				}
