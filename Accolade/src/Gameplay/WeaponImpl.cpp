@@ -25,7 +25,7 @@ void Weapon::createWeapons() {
 
 		weapon._equip = [](Weapon& me, Player&)mutable->void {
 			me._keys.push_back(
-				TimerManager::addFunction(me._json["cooldowns"][0], "1-cd", [&me](double)mutable->bool {
+				TimerManager::addFunction(me._json["cooldowns"][0], [&me](double)mutable->bool {
 					me._flags.set(0);
 					TimerManager::pauseFunction(me._keys[0]);
 					return false;
@@ -82,7 +82,7 @@ void Weapon::createWeapons() {
 		auto weapon = Weapon(AssetsManager::getJson(JSON_KEY)["weapons"][1]);
 
 		weapon._equip = [](Weapon& me, Player&)mutable->void {
-			me._keys.push_back(TimerManager::addFunction(me._json["cooldowns"][0], "1-cd", [&me](double)mutable->bool {
+			me._keys.push_back(TimerManager::addFunction(me._json["cooldowns"][0], [&me](double)mutable->bool {
 				me._flags.set(0);
 				TimerManager::pauseFunction(me._keys[0]);
 				return false;
@@ -143,7 +143,7 @@ void Weapon::createWeapons() {
 		auto weapon = Weapon(AssetsManager::getJson(JSON_KEY)["weapons"][2]);
 
 		weapon._equip = [](Weapon& me, Player&)mutable->void {
-			me._keys.push_back(TimerManager::addFunction(me._json["cooldowns"][0], "1-cd", [&me](double)mutable->bool {
+			me._keys.push_back(TimerManager::addFunction(me._json["cooldowns"][0], [&me](double)mutable->bool {
 				me._flags.set(0);
 				TimerManager::pauseFunction(me._keys[0]);
 				return false;

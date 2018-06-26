@@ -6,57 +6,50 @@
 
 #include "./../Time/Clock.hpp"
 
-std::unordered_map<std::string, TimerManager::Function> TimerManager::_functions;
+std::unordered_map<UUID, TimerManager::Function> TimerManager::_functions;
 
 u32 TimerManager::getNFunction() {
 	return _functions.size();
 }
 
-std::string TimerManager::addFunction(double timer, const std::string& key, const Function::Callback&& f) {
-	u08 i = (u08)rand();
-	std::string candidate = key + std::to_string(i);
-	while (_functions.find(candidate) != _functions.end()) {
-		candidate = candidate + std::to_string(i);
-	}
-	_functions[candidate] = Function(timer, std::forward<const Function::Callback>(f));
-	return candidate;
-}
-std::string TimerManager::addFunction(double timer, const Function::Callback&& f) {
-	return addFunction(timer, "", std::forward<const Function::Callback>(f));
+UUID TimerManager::addFunction(double timer, const Function::Callback&& f) {
+	UUID uuid;
+	_functions[uuid] = Function(timer, std::forward<const Function::Callback>(f));
+	return uuid;
 }
 
-void TimerManager::resetTimerFunction(const std::string& key) {
+void TimerManager::resetTimerFunction(UUID key) {
 	auto it = _functions.find(key);
 	assert(it != std::end(_functions) && "Can't find the function");
 	it->second.clock.reset();
 	it->second.paused = false;
 }
-void TimerManager::restartFunction(const std::string& key) {
+void TimerManager::restartFunction(UUID key) {
 	auto it = _functions.find(key);
 	assert(it != std::end(_functions) && "Can't find the function");
 	it->second.clock.restart();
 	it->second.paused = false;
 }
-void TimerManager::callFunction(const std::string& key) {
+void TimerManager::callFunction(UUID key) {
 	auto it = _functions.find(key);
 	assert(it != std::end(_functions) && "Can't find the function");
 	it->second.toRemove = it->second.f(0);
 }
-bool TimerManager::functionsExist(const std::string& key) {
+bool TimerManager::functionsExist(UUID key) {
 	return _functions.find(key) != std::end(_functions);
 }
-void TimerManager::removeFunction(const std::string& key) {
+void TimerManager::removeFunction(UUID key) {
 	auto it = _functions.find(key);
 	assert(it != std::end(_functions) && "Can't find the function");
 	it->second.toRemove = true;
 }
-void TimerManager::pauseFunction(const std::string& key) {
+void TimerManager::pauseFunction(UUID key) {
 	auto it = _functions.find(key);
 	assert(it != std::end(_functions) && "Can't find the function");
 	it->second.clock.pause();
 	it->second.paused = true;
 }
-void TimerManager::resumeFunction(const std::string& key) {
+void TimerManager::resumeFunction(UUID key) {
 	auto it = _functions.find(key);
 	assert(it != std::end(_functions) && "Can't find the function");
 	it->second.clock.resume();

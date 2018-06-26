@@ -111,7 +111,7 @@ void Player::hit(float d) {
 
 	_life -= d;
 	_sprite.getSprite().setColor(sf::Color(230, 230, 230));
-	TimerManager::addFunction(0.33f, "blinkDown", 
+	TimerManager::addFunction(0.33f, 
 		[&, n = 0](double) mutable -> bool {
 			_sprite.getSprite().setColor(
 				(n++ % 2 == 0) 
@@ -125,12 +125,6 @@ void Player::hit(float d) {
 			return false;
 		}
 	);
-}
-
-void Player::startCaC() {
-	TimerManager::restartFunction(_keyCdActionCaC);
-	_sprite.getSprite().setColor(sf::Color::Blue);
-	_freeze = true;
 }
 
 UUID Player::getWeapon() const noexcept {

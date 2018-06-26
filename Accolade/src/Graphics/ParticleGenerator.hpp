@@ -12,6 +12,8 @@
 
 #include "./../Math/Vector.hpp"
 
+#include "./../Utils/UUID.hpp"
+
 class Particle;
 class ParticleGenerator {
 public:
@@ -46,7 +48,7 @@ private:
 
 	std::vector<std::string> _keys = {};
 	std::function<bool(double)> _lambda = [](auto) {return false; };
-	std::string _lambdaKey = "";
+	UUID _lambdaKey{ UUID::null };
 
 	std::vector<std::shared_ptr<Particle>> _particles = {};
 };

@@ -59,7 +59,7 @@ void AnimatedSprite::pushAnim(const std::string& key, u32 offset) noexcept {
 	anim.row = json["row"].is_null() ? 0 : json["row"].get<u32>();
 	anim.col = json["col"].is_null() ? 0 : json["col"].get<u32>();
 
-	anim.keyCallback = TimerManager::addFunction(time / frames, key,
+	anim.keyCallback = TimerManager::addFunction(time / frames,
 		[
 			&, row = anim.row, col = anim.col, frames,
 			w = anim.w, h = anim.h, loop, n = offset

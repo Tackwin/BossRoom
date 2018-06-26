@@ -79,17 +79,14 @@ void startGame() {
 
 	const auto& updateKey = TimerManager::addFunction(
 		MIN_MS,
-		"update",
 		std::bind(&update, std::ref(window), std::placeholders::_1)
 	);
 	const auto& renderKey = TimerManager::addFunction(
 		MAX_FPS == 0.f ? 0.f : 1.f / MAX_FPS,
-		"render",
 		std::bind(&render, std::ref(window))
 	);
 	const auto& sizeKey = TimerManager::addFunction(
 		10.f,
-		"size",
 		[](double) -> bool {
 			const auto buffer_size = MM::I().get_buffer_size();
 			const auto free_size = MM::I().get_free_size();

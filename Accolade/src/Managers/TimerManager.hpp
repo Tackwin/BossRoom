@@ -7,8 +7,9 @@
 #include <mutex>
 #include <cmath>
 
-#include "./../Common.hpp"
-#include "./../Time/Clock.hpp"
+#include "../Common.hpp"
+#include "../Time/Clock.hpp"
+#include "../Utils/UUID.hpp"
 
 class TimerManager {
 private:
@@ -37,110 +38,109 @@ private:
 	};
 
 	static std::unordered_map<
-		std::string, 
+		UUID, 
 		Function
 	> _functions;
 
 
 public:
+
 	static u32 getNFunction();
 
-	static std::string addFunction(
-		double timer, const std::string& key, const Function::Callback&& f
-	);
-	static std::string addFunction(double timer, const Function::Callback&& f);
-	static void resetTimerFunction(const std::string& key);
-	static void restartFunction(const std::string& key);
-	static void removeFunction(const std::string& key);
-	static void resumeFunction(const std::string& key);
-	static void pauseFunction(const std::string& key);
-	static void callFunction(const std::string& key);
+	static UUID addFunction(double timer, const Function::Callback&& f);
 
-	static bool functionsExist(const std::string& key);
+	static void resetTimerFunction(UUID key);
+	static void restartFunction(UUID key);
+	static void removeFunction(UUID key);
+	static void resumeFunction(UUID key);
+	static void pauseFunction(UUID key);
+	static void callFunction(UUID key);
+
+	static bool functionsExist(UUID key);
 
 	//ASSUREZ VOUS QUE LE POINTEUR RESTE VALIDE TOUT AU LONG DU PROCESSUS !!!!!!
 	template<typename T = double>
-	static std::string addPowerEase(double t, std::string key, T* v, T min, T max, float p);
+	static UUID addPowerEase(double t, T* v, T min, T max, float p);
 	template<typename T = double>
-	static std::string addPowerOEase(
-		double t, std::string key, T* v, T min, T max, float p
+	static UUID addPowerOEase(
+		double t, T* v, T min, T max, float p
 	);
 	template<typename T = double>
-	static std::string addPowerIOEase(
-		double t, std::string key, T* v, T min, T max, float p
+	static UUID addPowerIOEase(
+		double t, T* v, T min, T max, float p
 	);
 	template<typename T = double>
-	static std::string addCustomEase(
-		double t, std::string key, T* v, T min, T max, std::function<double(double)> f
+	static UUID addCustomEase(
+		double t, T* v, T min, T max, std::function<double(double)> f
 	);
 	template<typename T = double>
-	static std::string addLinearEase(double t, std::string key, T* v, T min, T max) {
-		return TimerManager::addPowerEase<T>(t, key, v, min, max, 1);
+	static UUID addLinearEase(double t, T* v, T min, T max) {
+		return TimerManager::addPowerEase<T>(t, v, min, max, 1);
 	}
 	template<typename T = double>
-	static std::string addSquaredEase(double t, std::string key, T* v, T min, T max){
-		return TimerManager::addPowerEase<T>(t, key, v, min, max, 2);
+	static UUID addSquaredEase(double t, T* v, T min, T max){
+		return TimerManager::addPowerEase<T>(t, v, min, max, 2);
 	}
 	template<typename T = double>
-	static std::string addSquaredIOEase(double t, std::string key, T* v, T min, T max){
-		return TimerManager::addPowerIOEase<T>(t, key, v, min, max, 2);
+	static UUID addSquaredIOEase(double t, T* v, T min, T max){
+		return TimerManager::addPowerIOEase<T>(t, v, min, max, 2);
 	}
 	template<typename T = double>
-	static std::string addsinEase(double t, std::string key, T* v, T min, T max);
+	static UUID addsinEase(double t, T* v, T min, T max);
 	template<typename T = double>
-	static std::string addsinOEase(double t, std::string key, T* v, T min, T max);
+	static UUID addsinOEase(double t, T* v, T min, T max);
 	template<typename T = double>
-	static std::string addsinIOEase(double t, std::string key, T* v, T min, T max);
+	static UUID addsinIOEase(double t, T* v, T min, T max);
 
 	static void update(double dt);
 	static void updateInc(double dt, uint32_t n);
 };
 
 template<typename T>
-std::string TimerManager::addPowerEase(
-	double t, std::string key, T* v, T min, T max, float p
+UUID TimerManager::addPowerEase(
+	double t, T* v, T min, T max, float p
 ) {
-	return addCustomEase<T>(t, key, v, min, max, [p](double x)->double {return pow(x, p);});
+	return addCustomEase<T>(t, v, min, max, [p](double x)->double {return pow(x, p);});
 }
 template<typename T>
-std::string TimerManager::addPowerOEase(
-	double t, std::string key, T* v, T min, T max, float p
+UUID TimerManager::addPowerOEase(
+	double t, T* v, T min, T max, float p
 ) {
 	return addCustomEase<T>(
-		t, key, v, min, max, [p](double x)->double {return 1 - pow(1-x, p)}
+		t, v, min, max, [p](double x)->double {return 1 - pow(1-x, p)}
 	);
 }
 template<typename T>
-std::string TimerManager::addPowerIOEase(
-	double t, std::string key, T* v, T min, T max, float p
+UUID TimerManager::addPowerIOEase(
+	double t, T* v, T min, T max, float p
 ) {
-	return addCustomEase<T>(t, key, v, min, max, [p](double x)->double {
+	return addCustomEase<T>(t, v, min, max, [p](double x)->double {
 		return x < 0.5 ? pow(2*x, p) / 2. : 1 - pow(2 * (1 - x), p) / 2.;
 	});
 }
 template<typename T>
-std::string TimerManager::addsinEase(double t, std::string key, T* V, T mmin, T max) {
-	return TimerManager::addCustomEase<T>(t, key, v, min, max, [](double x)->double {
+UUID TimerManager::addsinEase(double t, T* V, T mmin, T max) {
+	return TimerManager::addCustomEase<T>(t, v, min, max, [](double x)->double {
 		return 1 - std::sin(C::PI * (1 - x) / 2.);
 	});
 }
 template<typename T>
-std::string TimerManager::addsinOEase(double t, std::string key, T* V, T mmin, T max) {
-	return TimerManager::addCustomEase<T>(t, key, v, min, max, [](double x)->double {
+UUID TimerManager::addsinOEase(double t, T* V, T mmin, T max) {
+	return TimerManager::addCustomEase<T>(t, v, min, max, [](double x)->double {
 		return std::sin(C::PI * x / 2.);
 	});
 }
 template<typename T>
-std::string TimerManager::addsinIOEase(double t, std::string key, T* V, T mmin, T max) {
-	return TimerManager::addCustomEase<T>(t, key, v, min, max, [](double x)->double {
+UUID TimerManager::addsinIOEase(double t, T* V, T mmin, T max) {
+	return TimerManager::addCustomEase<T>(t, v, min, max, [](double x)->double {
 		return 0.5f * (x < 0.5 
 			? (1 - std::sin(C::PI * (1 - 2 * x) / 2.f)) 
 			: std::sin((x - 0.5) * C::PI));
 	});
 }
 template<typename T>
-std::string TimerManager::addCustomEase(
-	double t, std::string key, T* v, T min, T max, std::function<double(double)> pf
+UUID TimerManager::addCustomEase(
+	double t, T* v, T min, T max, std::function<double(double)> pf
 ) {
 	std::shared_ptr<Clock> clock = std::make_shared<Clock>(t);
 	auto f = [t, v, min, max, pf, clock, intT = 0.f](double)mutable->bool {
@@ -151,7 +151,7 @@ std::string TimerManager::addCustomEase(
 		}
 		return false;
 	};
-	return TimerManager::addFunction(0., key, f);
+	return TimerManager::addFunction(0., f);
 }
 
 using TM = TimerManager;

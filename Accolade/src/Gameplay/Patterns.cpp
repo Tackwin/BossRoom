@@ -60,7 +60,7 @@ void Patterns::randomFire(
 		Vector2f dir = Vector2f::createUnitVector(ca);
 		Vector2f pos = boss.getPos() + dir * (boss.getRadius() + 10);
 
-		const auto& key = TimerManager::addFunction(sumDelay, "random fire_", 
+		const auto& key = TimerManager::addFunction(sumDelay, 
 			[&boss, projectile, pos, dir](double) mutable -> bool {
 				boss.shoot(projectile, pos, dir);
 				return true;
@@ -84,7 +84,7 @@ void Patterns::directionalFire(
 	float time, 
 	nlohmann::json projectile
 ) {
-	const auto& key = TimerManager::addFunction(1 / fireRate, "directive fire", 
+	const auto& key = TimerManager::addFunction(1 / fireRate, 
 		[&boss, projectile, N = time * fireRate](double) mutable -> bool {
 			float a = 
 				(float)boss.getPos().angleTo(boss.getLevel()->getPlayerPos());
@@ -139,7 +139,7 @@ void Patterns::barage(
 		return --nWaves == 0;
 	};
 	
-	boss.addKeyTimer(TimerManager::addFunction(iTime, "barage", barage));
+	boss.addKeyTimer(TimerManager::addFunction(iTime, barage));
 }
 
 void Patterns::snipe(Boss& boss, nlohmann::json json) {

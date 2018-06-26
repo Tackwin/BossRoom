@@ -8,6 +8,8 @@
 
 #include "./../Math/Vector.hpp"
 
+#include "./../Utils/UUID.hpp"
+
 class Probe {
 public:
 
@@ -35,7 +37,7 @@ public: //TODO: make this private
 	sf::Color _color;
 	sf::CircleShape _shape;
 
-	std::vector<std::string> _keys;
+	std::vector<UUID> _keys;
 
 	void update(float dt);
 	void render(sf::RenderTarget& target);

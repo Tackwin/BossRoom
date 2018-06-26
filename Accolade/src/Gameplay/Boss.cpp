@@ -136,7 +136,7 @@ void Boss::hit(float d) {
 		return true;
 	};
 
-	TimerManager::addFunction(0.05f, "blinkDown", blinkDown);
+	TimerManager::addFunction(0.05f, blinkDown);
 	_color = hexToColor(_json["blinkColor"]);
 }
 
@@ -149,7 +149,7 @@ void Boss::hit(u32 d) {
 		return true;
 	};
 
-	TimerManager::addFunction(0.05f, "blinkDown", blinkDown);
+	TimerManager::addFunction(0.05f, blinkDown);
 	_color = hexToColor(_json["blinkColor"]);
 }
 
@@ -218,9 +218,9 @@ Level* Boss::getLevel() const {
 	return _level;
 }
 
-void Boss::addKeyTimer(std::string_view key) {
-	_keyPatterns.push_back(std::string(key));
+void Boss::addKeyTimer(UUID key) {
+	_keyPatterns.push_back(key);
 }
-void Boss::delKeyTimer(std::string_view key) {
+void Boss::delKeyTimer(UUID key) {
 	_keyPatterns.erase(std::find(_keyPatterns.begin(), _keyPatterns.end(), key));
 }

@@ -23,8 +23,7 @@ void Boss::createBosses() {
 			boss._sounds.push_back(sound);
 
 			boss._keyPatterns.push_back(TimerManager::addFunction(
-				3, 
-				"P1", 
+				3,
 				[&boss](double)mutable->bool {
 					Patterns::directionalFire(
 						boss, 
@@ -37,7 +36,6 @@ void Boss::createBosses() {
 			));
 			boss._keyPatterns.push_back(TimerManager::addFunction(
 				2,
-				"P2",
 				[&boss](double)mutable->bool {
 				if (boss._life < 0.6f * boss._maxLife) {
 					Patterns::snipe(boss, Patterns::_json["snipe"]);
@@ -47,8 +45,7 @@ void Boss::createBosses() {
 			}
 			));
 			boss._keyPatterns.push_back(TimerManager::addFunction(
-				5.5f, 
-				"P3", 
+				5.5f,
 				[&boss](double)mutable->bool {
 					if (boss._life < 0.3f * boss._maxLife) {
 
@@ -83,13 +80,13 @@ void Boss::createBosses() {
 		[](double, Boss&) {},
 		[](Boss& boss) { // Init function
 		boss._keyPatterns.push_back(
-			TimerManager::addFunction(6, "P1", [&boss](double)mutable->bool {
+			TimerManager::addFunction(6, [&boss](double)mutable->bool {
 				Patterns::cerclique(boss, Patterns::_json["cerclique"]);
 				return false;
 			}
 		));
 		boss._keyPatterns.push_back(
-			TimerManager::addFunction(3.5, "P2", [&boss](double)mutable->bool {
+			TimerManager::addFunction(3.5, [&boss](double)mutable->bool {
 				if (boss._life < 0.66f * boss._maxLife) {
 					Patterns::snipe(boss, Patterns::_json["snipe"]);
 				}
@@ -97,7 +94,7 @@ void Boss::createBosses() {
 			}
 		));
 		boss._keyPatterns.push_back(
-			TimerManager::addFunction(5, "P3", [&boss](double)mutable->bool {
+			TimerManager::addFunction(5, [&boss](double)mutable->bool {
 				if (boss._life < 0.33f * boss._maxLife) 
 					Patterns::barage(boss, Patterns::_json["barage"]);
 				return false;
@@ -116,14 +113,14 @@ void Boss::createBosses() {
 		AssetsManager::getJson(JSON_KEY)["bosses"][1],
 		[](double, Boss&) {},
 		[](Boss& boss) { // Init function
-		boss._keyPatterns.push_back(TimerManager::addFunction(3, "P1", 
+		boss._keyPatterns.push_back(TimerManager::addFunction(3,
 			[&boss](double)mutable->bool {
 				Patterns::boomerang(boss, Patterns::_json["boomerang"]);
 				return false;
 			}
 		));
 		boss._keyPatterns.push_back(
-			TimerManager::addFunction(2, "P2", [&boss](double)mutable->bool {
+			TimerManager::addFunction(2, [&boss](double)mutable->bool {
 				if (boss._life < 0.66f * boss._maxLife) 
 					Patterns::rapprochement(
 						boss, 
@@ -133,7 +130,7 @@ void Boss::createBosses() {
 			}
 		));
 		boss._keyPatterns.push_back(
-			TimerManager::addFunction(5, "P3", [&boss](double)mutable->bool {
+			TimerManager::addFunction(5, [&boss](double)mutable->bool {
 				if (boss._life < 0.33f * boss._maxLife) 
 					Patterns::entonnoir(
 						boss, 
@@ -156,7 +153,7 @@ void Boss::createBosses() {
 		[](double, Boss&) {},
 		[](Boss& boss) { // Init function
 		boss._keyPatterns.push_back(
-			TimerManager::addFunction(4, "P1", [&boss](double)mutable->bool {
+			TimerManager::addFunction(4, [&boss](double)mutable->bool {
 				Patterns::blastCosmopolitain(
 					boss, 
 					Patterns::_json["blastCosmopolitain"]
@@ -165,14 +162,14 @@ void Boss::createBosses() {
 			}
 		));
 		boss._keyPatterns.push_back(
-			TimerManager::addFunction(7, "P2", [&boss](double)mutable->bool {
+			TimerManager::addFunction(7, [&boss](double)mutable->bool {
 				if (boss._life < 0.66f * boss._maxLife)
 					Patterns::broyeur(boss, Patterns::_json["broyeur"]);
 				return false;
 			}
 		));
 		boss._keyPatterns.push_back(
-			TimerManager::addFunction(2, "P3", [&boss](double)mutable->bool {
+			TimerManager::addFunction(2, [&boss](double)mutable->bool {
 				if (boss._life < 0.33f * boss._maxLife) {
 					auto json = Patterns::_json["directionalFire"];
 					json["time"] = 0.3f;
@@ -195,20 +192,20 @@ void Boss::createBosses() {
 		[](double, Boss&) {},
 		[](Boss& boss) { // Init function
 		boss._keyPatterns.push_back(
-			TimerManager::addFunction(6, "P1", [&boss](double)mutable->bool {
+			TimerManager::addFunction(6, [&boss](double)mutable->bool {
 				Patterns::boomerang(boss, Patterns::_json["randomFire"]);
 				return false;
 			}
 		));
 		boss._keyPatterns.push_back(
-			TimerManager::addFunction(2, "P2", [&boss](double)mutable->bool {
+			TimerManager::addFunction(2, [&boss](double)mutable->bool {
 				if (boss._life < 0.66f * boss._maxLife) 
 					Patterns::snipe(boss, Patterns::_json["snipe"]);
 				return false;
 			}
 		));
 		boss._keyPatterns.push_back(
-			TimerManager::addFunction(4, "P3", [&boss](double)mutable->bool {
+			TimerManager::addFunction(4, [&boss](double)mutable->bool {
 				if (boss._life < 0.33f * boss._maxLife) 
 					Patterns::rapprochement(
 						boss, 

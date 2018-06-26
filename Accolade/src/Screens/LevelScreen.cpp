@@ -161,31 +161,29 @@ void LevelScreen::renderGui(sf::RenderTarget& target) {
 void LevelScreen::shakeScreen(float power) {
 	constexpr u32 nShakes = 5;
 	constexpr float iTimeShakes = 0.03f;
-	TimerManager::addLinearEase(1.f, "", &_gameViewOffset, { 0, 0 }, { 50, 0 });
+	TimerManager::addLinearEase(1.f, &_gameViewOffset, { 0, 0 }, { 50, 0 });
 
 	const auto& lambda = [&, p = power, n = nShakes](double)mutable->bool {
 		Vector2f from = _gameViewOffset;
 		Vector2f to = Vector2f::createUnitVector(unitaryRng(RD) * 2 * PIf) * power;
 		TimerManager::addLinearEase(
-			iTimeShakes, 
-			"shake", 
-			&_gameViewOffset, 
-			from, 
+			iTimeShakes,
+			&_gameViewOffset,
+			from,
 			to
 		);
 		if (n-- <= 0)
 			TimerManager::addLinearEase(
-				iTimeShakes, 
-				"shakeBack", 
-				&_gameViewOffset, 
-				_gameViewOffset, 
+				iTimeShakes,
+				&_gameViewOffset,
+				_gameViewOffset,
 				{ 0, 0 }
 			);
 
 		return n == 0;
 	};
 
-	TimerManager::addFunction(iTimeShakes, "shake", lambda);
+	TimerManager::addFunction(iTimeShakes, lambda);
 
 }
 

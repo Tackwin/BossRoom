@@ -11,6 +11,8 @@
 
 #include "./../Math/Vector.hpp"
 
+#include "./../Utils/UUID.hpp"
+
 class Particle {
 public:
 	using Function = std::function<void(double)>;
@@ -27,7 +29,7 @@ private:
 
 	nlohmann::json _json;
 
-	std::unordered_map<std::string, std::string> _keys;
+	std::unordered_map<std::string, UUID> _keys;
 
 public:
 	Particle(nlohmann::json json_, Vector2f pos_, Vector2f dir_, Function update_ = [](double) {});

@@ -12,6 +12,8 @@
 
 #include "./../Math/Vector.hpp"
 
+#include "./../Utils/UUID.hpp"
+
 class AnimatedSprite{
 public:
 	AnimatedSprite() noexcept;
@@ -33,7 +35,7 @@ public:
 	const Vector2f getSize();
 private:
 	struct Animation {
-		std::string keyCallback = "";
+		UUID keyCallback{ UUID::null };
 		u32 col = 0;
 		u32 row = 0;
 		u32 w = 0;

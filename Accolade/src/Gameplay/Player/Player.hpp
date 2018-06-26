@@ -36,7 +36,6 @@ public:
 
 	void shoot() noexcept;
 	void hit(float damage);
-	void startCaC();
 
 	bool isAlive() const;
 	float getLife() const;
@@ -107,12 +106,7 @@ public: //TODO: Make private
 
 	Disk* _hitBox;
 
-	std::string _projectilesKey;
-
 	nlohmann::basic_json<> _json;
-
-	std::string _keyCdAction;
-	std::string _keyCdActionCaC;
 
 	bool _floored{ false };
 	bool _invincible{ false };

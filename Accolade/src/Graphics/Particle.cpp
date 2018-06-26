@@ -17,7 +17,6 @@ Particle::Particle(nlohmann::json json_, Vector2f pos_, Vector2f dir_, Function 
 	);
 	_keys["destroy"] = TimerManager::addFunction(
 		getJsonValue<float>(_json, "lifetime"), 
-		"destroy", 
 		[&](double)mutable->bool {
 			_remove = true;
 			return true;

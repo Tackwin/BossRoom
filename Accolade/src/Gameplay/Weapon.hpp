@@ -70,7 +70,7 @@ private:
 
 	float _radius;
 
-	std::vector<std::string> _keys;
+	std::vector<UUID> _keys;
 	std::bitset<32u> _flags = 0;
 
 	nlohmann::json _json;

@@ -54,8 +54,8 @@ public:
 
 	Level* getLevel() const;
 
-	void addKeyTimer(std::string_view key);
-	void delKeyTimer(std::string_view key);
+	void addKeyTimer(UUID key);
+	void delKeyTimer(UUID key);
 
 	const std::vector<std::shared_ptr<Projectile>>& getProtectilesToShoot() const;
 	void clearProtectilesToShoot();
@@ -78,7 +78,7 @@ private:
 
 	std::vector<std::shared_ptr<Projectile>> _projectilesToShoot;
 
-	std::vector<std::string> _keyPatterns; // (key, running)
+	std::vector<UUID> _keyPatterns;
 
 	std::function<void(Boss&)> _init;
 	std::function<void(double, Boss&)> _update;
