@@ -12,6 +12,11 @@ Loot::Loot(float r) :
 	collider->onEnter = std::bind(&Loot::onEnter, this, std::placeholders::_1);
 	collisionMask.set((size_t)Object::BIT_TAGS::PLAYER);
 }
+Loot::~Loot() noexcept {
+	if (_lootImpossibleKey) {
+		TM::removeFunction(_lootImpossibleKey);
+	}
+}
 
 
 void Loot::setLootType(LOOT_TYPE type) {
@@ -59,9 +64,10 @@ void Loot::onEnter(Object* obj) { // we know typeof(obj) is necessarly Player*
 		setWeapon(player_weapon);
 		_lootable = false;
 
-		TimerManager::addFunction(_lootImpossibleTime, 
-			[&lootable = _lootable](double) -> bool {
-				lootable = true;
+		_lootImpossibleKey = TimerManager::addFunction(_lootImpossibleTime, 
+			[&](double) -> bool {
+				_lootable = true;
+				_lootImpossibleKey.nullify();
 				return true;
 			}
 		);

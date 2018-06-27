@@ -35,7 +35,7 @@ void Boss::createBosses() {
 				}
 			));
 			boss._keyPatterns.push_back(TimerManager::addFunction(
-				2,
+				3,
 				[&boss](double)mutable->bool {
 				if (boss._life < 0.6f * boss._maxLife) {
 					Patterns::snipe(boss, Patterns::_json["snipe"]);

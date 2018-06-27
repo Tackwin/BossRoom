@@ -15,6 +15,7 @@
 #include "./../Physics/Object.hpp"
 
 #include "./../Common.hpp"
+#include <unordered_set>
 
 class Level;
 class Projectile;
@@ -28,6 +29,8 @@ public:
 		 std::function<void(Boss&)> initFunction,
 		 std::function<void(Boss&)> unInitFunction);
 
+	~Boss() noexcept;
+
 	void enterLevel(Level* level);
 	void exitLevel();
 
@@ -37,7 +40,6 @@ public:
 	void render(sf::RenderTarget& target);
 
 	void hit(float damage);
-	void hit(u32 damage);
 	void shoot(const std::shared_ptr<Projectile>& projectile);
 	void shoot(
 		const nlohmann::json& json, 
@@ -77,6 +79,8 @@ private:
 	Disk* _disk;
 
 	std::vector<std::shared_ptr<Projectile>> _projectilesToShoot;
+
+	UUID _blinkDownKey{ UUID::null };
 
 	std::vector<UUID> _keyPatterns;
 

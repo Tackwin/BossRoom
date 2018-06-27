@@ -66,6 +66,10 @@ void Weapon::createWeapons() {
 				me._activeSounds[0].play();
 
 				me.addProjectile(std::make_shared<Projectile>(me._json["projectile"], pos, dir, true));
+
+				TimerManager::addFunction(me._json["cooldowns"][0], [me]() {
+					me.
+				});
 			}
 		};
 

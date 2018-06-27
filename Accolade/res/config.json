@@ -141,7 +141,7 @@
 		{
 			"name": "boss 0",
 			"sprite": "phoenix",
-			"life": 500,
+			"life": 400,
 			"radius": 65,
 			"color": "FFFFFFFF",
 			"hitParticle": "particleBurstFeather",
@@ -223,7 +223,7 @@
 
       "projectile": {
         "damage": 1,
-        "speed": 300,
+        "speed": 1700,
         "radius": 10,
         "lifespan": 7.5,
         "destroyOthers": false,
@@ -239,12 +239,12 @@
       }
 		},
 		"directionalFire": {
-			"fireRate": 5,
+			"fireRate": 10,
 			"time": 0.7,
 
       "projectile": {
         "damage": 1,
-        "speed": 700,
+        "speed": 1800,
         "radius": 10,
         "lifespan": 5,
         "destroyOthers": false,
@@ -252,7 +252,7 @@
         "sprite": "boulefeu",
 
         "explosion": {
-          "radius": 35,
+          "radius": 45,
           "damage": 1,
           "force": 300,
           "time": 0.05
@@ -260,13 +260,13 @@
       }
 		},
 		"barage": {
-			"nOrbs": 18,
-			"nWaves": 1,
+			"nOrbs": 6,
+			"nWaves": 2,
 			"iTime": 0,
 
       "projectile": {
         "damage": 1,
-        "speed": 300,
+        "speed": 1500,
         "radius": 5,
         "lifespan": 4,
         "destroyOthers": false,
@@ -275,13 +275,13 @@
       }
 		},
 		"snipe": {
-			"nShots": 1,
+			"nShots": 2,
 			"aimTime": 1,
-			"iTime": 0.1,
+			"iTime": 0.2,
 
       "projectile": {
         "damage": 1,
-        "speed": 2000,
+        "speed": 3800,
         "radius": 7,
         "lifespan": 2,
         "destroyOthers": false,
@@ -413,7 +413,7 @@
       "recoil_force": 1500,
 
       "projectile": {
-        "damage": 2,
+        "damage": 1,
         "speed": 1500,
         "radius": 5,
         "lifespan": 5,

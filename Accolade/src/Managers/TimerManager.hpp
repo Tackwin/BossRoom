@@ -12,9 +12,11 @@
 #include "../Utils/UUID.hpp"
 
 class TimerManager {
-private:
+public:
+	struct Function;
+	using Callback = std::function<bool(double)>;
+
 	struct Function {
-		using Callback = std::function<bool(double)>;
 
 		Clock clock;
 
@@ -36,6 +38,7 @@ private:
 			: clock(timer), timer(timer), time(timer), f(f) {
 		};
 	};
+private:
 
 	static std::unordered_map<
 		UUID, 
@@ -47,7 +50,7 @@ public:
 
 	static u32 getNFunction();
 
-	static UUID addFunction(double timer, const Function::Callback&& f);
+	static UUID addFunction(double timer, const Callback&& f);
 
 	static void resetTimerFunction(UUID key);
 	static void restartFunction(UUID key);

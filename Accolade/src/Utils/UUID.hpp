@@ -23,6 +23,16 @@ public:
 		}
 	}
 
+	constexpr void nullify() noexcept {
+		for (unsigned i = 0; i < sizeof(UUID); ++i) {
+			uuid[i] = null.uuid[i];
+		}
+	}
+
+	constexpr operator bool() const noexcept {
+		return *this != null;
+	}
+
 	constexpr bool operator==(const UUID& other) const noexcept {
 		for (int i = 0; i < sizeof(UUID); ++i) {
 			if (uuid[i] != other.uuid[i]) return false;

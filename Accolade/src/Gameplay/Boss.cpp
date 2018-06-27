@@ -51,6 +51,14 @@ Boss::Boss(const basic_json<>& json,
 Boss::Boss(Boss& other) :
 	Boss(other._json, other._update, other._init, other._unInit) {}
 
+Boss::~Boss() noexcept {
+	if (_blinkDownKey) {
+		TM::removeFunction(_blinkDownKey);
+	}
+	for (auto& k : _keyPatterns) {
+		TimerManager::removeFunction(k);
+	}
+}
 
 void Boss::enterLevel(Level* level) {
 	_level = level;
@@ -133,19 +141,7 @@ void Boss::hit(float d) {
 
 	const auto& blinkDown = [&](double)mutable->bool {
 		_color = hexToColor(_json["color"]);
-		return true;
-	};
-
-	TimerManager::addFunction(0.05f, blinkDown);
-	_color = hexToColor(_json["blinkColor"]);
-}
-
-void Boss::hit(u32 d) {
-	_life -= d;
-	_life = _life < 0.f ? 0.f : _life;
-
-	const auto& blinkDown = [&](double)mutable->bool {
-		_color = hexToColor(_json["color"]);
+		_blinkDownKey.nullify();
 		return true;
 	};
 

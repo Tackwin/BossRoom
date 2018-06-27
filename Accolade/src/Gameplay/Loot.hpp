@@ -19,6 +19,13 @@ public:
 	};
 
 	Loot(float r);
+	~Loot() noexcept;
+
+	Loot(Loot&) = delete;
+	Loot& operator=(Loot&) = delete;
+
+	Loot(Loot&&) = default;
+	Loot& operator=(Loot&&) = default;
 
 	void setLootType(LOOT_TYPE type);
 	LOOT_TYPE getLootType() const;
@@ -42,4 +49,6 @@ private:
 
 	sf::Sprite _lootSprite;
 	UUID _weapon;
+
+	UUID _lootImpossibleKey{ UUID::null };
 };

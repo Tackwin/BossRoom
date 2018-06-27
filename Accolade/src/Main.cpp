@@ -32,7 +32,9 @@ void loadJsonsFromJson(const nlohmann::json& json);
 
 bool update(sf::RenderWindow& window, double dt) {
 	InputsManager::update(window);
-	C::game->update((float)(dt > MIN_MS ? dt : MIN_MS));
+	//if (dt - FIXED_DT == dt) return false;
+
+	C::game->update(dt);
 	return false;
 }
 
@@ -99,13 +101,14 @@ void startGame() {
 	);
 
 	while (window.isOpen()) {
-		static sf::Clock dtClock;
-		static float dt = 0;
-		static float sum = 0;
-		dt = dtClock.restart().asSeconds();
-		dt = dt < MIN_DELTA ? dt : MIN_DELTA;
+		static Clock dtClock;
+		static double dt = 0;
+		dt = dtClock.restart();
 
-		TimerManager::update(dt);
+		//while (dt > 0.0) {
+			TM::update(dt);
+		//	dt -= FIXED_DT;
+		//}
 	}
 	C::game.reset();
 

@@ -12,9 +12,9 @@ u32 TimerManager::getNFunction() {
 	return _functions.size();
 }
 
-UUID TimerManager::addFunction(double timer, const Function::Callback&& f) {
+UUID TimerManager::addFunction(double timer, const Callback&& f) {
 	UUID uuid;
-	_functions[uuid] = Function(timer, std::forward<const Function::Callback>(f));
+	_functions[uuid] = Function(timer, std::forward<const Callback>(f));
 	return uuid;
 }
 
