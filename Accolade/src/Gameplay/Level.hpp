@@ -8,9 +8,9 @@
 
 #include "./../Physics/World.hpp"
 
-#include "./../Gameplay/Zone.hpp"
-#include "./../Gameplay/Weapon.hpp"
-#include "./../Gameplay/Loot.hpp"
+#include "Zone.hpp"
+#include "Wearable/Wearable.hpp"
+#include "Loot.hpp"
 
 class Zone;
 class Boss;
@@ -98,8 +98,8 @@ private:
 	bool _aiming = false;
 	bool _running = false;
 
-	u32 _keyPressedEvent{ 0u };
-	u32 _keyReleasedEvent{ 0u };
+	UUID _keyPressedEvent{ UUID::null };
+	UUID _keyReleasedEvent{ UUID::null };
 
 	sf::View _view;
 };

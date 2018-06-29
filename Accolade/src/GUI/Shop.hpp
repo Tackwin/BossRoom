@@ -2,7 +2,7 @@
 
 #include <map>
 
-#include "./../Gameplay/Weapon.hpp"
+#include "./../Gameplay/Wearable/Wearable.hpp"
 #include "./../Gameplay/Player/Player.hpp"
 
 #include "./../Graphics/GUI/Widget.hpp" 
@@ -17,7 +17,7 @@ public:
 
 	void setPlayer(std::weak_ptr<Player> player);
 
-	void addWeapon(UUID weapon);
+	void addWeapon(const std::string& weapon);
 
 	void focusItem(u32 i);
 	void unFocus();
@@ -31,7 +31,7 @@ private:
 		static constexpr float PANEL_SIZE = 60.f;
 
 		_ItemPanel() {};
-		_ItemPanel(Shop* shop, UUID weapon, u32 id);
+		_ItemPanel(Shop* shop, const std::string& weapon, u32 id);
 
 		bool onClickBegan();
 		bool onClickEnded();
@@ -40,7 +40,7 @@ private:
 		Panel sprite;
 		Label label;
 
-		UUID weapon;
+		std::string weapon;
 
 	private:
 		Shop* _shop;
@@ -51,7 +51,7 @@ private:
 		_InfoPanel() {};
 		_InfoPanel(Shop* shop);
 
-		void populateBy(UUID weapon);
+		void populateBy(const std::string& weapon);
 
 		bool onClickBegan();
 		bool onClickEnded();
@@ -64,7 +64,7 @@ private:
 		
 		Shop* _shop;
 
-		UUID _weapon;
+		std::string _weapon;
 	};
 
 	bool onClickBegan();

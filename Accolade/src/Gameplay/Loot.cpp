@@ -27,12 +27,12 @@ Loot::LOOT_TYPE Loot::getLootType() const {
 	return _lootType;
 }
 
-void Loot::setWeapon(UUID weapon) {
+void Loot::setWeapon(const std::string& weapon) {
 	_weapon = weapon;
 	cleanSprites();
-	addSprite("icon", Weapon::_weapons.at(weapon).getUiSprite());
+	addSprite("icon", Wearable::GetWearableinfo(weapon).uiSprite);
 }
-UUID Loot::getWeapon() const {
+const std::string& Loot::getWeapon() const {
 	return _weapon;
 }
 

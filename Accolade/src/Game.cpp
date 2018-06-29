@@ -12,7 +12,7 @@
 #include "Screens/LevelScreen.hpp"
 #include "Screens/StartScreen.hpp"
 
-#include "Gameplay/Weapon.hpp"
+#include "Gameplay/Wearable/Wearable.hpp"
 #include "Gameplay/Player/Player.hpp"
 #include "Gameplay/Level.hpp"
 #include "Gameplay/Boss.hpp"
@@ -101,7 +101,7 @@ Game::~Game() {
 
 Game::Game()
 {
-	Weapon::createWeapons();
+	Wearable::InitWearable();
 	Boss::createBosses();
 	Level::createLevels();
 

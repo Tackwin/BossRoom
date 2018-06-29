@@ -12,7 +12,7 @@
 #include "./../Graphics/GUI/Panel.hpp"
 
 #include "./../Gameplay/Projectile.hpp"
-#include "./../Gameplay/Weapon.hpp"
+#include "./../Gameplay/Wearable/Wearable.hpp"
 #include "./../Gameplay/Player/Player.hpp"
 #include "./../Gameplay/Level.hpp"
 
@@ -43,6 +43,9 @@ LevelScreen::~LevelScreen() {
 
 void LevelScreen::onEnter() {
 	_player = std::make_shared<Player>();
+	if (_player->isEquiped()) {
+		_player->swapWeapon(_player->getPlayerInfo().weapon);
+	}
 	_level->start(this);
 
 	for (int i = 0; i < _player->getPlayerInfo().maxLife; i++) {
@@ -153,7 +156,7 @@ void LevelScreen::renderGui(sf::RenderTarget& target) {
 	}
 	_bossHealthTileSprite.setPosition(pos);
 	
-	sf::Sprite weaponGuiSprite = _player->_weapon.getUiSprite();
+	sf::Sprite weaponGuiSprite = _player->_weapon.getInfo().uiSprite;
 	weaponGuiSprite.setPosition({ WIDTH - 50.f, HEIGHT - 50.f });
 	target.draw(weaponGuiSprite);
 }

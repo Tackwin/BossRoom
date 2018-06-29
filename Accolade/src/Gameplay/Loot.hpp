@@ -8,7 +8,7 @@
 #include "./../Math/Vector.hpp"
 
 #include "Zone.hpp"
-#include "Weapon.hpp"
+#include "Wearable/Wearable.hpp"
 
 class Loot : public Zone {
 public:
@@ -30,8 +30,8 @@ public:
 	void setLootType(LOOT_TYPE type);
 	LOOT_TYPE getLootType() const;
 
-	void setWeapon(UUID weapon);
-	UUID getWeapon() const;
+	void setWeapon(const std::string& weapon);
+	const std::string& getWeapon() const;
 
 	void setLootable(bool lootable = true);
 	bool isLootable() const;
@@ -48,7 +48,7 @@ private:
 	float _lootImpossibleTime = 2.f;
 
 	sf::Sprite _lootSprite;
-	UUID _weapon;
+	std::string _weapon;
 
 	UUID _lootImpossibleKey{ UUID::null };
 };

@@ -7,14 +7,15 @@
 #include <any>
 
 #include "./../Common.hpp"
+#include "./../Utils/UUID.hpp"
 
 class EventManager {
 public:
 	using EventCallbackParameter = const std::initializer_list<std::any>&;
 	using EventCallback = std::function<void(EventCallbackParameter)>;
 	
-	static u32 subscribe(const std::string& key, const EventCallback& callback);
-	static void unSubscribe(const std::string& key, u32 id);
+	static UUID subscribe(const std::string& key, const EventCallback& callback);
+	static void unSubscribe(const std::string& key, UUID id);
 
 	static void fire(std::string key, EventCallbackParameter args = {});
 private:
@@ -23,6 +24,6 @@ private:
 
 	static std::unordered_map<
 		std::string, 
-		std::unordered_map<u32, EventCallback>
+		std::unordered_map<UUID, EventCallback>
 	> _callbacks;
 };

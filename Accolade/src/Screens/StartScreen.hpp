@@ -88,6 +88,6 @@ private:
 
 	Shop _shop;
 
-	u32 _keyPressedEvent{ 0u };
-	u32 _keyReleasedEvent{ 0u };
+	UUID _keyPressedEvent{ UUID::null };
+	UUID _keyReleasedEvent{ UUID::null };
 };

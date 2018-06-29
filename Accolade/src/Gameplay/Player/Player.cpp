@@ -9,7 +9,7 @@
 #include "./../../Managers/EventManager.hpp"
 
 #include "./../Projectile.hpp"
-#include "./../Weapon.hpp"
+#include "./../Wearable/Wearable.hpp"
 
 Player::Player() : 
 	Object(), _info(game->getPlayerInfo()), _hitSound(AssetsManager::getSound("hit"))
@@ -34,12 +34,6 @@ Player::Player() :
 	pos = { 100, 100 };
 	idMask.set((size_t)Object::BIT_TAGS::PLAYER);
 	collisionMask.set((size_t)Object::BIT_TAGS::FLOOR);
-
-	if (isEquiped()) {
-		swapWeapon(_info.weapon);
-	}
-
-
 }
 void Player::enterLevel(Level* level) {
  	_level = level;
@@ -56,10 +50,11 @@ void Player::update(double dt) {
 	bool tryingToShoot = 
 		InputsManager::isMousePressed(kb.getKey(KeyBindings::ACTION)) && 
 		_focus;
-
 	if (tryingToShoot) {
-		_weapon.active(*this, 0);
+		_events.emplace(Event::FIRE);
 	}
+
+	_weapon.update(dt);
 
 	if (!_freeze) {
 		if (_jumping && 
@@ -84,13 +79,7 @@ void Player::update(double dt) {
 
 	velocity *= (float)std::pow(0.2, dt);
 
-	const auto& projectileBuffer = _weapon.getProjectileBuffer();
-	_projectilesToShoot.insert(
-		_projectilesToShoot.end(),
-		projectileBuffer.begin(),
-		projectileBuffer.end()
-	);
-	_weapon.clearProjectileBuffer();
+	_events.clear();
 }
 
 void Player::render(sf::RenderTarget &target) {
@@ -127,21 +116,21 @@ void Player::hit(float d) {
 	);
 }
 
-UUID Player::getWeapon() const noexcept {
+std::string Player::getWeapon() const noexcept {
 	return _info.weapon;
 }
 bool Player::isEquiped() const noexcept {
-	return _info.weapon != UUID::null;
+	return _info.weapon != "";
 }
 
 
-void Player::swapWeapon(UUID weapon) {
+void Player::swapWeapon(std::string weapon) {
 	auto info = game->getPlayerInfo();
 	info.weapon = weapon;
 	game->setPlayerInfo(info);
-	if (isEquiped()) _weapon.unEquip(*this);
-	_weapon = Weapon(Weapon::_weapons[weapon]);
-	_weapon.equip(*this);
+	if (isEquiped()) _weapon.unmount();
+	_weapon = Wearable(Wearable::GetWearableinfo(weapon));
+	_weapon.mount(shared_from_this());
 	_info.weapon = weapon;
 }
 
@@ -274,8 +263,8 @@ float Player::getLife() const {
 	return _life;
 }
 
-void Player::unEquip() {
-	_weapon.unEquip(*this);
+void Player::unmount() {
+	_weapon.unmount();
 	_info.weapon = UUID::null;
 }
 
@@ -289,4 +278,12 @@ Vector2f Player::getFacingDir() const noexcept {
 
 void Player::setFacingDir(float dir) noexcept {
 	_facingDir = dir;
+}
+
+Vector2f Player::support(float a, float d) const noexcept {
+	return pos + Vector2f::createUnitVector(a) * (d + _info.radius);
+}
+
+bool Player::eventFired(const std::string& name) const noexcept {
+	return _events.count(name) > 0;
 }

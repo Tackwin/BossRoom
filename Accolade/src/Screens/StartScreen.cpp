@@ -13,7 +13,7 @@
 #include "./../Graphics/GUI/Button.hpp"
 
 #include "./../Gameplay/Projectile.hpp"
-#include "./../Gameplay/Weapon.hpp"
+#include "./../Gameplay/Wearable/Wearable.hpp"
 #include "./../Gameplay/Player/Player.hpp"
 #include "./../Gameplay/Zone.hpp"
 
@@ -42,9 +42,7 @@ void StartScreen::initializeGui() {
 	_guiRoot.addChild(&_shop);
 
 	for (u32 i = 0u; i < 10; ++i) {
-		for (auto&[k, _] : Weapon::_weapons) {
-			_;
-			printf("%s", _.getName().c_str());
+		for (auto& k : Wearable::EVERY_WEARABLE) {
 			_shop.addWeapon(k);
 		}
 	}
@@ -67,7 +65,7 @@ void StartScreen::onExit() {
 
 	_player->collider->onEnter = [](Object*) {};
 	_player->collider->onExit = [](Object*) {};
-	_player->unEquip();
+	_player->unmount();
 	_projectiles.clear();
 	_world.purge();
 }
@@ -205,7 +203,7 @@ void StartScreen::renderGui(sf::RenderTarget& target) {
 
 	_weaponIcon.setVisible(_player->isEquiped());
 	if (_player->isEquiped()) {
-		_weaponIcon.setSprite(Weapon::_weapons.at(_player->getWeapon()).getUiSprite());
+		_weaponIcon.setSprite(Wearable::GetWearableinfo(_player->getWeapon()).uiSprite);
 		_weaponLabel.setPosition(_weaponIcon.getSize() * (-1.f));
 	}
 

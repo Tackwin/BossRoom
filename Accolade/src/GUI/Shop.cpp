@@ -57,7 +57,7 @@ void Shop::setPlayer(std::weak_ptr<Player> player) {
 }
 
 
-void Shop::addWeapon(UUID weapon) {
+void Shop::addWeapon(const std::string& weapon) {
 	constexpr u32 itemPerRow = 7;
 
 	u32 size = _itemPanels.size();
@@ -156,7 +156,7 @@ bool Shop::isIn() const {
 }
 
 
-Shop::_ItemPanel::_ItemPanel(Shop* shop, UUID weapon, u32 id) :
+Shop::_ItemPanel::_ItemPanel(Shop* shop, const std::string& weapon, u32 id) :
 	_shop(shop),
 	weapon(weapon),
 	_id(id)
@@ -166,7 +166,7 @@ Shop::_ItemPanel::_ItemPanel(Shop* shop, UUID weapon, u32 id) :
 	getSprite().setColor({ 80, 80, 80 });
 	setSize({ PANEL_SIZE, PANEL_SIZE });
 
-	sprite.setSprite(Weapon::_weapons[weapon].getUiSprite());
+	sprite.setSprite(Wearable::GetWearableinfo(weapon).uiSprite);
 	sprite.setSize({ PANEL_SIZE - 4, PANEL_SIZE - 4 });
 	sprite.setPosition({ 2, 2 });
 	sprite.setOnClick({
@@ -239,20 +239,20 @@ Shop::_InfoPanel::_InfoPanel(Shop* shop) :
 		std::bind(&Shop::_InfoPanel::onClickGoing, this)
 	});
 }
-void Shop::_InfoPanel::populateBy(UUID weapon) {
+void Shop::_InfoPanel::populateBy(const std::string& weapon) {
 
-	const auto& w = Weapon::_weapons[weapon];
+	const auto& w = Wearable::GetWearableinfo(weapon);
 
 	auto& icon = panels["icon"];
-	icon.setSprite(w.getUiSprite());
+	icon.setSprite(w.uiSprite);
 	icon.setSize({ 150, 150 });
 	icon.setPosition({ 50, 120 });
 
 	auto& name = labels["name"];
-	name.setString("Name: " + w.getName());
+	name.setString("Name: " + w.name);
 
 	auto& cost = labels["cost"];
-	cost.setString("Cost: " + std::to_string(w.getCost()));
+	cost.setString("Cost: " + std::to_string(w.cost));
 
 	_weapon = weapon;
 }

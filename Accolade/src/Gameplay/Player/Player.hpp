@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <vector>
+#include <unordered_set>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
@@ -17,14 +18,14 @@
 
 #include "./../../Managers/MemoryManager.hpp"
 
-#include "./../Weapon.hpp"
+#include "./../Wearable/Wearable.hpp"
 #include "PlayerInfo.hpp"
 
 class Zone;
 class Game;
 class Level;
 class Projectile;
-class Player : public Object {
+class Player : public Object, public std::enable_shared_from_this<Player> {
 public:
 	Player();
 
@@ -40,8 +41,8 @@ public:
 	bool isAlive() const;
 	float getLife() const;
 
-	UUID getWeapon() const noexcept;
-	void swapWeapon(UUID weapon);
+	std::string getWeapon() const noexcept;
+	void swapWeapon(std::string weapon);
 	bool isEquiped() const noexcept;
 
 	template<class... Args>
@@ -76,7 +77,7 @@ public:
 	void setFocus(bool focus = true);
 	bool getFocus() const;
 
-	void unEquip();
+	void unmount();
 
 	void applyVelocity(Vector2f v);
 
@@ -90,6 +91,10 @@ public:
 
 	void keyPressed(sf::Keyboard::Key key);
 	void keyReleased(sf::Keyboard::Key key);
+
+	Vector2f support(float a, float d) const noexcept;
+
+	bool eventFired(const std::string& name) const noexcept;
 public: //TODO: Make private
 
 	void jumpKeyPressed();
@@ -102,7 +107,7 @@ public: //TODO: Make private
 
 	PlayerInfo _info;
 
-	Weapon _weapon;
+	Wearable _weapon;
 
 	Disk* _hitBox;
 
@@ -123,6 +128,8 @@ public: //TODO: Make private
 
 	AnimatedSprite _sprite;
 	sf::Sound _hitSound;
+
+	std::unordered_set<std::string> _events;
 
 	std::vector<std::shared_ptr<Projectile>> _projectilesToShoot;
 	std::vector<std::shared_ptr<Zone>> _zonesToApply;

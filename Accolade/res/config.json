@@ -384,78 +384,35 @@
       }
 		}
 	},
-	"weapons": [
-		{
-			"cooldowns": [ 0.45 ],
-			"radius": 30,
-			"sprite": "weapon0",
-      "sounds": {
-        "active": [ "shoot" ]
-      },
-      "recoil_force": 1000,
-
-			"projectile": {
-				"damage": 7,
-				"speed": 1200,
-				"radius": 7,
-				"lifespan": 5,
-				"destroyOthers": false,
-				"sprite": "projectiles-1"
-			}
-		},
-    {
-      "cooldowns": [ 0.1 ],
+  "weapons": {
+    "Fire ball": {
+      "countdownTime": 0.1,
       "radius": 30,
       "sprite": "weapon1",
       "sounds": {
         "active": [ "shoot" ]
       },
-      "recoil_force": 1500,
+      "recoil": 1500,
 
       "projectile": {
         "damage": 1,
-        "speed": 1500,
+        "speed": 2000,
         "radius": 5,
         "lifespan": 5,
         "destroyOthers": false,
         "sprite": "projectiles-1"
       }
     },
-    {
-      "cooldowns": [ 0.5 ],
-      "spray": 0.0628318530718,
-      "radius": 10,
-      "sprite": "weapon2",
-      "sounds": {
-        "active": [ "shoot" ]
-      },
-      "recoil_force": 1200,
-
-      "projectile": {
-        "damage": 3,
-        "speed": 1400,
-        "radius": 5,
-        "lifespan": 5,
-        "destroyOthers": false,
-        "sprite": "projectiles-1"
-      }
-    },
-		{
-			"cooldowns": [ 0.7 ],
-			"sprite": "sword",
-			"sounds": {
-				"active": [ "shoot" ]
-			},
+		"Sword": {
+			"countdownTime": 0.7,
+      "sprite": "sword",
+      "spriteZone": "slash",
       "radius": 50,
-      "offsetX": 40,
+      "offset": 40,
 			"damage": 40,
-			"remainTime": 0.1,
-			"collider": {
-				"type": "disk",
-				"r": 10
-			}
+			"remainTime": 0.1
 		}
-	],
+  },
 	"particlesGenerator": {
 		"particleBurstFeather": {
 			"nParticles": {

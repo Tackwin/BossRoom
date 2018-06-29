@@ -17,7 +17,7 @@ struct PlayerInfo {
 	std::string name{ "" };
 	std::string sprite{ "" };
 
-	UUID weapon{ UUID::null };
+	std::string weapon{ "" };
 
 	PlayerInfo();
 	PlayerInfo(nlohmann::json json);

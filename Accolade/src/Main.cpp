@@ -39,17 +39,11 @@ bool update(sf::RenderWindow& window, double dt) {
 }
 
 bool render(sf::RenderWindow& window) {
-	static u64 i = 0;
 	Clock c;
 	if (window.isOpen()) {
 		window.clear(sf::Color(50, 50, 50));
 		C::game->render(window);
 		window.display();
-	}
-	if (i++ >= ((MAX_FPS == 0) ? 1'000 : MAX_FPS)) {
-		//const auto& dt = c.elapsed() * 1'000'000.0;
-		//printf("Rendered in %u us.\n", static_cast<uint32_t>(dt));
-		i = 0;
 	}
 	return false;
 }
@@ -102,13 +96,18 @@ void startGame() {
 
 	while (window.isOpen()) {
 		static Clock dtClock;
-		static double dt = 0;
-		dt = dtClock.restart();
+		static double dt{ 0.0 };
+		static double error{ 0.0 };
+		dt = dtClock.restart() + error;
 
-		//while (dt > 0.0) {
-			TM::update(dt);
-		//	dt -= FIXED_DT;
-		//}
+		while (dt >= FIXED_DT) {
+			TM::update(FIXED_DT);
+			dt -= FIXED_DT;
+		}
+		error = dt;
+
+		using namespace std::chrono_literals;
+		std::this_thread::sleep_for(10us);
 	}
 	C::game.reset();
 
