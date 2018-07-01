@@ -34,9 +34,7 @@ void Wearable::InitWearable() {
 	fireBall.name = Wearable::FIRE_BALL;
 	fireBall.configuration = 
 		AssetsManager::getJson(JSON_KEY)["weapons"][fireBall.name];
-	//fireBall.uiSprite.setTexture(
-	//	AssetsManager::getTexture(fireBall.configuration["sprite"])
-	//);
+	fireBall.uiTexture = fireBall.configuration["sprite"].get<std::string>();
 	fireBall.onMount = [](Wearable& me) {
 		auto json = me.getInfo().configuration;
 
@@ -93,7 +91,7 @@ void Wearable::InitWearable() {
 	sword.name = Wearable::SWORD;
 	sword.configuration =
 		AssetsManager::getJson(JSON_KEY)["weapons"][sword.name];
-	//sword.uiSprite.setTexture(AssetsManager::getTexture(sword.configuration["sprite"]));
+	sword.uiTexture = sword.configuration["sprite"].get<std::string>();
 	sword.onMount = [](Wearable& me) {
 		auto json = me.getInfo().configuration;
 

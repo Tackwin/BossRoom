@@ -77,23 +77,11 @@ void startGame() {
 		MIN_MS,
 		std::bind(&update, std::ref(window), std::placeholders::_1)
 	);
+	Clock fpsClock;
 	const auto& renderKey = TimerManager::addFunction(
 		MAX_FPS == 0.f ? 0.f : 1.f / MAX_FPS,
 		std::bind(&render, std::ref(window))
 	);
-	const auto& sizeKey = TimerManager::addFunction(
-		10.f,
-		[](double) -> bool {
-			const auto buffer_size = MM::I().get_buffer_size();
-			const auto free_size = MM::I().get_free_size();
-			printf("Size of MM's buffer: %u \t bytes\n", buffer_size);
-			printf("Size used by MM:     %u \t bytes\n", buffer_size - free_size);
-			printf("Size used by AM:     %u \t bytes\n", AM::getSize());
-			printf("# functions          %u\n", TimerManager::getNFunction());
-			return false;
-		}
-	);
-
 	while (window.isOpen()) {
 		static Clock dtClock;
 		static double dt{ 0.0 };
@@ -113,7 +101,6 @@ void startGame() {
 
 	TimerManager::removeFunction(renderKey);
 	TimerManager::removeFunction(updateKey);
-	TimerManager::removeFunction(sizeKey);
 }
 void loadRessources() {
 	printf("Loading jsons...\n");

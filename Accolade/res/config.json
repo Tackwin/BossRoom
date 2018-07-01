@@ -416,15 +416,15 @@
 	"particlesGenerator": {
 		"particleBurstFeather": {
 			"nParticles": {
-				"mean": 20,
+				"mean": 1000000,
 				"range": 5,
 				"type": "normal",
 				"min": 0,
 				"real": false
 			},
 			"iTime": {
-				"mean": 0.005,
-				"range": 0.005,
+				"mean": 0.0000005,
+				"range": 0.0000005,
 				"type": "normal",
 				"min": 0,
 				"real": true
@@ -433,14 +433,14 @@
 			"particle": {
 				"sprite": "particle_feather",
 				"size": {
-					"mean": 0.2,
+					"mean": 0.5,
 					"range": 0.05,
 					"real": true,
 					"min": 0
 				},
 				"lifetime": {
-					"mean": 0.17,
-					"range": 0.07,
+					"mean": 0.7,
+					"range": 0.1,
 					"type": "normal"
 				},
 				"a": {
@@ -450,8 +450,8 @@
 					"real": true
 				},
 				"speed": {
-					"mean": 270,
-					"range": 80,
+					"mean": 600,
+					"range": 100,
 					"type": "normal"
 				}
 			}

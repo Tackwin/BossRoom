@@ -156,7 +156,7 @@ void LevelScreen::renderGui(sf::RenderTarget& target) {
 	}
 	_bossHealthTileSprite.setPosition(pos);
 	
-	sf::Sprite weaponGuiSprite = _player->_weapon.getInfo().uiSprite;
+	sf::Sprite weaponGuiSprite(AM::getTexture(_player->_weapon.getInfo().uiTexture));
 	weaponGuiSprite.setPosition({ WIDTH - 50.f, HEIGHT - 50.f });
 	target.draw(weaponGuiSprite);
 }

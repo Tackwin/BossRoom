@@ -112,8 +112,7 @@ void Boss::update(double dt) {
 		fx->update(dt);
 
 	for (size_t i = _particleEffects.size(); i > 0u; i--) {
-		if (_particleEffects[i - 1]->isEnded()) {
-			delete _particleEffects[i - 1];
+		if (_particleEffects[i - 1]->toRemove()) {
 			_particleEffects.erase(_particleEffects.begin() + i - 1);
 		}
 	}
@@ -190,7 +189,7 @@ void Boss::collision(Object* obj) {
 			_json["hitParticle"];
 
 		_particleEffects.push_back(
-			new ParticleGenerator(
+			std::make_unique<ParticleGenerator>(
 				particleGeneratorJson[particleGenerator],
 				ptr->getPos()
 			)

@@ -22,8 +22,7 @@ private:
 	Vector2f _pos;
 	Vector2f _dir;
 
-
-	bool _remove = false;
+	double _countdownLifetime{ 0.0 };
 
 	Function _update;
 
@@ -37,7 +36,7 @@ public:
 	void update(double dt);
 	void render(sf::RenderTarget& target);
 
-	bool toRemove() const { return _remove; }
+	bool toRemove() const { return _countdownLifetime <= 0.0; }
 
 	static std::vector<std::shared_ptr<Particle>> burst(nlohmann::json json_, Vector2f pos_);
 };

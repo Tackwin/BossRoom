@@ -5,6 +5,7 @@
 #include "Player/Player.hpp"
 
 #include "./../Managers/TimerManager.hpp"
+#include "./../Managers/AssetsManager.hpp"
 
 Loot::Loot(float r) :
 	Zone(r) 
@@ -30,7 +31,9 @@ Loot::LOOT_TYPE Loot::getLootType() const {
 void Loot::setWeapon(const std::string& weapon) {
 	_weapon = weapon;
 	cleanSprites();
-	addSprite("icon", Wearable::GetWearableinfo(weapon).uiSprite);
+	addSprite(
+		"icon", sf::Sprite{ AM::getTexture(Wearable::GetWearableinfo(weapon).uiTexture) }
+	);
 }
 const std::string& Loot::getWeapon() const {
 	return _weapon;

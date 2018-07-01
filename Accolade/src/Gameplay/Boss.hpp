@@ -92,7 +92,7 @@ private:
 
 	std::vector<sf::Sound> _sounds;
 
-	std::vector<ParticleGenerator*> _particleEffects;
+	std::vector<std::unique_ptr<ParticleGenerator>> _particleEffects;
 private:
 	void collision(Object* obj);
 };

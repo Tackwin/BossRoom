@@ -19,9 +19,10 @@ class ParticleGenerator {
 public:
 	ParticleGenerator();
 	ParticleGenerator(nlohmann::json json_, Vector2f pos_);
-	~ParticleGenerator();
 
 	void loadJson(const nlohmann::json& json);
+
+	bool toRemove() const noexcept;
 
 	void setPos(const Vector2f& pos);
 	Vector2f getPos() const;
@@ -34,21 +35,21 @@ public:
 	void update(double dt);
 	void render(sf::RenderTarget& target);
 
-	bool isEnded() const;
 private:
 
-	nlohmann::json _json = {};
+	nlohmann::json _json{};
+	nlohmann::json _particule{};
 
 	bool _paused = false;
-	bool _ended = false;
+
+	double _timer{ 0.0 };
+	double _iTime{ 0.0 };
 
 	Vector2f _pos = { 0, 0 };
 	u32 _remain = 0u;
 	u32 _nParticles = 0u;
 
 	std::vector<std::string> _keys = {};
-	std::function<bool(double)> _lambda = [](auto) {return false; };
-	UUID _lambdaKey{ UUID::null };
 
 	std::vector<std::shared_ptr<Particle>> _particles = {};
 };

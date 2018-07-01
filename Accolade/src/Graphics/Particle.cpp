@@ -15,13 +15,7 @@ Particle::Particle(nlohmann::json json_, Vector2f pos_, Vector2f dir_, Function 
 		_sprite.getTextureRect().width / 2.f, 
 		_sprite.getTextureRect().height / 2.f
 	);
-	_keys["destroy"] = TimerManager::addFunction(
-		getJsonValue<float>(_json, "lifetime"), 
-		[&](double)mutable->bool {
-			_remove = true;
-			return true;
-		}
-	);
+	_countdownLifetime = getJsonValue<double>(_json, "lifetime");
 
 	_json["speed"] = getJsonValue<float>(_json, "speed"); //collapse the wave function :p
 	if (_json.find("a") != _json.end()) {
@@ -35,6 +29,7 @@ Particle::Particle(nlohmann::json json_, Vector2f pos_, Vector2f dir_, Function 
 
 void Particle::update(double dt) {
 	_pos += _dir * dt * _json["speed"].get<float>();
+	_countdownLifetime -= dt;
 	_update(dt);
 }
 

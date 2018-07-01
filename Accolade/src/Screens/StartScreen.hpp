@@ -20,6 +20,7 @@
 #include "../Physics/World.hpp"
 
 #include "../GUI/Shop.hpp"
+#include "../Graphics/ParticleGenerator.hpp"
 
 class Zone;
 class Player;
@@ -90,4 +91,6 @@ private:
 
 	UUID _keyPressedEvent{ UUID::null };
 	UUID _keyReleasedEvent{ UUID::null };
+
+	ParticleGenerator _generator; 
 };

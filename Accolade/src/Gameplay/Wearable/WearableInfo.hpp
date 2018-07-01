@@ -19,6 +19,6 @@ struct WearableInfo {
 	OnUnmount onUnmount = [](auto&) {};
 	OnUpdate onUpdate = [](auto, auto&) {};
 
-	sf::Sprite uiSprite;
+	std::string uiTexture;
 	unsigned cost{ 0u };
 };

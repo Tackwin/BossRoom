@@ -48,12 +48,13 @@ void Game::render(sf::RenderTarget& target) {
 	target.setView(initialView);
 }
 
-void Game::updateDebugText(double dt) {
+void Game::updateDebugText(double) {
+	static Clock fpsClock;
 	static double avgMs = 0;
 	static int avgN = 0;
 	static constexpr int avgRange = MAX_FPS == 0 ? 100 : MAX_FPS;
 
-	avgMs += dt;
+	avgMs += fpsClock.restart();
 	if (++avgN > avgRange) {
 		u32 fps = (u32)(avgRange / (avgMs == .0f ? 1 : avgMs));
 		u32 µs = (u32)(1000'000 * avgMs / avgRange); // :)

@@ -57,6 +57,9 @@ void StartScreen::onEnter() {
 	initializeSprite();
 	initializeWorld();
 	subscribeToEvents();
+
+	_generator.loadJson(AM::getJson(JSON_KEY)["particlesGenerator"]["particleBurstFeather"]);
+	_generator.setPos({ 100, 100 });
 }
 void StartScreen::onExit() {
 	unsubscribeToEvents();
@@ -103,6 +106,7 @@ void StartScreen::initializeWorld(){
 
 
 void StartScreen::update(double dt) {
+	_generator.update(dt);
 	removeNeeded();
 	_guiRoot.propagateInput();
 	if (_enteredShop && !_shop.isIn()) {
@@ -193,6 +197,7 @@ void StartScreen::render(sf::RenderTarget& target) {
 	renderGui(target);
 
 	_world.render(target);
+	_generator.render(target);
 
 	target.setView(oldView);
 }
@@ -203,7 +208,8 @@ void StartScreen::renderGui(sf::RenderTarget& target) {
 
 	_weaponIcon.setVisible(_player->isEquiped());
 	if (_player->isEquiped()) {
-		_weaponIcon.setSprite(Wearable::GetWearableinfo(_player->getWeapon()).uiSprite);
+		auto texture = Wearable::GetWearableinfo(_player->getWeapon()).uiTexture;
+		_weaponIcon.setSprite(sf::Sprite{ AM::getTexture(texture) });
 		_weaponLabel.setPosition(_weaponIcon.getSize() * (-1.f));
 	}
 

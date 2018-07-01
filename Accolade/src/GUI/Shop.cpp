@@ -166,7 +166,9 @@ Shop::_ItemPanel::_ItemPanel(Shop* shop, const std::string& weapon, u32 id) :
 	getSprite().setColor({ 80, 80, 80 });
 	setSize({ PANEL_SIZE, PANEL_SIZE });
 
-	sprite.setSprite(Wearable::GetWearableinfo(weapon).uiSprite);
+	sprite.setSprite(
+		sf::Sprite{ AM::getTexture(Wearable::GetWearableinfo(weapon).uiTexture) }
+	);
 	sprite.setSize({ PANEL_SIZE - 4, PANEL_SIZE - 4 });
 	sprite.setPosition({ 2, 2 });
 	sprite.setOnClick({
@@ -244,7 +246,7 @@ void Shop::_InfoPanel::populateBy(const std::string& weapon) {
 	const auto& w = Wearable::GetWearableinfo(weapon);
 
 	auto& icon = panels["icon"];
-	icon.setSprite(w.uiSprite);
+	icon.setSprite(sf::Sprite{AM::getTexture(w.uiTexture)});
 	icon.setSize({ 150, 150 });
 	icon.setPosition({ 50, 120 });
 
