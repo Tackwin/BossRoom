@@ -27,7 +27,8 @@ class Level;
 class Projectile;
 class Player : public Object, public std::enable_shared_from_this<Player> {
 public:
-	Player();
+	Player() noexcept;
+	Player(PlayerInfo info) noexcept;
 
 	void enterLevel(Level* level);
 	void exitLevel();
@@ -41,7 +42,7 @@ public:
 	bool isAlive() const;
 	float getLife() const;
 
-	std::string getWeapon() const noexcept;
+	std::optional<std::string> getWeapon() const noexcept;
 	void swapWeapon(std::string weapon);
 	bool isEquiped() const noexcept;
 

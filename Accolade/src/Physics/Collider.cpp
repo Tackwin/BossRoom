@@ -66,3 +66,10 @@ void Box::render(sf::RenderTarget& target) {
 	shape.setFillColor(sf::Color(200, 200, 200, 200));
 	target.draw(shape);
 }
+
+Vector2f Box::getSize() const noexcept {
+	return size;
+}
+void Box::setSize(Vector2f size) noexcept {
+	this->size = size;
+}

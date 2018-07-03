@@ -116,7 +116,7 @@ void World::update(double dt) {
 	}
 }
 
-void World::render(sf::RenderTarget& target) {
+void World::render(sf::RenderTarget& target) const noexcept {
 	for (auto& [_, obj] : _objectsMap) {_;
 		if (obj.expired()) continue;
 

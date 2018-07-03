@@ -30,7 +30,6 @@ struct Collider {
 
 	virtual void render(sf::RenderTarget& target) = 0;
 
-
 	Vector2f getGlobalPos() const { return __pos + dtPos; }
 	void setPos(const Vector2f& pos) { __pos = pos; }
 
@@ -72,4 +71,8 @@ struct Box : Collider {
 	virtual bool collideWith(const Collider* collider) const override;
 
 	virtual void render(sf::RenderTarget& target) override;
+
+	virtual Vector2f getSize() const noexcept;
+	virtual void setSize(Vector2f size) noexcept;
+private:
 };

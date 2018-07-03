@@ -20,7 +20,7 @@ class World {
 public:
 	void update(double dt);
 	void updateInc(double dt, u32 itLevel);
-	void render(sf::RenderTarget& target);
+	void render(sf::RenderTarget& target) const noexcept;
 
 	void addObject(std::weak_ptr<Object> obj);
 	void delObject(UUID uuid);

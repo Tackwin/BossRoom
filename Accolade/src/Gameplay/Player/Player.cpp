@@ -11,8 +11,10 @@
 #include "./../Projectile.hpp"
 #include "./../Wearable/Wearable.hpp"
 
-Player::Player() : 
-	Object(), _info(game->getPlayerInfo()), _hitSound(AssetsManager::getSound("hit"))
+Player::Player() noexcept : Player(C::game->getPlayerInfo()) {}
+
+Player::Player(PlayerInfo info) noexcept : 
+	Object(), _info(info), _hitSound(AssetsManager::getSound("hit"))
 {
 	_life = _info.maxLife;
 	_sprite = AnimatedSprite(_info.sprite);
@@ -116,11 +118,11 @@ void Player::hit(float d) {
 	);
 }
 
-std::string Player::getWeapon() const noexcept {
+std::optional<std::string> Player::getWeapon() const noexcept {
 	return _info.weapon;
 }
 bool Player::isEquiped() const noexcept {
-	return _info.weapon != "";
+	return _info.weapon.has_value();
 }
 
 
@@ -265,7 +267,7 @@ float Player::getLife() const {
 
 void Player::unmount() {
 	_weapon.unmount();
-	_info.weapon = UUID::null;
+	_info.weapon.reset();
 }
 
 void Player::knockBack(Vector2f recoil) noexcept {

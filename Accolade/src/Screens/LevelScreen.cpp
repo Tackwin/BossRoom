@@ -44,7 +44,7 @@ LevelScreen::~LevelScreen() {
 void LevelScreen::onEnter() {
 	_player = std::make_shared<Player>();
 	if (_player->isEquiped()) {
-		_player->swapWeapon(_player->getPlayerInfo().weapon);
+		_player->swapWeapon(_player->getPlayerInfo().weapon.value());
 	}
 	_level->start(this);
 
@@ -156,9 +156,11 @@ void LevelScreen::renderGui(sf::RenderTarget& target) {
 	}
 	_bossHealthTileSprite.setPosition(pos);
 	
-	sf::Sprite weaponGuiSprite(AM::getTexture(_player->_weapon.getInfo().uiTexture));
-	weaponGuiSprite.setPosition({ WIDTH - 50.f, HEIGHT - 50.f });
-	target.draw(weaponGuiSprite);
+	if (_player->isEquiped()) {
+		sf::Sprite weaponGuiSprite(AM::getTexture(_player->_weapon.getInfo().uiTexture));
+		weaponGuiSprite.setPosition({ WIDTH - 50.f, HEIGHT - 50.f });
+		target.draw(weaponGuiSprite);
+	}
 }
 
 void LevelScreen::shakeScreen(float power) {

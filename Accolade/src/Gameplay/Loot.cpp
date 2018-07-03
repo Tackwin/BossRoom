@@ -64,7 +64,12 @@ void Loot::onEnter(Object* obj) { // we know typeof(obj) is necessarly Player*
 		auto player_weapon = player->getWeapon();
 		player->swapWeapon(_weapon);
 
-		setWeapon(player_weapon);
+		if (!player_weapon) {
+			_remove = true;
+			return;
+		}
+
+		setWeapon(player_weapon.value());
 		_lootable = false;
 
 		_lootImpossibleKey = TimerManager::addFunction(_lootImpossibleTime, 
@@ -77,4 +82,8 @@ void Loot::onEnter(Object* obj) { // we know typeof(obj) is necessarly Player*
 
 		break;
 	}
+}
+
+bool Loot::toRemove() const noexcept {
+	return _remove;
 }

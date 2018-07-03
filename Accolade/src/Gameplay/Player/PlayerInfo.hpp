@@ -1,5 +1,7 @@
 #pragma once
 #include <string>
+#include <optional>
+
 #include "./../../Utils/UUID.hpp"
 #include "./../../3rd/json.hpp"
 
@@ -17,7 +19,7 @@ struct PlayerInfo {
 	std::string name{ "" };
 	std::string sprite{ "" };
 
-	std::string weapon{ "" };
+	std::optional<std::string> weapon{};
 
 	PlayerInfo();
 	PlayerInfo(nlohmann::json json);
