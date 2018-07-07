@@ -136,7 +136,8 @@
   },
   "jsons": {
     "default_key": "keys/default.json",
-    "roomA": "rooms/roomA.json"
+    "roomA": "rooms/roomA.json",
+    "startZone": "rooms/start.json"
   },
   "bosses": [
     {
@@ -208,11 +209,6 @@
   "player": {
     "characters": {
       "char_boloss": "characters/boloss.json"
-    },
-
-    "startpos": {
-      "x": 200,
-      "y": 360
     }
   },
   "patterns": {
@@ -450,8 +446,8 @@
           "real": true
         },
         "speed": {
-          "mean": 600,
-          "range": 100,
+          "mean": 6,
+          "range": 1,
           "type": "normal"
         }
       }
@@ -490,28 +486,6 @@
           "type": "normal"
         }
       }
-    }
-  },
-  "startZone": {
-    "startBackground": {
-      "sprite": "start_background",
-      "size": [ 3000, 720 ],
-      "pos": [ 0, 0 ]
-    },
-    "dungeon": {
-      "sprite": "dungeon",
-      "size": [ 975, 633 ],
-      "pos": [ 2555, 52 ]
-    },
-    "dungeonDoor": {
-      "sprite": "dungeon_door",
-      "size": [ 300, 500 ],
-      "pos": [ 2615, 147 ]
-    },
-    "merchantShop": {
-      "sprite": "merchant_shop",
-      "size": [ 530, 231 ],
-      "pos": [ 1001, 343 ]
     }
   }
 }

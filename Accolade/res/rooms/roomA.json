@@ -1,12 +1,12 @@
 {
-  "platforms": {
+  "plateformes": {
     "boxA": {
-      "size": [ 15, 2 ],
-      "pos": [ 0, 0 ]
+      "rectangle": [ 0, 8, 15, 2 ]
     },
     "boxB": {
-      "size": [ 5, 1.0 ],
-      "pos": [ 5, 2.5 ]
+      "rectangle": [ 5, 5.5, 5, 1.0 ]
     }
-  }
+  },
+  "maxRect": [ 0, 0, 15, 7 ],
+  "startPos": [ 1, 3 ]
 }

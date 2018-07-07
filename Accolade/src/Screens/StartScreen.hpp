@@ -22,6 +22,8 @@
 #include "../GUI/Shop.hpp"
 #include "../Graphics/ParticleGenerator.hpp"
 
+#include "../Ruins/Structure/Plateforme.hpp"
+
 class Zone;
 class Player;
 class Projectile;
@@ -60,10 +62,7 @@ private:
 	void projectileOnEnter(std::weak_ptr<Projectile> projectile, Object* object);
 	void projectileOnExit(std::weak_ptr<Projectile> projectile, Object* object);
 
-	sf::Sprite _startBackground;
-	sf::Sprite _dungeon;
-	sf::Sprite _dungeonDoor;
-	sf::Sprite _merchantShop;
+	std::unordered_map<std::string, sf::Sprite> _sprites;
 
 	sf::View _guiView;
 	sf::View _playerView;
@@ -72,6 +71,7 @@ private:
 
 	std::vector<std::shared_ptr<Projectile>> _projectiles;
 	std::vector<std::shared_ptr<Zone>> _playerZones;
+
 	std::shared_ptr<Player> _player;
 
 	bool _isInShop = false;
@@ -79,7 +79,8 @@ private:
 
 	World _world;
 
-	std::map<std::string, std::shared_ptr<Zone>> _zones;
+	std::unordered_map<std::string, std::shared_ptr<Plateforme>> _plateformes;
+	std::unordered_map<std::string, std::shared_ptr<Zone>> _zones;
 
 	std::shared_ptr<Object> _floor;
 

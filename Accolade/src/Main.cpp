@@ -65,7 +65,7 @@ int main(int, char**) {
 }
 
 void startGame() {
-	Patterns::_json = AssetsManager::getJson(JSON_KEY)["patterns"];
+	Patterns::_json = AssetsManager::getJson(JSON_KEY).at("patterns");
 	C::game = std::make_shared<Game>();
 	game->start();
 
@@ -79,23 +79,16 @@ void startGame() {
 	);
 	Clock fpsClock;
 	const auto& renderKey = TimerManager::addFunction(
-		MAX_FPS == 0.f ? 0.f : 1.f / MAX_FPS,
+		0,
 		std::bind(&render, std::ref(window))
 	);
+	
 	while (window.isOpen()) {
 		static Clock dtClock;
-		static double dt{ 0.0 };
-		static double error{ 0.0 };
-		dt = dtClock.restart() + error;
 
-		while (dt >= FIXED_DT) {
-			TM::update(FIXED_DT);
-			dt -= FIXED_DT;
-		}
-		error = dt;
+		const double dt = dtClock.restart();
 
-		using namespace std::chrono_literals;
-		std::this_thread::sleep_for(10us);
+		TM::update(dt);
 	}
 	C::game.reset();
 

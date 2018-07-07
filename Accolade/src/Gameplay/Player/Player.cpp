@@ -28,14 +28,15 @@ Player::Player(PlayerInfo info) noexcept :
 
 	_hitSound.setVolume(SOUND_LEVEL);
 
-	collider = std::make_unique<Disk>();
-	_hitBox = (Disk*)collider.get();
+	collider = std::make_unique<Box>();
+	_hitBox = (Box*)collider.get();
 	_hitBox->userPtr = this;
-	_hitBox->r = _info.radius;
+	_hitBox->setSize(_info.hitBox);
+	_hitBox->dtPos = _info.hitBox / -2.f;
 
 	pos = { 100, 100 };
 	idMask.set((size_t)Object::BIT_TAGS::PLAYER);
-	collisionMask.set((size_t)Object::BIT_TAGS::FLOOR);
+	collisionMask.set((size_t)Object::BIT_TAGS::STRUCTURE);
 }
 void Player::enterLevel(Level* level) {
  	_level = level;
@@ -66,26 +67,34 @@ void Player::update(double dt) {
 		}
 
 		if (InputsManager::isKeyPressed(kb.getKey(KeyBindings::JUMP)) && _jumping) {
-			flatVelocities.push_back({ 0, -300 });
+			flatVelocities.push_back({ 0, -_info.jumpHeight });
 		}
 
 		_dir.normalize();
-		if (InputsManager::isKeyPressed(kb.getKey(KeyBindings::JUMP)))
+		
+		if (InputsManager::isKeyPressed(kb.getKey(KeyBindings::SPECIAL_SPEED))) {
 			_dir.x *= _info.specialSpeed;
-		else
+		}
+		else {
 			_dir.x *= _info.speed;
+		}
+		_dir.y = 0;
 
 		flatForces.push_back({ 0, G });
 		flatVelocities.push_back(_dir);
 	}
 
-	velocity *= (float)std::pow(0.2, dt);
+	//velocity *= (float)std::pow(0.2, dt);
 
 	_events.clear();
 }
 
 void Player::render(sf::RenderTarget &target) {
 	_sprite.getSprite().setPosition(pos);
+	_sprite.getSprite().setScale(
+		_info.hitBox.x / _sprite.getSprite().getTextureRect().width,
+		_info.hitBox.y / _sprite.getSprite().getTextureRect().height
+	);
 	_sprite.render(target);
 
 }
@@ -186,7 +195,8 @@ void Player::jumpKeyPressed() {
 
 		_jumping = true;
 
-		velocity.y = -sqrtf(G * 2.f * _info.jumpHeight); // derived from equation of motion, thanks Newton
+		// derived from equation of motion, thanks Newton
+		velocity.y = -sqrtf(G * 2 * _info.jumpHeight); 
 		_nJumpsLeft--;
 	}
 }
@@ -283,9 +293,27 @@ void Player::setFacingDir(float dir) noexcept {
 }
 
 Vector2f Player::support(float a, float d) const noexcept {
-	return pos + Vector2f::createUnitVector(a) * (d + _info.radius);
+	return pos + Vector2f::createUnitVector(a) * (d + _info.hitBox.length());
 }
 
 bool Player::eventFired(const std::string& name) const noexcept {
 	return _events.count(name) > 0;
+}
+
+PlayerInfo::PlayerInfo() {
+
+}
+
+PlayerInfo::PlayerInfo(nlohmann::json json) :
+	maxLife(json.at("max_life")),
+	speed(json.at("speed")),
+	dashRange(json.at("dash_range")),
+	specialSpeed(json.at("special_speed")),
+	invincibilityTime(json.at("invincibility_time")),
+	jumpHeight(json.at("jump_height")),
+	name(json.at("name").get<std::string>()),
+	sprite(json.at("sprite").get<std::string>())
+{
+	auto vec = json.at("hit_box").get<std::vector<double>>();
+	hitBox = { (float)vec[0], (float)vec[1] };
 }

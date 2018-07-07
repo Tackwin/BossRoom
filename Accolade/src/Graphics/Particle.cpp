@@ -23,7 +23,10 @@ Particle::Particle(nlohmann::json json_, Vector2f pos_, Vector2f dir_, Function 
 	}
 	if (_json.find("size") != _json.end()) {
 		const auto& size = getJsonValue<float>(_json, "size");
-		_sprite.setScale(size, size);
+		_sprite.setScale(
+			size / _sprite.getTextureRect().width,
+			size / _sprite.getTextureRect().height
+		);
 	}
 }
 

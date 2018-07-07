@@ -4,6 +4,8 @@
 #include <numeric>
 
 void World::updateInc(double dt, u32 itLevel) {
+	removeNeeded();
+
 	for (u32 i = 0u; i < itLevel; ++i) {
 		update(dt / itLevel);
 	}

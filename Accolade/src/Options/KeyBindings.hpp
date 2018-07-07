@@ -12,7 +12,7 @@ public:
 	static constexpr auto MOVE_RIGHT = "move_right";
 	static constexpr auto ACTION = "action";
 	static constexpr auto DASH = "dash";
-	static constexpr auto SLOW = "slow";
+	static constexpr auto SPECIAL_SPEED = "special_speed";
 	static constexpr auto JUMP = "jump";
 
 	using Command = decltype(MOVE_DOWN);

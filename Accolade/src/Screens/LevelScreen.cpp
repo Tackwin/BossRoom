@@ -22,8 +22,8 @@ LevelScreen::LevelScreen(u32 n) :
 	_gameViewPos({ WIDTH * 0.5f, HEIGHT * 0.5f}),
 	_gameViewSize({ (float)WIDTH, (float)HEIGHT }),
 	_guiView(_gameViewPos, _gameViewSize),
-	_gameView(_gameViewPos, _gameViewSize),
-	_level(std::make_unique<Level>(*Level::levels[_n]))
+	_gameView(_gameViewPos, _gameViewSize)//,
+	//_level(std::make_unique<Level>(*Level::levels[_n]))
 {
 	constexpr float bossHealthTileSize = 60;
 	AssetsManager::getTexture("health_tile").setSmooth(true);
@@ -36,6 +36,9 @@ LevelScreen::LevelScreen(u32 n) :
 		bossHealthTileSize / _bossHealthTileSprite.getTextureRect().height
 	);
 	_bossHealthTileSprite.setPosition(35, 35);
+
+	auto sectionInfo = SectionInfo::load(AM::getJson("roomA"));
+	_section = std::make_unique<Section>(sectionInfo);
 }
 
 LevelScreen::~LevelScreen() {
@@ -46,7 +49,7 @@ void LevelScreen::onEnter() {
 	if (_player->isEquiped()) {
 		_player->swapWeapon(_player->getPlayerInfo().weapon.value());
 	}
-	_level->start(this);
+	//_level->start(this);
 
 	for (int i = 0; i < _player->getPlayerInfo().maxLife; i++) {
 		_playerLife.push_back(sf::RectangleShape());
@@ -63,12 +66,15 @@ void LevelScreen::onEnter() {
 			(C::HEIGHT - 10) - _playerLife[i].getSize().y
 		);
 	}
+
+	_section->enter();
 }
 
 void LevelScreen::onExit() {
-	if (_level) 
-		_level->stop();
+	//if (_level) 
+	//	_level->stop();
 
+	_section->exit();
 	_playerLife.clear();
 }
 
@@ -90,12 +96,13 @@ void LevelScreen::update(double dt) {
 		);
 	}
 
-	if (_level) {
+	_section->update(dt);
+	/*if (_level) {
 		_level->update(dt);
 		if (_level->lost()) {
 			game->enterHeritage();
 		}
-	}
+	}*/
 }
 
 void LevelScreen::render(sf::RenderTarget& target) {
@@ -103,7 +110,10 @@ void LevelScreen::render(sf::RenderTarget& target) {
 
 	_gameView.setCenter(_gameViewPos + _gameViewOffset);
 	target.setView(_gameView);
-	if (_level) _level->render(target);
+	//if (_level) _level->render(target);
+	_section->render(target);
+	_section->renderDebug(target);
+
 
 	target.setView(_guiView);
 
@@ -129,10 +139,10 @@ void LevelScreen::renderGui(sf::RenderTarget& target) {
 
 	const auto pos = _bossHealthTileSprite.getPosition();
 	const float& bossTileWidth = _bossHealthTileSprite.getGlobalBounds().width;
-	const float& bossLife = 
+	const float& bossLife = 10; /*
 		_level->getNormalizedBossLife() == 1.f 
 			? 1.f - FLT_EPSILON 
-			: _level->getNormalizedBossLife(); // hack to bypass the problem below
+			: _level->getNormalizedBossLife(); // hack to bypass the problem below*/
 
 	for (u32 i = 0; i < nTiles; ++i) { // This depends on the fact that if a = n*b then  a mod 1 / n == b, need to check if it's true for float
 		const u32& color = (u32)(bossLife * nColors) +  // Not true for nColors == 3 :(

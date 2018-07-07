@@ -4,14 +4,22 @@
 
 #include "./../Managers/AssetsManager.hpp"
 #include "./../Managers/EventManager.hpp"
-
 #include "./Structure/Plateforme.hpp"
 
-void Section::enter() noexcept {
-	_cameraView = sf::View({ WIDTH / 2.f, HEIGHT / 2.f }, { (float)WIDTH, (float)HEIGHT });
 
+Section::Section(SectionInfo info) noexcept : _info(info) {
+	_cameraView.setCenter(_info.maxRectangle.fitUpRatio(RATIO).center());
+	_cameraView.setSize(_info.maxRectangle.fitUpRatio(RATIO).size);
+
+	for (auto& plateforme : _info.plateformes) {
+		auto ptr = std::make_shared<Plateforme>(plateforme);
+		addStructure(std::shared_ptr<Structure>(ptr));
+	}
+}
+
+void Section::enter() noexcept {
 	_player = std::make_shared<Player>(C::game->getPlayerInfo());
-	_player->setPos({ 100.f, HEIGHT / 2.f });
+	_player->setPos(_info.startPos);
 	_player->collider->onEnter =
 		std::bind(&Section::playerOnEnter, this, std::placeholders::_1);
 
@@ -31,29 +39,13 @@ void Section::exit() noexcept {
 	_world.purge();
 }
 
-void Section::loadJson(std::string jsonName) noexcept {
-	_levelJson = AM::getJson(jsonName);
-
-	for (auto[key, platform] : _levelJson.at("platforms").get<nlohmann::json::object_t>())
-	{
-		Vector2f pos;
-		pos.x = (float)platform.at("pos").get<std::vector<double>>()[0];
-		pos.y = (float)platform.at("pos").get<std::vector<double>>()[1];
-		Vector2f size;
-		size.x = (float)platform.at("size").get<std::vector<double>>()[0];
-		size.y = (float)platform.at("size").get<std::vector<double>>()[1];
-
-		auto box = std::make_shared<Plateforme>(pos, size);
-		auto temp = std::shared_ptr<Structure>{ box };
-		addStructure(temp);
-	}
-}
-
 void Section::update(double dt) noexcept {
 	_player->update(dt);
 	for (auto& spatial : _structures) {
 		spatial->update(dt);
 	}
+
+	_world.updateInc(dt, 1);
 }
 void Section::render(sf::RenderTarget& target) const noexcept {
 	auto oldView = target.getView();
@@ -65,13 +57,18 @@ void Section::render(sf::RenderTarget& target) const noexcept {
 }
 
 void Section::renderDebug(sf::RenderTarget& target) const noexcept {
+	auto oldView = target.getView();
+	target.setView(_cameraView);
+
 	for (auto& spatial : _structures) {
 		spatial->renderDebug(target);
 	}
 	_world.render(target);
+
+	target.setView(oldView);
 }
 
-void Section::addStructure(std::shared_ptr<Structure>& ptr) noexcept {
+void Section::addStructure(const std::shared_ptr<Structure>& ptr) noexcept {
 	_structures.push_back(ptr);
 }
 
@@ -96,5 +93,37 @@ void Section::unsubscribeToEvents() noexcept {
 	EventManager::unSubscribe("keyReleased", _keyReleasedEvent);
 }
 
-void Section::playerOnEnter(Object*) noexcept {
+void Section::playerOnEnter(Object* object) noexcept {
+	if (object->idMask[Object::STRUCTURE]) {
+		_player->floored();
+	}
+}
+void Section::playerOnExit(Object*) noexcept {
+
+}
+
+SectionInfo SectionInfo::load(const nlohmann::json& json) noexcept {
+	SectionInfo info;
+
+	if (json.count("maxRect") != 0) {
+		info.maxRectangle.x = json.at("maxRect").get<std::vector<float>>()[0];
+		info.maxRectangle.y = json.at("maxRect").get<std::vector<float>>()[1];
+		info.maxRectangle.w = json.at("maxRect").get<std::vector<float>>()[2];
+		info.maxRectangle.h = json.at("maxRect").get<std::vector<float>>()[3];
+	}
+
+	if (json.count("plateformes") != 0) {
+		info.plateformes.reserve(json.at("plateformes").size());
+		for (auto[key, plateforme] : json.at("plateformes").get<nlohmann::json::object_t>())
+		{
+			info.plateformes.push_back(PlateformeInfo::loadFromJson(plateforme));
+		}
+	}
+
+	if (json.count("startPos") != 0) {
+		info.startPos.x = json.at("startPos").get<std::vector<float>>()[0];
+		info.startPos.y = json.at("startPos").get<std::vector<float>>()[1];
+	}
+
+	return info;
 }

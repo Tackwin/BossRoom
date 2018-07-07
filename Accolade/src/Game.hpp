@@ -6,9 +6,9 @@
 
 #include "Common.hpp"
 
-#include "Gameplay/Player/PlayerInfo.hpp"
-
 #include "Options/KeyBindings.hpp"
+
+#include "Gameplay/Player/Player.hpp"
 
 class Screen;
 class Player;

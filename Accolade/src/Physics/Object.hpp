@@ -18,6 +18,7 @@ struct Object {
 		PROJECTILE,
 		BOSS,
 		ZONE,
+		STRUCTURE,
 		SIZE
 	};
 

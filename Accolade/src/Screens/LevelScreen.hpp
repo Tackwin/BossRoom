@@ -9,6 +9,7 @@
 #include "./../Managers/MemoryManager.hpp"
 
 #include "./../Gameplay/Player/Player.hpp"
+#include "../Ruins/Section.hpp"
 
 class Level;
 class LevelScreen : public Screen {
@@ -42,6 +43,7 @@ private:
 	MM::unique_ptr<Level> _level;
 	
 	sf::Sprite _bossHealthTileSprite;
+	std::unique_ptr<Section> _section;
 	std::vector<sf::RectangleShape> _playerLife;
 
 };

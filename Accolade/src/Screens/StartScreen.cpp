@@ -18,7 +18,6 @@
 #include "./../Gameplay/Zone.hpp"
 
 StartScreen::StartScreen() :
-	_playerView({ WIDTH / 2.f, HEIGHT / 2.f }, { (float)WIDTH, (float)HEIGHT }),
 	_guiView({ WIDTH / 2.f, HEIGHT / 2.f }, { (float)WIDTH, (float)HEIGHT })
 {
 	initializeGui();
@@ -49,8 +48,20 @@ void StartScreen::initializeGui() {
 }
 
 void StartScreen::onEnter() {
-	_json = AssetsManager::getJson(JSON_KEY)["startZone"];
+	_json = AssetsManager::getJson("startZone");
+	auto startingPos = _json.at("startPos").get<std::vector<double>>();
+
+	Rectangle2f viewRectangle;
+	viewRectangle.x = (float)_json["maxRectangle"].get<std::vector<double>>()[0];
+	viewRectangle.y = (float)_json["maxRectangle"].get<std::vector<double>>()[1];
+	viewRectangle.w = (float)_json["maxRectangle"].get<std::vector<double>>()[2];
+	viewRectangle.h = (float)_json["maxRectangle"].get<std::vector<double>>()[3];
+	
+	_playerView.setSize(viewRectangle.fitDownRatio(RATIO).size);
+	_playerView.setCenter(viewRectangle.center());
+
 	_player = std::make_shared<Player>();
+	_player->setPos({ (float)startingPos[0], (float)startingPos[1] });
 
 	_shop.setPlayer(_player);
 
@@ -59,7 +70,7 @@ void StartScreen::onEnter() {
 	subscribeToEvents();
 
 	_generator.loadJson(AM::getJson(JSON_KEY)["particlesGenerator"]["particleBurstFeather"]);
-	_generator.setPos({ 100, 100 });
+	_generator.setPos({ 1, 1 });
 }
 void StartScreen::onExit() {
 	unsubscribeToEvents();
@@ -73,28 +84,32 @@ void StartScreen::onExit() {
 	_world.purge();
 }
 
-void StartScreen::initializeWorld(){
+void StartScreen::initializeWorld() {
 	_world.addObject(_player);
 	_player->collider->onEnter =
 		std::bind(&StartScreen::playerOnEnter, this, std::placeholders::_1);
 	_player->collider->onExit =
 		std::bind(&StartScreen::playerOnExit, this, std::placeholders::_1);
 
-	_floor = std::make_shared<Object>();
-	_floor->idMask.set((size_t)Object::BIT_TAGS::FLOOR);
-	_floor->pos = { 0, 600 };
-	_floor->collider = std::make_unique<Box>();
-	((Box*)_floor->collider.get())->size = { 3000, 120 };
+	auto json = _json.at("plateformes");
 
-	_world.addObject(_floor);
+	for (auto&[key, value] : json.get<nlohmann::json::object_t>()) {
+		PlateformeInfo info = PlateformeInfo::loadFromJson(value);
+
+		_plateformes[key] = std::make_shared<Plateforme>(info);
+		_world.addObject(_plateformes[key]);
+	}
 
 	auto& merchant = _zones["merchant"];
+
+	json = AM::getJson("startZone").at("merchant");
+	auto pos = json.at("pos").get<std::vector<double>>();
+	auto size = json.at("size").get<std::vector<double>>();
+
 	merchant = std::make_shared<Zone>();
-	merchant->setRadius(150.f);
-	merchant->pos.x = _merchantShop.getPosition().x +
-		_merchantShop.getGlobalBounds().width * 0.5f;
-	merchant->pos.y = _merchantShop.getPosition().y +
-		_merchantShop.getGlobalBounds().height * 0.5f;
+	merchant->setRadius(json.at("radius"));
+	merchant->pos.x = (float)(pos[0] + size[0] * 0.5);
+	merchant->pos.y = (float)(pos[1] + size[1] * 0.5);
 	merchant->collisionMask.set((size_t)Object::BIT_TAGS::PLAYER);
 	merchant->collider->sensor = true;
 	merchant->collider->onExit = [&](Object*) mutable { leaveShop(); };
@@ -128,10 +143,10 @@ void StartScreen::update(double dt) {
 		unActivateShop();
 	}
 	else if (_isInShop && InputsManager::isKeyJustPressed(sf::Keyboard::E)) {
- 		activateShop();
+		activateShop();
 	}
 
-	if (_dungeonDoor.getGlobalBounds().contains(_player->pos)) {
+	if (_sprites["dungeonDoor"].getGlobalBounds().contains(_player->pos)) {
 		game->enterDungeon();
 	}
 }
@@ -159,29 +174,27 @@ void StartScreen::pullPlayerObjects() {
 void StartScreen::render(sf::RenderTarget& target) {
 	const auto oldView = target.getView();
 	
-	float minX = 
-		_startBackground.getGlobalBounds().left + _playerView.getSize().x / 2.f;
-	float maxX = 
-		_startBackground.getGlobalBounds().left + 
-		_startBackground.getGlobalBounds().width - 
-		_playerView.getSize().x / 2.f;
 
-	float minY = 
-		_startBackground.getGlobalBounds().top + _playerView.getSize().y / 2.f;
-	float maxY = _startBackground.getGlobalBounds().top + 
-		_startBackground.getGlobalBounds().height - 
-		_playerView.getSize().y / 2.f;
+	Rectangle2f viewRectangle;
+	viewRectangle.x = (float)_json["maxRectangle"].get<std::vector<double>>()[0];
+	viewRectangle.y = (float)_json["maxRectangle"].get<std::vector<double>>()[1];
+	viewRectangle.w = (float)_json["maxRectangle"].get<std::vector<double>>()[2];
+	viewRectangle.h = (float)_json["maxRectangle"].get<std::vector<double>>()[3];
 
-	_playerView.setCenter({
-		std::clamp(_player->pos.x, minX, maxX),
-		std::clamp(_player->pos.y, minY, maxY)
-	});
+	float minX = _playerView.getSize().x / 2.f;
+	float maxX = viewRectangle.w - minX;
+
+	_playerView.setCenter(
+		std::clamp(_player->getPos().x, minX, maxX),
+		_playerView.getCenter().y
+	);
+
 	target.setView(_playerView);
 
-	target.draw(_startBackground);
-	target.draw(_dungeon);
-	target.draw(_merchantShop);
-	target.draw(_dungeonDoor);
+	target.draw(_sprites["startBackground"]);
+	target.draw(_sprites["dungeon"]);
+	target.draw(_sprites["merchantShop"]);
+	target.draw(_sprites["dungeonDoor"]);
 
 	for (auto& p : _projectiles) {
 		p->render(target);
@@ -219,54 +232,19 @@ void StartScreen::renderGui(sf::RenderTarget& target) {
 }
 
 void StartScreen::initializeSprite() {
-	{
-		const auto& json = _json["startBackground"];
-		_startBackground = sf::Sprite(AssetsManager::getTexture(json["sprite"]));
-		_startBackground.setScale(
-			json["size"][0].get<float>() / _startBackground.getTextureRect().width,
-			json["size"][1].get<float>() / _startBackground.getTextureRect().height
+	for (auto&[key, value] : _json.at("sprites").get<nlohmann::json::object_t>()) {
+		auto& sprite = _sprites[key];
+
+		auto size = value.at("size").get<std::vector<double>>();
+		auto pos = value.at("pos").get<std::vector<double>>();
+
+		sprite.setTexture(AM::getTexture(value.at("sprite").get<std::string>()));
+		sprite.setScale(
+			(float)(size[0] / sprite.getTextureRect().width),
+			(float)(size[1] / sprite.getTextureRect().height)
 		);
-		_startBackground.setPosition(
-			json["pos"][0].get<float>(),
-			json["pos"][1].get<float>()
-		);
-	} 
-	{
-		const auto& json = _json["dungeon"];
-		_dungeon = sf::Sprite(AssetsManager::getTexture(json["sprite"]));
-		_dungeon.setScale(
-			json["size"][0].get<float>() / _dungeon.getTextureRect().width,
-			json["size"][1].get<float>() / _dungeon.getTextureRect().height
-		);
-		_dungeon.setPosition(
-			json["pos"][0].get<float>(),
-			json["pos"][1].get<float>()
-		);
-	} 
-	{
-		const auto& json = _json["dungeonDoor"];
-		_dungeonDoor = sf::Sprite(AssetsManager::getTexture(json["sprite"]));
-		_dungeonDoor.setScale(
-			json["size"][0].get<float>() / _dungeonDoor.getTextureRect().width,
-			json["size"][1].get<float>() / _dungeonDoor.getTextureRect().height
-		);
-		_dungeonDoor.setPosition(
-			json["pos"][0].get<float>(),
-			json["pos"][1].get<float>()
-		);
-	} 
-	{
-		const auto& json = _json["merchantShop"];
-		_merchantShop = sf::Sprite(AssetsManager::getTexture(json["sprite"]));
-		_merchantShop.setScale(
-			json["size"][0].get<float>() / _merchantShop.getTextureRect().width,
-			json["size"][1].get<float>() / _merchantShop.getTextureRect().height
-		);
-		_merchantShop.setPosition(
-			json["pos"][0].get<float>(),
-			json["pos"][1].get<float>()
-		);
-	} 
+		sprite.setPosition((float)pos[0], (float)pos[1]);
+	}
 }
 
 void StartScreen::enterShop() {

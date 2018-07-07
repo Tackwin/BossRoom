@@ -10,7 +10,6 @@
 #include "./../Managers/MemoryManager.hpp"
 
 #include "./../Gameplay/Player/Player.hpp"
-#include "./../Gameplay/Player/PlayerInfo.hpp"
 
 class HeritageScreen : public Screen {
 public:

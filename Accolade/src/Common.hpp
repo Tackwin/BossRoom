@@ -24,18 +24,19 @@ namespace C {
 	constexpr char JSON_PATH[] = ASSETS_PATH"config.json";
 
 	constexpr u32 WIDTH = 1280;
-	constexpr u32 HEIGHT = 720;
+	constexpr u32 HEIGHT = 800;
+	constexpr double RATIO = (double)WIDTH / (double)HEIGHT;
 
 	constexpr u32 MAX_FPS = 60;
 
 	constexpr float MIN_DELTA = 1 / 30.f;
 	constexpr float MIN_MS = 0.000f;
 
-	constexpr float G = 2'500.f;
+	constexpr float G = 100.f;
 
 	constexpr float SOUND_LEVEL = 0.2f;
 
-	constexpr double FIXED_DT = 0.01;
+	constexpr double FIXED_DT = 0.001;
 
 	constexpr double PId = 3.1415926535897923846;
 	constexpr float PIf = 3.1415926f;

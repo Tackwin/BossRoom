@@ -17,6 +17,8 @@ struct Rectangle {
 		};
 	};
 
+	Rectangle() {}
+
 	Rectangle(const Vector<2, T>& pos, const Vector<2, T>& size) :
 		pos(pos),
 		size(size) 
@@ -35,6 +37,49 @@ struct Rectangle {
 
 	T bot() const {
 		return pos.y + size.y;
+	}
+
+	Rectangle<T> fitUpRatio(double ratio) const noexcept {
+		if (w > h) {
+			return { pos,{ w, (T)(w / ratio) } };
+		}
+		else {
+			return { pos,{ (T)(h * ratio), h } };
+		}
+	}
+	Rectangle<T> fitDownRatio(double ratio) const noexcept {
+		if (w < h) {
+			return { pos,{ w, (T)(w / ratio) } };
+		}
+		else {
+			return { pos,{ (T)(h * ratio), h } };
+		}
+	}
+
+	Rectangle<T> restrictIn(Rectangle<T> area) const noexcept {
+		if (area.area() <= this->area()) return { area.center(), size };
+
+		Rectangle<T> result = *this;
+
+		if (x < area.x) {
+			result.x = area.x;
+		}
+		if (x + w > area.x + area.w) {
+			result.x = area.x + area.w - w;
+		}
+
+		if (y < area.y) {
+			result.y = area.y;
+		}
+		if (y + h > area.y + area.h) {
+			result.y = area.y + area.h - h;
+		}
+
+		return result;
+	}
+
+	T area() const noexcept {
+		return w * h;
 	}
 
 	template<typename U>
