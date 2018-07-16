@@ -73,8 +73,13 @@ void Projectile::update(double dt) {
 }
 
 void Projectile::render(sf::RenderTarget &target) {
+	sf::CircleShape mark{ 0.05f };
+	mark.setOrigin(mark.getRadius(), mark.getRadius());
+	mark.setPosition(getPos());
+
 	_sprite.setPosition(pos);
 	target.draw(_sprite);
+	target.draw(mark);
 }
 
 void Projectile::changeLifespan(float) {

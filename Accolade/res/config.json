@@ -1,5 +1,9 @@
 {
   "sprites": {
+    "slime": {
+      "sheet": "images/slime.png",
+      "origin": [0.5, 0.15]
+    },
     "phoenix": {
       "sheet": "images/phoenix_fire.png",
       "rect": [ 600, 500 ],
@@ -14,6 +18,9 @@
         "frames": 6,
         "time": 0.2
       }
+    },
+    "source": {
+      "sheet": "images/source.png"
     },
     "aim": {
       "sheet": "images/aim.png"
@@ -388,12 +395,12 @@
       "sounds": {
         "active": [ "shoot" ]
       },
-      "recoil": 1500,
+      "recoil": 0.5,
 
       "projectile": {
         "damage": 1,
-        "speed": 2000,
-        "radius": 5,
+        "speed": 25,
+        "radius": 0.05,
         "lifespan": 5,
         "destroyOthers": false,
         "sprite": "projectiles-1"

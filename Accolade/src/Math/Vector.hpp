@@ -2,6 +2,7 @@
 
 #include <type_traits>
 #include "./../Common.hpp"
+#include "./../3rd/json.hpp"
 
 #pragma warning(push)
 #pragma warning(disable: 4201)
@@ -105,6 +106,17 @@ template<size_t D, typename T = float>
 struct Vector : public __vec_member<D, T> {
 
 #pragma region STATIC
+
+	static Vector<D, T> load(nlohmann::json json) noexcept {
+		auto vec = json.get<std::vector<T>>();
+		Vector<D, T> vector;
+
+		for (size_t i = 0; i < D; ++i) {
+			vector.components[i] = vec[i];
+		}
+		return vector;
+	}
+
 	static Vector<D, T> createUnitVector(float angles[D]) {
 		Vector<D, T> result;
 		result[0] = cosf(angles[0]);
@@ -292,6 +304,16 @@ struct Vector : public __vec_member<D, T> {
 		return results;
 	}
 
+	template<size_t Dp = D>
+	std::enable_if_t<Dp == 2, Vector<D, T>> fitUpRatio(double ratio) const noexcept {
+		if (x > y) {
+			return { x, (T)(x / ratio) };
+		}
+		else {
+			return { (T)(y * ratio), y };
+		}
+	}
+
 #pragma region COLORS
 
 	template<size_t Dp = D>
@@ -355,6 +377,10 @@ struct Vector : public __vec_member<D, T> {
 			this->components[i] += static_cast<T>(other[i]);
 		}
 		return *this;
+	}
+	template<typename U>
+	Vector<D, T>& operator-=(const U& other) {
+		return this->operator+=(static_cast<T>(-1) * other);
 	}
 	template<typename U>
 	Vector<D, T>& operator*=(const U& scalaire) {

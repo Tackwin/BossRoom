@@ -19,6 +19,7 @@ struct Object {
 		BOSS,
 		ZONE,
 		STRUCTURE,
+		SLIME,
 		SIZE
 	};
 

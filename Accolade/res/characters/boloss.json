@@ -1,9 +1,8 @@
 {
   "name": "Boloss",
   "max_life": 3,
-  "dash_range": 150,
-  "speed": 10,
-  "special_speed": 15,
+  "speed": 15,
+  "special_speed": 10,
   "invincibility_time": 0.2,
   "jump_height": 4.5,
   "jump_boost_multiplier": 1.3,

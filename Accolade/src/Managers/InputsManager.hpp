@@ -60,3 +60,4 @@ public:
 	static Vector2f getMouseScreenPos();
 };
 
+using IM = InputsManager;

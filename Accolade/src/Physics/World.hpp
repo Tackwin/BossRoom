@@ -22,7 +22,7 @@ public:
 	void updateInc(double dt, u32 itLevel);
 	void render(sf::RenderTarget& target) const noexcept;
 
-	void addObject(std::weak_ptr<Object> obj);
+	void addObject(std::weak_ptr<Object> obj) noexcept;
 	void delObject(UUID uuid);
 
 	void purge();

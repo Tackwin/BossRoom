@@ -122,11 +122,12 @@ void World::render(sf::RenderTarget& target) const noexcept {
 	for (auto& [_, obj] : _objectsMap) {_;
 		if (obj.expired()) continue;
 
-		obj.lock()->collider->render(target);
+		if (obj.lock()->collider)
+			obj.lock()->collider->render(target);
 	}
 }
 
-void World::addObject(std::weak_ptr<Object> obj) {
+void World::addObject(std::weak_ptr<Object> obj) noexcept {
 	auto id = obj.lock()->uuid;
 	_objectsMap[id] = obj;
 

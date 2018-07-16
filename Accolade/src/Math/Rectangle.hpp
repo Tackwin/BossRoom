@@ -35,6 +35,10 @@ struct Rectangle {
 		return pos + size / 2;
 	}
 
+	void setCenter(Vector2<T> vec) noexcept {
+		pos = vec - size / 2.0;
+	}
+
 	T bot() const {
 		return pos.y + size.y;
 	}

@@ -84,7 +84,7 @@ void Player::update(double dt) {
 		flatVelocities.push_back(_dir);
 	}
 
-	//velocity *= (float)std::pow(0.2, dt);
+	velocity *= (float)std::pow(0.2, dt);
 
 	_events.clear();
 }
@@ -97,6 +97,20 @@ void Player::render(sf::RenderTarget &target) {
 	);
 	_sprite.render(target);
 
+	sf::CircleShape mark{ 0.05f };
+	mark.setOrigin(mark.getRadius(), mark.getRadius());
+	mark.setPosition(support(
+		(float)pos.angleTo(IM::getMousePosInView(target.getView())),
+		0
+	));
+
+	target.draw(mark);
+
+
+	sf::CircleShape playerPosMark{ 0.05f };
+	playerPosMark.setOrigin(0.05f, 0.05f);
+	playerPosMark.setPosition(pos);
+	target.draw(playerPosMark);
 }
 void Player::shoot() noexcept {
 	_sprite.pushAnim("action");
@@ -307,7 +321,6 @@ PlayerInfo::PlayerInfo() {
 PlayerInfo::PlayerInfo(nlohmann::json json) :
 	maxLife(json.at("max_life")),
 	speed(json.at("speed")),
-	dashRange(json.at("dash_range")),
 	specialSpeed(json.at("special_speed")),
 	invincibilityTime(json.at("invincibility_time")),
 	jumpHeight(json.at("jump_height")),

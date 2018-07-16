@@ -9,12 +9,17 @@
 #include "./../Gameplay/Boss.hpp"
 #include "../Math/Rectangle.hpp"
 #include "Structure/Plateforme.hpp"
+#include "./../Gameplay/Magic/Source.hpp"
+#include "Gameplay/Characters/Slime.hpp"
 
 
 struct SectionInfo {
+	std::vector<SlimeInfo> slimes;
 	std::vector<PlateformeInfo> plateformes;
+	std::vector<SourceInfo> sources;
 	Rectangle2f maxRectangle;
 	Vector2f startPos;
+	Vector2f viewSize;
 
 	static SectionInfo load(const nlohmann::json& json) noexcept;
 };
@@ -33,6 +38,10 @@ public:
 	void renderDebug(sf::RenderTarget& target) const noexcept;
 
 	void addStructure(const std::shared_ptr<Structure>& ptr) noexcept;
+	void addSource(const std::shared_ptr<Source>& ptr) noexcept;
+	void addSlime(const std::shared_ptr<Slime>& ptr) noexcept;
+
+	Vector2f getPlayerPos() const noexcept;
 
 private:
 	void playerOnEnter(Object*) noexcept;
@@ -41,17 +50,21 @@ private:
 	void subscribeToEvents() noexcept;
 	void unsubscribeToEvents() noexcept;
 
+	void pullPlayerObjects();
+
 	nlohmann::json _levelJson;
 
 	World _world;
 
-	sf::View _cameraView;
+	mutable sf::View _cameraView;
 
 	std::shared_ptr<Player> _player;
 
-	std::vector<std::shared_ptr<Structure>> _structures;
+	std::vector<std::shared_ptr<Slime>> _slimes;
 	std::vector<std::shared_ptr<Projectile>> _projectiles;
+	std::vector<std::shared_ptr<Structure>> _structures;
 	std::vector<std::shared_ptr<Zone>> _playerZones;
+	std::vector<std::shared_ptr<Source>> _sources;
 
 	UUID _keyPressedEvent{ UUID::null };
 	UUID _keyReleasedEvent{ UUID::null };

@@ -27,7 +27,7 @@ public:
 	void enterScreen(std::shared_ptr<Screen> s);
 	void exitScreen();
 
-	void update(double dt);
+	void update(double dt) noexcept;
 	void updateDebugText(double dt);
 
 	void render(sf::RenderTarget& target);
@@ -43,7 +43,7 @@ public:
 	PlayerInfo loadPlayerInfo(std::string character) const noexcept;
 private: //TODO: Make this private
 	u08 _debugTimeClockColor;
-	sf::CircleShape _debugTimeClockShape;
+    sf::CircleShape _debugTimeClockShape;
 
 	PlayerInfo _playerInfo;
 

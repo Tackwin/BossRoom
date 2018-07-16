@@ -67,7 +67,7 @@ void Game::updateDebugText(double) {
 	}
 }
 
-void Game::update(double dt) {
+void Game::update(double dt) noexcept {
 	updateDebugText(dt);
 	_screens.top()->update(dt);
 }
@@ -111,7 +111,7 @@ Game::Game()
 	_debugText["ups"].setPosition(5, 5);
 	_debugText["ups"].setFillColor(sf::Color(100, 100, 100));
 
-	_keyBindings.emplace_back(AM::getJson("default_key"));
+    _keyBindings.emplace_back(AM::getJson("default_key"));
 	_currentKeyBindings = 0;
 
 	_playerInfo = loadPlayerInfo(PlayerInfo::BOLOSS);

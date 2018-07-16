@@ -63,7 +63,9 @@ bool Box::collideWith(const Collider* collider) const {
 void Box::render(sf::RenderTarget& target) {
 	sf::RectangleShape shape(size);
 	shape.setPosition(getGlobalPos());
-	shape.setFillColor(sf::Color(200, 200, 200, 200));
+	shape.setOutlineColor({ 255, 20, 20, 255 });
+	shape.setOutlineThickness(0.01f);
+	shape.setFillColor({ 0, 0, 0, 0 });
 	target.draw(shape);
 }
 

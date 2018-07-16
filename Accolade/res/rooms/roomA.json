@@ -1,12 +1,42 @@
 {
   "plateformes": {
     "boxA": {
-      "rectangle": [ 0, 8, 15, 2 ]
+      "rectangle": [ 0, 8, 27.5, 2 ]
     },
     "boxB": {
       "rectangle": [ 5, 5.5, 5, 1.0 ]
+    },
+    "boxC": {
+      "rectangle": [ 16, 3, 1, 5 ]
+    },
+    "boxD": {
+      "rectangle": [ 17, 3, 5, 1 ]
+    },
+    "boxE": {
+      "rectangle": [ 24, 3, 3.5, 1 ]
+    },
+    "boxF": {
+      "rectangle": [ 26.5, 4, 1, 4 ]
+    },
+    "boxG": {
+      "rectangle": [ 23, 5, 3.5, 1 ]
     }
   },
-  "maxRect": [ 0, 0, 15, 7 ],
-  "startPos": [ 1, 3 ]
+  "sources": {
+    "sourceA": {
+      "id": 0,
+      "sprite": "source",
+      "reloadTime": 5.0,
+      "pos": [ 13.5, 7.5 ],
+      "size": [ 0.3, 0.7 ]
+    }
+  },
+  "slimes": {
+    "first": {
+      "startPos": [ 5, 3 ]
+    }
+  },
+  "maxRect": [ 0, 0, 27.5, 10 ],
+  "startPos": [ 1, 3 ],
+  "viewSize": [ 13.5, 8 ]
 }

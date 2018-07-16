@@ -19,8 +19,8 @@ AnimatedSprite::AnimatedSprite(AnimatedSprite&& other) noexcept {
 }
 AnimatedSprite::AnimatedSprite(const std::string& json_) noexcept :
 	_json(AssetsManager::getJson(JSON_KEY)["sprites"][json_]),
-	_sprite(AssetsManager::getTexture(json_)) {
-}
+	_sprite(AssetsManager::getTexture(json_)) 
+{}
 
 AnimatedSprite::~AnimatedSprite() {
 	while (!_stackAnim.empty()) {

@@ -74,11 +74,9 @@ void Wearable::InitWearable() {
 		player->knockBack(dir * -recoil);
 
 		float a = (float)dir.angleX();
-		a += static_cast<float>((evenShot ? -1 : 1) * PIf / 6);
+		a += static_cast<float>((evenShot ? -1 : 1) * PIf / 15);
 
-		Vector2f pos = player->support(a, 5);
-
-		evenShot = !evenShot;
+		Vector2f pos = player->support(a, 0);
 
 		player->addProjectile(std::make_shared<Projectile>(projectile, pos, dir, true));
 	};

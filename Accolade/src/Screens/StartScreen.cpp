@@ -175,19 +175,23 @@ void StartScreen::render(sf::RenderTarget& target) {
 	const auto oldView = target.getView();
 	
 
-	Rectangle2f viewRectangle;
-	viewRectangle.x = (float)_json["maxRectangle"].get<std::vector<double>>()[0];
-	viewRectangle.y = (float)_json["maxRectangle"].get<std::vector<double>>()[1];
-	viewRectangle.w = (float)_json["maxRectangle"].get<std::vector<double>>()[2];
-	viewRectangle.h = (float)_json["maxRectangle"].get<std::vector<double>>()[3];
+	Rectangle2f maxRectangle;
+	maxRectangle.x = (float)_json["maxRectangle"].get<std::vector<double>>()[0];
+	maxRectangle.y = (float)_json["maxRectangle"].get<std::vector<double>>()[1];
+	maxRectangle.w = (float)_json["maxRectangle"].get<std::vector<double>>()[2];
+	maxRectangle.h = (float)_json["maxRectangle"].get<std::vector<double>>()[3];
 
-	float minX = _playerView.getSize().x / 2.f;
-	float maxX = viewRectangle.w - minX;
+	_playerView.setCenter(_player->getPos());
 
-	_playerView.setCenter(
-		std::clamp(_player->getPos().x, minX, maxX),
-		_playerView.getCenter().y
-	);
+	Rectangle2f viewRect{
+		_playerView.getCenter() - _playerView.getSize() / 2.f,
+		_playerView.getSize()
+	};
+
+	Rectangle2f restirctedView = viewRect.restrictIn(maxRectangle);
+
+	_playerView.setCenter(restirctedView.center());
+	_playerView.setSize(restirctedView.size);
 
 	target.setView(_playerView);
 
