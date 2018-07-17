@@ -6,6 +6,8 @@
 #include "./../Managers/EventManager.hpp"
 #include "./Structure/Plateforme.hpp"
 
+#include "Gameplay/Projectile.hpp"
+#include "Gameplay/Zone.hpp"
 
 Section::Section(SectionInfo info) noexcept : _info(info) {
 	_cameraView.setCenter(_info.maxRectangle.fitUpRatio(RATIO).center());
@@ -195,13 +197,13 @@ void Section::addSlime(const std::shared_ptr<Slime>& slime) noexcept {
 
 void Section::pullPlayerObjects() {
 	for (auto& p : _player->getProtectilesToShoot()) {
-		_world.addObject(std::dynamic_pointer_cast<Object>(p));
+		_world.addObject(p);
 		_projectiles.push_back(p);
 	}
 	_player->clearProtectilesToShoot();
 
 	for (auto& p : _player->getZonesToApply()) {
-		_world.addObject(std::dynamic_pointer_cast<Object>(p));
+		_world.addObject(p);
 		_playerZones.push_back(p);
 	}
 	_player->clearZonesToApply();
