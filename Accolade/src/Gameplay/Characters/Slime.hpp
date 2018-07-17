@@ -3,6 +3,7 @@
 #include "3rd/json.hpp"
 #include "Physics/Object.hpp"
 #include "Graphics/AnimatedSprite.hpp"
+#include "Components/Removable.hpp"
 
 class Section;
 
@@ -10,13 +11,14 @@ struct SlimeInfo {
 
 	Vector2f startPos{ 0., 0. };
 	float speed{ 1.f };
+	float health{ 10.f };
 	std::string sprite{ "slime" };
 	Vector2f size{ 1.f, 1.f };
 
 	static SlimeInfo loadFromJson(nlohmann::json json) noexcept;
 };
 
-class Slime : public Object {
+class Slime : public Object, public Removable {
 public:
 	Slime(SlimeInfo info) noexcept;
 

@@ -13,9 +13,10 @@ SourceInfo SourceInfo::load(nlohmann::json json) noexcept {
 }
 
 Source::Source(SourceInfo info) noexcept : 
-	_info(info),
-	pos(info.pos)
+	Object(),
+	_info(info)
 {
+	pos = _info.pos;
 	_sprite.setTexture(AM::getTexture(_info.sprite));
 }
 

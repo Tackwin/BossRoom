@@ -3,6 +3,7 @@
 #include "./../Game.hpp"
 
 #include "./../Managers/AssetsManager.hpp"
+#include "./../Managers/InputsManager.hpp"
 #include "./../Managers/EventManager.hpp"
 #include "./Structure/Plateforme.hpp"
 
@@ -35,6 +36,10 @@ void Section::enter() noexcept {
 	_player->collider->onEnter =
 		std::bind(&Section::playerOnEnter, this, std::placeholders::_1);
 
+	if (_player->isEquiped()) {
+		_player->swapWeapon(_player->getPlayerInfo().weapon.value());
+	}
+
 	for (auto& structure : _structures) {
 		_world.addObject(structure);
 	}
@@ -57,7 +62,13 @@ void Section::exit() noexcept {
 }
 
 void Section::update(double dt) noexcept {
+	auto mouse = IM::getMousePosInView(_cameraView);
+
+	_player->setFacingDir((float)(mouse - _player->getPos()).angleX());
 	_player->update(dt);
+	for (auto& projectile : _projectiles) {
+		projectile->update(dt);
+	}
 	for (auto& spatial : _structures) {
 		spatial->update(dt);
 	}
@@ -67,6 +78,10 @@ void Section::update(double dt) noexcept {
 	for (auto& slime : _slimes) {
 		slime->update(dt);
 	}
+
+	removeDeadObject();
+
+	pullPlayerObjects();
 
 	_world.updateInc(dt, 1);
 }
@@ -134,9 +149,31 @@ void Section::unsubscribeToEvents() noexcept {
 	EventManager::unSubscribe("keyReleased", _keyReleasedEvent);
 }
 
+void Section::removeDeadObject() noexcept {
+	for (int i = _projectiles.size() - 1; i >= 0; --i) {
+		if (_projectiles[i]->toRemove()) {
+			_world.delObject(_projectiles[i]->uuid);
+			_projectiles.erase(_projectiles.begin() + i);
+		}
+	}
+	for (int i = _slimes.size() - 1; i >= 0; --i) {
+		if (_slimes[i]->toRemove()) {
+			_world.delObject(_slimes[i]->uuid);
+			_slimes.erase(_slimes.begin() + i);
+		}
+	}
+	for (int i = _sources.size() - 1; i >= 0; --i) {
+		if (_sources[i]->toRemove()) {
+			_world.delObject(_sources[i]->uuid);
+			_sources.erase(_sources.begin() + i);
+		}
+	}
+}
+
 void Section::playerOnEnter(Object* object) noexcept {
 	if (object->idMask[Object::STRUCTURE]) {
 		_player->floored();
+		_player->clearKnockBack();
 	}
 }
 void Section::playerOnExit(Object*) noexcept {
@@ -189,6 +226,10 @@ SectionInfo SectionInfo::load(const nlohmann::json& json) noexcept {
 
 Vector2f Section::getPlayerPos() const noexcept {
 	return _player->getPos();
+}
+
+std::shared_ptr<Player> Section::getPlayer() const noexcept {
+	return _player;
 }
 
 void Section::addSlime(const std::shared_ptr<Slime>& slime) noexcept {

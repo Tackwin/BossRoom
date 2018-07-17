@@ -1,8 +1,11 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
-#include "./../../3rd/json.hpp"
-#include "./../../Math/Vector.hpp"
+#include "3rd/json.hpp"
+#include "Math/Vector.hpp"
+
+#include "Components/Removable.hpp"
+#include "Physics/Object.hpp"
 
 struct SourceInfo {
 	
@@ -18,7 +21,7 @@ struct SourceInfo {
 	static SourceInfo load(nlohmann::json json) noexcept;
 };
 
-class Source {
+class Source: public Object, public Removable {
 public:
 	Source(SourceInfo info) noexcept;
 
@@ -33,7 +36,6 @@ public:
 
 private:
 	SourceInfo _info;
-	Vector2f pos;
-
+	
 	mutable sf::Sprite _sprite;
 };

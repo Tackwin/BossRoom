@@ -102,6 +102,8 @@ public:
 	void floored();
 	bool isFloored() const;
 
+	void clearKnockBack() noexcept;
+
 	void setFocus(bool focus = true);
 	bool getFocus() const;
 
@@ -112,7 +114,7 @@ public:
 	PlayerInfo getPlayerInfo() const;
 	PlayerInfo& getPlayerInfo();
 
-	void knockBack(Vector2f recoil) noexcept;
+	void knockBack(Vector2f recoil, float time) noexcept;
 
 	Vector2f getFacingDir() const noexcept;
 	void setFacingDir(float angle) noexcept;
@@ -128,6 +130,9 @@ public: //TODO: Make private
 	void jumpKeyPressed();
 
 	u32 _nJumpsLeft{ 2 };
+
+	std::optional<Vector2f> _knockBack{};
+	float _knockBackTime{ 0.f };
 
 	float _life;
 	Vector2f _dir;

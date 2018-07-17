@@ -17,7 +17,7 @@
 #include "Gameplay/Patterns.hpp"
 #include "System/Window.hpp"
 
-
+double C::DT{ 0.0 };
 std::default_random_engine C::RD(SEED);
 std::uniform_real_distribution<float> C::unitaryRng(0.f, 1.f - FLT_EPSILON);
 std::shared_ptr<Game> C::game;
@@ -33,7 +33,7 @@ void loadJsonsFromJson(const nlohmann::json& json);
 bool update(sf::RenderWindow& window, double dt) {
 	InputsManager::update(window);
 	//if (dt - FIXED_DT == dt) return false;
-
+	C::DT = dt;
 	C::game->update(dt);
 	return false;
 }

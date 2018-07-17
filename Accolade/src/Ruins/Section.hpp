@@ -43,7 +43,12 @@ public:
 
 	Vector2f getPlayerPos() const noexcept;
 
+	std::shared_ptr<Player> getPlayer() const noexcept;
+
 private:
+	// remove all object wich has the remove flag set
+	void removeDeadObject() noexcept;
+
 	void playerOnEnter(Object*) noexcept;
 	void playerOnExit(Object*) noexcept;
 

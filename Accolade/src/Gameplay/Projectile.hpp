@@ -12,7 +12,9 @@
 #include "./../Physics/Collider.hpp"
 #include "./../Physics/Object.hpp"
 
-class Projectile : public Object {
+#include "Components/Removable.hpp"
+
+class Projectile : public Object, public Removable {
 public:
 	Projectile();
 	Projectile(nlohmann::json json, Vector2f pos, Vector2f dir, bool player);
@@ -24,9 +26,6 @@ public:
 
 	Vector2f getDir() const;
 	void setDir(const Vector2f& d);
-
-	bool toRemove() const;
-	void remove();
 
 	void explode(bool v = true);
 	bool toExplode() const;
@@ -56,12 +55,10 @@ private:
 	Disk* _disk;
 
 	bool _player;
-	bool _remove = false;
 	bool _exploded = false;
 	bool _damageable = true;
 	bool _destroyOthers = false;
 
 	sf::Sprite _sprite;
-
 };
 

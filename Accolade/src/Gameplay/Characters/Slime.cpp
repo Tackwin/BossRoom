@@ -3,6 +3,9 @@
 
 #include "Managers/AssetsManager.hpp"
 
+#include "Gameplay/Projectile.hpp"
+#include "Gameplay/Player/Player.hpp"
+
 SlimeInfo SlimeInfo::loadFromJson(nlohmann::json json) noexcept {
 	SlimeInfo info;
 
@@ -10,10 +13,13 @@ SlimeInfo SlimeInfo::loadFromJson(nlohmann::json json) noexcept {
 		info.sprite = it->get<std::string>();
 	}
 	if (auto it = json.find("speed"); it != json.end()) {
-		info.speed = it->get<float>();
+		info.speed = *it;
 	}
 	if (auto it = json.find("startPos"); it != json.end()) {
 		info.startPos = Vector2f::load(*it);
+	}
+	if (auto it = json.find("health"); it != json.end()) {
+		info.health = *it;
 	}
 	return info;
 }
@@ -32,6 +38,8 @@ Slime::Slime(SlimeInfo info) noexcept : _info(info) {
 	collider = std::unique_ptr<Collider>((Collider*)box.release());
 	idMask.set(Object::SLIME);
 	collisionMask.set(Object::STRUCTURE);
+	collisionMask.set(Object::PROJECTILE);
+	collisionMask.set(Object::PLAYER);
 
 	collider->onEnter	= std::bind(&Slime::onEnter, this, std::placeholders::_1);
 	collider->onExit	= std::bind(&Slime::onExit , this, std::placeholders::_1);
@@ -60,9 +68,28 @@ void Slime::render(sf::RenderTarget& target) noexcept {
 		_info.size.x / _sprite.getTextureRect().width,
 		_info.size.y / _sprite.getTextureRect().height
 	);
+
+	sf::CircleShape mark(0.05f);
+	mark.setOrigin(mark.getRadius(), mark.getRadius());
+	mark.setPosition(pos);
 	target.draw(_sprite);
+	target.draw(mark);
 }
 
-void Slime::onEnter(Object*) noexcept {}
+void Slime::onEnter(Object* object) noexcept {
+	if (auto proj = (Projectile*)object;  object->idMask[Object::PROJECTILE]) {
+		_info.health -= proj->getDamage();
+		if (_info.health < 0) {
+			remove();
+		}
+		proj->remove();
+	}
+	else if (auto player = (Player*)object; object->idMask[Object::PLAYER]) {
+		player->knockBack(
+			2 * ((player->getPos() - pos).normalize() * 5 + Vector2f{0.f, -10.f}),
+			0.5f
+		);
+	}
+}
 
 void Slime::onExit(Object*) noexcept {}

@@ -43,6 +43,8 @@ namespace C {
 
 	constexpr u32 N_LEVEL = 5u;
 
+	extern double DT;
+
 	extern std::default_random_engine RD;
 	extern std::uniform_real_distribution<float> unitaryRng;
 	constexpr u32 SEED = 0;

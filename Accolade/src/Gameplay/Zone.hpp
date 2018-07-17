@@ -7,9 +7,10 @@
 #include <SFML/Graphics.hpp>
 
 #include "./../Physics/Object.hpp"
+#include "Components/Removable.hpp"
 
 class Projectile;
-class Zone : public Object {
+class Zone : public Object, public Removable {
 public:
 	static std::shared_ptr<Zone> buildExplosion(
 		const std::shared_ptr<Projectile>& p
@@ -22,7 +23,6 @@ public:
 	Callback inside = [](Object*) {};
 
 	Zone(float r = 0.f);
-	Zone(const Zone& other);
 
 	void render(sf::RenderTarget& target);
 
@@ -34,9 +34,6 @@ public:
 	void setRadius(float r);
 	float getRadius() const;
 
-	void setRemove(bool remove = true);
-	bool toRemove() const;
-
 	Zone& operator=(const Zone& other);
 protected:
 	std::vector<Object*> _objectsColliding;
@@ -44,8 +41,6 @@ protected:
 	Disk* _disk;
 
 	std::unordered_map<std::string, sf::Sprite> _sprites;
-
-	bool _toRemove = false;
 
 	float _radius = 0.f;
 

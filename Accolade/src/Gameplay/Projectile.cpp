@@ -68,7 +68,7 @@ void Projectile::update(double dt) {
 	_update(*this, dt);
 	_lifespan -= (float)dt;
 	if (_lifespan < 0.f) {
-		_remove = true;
+		remove();
 	}
 }
 
@@ -108,12 +108,6 @@ void Projectile::setDir(const Vector2f& d) {
 	velocity = _dir * _speed;
 }
 
-bool Projectile::toRemove() const {
-	return _remove;
-}
-void Projectile::remove() {
-	_remove = true;
-}
 float Projectile::getDamage() const {
 	return _damage;
 }

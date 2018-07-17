@@ -13,7 +13,7 @@
 
 Player::Player() noexcept : Player(C::game->getPlayerInfo()) {}
 
-Player::Player(PlayerInfo info) noexcept : 
+Player::Player(PlayerInfo info) noexcept :
 	Object(), _info(info), _hitSound(AssetsManager::getSound("hit"))
 {
 	_life = _info.maxLife;
@@ -60,28 +60,42 @@ void Player::update(double dt) {
 	_weapon.update(dt);
 
 	if (!_freeze) {
-		if (_jumping && 
-			!InputsManager::isKeyPressed(kb.getKey(KeyBindings::JUMP))
-		) {
-			_jumping = false;
-		}
-
-		if (InputsManager::isKeyPressed(kb.getKey(KeyBindings::JUMP)) && _jumping) {
-			flatVelocities.push_back({ 0, -_info.jumpHeight });
-		}
-
-		_dir.normalize();
-		
-		if (InputsManager::isKeyPressed(kb.getKey(KeyBindings::SPECIAL_SPEED))) {
-			_dir.x *= _info.specialSpeed;
+		if (_knockBack) {
+			if (_knockBackTime > 0.0) {
+				printf("time: %f\n", _knockBackTime);
+				auto& knock = _knockBack.value();
+				knock *= std::pow(0.2, dt);
+				flatVelocities.push_back(knock);
+				_knockBackTime -= (float)dt;
+			}
+			else {
+				_knockBack = {};
+			}
 		}
 		else {
-			_dir.x *= _info.speed;
-		}
-		_dir.y = 0;
+			if (_jumping && 
+				!InputsManager::isKeyPressed(kb.getKey(KeyBindings::JUMP))
+			) {
+				_jumping = false;
+			}
 
+			if (InputsManager::isKeyPressed(kb.getKey(KeyBindings::JUMP)) && _jumping) {
+				flatVelocities.push_back({ 0, -_info.jumpHeight });
+			}
+
+			_dir.normalize();
+		
+			if (InputsManager::isKeyPressed(kb.getKey(KeyBindings::SPECIAL_SPEED))) {
+				_dir.x *= _info.specialSpeed;
+			}
+			else {
+				_dir.x *= _info.speed;
+			}
+			_dir.y = 0;
+
+			flatVelocities.push_back(_dir);
+		}
 		flatForces.push_back({ 0, G });
-		flatVelocities.push_back(_dir);
 	}
 
 	velocity *= (float)std::pow(0.2, dt);
@@ -99,10 +113,7 @@ void Player::render(sf::RenderTarget &target) {
 
 	sf::CircleShape mark{ 0.05f };
 	mark.setOrigin(mark.getRadius(), mark.getRadius());
-	mark.setPosition(support(
-		(float)pos.angleTo(IM::getMousePosInView(target.getView())),
-		0
-	));
+	mark.setPosition(support(_facingDir, 0));
 
 	target.draw(mark);
 
@@ -183,8 +194,8 @@ bool Player::isInvicible() const {
 
 void Player::collision(Object* obj) {
 	if (auto ptr = static_cast<Projectile*>(obj); 
-			ptr->idMask.test((size_t)Object::BIT_TAGS::PROJECTILE) &&
-			!ptr->isFromPlayer()
+		ptr->idMask.test((size_t)Object::BIT_TAGS::PROJECTILE) &&
+		!ptr->isFromPlayer()
 	) {
 		if (!_invincible) {
 			hit(ptr->getDamage());
@@ -198,6 +209,12 @@ void Player::floored() {
 	_jumping = false;
 	_floored = true;
 }
+
+void Player::clearKnockBack() noexcept {
+	_knockBack = {};
+	_knockBackTime = 0.f;
+}
+
 bool Player::isFloored() const {
 	return _floored;
 }
@@ -294,8 +311,9 @@ void Player::unmount() {
 	_info.weapon.reset();
 }
 
-void Player::knockBack(Vector2f recoil) noexcept {
-	flatForces.push_back(recoil);
+void Player::knockBack(Vector2f recoil, float time) noexcept {
+	_knockBack = recoil;
+	_knockBackTime = time;
 }
 
 Vector2f Player::getFacingDir() const noexcept {

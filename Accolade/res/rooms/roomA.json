@@ -32,8 +32,32 @@
     }
   },
   "slimes": {
-    "first": {
+    "slime0": {
       "startPos": [ 5, 3 ]
+    },
+    "slime1": {
+      "startPos": [ 6, 3 ]
+    },
+    "slime2": {
+      "startPos": [ 7, 3 ]
+    },
+    "slime3": {
+      "startPos": [ 8, 3 ]
+    },
+    "slime4": {
+      "startPos": [ 9, 3 ]
+    },
+    "slime5": {
+      "startPos": [ 6, -30 ]
+    },
+    "slime6": {
+      "startPos": [ 7, -30 ]
+    },
+    "slime7": {
+      "startPos": [ 8, -30 ]
+    },
+    "slime8": {
+      "startPos": [ 9, -30 ]
     }
   },
   "maxRect": [ 0, 0, 27.5, 10 ],

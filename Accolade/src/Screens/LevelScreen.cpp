@@ -6,6 +6,7 @@
 
 #include "./../Common.hpp"
 
+#include "./../Managers/InputsManager.hpp"
 #include "./../Managers/AssetsManager.hpp"
 #include "./../Managers/TimerManager.hpp"
 
@@ -15,6 +16,8 @@
 #include "./../Gameplay/Wearable/Wearable.hpp"
 #include "./../Gameplay/Player/Player.hpp"
 #include "./../Gameplay/Level.hpp"
+
+#include "EditSectionScreen.hpp"
 
 LevelScreen::LevelScreen(u32 n) :
 	_n(n),
@@ -45,19 +48,18 @@ LevelScreen::~LevelScreen() {
 }
 
 void LevelScreen::onEnter() {
-	_player = std::make_shared<Player>();
-	if (_player->isEquiped()) {
-		_player->swapWeapon(_player->getPlayerInfo().weapon.value());
-	}
+	_section->enter();
 	//_level->start(this);
 
-	for (int i = 0; i < _player->getPlayerInfo().maxLife; i++) {
+	auto player = _section->getPlayer();
+
+	for (int i = 0; i < player->getPlayerInfo().maxLife; i++) {
 		_playerLife.push_back(sf::RectangleShape());
 		_playerLife[i].setOutlineColor(sf::Color(10, 10, 30));
 		_playerLife[i].setSize({ 40, 40 });
 		_playerLife[i].setOutlineThickness(2);
 		_playerLife[i].setFillColor(
-			i < _player->getLife()
+			i < player->getLife()
 				? sf::Color(180, 50, 50)
 				: sf::Color(90, 20, 20)
 		);
@@ -67,7 +69,6 @@ void LevelScreen::onEnter() {
 		);
 	}
 
-	_section->enter();
 }
 
 void LevelScreen::onExit() {
@@ -79,14 +80,24 @@ void LevelScreen::onExit() {
 }
 
 void LevelScreen::update(double dt) {
+	if (IM::isKeyPressed(sf::Keyboard::LControl) &&
+		IM::isKeyJustPressed(sf::Keyboard::E)
+		) {
+		C::game->enterScreen(std::make_shared<EditSectionScreen>(
+			
+			std::dynamic_pointer_cast<LevelScreen>(shared_from_this())));
+	}
+
 	if (_gameViewPos != _gameView.getCenter())
 		_gameView.setCenter(_gameViewPos);
 	if (_gameViewSize != _gameView.getSize())
 		_gameView.setSize(_gameViewSize);
 
-	for (int i = 0; i < _player->getPlayerInfo().maxLife; i++) {
+	auto player = _section->getPlayer();
+
+	for (int i = 0; i < player->getPlayerInfo().maxLife; i++) {
 		_playerLife[i].setFillColor(
-			i < _player->getLife()
+			i < player->getLife()
 				? sf::Color(180, 50, 50) 
 				: sf::Color(90, 20, 20)
 		);
@@ -166,8 +177,10 @@ void LevelScreen::renderGui(sf::RenderTarget& target) {
 	}
 	_bossHealthTileSprite.setPosition(pos);
 	
-	if (_player->isEquiped()) {
-		sf::Sprite weaponGuiSprite(AM::getTexture(_player->_weapon.getInfo().uiTexture));
+	auto player = _section->getPlayer();
+
+	if (player->isEquiped()) {
+		sf::Sprite weaponGuiSprite(AM::getTexture(player->_weapon.getInfo().uiTexture));
 		weaponGuiSprite.setPosition({ WIDTH - 50.f, HEIGHT - 50.f });
 		target.draw(weaponGuiSprite);
 	}
@@ -207,8 +220,4 @@ void LevelScreen::shakeScreen(float power) {
 
 u32 LevelScreen::getIndex() const {
 	return _n;
-}
-
-std::shared_ptr<Player> LevelScreen::getPlayer() const noexcept {
-	return _player;
 }

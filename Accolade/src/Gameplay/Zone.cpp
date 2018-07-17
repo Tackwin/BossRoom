@@ -28,7 +28,7 @@ std::shared_ptr<Zone> Zone::buildExplosion(
 	TimerManager::addFunction(
 		getJsonValue<float>(json, "time"),
 		[z](double) -> bool {
-			z->setRemove();
+			z->remove();
 			return false;
 		}
 	);
@@ -89,13 +89,6 @@ void Zone::setRadius(float r) {
 
 float Zone::getRadius() const {
 	return reinterpret_cast<Disk*>(collider.get())->r;
-}
-
-void Zone::setRemove(bool remove) {
-	_toRemove = remove;
-}
-bool Zone::toRemove() const {
-	return _toRemove;
 }
 
 void Zone::addSprite(const std::string& key, const sf::Sprite& sprite) {

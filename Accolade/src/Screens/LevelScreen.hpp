@@ -27,12 +27,8 @@ public:
 	void shakeScreen(float power = 1.0f);
 
 	u32 getIndex() const;
-
-	std::shared_ptr<Player> getPlayer() const noexcept;
 private: 
 	u32 _n;
-
-	std::shared_ptr<Player> _player;
 
 	Vector2f _gameViewPos;
 	Vector2f _gameViewSize;
