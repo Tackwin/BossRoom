@@ -17,9 +17,36 @@ Vector2f InputsManager::mouseWorldPos;
 Vector2f InputsManager::mouseScreenPos;
 Vector2f InputsManager::relativeMouseScreenPos;
 
+std::vector<sf::Keyboard::Key> InputsManager::currentSequence;
+
+sf::Keyboard::Key InputsManager::lastKey;
+
 InputsManager::InputsManager() {
 }
 InputsManager::~InputsManager() {
+}
+
+bool InputsManager::isLastSequence(std::initializer_list<sf::Keyboard::Key> keys) noexcept {
+	unsigned i{ 0u };
+	for (auto k : keys) {
+		if (i >= currentSequence.size()) return false;
+		if (k != currentSequence[i++])
+			return false;
+	}
+	return keys.size() == currentSequence.size();
+}
+bool InputsManager::isLastSequenceJustFinished(
+	std::initializer_list<sf::Keyboard::Key> keys
+) noexcept {
+	unsigned i = { 0u };
+	sf::Keyboard::Key last;
+	for (auto k : keys) {
+		last = k;
+		if (i >= currentSequence.size()) return false;
+		if (k != currentSequence[i++])
+			return false;
+	}
+	return isKeyJustPressed(last) && keys.size() == currentSequence.size();
 }
 
 bool InputsManager::isKeyPressed(const sf::Keyboard::Key &key) {
@@ -90,6 +117,21 @@ void InputsManager::update(sf::RenderWindow &window) {
 			keyPressed[event.key.code] = true;
 
 			EventManager::fire("keyPressed", { event.key.code });
+			lastKey = event.key.code;
+
+			if (
+				InputsManager::isKeyJustPressed(sf::Keyboard::LControl) ||
+				InputsManager::isKeyJustPressed(sf::Keyboard::RControl)
+			) {
+				currentSequence.clear();
+				currentSequence.push_back(lastKey);
+			}
+			else if (currentSequence.size() > 2) {
+				currentSequence.clear();
+			}
+			else if (!currentSequence.empty()) {
+				currentSequence.push_back(lastKey);
+			}
 		}
 		if(event.type == sf::Event::KeyReleased) {
 			if (event.key.code == sf::Keyboard::Unknown)
@@ -98,6 +140,12 @@ void InputsManager::update(sf::RenderWindow &window) {
 			keyJustReleased[event.key.code] = true;
 			keyPressed[event.key.code] = false;
 			
+			if (event.key.code == sf::Keyboard::LControl ||
+				event.key.code == sf::Keyboard::RControl
+			) {
+				currentSequence.clear();
+			}
+
 			EventManager::fire("keyReleased", { event.key.code });
 		}
 		if(event.type == sf::Event::MouseButtonPressed) {

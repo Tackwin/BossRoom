@@ -5,9 +5,42 @@
 
 #include "./../../Managers/InputsManager.hpp"
 
+#include "Label.hpp"
+
 const Widget::Callback::type Widget::Callback::ZERO = []() { return false; };
 
 Widget::Widget() {
+}
+
+Widget::Widget(nlohmann::json json) noexcept {
+	if (auto it = json.find("pos"); it != json.end()) {
+		setPosition(Vector2f::load(*it));
+	} if (auto it = json.find("origin"); it != json.end()) {
+		setOrigin(Vector2f::load(*it));
+	} if (auto it = json.find("originAbs"); it != json.end()) {
+		setOriginAbs(Vector2f::load(*it));
+	} if (auto it = json.find("size"); it != json.end()) {
+		setSize(Vector2f::load(*it));
+	} if (auto it = json.find("visible"); it != json.end()) {
+		setVisible(it->get<bool>());
+	} if (auto it = json.find("name"); it != json.end()) {
+		setName(*it);
+	}
+
+	if (auto it = json.find("childs"); it != json.end()) {
+		for (auto child : *it) {
+			if (auto typeIt = child.find("type"); typeIt != child.end()) {
+				std::string type = typeIt->get<std::string>();
+
+				if (type == "Label") {
+					addChild(new Label(child));
+				}
+			}
+			else {
+				addChild(new Widget(child));
+			}
+		}
+	}
 }
 
 Widget::Widget(Widget* const parent) :
@@ -130,9 +163,71 @@ void Widget::setVisible(bool visible) {
 	_visible = visible;
 }
 
-
-const std::vector<std::pair<i32, Widget*>> Widget::getChilds() {
+const std::vector<std::pair<i32, Widget*>>& Widget::getChilds() const noexcept {
 	return _childs;
+}
+
+Widget* Widget::findChild(UUID id) const noexcept {
+
+	std::queue<Widget*> open;
+	for (auto[_, child] : getChilds()) {
+		_;
+		if (child->getUuid() == id) return child;
+		open.push(child);
+	}
+
+	while (!open.empty()) {
+		auto w = open.front();
+		const auto& c = w->getChilds();
+		open.pop();
+
+		auto it = std::find_if(std::begin(c), std::end(c),
+			[id](const std::pair<i32, Widget*>& a) -> bool {
+			return a.second->getUuid() == id;
+		}
+		);
+		if (it != std::end(c)) {
+			return w;
+		}
+
+		for (auto child : c) {
+			open.push(child.second);
+		}
+	}
+
+	return nullptr;
+}
+
+Widget* Widget::findChild(std::string name) const noexcept {
+
+	std::queue<Widget*> open;
+	for (auto[_, child] : getChilds()) {
+		_;
+		if (child->getName() == name) return child;
+		open.push(child);
+	}
+
+
+	while (!open.empty()) {
+		auto w = open.front();
+		const auto& c = w->getChilds();
+		open.pop();
+
+		auto it = std::find_if(std::begin(c), std::end(c),
+			[name](const std::pair<i32, Widget*>& a) -> bool {
+			return a.second->getName() == name;
+		}
+		);
+		if (it != std::end(c)) {
+			return w;
+		}
+
+		for (auto child : c) {
+			open.push(child.second);
+		}
+	}
+	
+	return nullptr;
 }
 
 void Widget::render(sf::RenderTarget&) {}
@@ -218,4 +313,15 @@ void Widget::setOnClick(const Callback& onClick) {
 }
 void Widget::setOnKey(const Callback& onKey) {
 	_onKey = onKey;
+}
+
+UUID Widget::getUuid() const noexcept {
+	return _uuid;
+}
+
+std::string Widget::getName() const noexcept {
+	return _name;
+}
+void Widget::setName(std::string name) noexcept {
+	_name = name;
 }

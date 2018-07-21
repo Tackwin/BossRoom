@@ -68,7 +68,6 @@ void LevelScreen::onEnter() {
 			(C::HEIGHT - 10) - _playerLife[i].getSize().y
 		);
 	}
-
 }
 
 void LevelScreen::onExit() {
@@ -80,12 +79,8 @@ void LevelScreen::onExit() {
 }
 
 void LevelScreen::update(double dt) {
-	if (IM::isKeyPressed(sf::Keyboard::LControl) &&
-		IM::isKeyJustPressed(sf::Keyboard::E)
-		) {
-		C::game->enterScreen(std::make_shared<EditSectionScreen>(
-			
-			std::dynamic_pointer_cast<LevelScreen>(shared_from_this())));
+	if (IM::isLastSequenceJustFinished({sf::Keyboard::LControl, sf::Keyboard::E})) {
+		C::game->enterScreen(std::make_shared<EditSectionScreen>(_section->getInfo()));
 	}
 
 	if (_gameViewPos != _gameView.getCenter())
@@ -95,7 +90,7 @@ void LevelScreen::update(double dt) {
 
 	auto player = _section->getPlayer();
 
-	for (int i = 0; i < player->getPlayerInfo().maxLife; i++) {
+	/*for (int i = 0; i < player->getPlayerInfo().maxLife; i++) {
 		_playerLife[i].setFillColor(
 			i < player->getLife()
 				? sf::Color(180, 50, 50) 
@@ -106,7 +101,7 @@ void LevelScreen::update(double dt) {
 			(C::HEIGHT - 10) - _playerLife[i].getSize().y
 		);
 	}
-
+	*/
 	_section->update(dt);
 	/*if (_level) {
 		_level->update(dt);

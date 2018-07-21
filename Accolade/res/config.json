@@ -144,7 +144,8 @@
   "jsons": {
     "default_key": "keys/default.json",
     "roomA": "rooms/roomA.json",
-    "startZone": "rooms/start.json"
+    "startZone": "rooms/start.json",
+    "editScreen": "screens/edit.json"
   },
   "bosses": [
     {

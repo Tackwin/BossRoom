@@ -5,6 +5,7 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "Utils/UUID.hpp"
 #include "./../../Common.hpp"
 
 #include "./../../Math/Vector.hpp"
@@ -12,6 +13,8 @@
 
 class Widget {
 public:
+	using ID_t = UUID;
+
 	struct Callback {
 		using type = std::function<bool(void)>;
 
@@ -23,6 +26,7 @@ public:
 	};
 
 	Widget();
+	Widget(nlohmann::json json) noexcept;
 	Widget(const Widget& copy) = delete;
 	Widget& operator=(const Widget&) = delete;
 	Widget(Widget&&) = default;
@@ -53,7 +57,9 @@ public:
 	bool haveChild(const Widget* const child);
 	void setParent(Widget* const parent, i32 z = 0);
 	Widget* const getParent();
-	const std::vector<std::pair<i32, Widget*>> getChilds();
+	const std::vector<std::pair<i32, Widget*>>& getChilds() const noexcept;
+	Widget* findChild(UUID id) const noexcept;
+	Widget* findChild(std::string name) const noexcept;
 
 	virtual void render(sf::RenderTarget& target);
 	void propagateRender(sf::RenderTarget& target);
@@ -62,14 +68,23 @@ public:
 	void propagateInput();
 	std::bitset<9u> postOrderInput(const std::bitset<9u>& mask);
 
+	UUID getUuid() const noexcept;
+
+	std::string getName() const noexcept;
+	void setName(std::string name) noexcept;
+
 protected: //god this is growing into a god class... :(
 
 	Vector2f _pos;
 	Vector2f _size;
 	Vector2f _origin;
 
+	ID_t _uuid;
+
 	bool _visible = true;
 	bool _passThrough = false;
+
+	std::string _name{ "" };
 
 	Widget* _parent = nullptr;	//like, why do i even bother raw pointer mean, 
 								//I DON'T HAVE THE OWNERSHIP, it settles it

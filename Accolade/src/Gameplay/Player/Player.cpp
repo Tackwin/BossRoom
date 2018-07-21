@@ -62,7 +62,6 @@ void Player::update(double dt) {
 	if (!_freeze) {
 		if (_knockBack) {
 			if (_knockBackTime > 0.0) {
-				printf("time: %f\n", _knockBackTime);
 				auto& knock = _knockBack.value();
 				knock *= std::pow(0.2, dt);
 				flatVelocities.push_back(knock);

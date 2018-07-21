@@ -6,6 +6,21 @@ Label::Label() :
 	Widget() {
 	computeSize();
 }
+Label::Label(nlohmann::json json) noexcept : Widget(json) {
+	if (auto it = json.find("font"); it != json.end()) {
+		setFont(*it);
+	}
+	if (auto it = json.find("charSize"); it != json.end()) {
+		setCharSize(*it);
+	}
+	if (auto it = json.find("text"); it != json.end()) {
+		setString(*it);
+	}
+	if (auto it = json.find("textColor"); it != json.end()) {
+		setTextColor(Vector4f::load(*it));
+	}
+	computeSize();
+}
 
 void Label::setFont(const std::string& fontKey) {
 	_text.setFont(AssetsManager::getFont(fontKey));

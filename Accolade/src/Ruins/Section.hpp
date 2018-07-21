@@ -12,7 +12,6 @@
 #include "./../Gameplay/Magic/Source.hpp"
 #include "Gameplay/Characters/Slime.hpp"
 
-
 struct SectionInfo {
 	std::vector<SlimeInfo> slimes;
 	std::vector<PlateformeInfo> plateformes;
@@ -44,6 +43,8 @@ public:
 	Vector2f getPlayerPos() const noexcept;
 
 	std::shared_ptr<Player> getPlayer() const noexcept;
+
+	SectionInfo getInfo() const noexcept;
 
 private:
 	// remove all object wich has the remove flag set

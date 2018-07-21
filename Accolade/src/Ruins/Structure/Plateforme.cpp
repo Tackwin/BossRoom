@@ -1,7 +1,9 @@
 #include "Plateforme.hpp"
 #include "./../../Managers/AssetsManager.hpp"
 
-Plateforme::Plateforme(PlateformeInfo info) noexcept {
+Plateforme::Plateforme(PlateformeInfo info) noexcept : 
+	_info(info)
+{
 	auto boxPtr = std::make_unique<Box>();
 	boxPtr->setSize(info.rectangle.size);
 
@@ -17,7 +19,11 @@ void Plateforme::update(double) noexcept {
 }
 void Plateforme::render(sf::RenderTarget&) noexcept {
 }
-void Plateforme::renderDebug(sf::RenderTarget&) noexcept {
+void Plateforme::renderDebug(sf::RenderTarget& target) noexcept {
+	/*sf::RectangleShape rectangle{ _info.rectangle.size };
+	rectangle.setPosition(_info.rectangle.pos);
+	rectangle.setFillColor({ 255, 30, 30, 255 });
+	target.draw(rectangle);*/
 }
 
 

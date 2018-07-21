@@ -249,3 +249,7 @@ void Section::pullPlayerObjects() {
 	}
 	_player->clearZonesToApply();
 }
+
+SectionInfo Section::getInfo() const noexcept {
+	return _info;
+}

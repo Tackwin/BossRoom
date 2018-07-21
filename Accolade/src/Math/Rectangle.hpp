@@ -90,6 +90,18 @@ struct Rectangle {
 	bool in(const Vector<2, U>& p) const {
 		return p.inRect(pos, size);
 	}
+
+#ifdef SFML_GRAPHICS_HPP
+#include <SFML/Graphics.hpp>
+
+	void render(sf::RenderTarget& target, Vector4f color) const noexcept {
+		sf::RectangleShape shape{ size };
+		shape.setPosition(pos);
+		shape.setFillColor(color);
+		target.draw(shape);
+	}
+
+#endif
 };
 
 template<typename T>

@@ -10,6 +10,7 @@ class Label : public Widget {
 public:
 
 	Label();
+	Label(nlohmann::json json) noexcept;
 
 	void setFont(const std::string& fontKey);
 	void setString(const std::string& message);

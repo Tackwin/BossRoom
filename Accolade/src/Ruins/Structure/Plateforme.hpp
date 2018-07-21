@@ -17,4 +17,7 @@ public:
 	void update(double dt) noexcept override;
 	void render(sf::RenderTarget& target) noexcept override;
 	void renderDebug(sf::RenderTarget& target) noexcept override;
+
+private:
+	PlateformeInfo _info;
 };

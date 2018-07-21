@@ -41,6 +41,5 @@ private:
 	sf::Sprite _bossHealthTileSprite;
 	std::unique_ptr<Section> _section;
 	std::vector<sf::RectangleShape> _playerLife;
-
 };
 

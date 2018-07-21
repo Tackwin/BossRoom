@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <vector>
 
 #include "./../Math/Vector.hpp"
 
@@ -23,8 +24,17 @@ private:
 
 	static Vector2u windowsSize;
 
+	static std::vector<sf::Keyboard::Key> currentSequence;
+
+	static sf::Keyboard::Key lastKey;
+
 public:
 	static void update(sf::RenderWindow &window);
+
+	static bool isLastSequence(std::initializer_list<sf::Keyboard::Key> keys) noexcept;
+	static bool isLastSequenceJustFinished(
+		std::initializer_list<sf::Keyboard::Key> keys
+	) noexcept;
 
 	static bool isKeyPressed(const int &key) {
 		return isKeyPressed(static_cast<sf::Keyboard::Key>(key));
