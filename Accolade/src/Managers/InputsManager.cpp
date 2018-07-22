@@ -4,6 +4,12 @@
 
 #include "./../Common.hpp"
 
+sf::Uint32 InputsManager::textEntered;
+
+bool InputsManager::wasKeyJustPressed = false;
+bool InputsManager::wasKeyJustReleased = false;
+int InputsManager::nKeyPressed = 0;
+
 bool InputsManager::keyPressed[sf::Keyboard::KeyCount];
 bool InputsManager::keyJustPressed[sf::Keyboard::KeyCount];
 bool InputsManager::keyJustReleased[sf::Keyboard::KeyCount];
@@ -24,6 +30,10 @@ sf::Keyboard::Key InputsManager::lastKey;
 InputsManager::InputsManager() {
 }
 InputsManager::~InputsManager() {
+}
+
+sf::Uint32 InputsManager::getTextEntered() noexcept {
+	return textEntered;
 }
 
 bool InputsManager::isLastSequence(std::initializer_list<sf::Keyboard::Key> keys) noexcept {
@@ -49,6 +59,20 @@ bool InputsManager::isLastSequenceJustFinished(
 	return isKeyJustPressed(last) && keys.size() == currentSequence.size();
 }
 
+bool InputsManager::isKeyJustPressed() noexcept {
+	return wasKeyJustPressed;
+}
+bool InputsManager::isKeyJustReleased() noexcept {
+	return wasKeyJustReleased;
+}
+
+int InputsManager::countKeyPressed() noexcept {
+	return nKeyPressed;
+}
+
+bool InputsManager::isKeyPressed() noexcept {
+	return nKeyPressed != 0;
+}
 bool InputsManager::isKeyPressed(const sf::Keyboard::Key &key) {
 	return keyPressed[key];
 }
@@ -92,24 +116,22 @@ Vector2f InputsManager::getMouseScreenPos() {
 }
 
 void InputsManager::update(sf::RenderWindow &window) {
-	for(auto &b : keyJustPressed) {
-		b = false;
-	}
-	for(auto &b : keyJustReleased) {
-		b = false;
-	}
-	for(auto &b : mouseJustPressed) {
-		b = false;
-	}
-	for(auto &b : mouseJustReleased) {
-		b = false;
-	}
-
+	wasKeyJustPressed = false;
+	wasKeyJustReleased = false;
+	nKeyPressed = std::max(nKeyPressed, 0);
+	
+	memset(keyJustPressed   , 0, sizeof(keyJustPressed));
+	memset(keyJustReleased  , 0, sizeof(keyJustReleased));
+	memset(mouseJustPressed , 0, sizeof(mouseJustPressed));
+	memset(mouseJustReleased, 0, sizeof(mouseJustReleased));
+	
 	sf::Event event;
 	while(window.pollEvent(event)) {
 		if(event.type == sf::Event::Closed)
 			window.close();
 		if(event.type == sf::Event::KeyPressed) {
+			nKeyPressed++;
+			wasKeyJustPressed = true;
 			if (event.key.code == sf::Keyboard::Unknown)
 				continue;
 
@@ -134,6 +156,8 @@ void InputsManager::update(sf::RenderWindow &window) {
 			}
 		}
 		if(event.type == sf::Event::KeyReleased) {
+			nKeyPressed--;
+			wasKeyJustReleased = false;
 			if (event.key.code == sf::Keyboard::Unknown)
 				continue;
 
@@ -159,6 +183,9 @@ void InputsManager::update(sf::RenderWindow &window) {
 			mousePressed[event.mouseButton.button] = false;
 			
 			EventManager::fire("mouseReleased", { event.mouseButton.button });
+		}
+		if (event.type == sf::Event::TextEntered) {
+			textEntered = event.text.unicode;
 		}
 	}
 	for (i32 i = 0u; i < sf::Keyboard::KeyCount; ++i) {

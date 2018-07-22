@@ -1,30 +1,48 @@
 {
 	"root": {
 		"childs": {
-      "titleLabel": {
-        "name": "titleLabel",
-        "type": "Label",
-        "font": "consola",
-        "pos": [ 0, 0 ],
-        "charSize": 14,
-        "text": "Welcome in the editor :D !"
-      },
-      "drawPlateforme": {
-        "name": "drawPlateforme",
-        "type": "Label",
-        "font": "consola",
-        "pos": [ 0, 15 ],
-        "charSize": 14,
-        "text": "Draw structure: Ctrl + Q P"
-      },
-      "placeSlime": {
-        "name": "placeSlime",
-        "type": "Label",
-        "font": "consola",
-        "pos": [ 0, 30 ],
-        "charSize": 14,
-        "text": "Place slime: Ctrl + Q S"
-      }
+			"titleLabel": {
+				"name": "titleLabel",
+				"type": "Label",
+				"font": "consola",
+				"pos": [ 0, 0 ],
+				"charSize": 14,
+				"text": "Welcome in the editor :D !"
+			},
+			"drawPlateforme": {
+				"name": "drawPlateforme",
+				"type": "Label",
+				"font": "consola",
+				"pos": [ 0, 15 ],
+				"charSize": 14,
+				"text": "Draw structure: Ctrl + Q P"
+			},
+			"placeSlime": {
+				"name": "placeSlime",
+				"type": "Label",
+				"font": "consola",
+				"pos": [ 0, 30 ],
+				"charSize": 14,
+				"text": "Place slime: Ctrl + Q S"
+			},
+			"valueLabel": {
+				"name": "valueLabel",
+				"type": "Label",
+				"font": "consola",
+				"charSize": 14,
+				"pos": [0, 45],
+				"text": "test value: ",
+				"childs": [{
+					"name": "ValuePicker",
+					"type": "ValuePicker",
+					"font": "consola",
+					"charSize": 14,
+					"pos": [ 45, 3 ],
+					"size": [ 100, 14 ],
+					"unfocusedColor": [ 0.3, 0.3, 0.3, 0.8],
+					"focusedColor": [0.5, 0.5, 0.5, 0.95]
+				}]
+			}
 		}
 	}
 }

@@ -18,7 +18,8 @@ struct SourceInfo {
 
 	std::string sprite;
 
-	static SourceInfo load(nlohmann::json json) noexcept;
+	static SourceInfo loadJson(nlohmann::json json) noexcept;
+	static nlohmann::json saveJson(SourceInfo info) noexcept;
 };
 
 class Source: public Object, public Removable {

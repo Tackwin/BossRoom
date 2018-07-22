@@ -18,11 +18,12 @@ public:
 	struct Callback {
 		using type = std::function<bool(void)>;
 
-		static const type ZERO;
+		static const type FALSE;
+		static const type TRUE;
 
-		type began = ZERO;
-		type ended = ZERO;
-		type going = ZERO;
+		type began = FALSE;
+		type ended = FALSE;
+		type going = FALSE;
 	};
 
 	Widget();
@@ -84,11 +85,15 @@ protected: //god this is growing into a god class... :(
 	bool _visible = true;
 	bool _passThrough = false;
 
+	bool _focused{ false };
+	bool _hovered{ false };
+
 	std::string _name{ "" };
 
 	Widget* _parent = nullptr;	//like, why do i even bother raw pointer mean, 
 								//I DON'T HAVE THE OWNERSHIP, it settles it
 	std::vector<std::pair<i32, Widget*>> _childs;
+	std::vector<Widget*> _allocatedChilds;
 
 	Callback _onHover;
 	Callback _onClick;

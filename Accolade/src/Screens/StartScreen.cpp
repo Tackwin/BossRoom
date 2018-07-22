@@ -31,7 +31,7 @@ void StartScreen::initializeGui() {
 	
 	_weaponLabel.setFont("consola");
 	_weaponLabel.setCharSize(15u);
-	_weaponLabel.setString("Weapon");
+	_weaponLabel.setStdString("Weapon");
 	_weaponLabel.setOrigin({ 0.f, 1.f });
 	_weaponLabel.setPosition(_weaponIcon.getSize() * (-1.f));
 
@@ -94,7 +94,7 @@ void StartScreen::initializeWorld() {
 	auto json = _json.at("plateformes");
 
 	for (auto&[key, value] : json.get<nlohmann::json::object_t>()) {
-		PlateformeInfo info = PlateformeInfo::loadFromJson(value);
+		PlateformeInfo info = PlateformeInfo::loadJson(value);
 
 		_plateformes[key] = std::make_shared<Plateforme>(info);
 		_world.addObject(_plateformes[key]);

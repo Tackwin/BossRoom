@@ -180,7 +180,7 @@ void Section::playerOnExit(Object*) noexcept {
 
 }
 
-SectionInfo SectionInfo::load(const nlohmann::json& json) noexcept {
+SectionInfo SectionInfo::loadJson(const nlohmann::json& json) noexcept {
 	SectionInfo info;
 
 	if (json.count("maxRect") != 0) {
@@ -193,16 +193,16 @@ SectionInfo SectionInfo::load(const nlohmann::json& json) noexcept {
 	if (json.count("plateformes") != 0) {
 		const auto& plateformes = json.at("plateformes");
 		info.plateformes.reserve(plateformes.size());
-		for (auto&[key, plateforme] : plateformes.get<nlohmann::json::object_t>()) {
-			info.plateformes.push_back(PlateformeInfo::loadFromJson(plateforme));
+		for (auto plateforme : plateformes.get<nlohmann::json::array_t>()) {
+			info.plateformes.push_back(PlateformeInfo::loadJson(plateforme));
 		}
 	}
 
 	if (json.count("sources") != 0) {
 		const auto& sources = json.at("sources");
 		info.sources.reserve(sources.size());
-		for (auto&[key, source] : sources.get<nlohmann::json::object_t>()) {
-			info.sources.push_back(SourceInfo::load(source));
+		for (auto source : sources.get<nlohmann::json::array_t>()) {
+			info.sources.push_back(SourceInfo::loadJson(source));
 		}
 	}
 
@@ -212,16 +212,42 @@ SectionInfo SectionInfo::load(const nlohmann::json& json) noexcept {
 	}
 
 	if (json.count("viewSize") != 0) {
-		info.viewSize = Vector2f::load(json.at("viewSize"));
+		info.viewSize = Vector2f::loadJson(json.at("viewSize"));
 	}
 
 	if (auto slimes = json.find("slimes"); slimes != json.end()) {
-		for (auto&[key, slime] : slimes->get<nlohmann::json::object_t>()) {
-			info.slimes.push_back(SlimeInfo::loadFromJson(slime));
+		for (auto slime : slimes->get<nlohmann::json::array_t>()) {
+			info.slimes.push_back(SlimeInfo::loadJson(slime));
 		}
 	}
 
 	return info;
+}
+
+nlohmann::json SectionInfo::saveJson(SectionInfo info) noexcept {
+	nlohmann::json json;
+	nlohmann::json slimeArray;
+	nlohmann::json sourceArray;
+	nlohmann::json plateformeArray;
+
+	for (auto& slime : info.slimes) {
+		slimeArray.push_back(SlimeInfo::saveJson(slime));
+	}
+	for (auto& source : info.sources) {
+		sourceArray.push_back(SourceInfo::saveJson(source));
+	}
+	for (auto& plateforme : info.plateformes) {
+		plateformeArray.push_back(PlateformeInfo::saveJson(plateforme));
+	}
+
+	json["maxRect"]		= Rectangle2f::saveJson(info.maxRectangle);
+	json["startPos"]	= Vector2f::saveJson(info.startPos);
+	json["viewSize"]	= Vector2f::saveJson(info.viewSize);
+	json["plateformes"] = plateformeArray;
+	json["sources"]		= sourceArray;
+	json["slimes"]		= slimeArray;
+
+	return json;
 }
 
 Vector2f Section::getPlayerPos() const noexcept {

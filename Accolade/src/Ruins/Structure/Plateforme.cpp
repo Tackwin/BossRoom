@@ -19,7 +19,7 @@ void Plateforme::update(double) noexcept {
 }
 void Plateforme::render(sf::RenderTarget&) noexcept {
 }
-void Plateforme::renderDebug(sf::RenderTarget& target) noexcept {
+void Plateforme::renderDebug(sf::RenderTarget&) noexcept {
 	/*sf::RectangleShape rectangle{ _info.rectangle.size };
 	rectangle.setPosition(_info.rectangle.pos);
 	rectangle.setFillColor({ 255, 30, 30, 255 });
@@ -27,13 +27,14 @@ void Plateforme::renderDebug(sf::RenderTarget& target) noexcept {
 }
 
 
-PlateformeInfo PlateformeInfo::loadFromJson(const nlohmann::json& json) noexcept {
+PlateformeInfo PlateformeInfo::loadJson(const nlohmann::json& json) noexcept {
 	PlateformeInfo info;
-
-	info.rectangle.x = json.at("rectangle").get<std::vector<float>>()[0];
-	info.rectangle.y = json.at("rectangle").get<std::vector<float>>()[1];
-	info.rectangle.w = json.at("rectangle").get<std::vector<float>>()[2];
-	info.rectangle.h = json.at("rectangle").get<std::vector<float>>()[3];
-
+	info.rectangle = Rectangle2f::loadJson(json.at("rectangle"));
 	return info;
+}
+
+nlohmann::json PlateformeInfo::saveJson(const PlateformeInfo& info) noexcept {
+	nlohmann::json json;
+	json["rectangle"] = Rectangle2f::saveJson(info.rectangle);
+	return json;
 }

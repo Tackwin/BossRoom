@@ -6,7 +6,8 @@
 struct PlateformeInfo {
 	Rectangle2f rectangle;
 
-	static PlateformeInfo loadFromJson(const nlohmann::json& json) noexcept;
+	static PlateformeInfo loadJson(const nlohmann::json& json) noexcept;
+	static nlohmann::json saveJson(const PlateformeInfo& info) noexcept;
 };
 
 class Plateforme : public Structure {

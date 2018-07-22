@@ -26,11 +26,14 @@ public:
 	void onExit();
 private:
 
+	void saveSection(std::string path) const noexcept;
+
 	void inputSwitchState() noexcept;
 	void updateCameraMovement(double dt) noexcept;
 
 	void updateDrawPlateforme() noexcept;
 	void updatePlaceSlime() noexcept;
+	void updateNothing() noexcept;
 
 	void renderDebug(sf::RenderTarget& target, PlateformeInfo info) noexcept;
 	void renderDebug(sf::RenderTarget& target, SlimeInfo info) noexcept;
@@ -41,9 +44,6 @@ private:
 
 	std::unordered_map<std::string, Widget*> _widgets;
 
-	std::vector<PlateformeInfo> _plateformes;
-	std::vector<SlimeInfo> _slimes;
-
 	sf::View _uiView;
 	sf::View _cameraView;
 
@@ -51,6 +51,8 @@ private:
 
 	std::optional<PlateformeInfo> _newPlateforme;
 	std::optional<SlimeInfo> _newSlime;
+
+
 
 	enum EditorToolState {
 		nothing,

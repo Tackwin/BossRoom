@@ -6,7 +6,7 @@
 #include "Gameplay/Projectile.hpp"
 #include "Gameplay/Player/Player.hpp"
 
-SlimeInfo SlimeInfo::loadFromJson(nlohmann::json json) noexcept {
+SlimeInfo SlimeInfo::loadJson(nlohmann::json json) noexcept {
 	SlimeInfo info;
 
 	if (auto it = json.find("sprite"); it != json.end()) {
@@ -16,12 +16,22 @@ SlimeInfo SlimeInfo::loadFromJson(nlohmann::json json) noexcept {
 		info.speed = *it;
 	}
 	if (auto it = json.find("startPos"); it != json.end()) {
-		info.startPos = Vector2f::load(*it);
+		info.startPos = Vector2f::loadJson(*it);
 	}
 	if (auto it = json.find("health"); it != json.end()) {
 		info.health = *it;
 	}
 	return info;
+}
+
+nlohmann::json SlimeInfo::saveJson(SlimeInfo info) noexcept {
+	nlohmann::json json;
+	json["startPos"] = Vector2f::saveJson(info.startPos);
+	json["health"] = info.health;
+	json["sprite"] = info.sprite;
+	json["speed"] = info.speed;
+
+	return json;
 }
 
 Slime::Slime(SlimeInfo info) noexcept : _info(info) {

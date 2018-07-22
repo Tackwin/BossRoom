@@ -8,12 +8,14 @@
 
 class Label : public Widget {
 public:
+	static constexpr auto NAME = "Label";
 
 	Label();
 	Label(nlohmann::json json) noexcept;
 
 	void setFont(const std::string& fontKey);
-	void setString(const std::string& message);
+	void setStdString(const std::string& message);
+	void setSfString(const sf::String& message);
 	void setTextColor(const sf::Color& color);
 	void setCharSize(const u32& size);
 

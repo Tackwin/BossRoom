@@ -15,7 +15,7 @@ public:
 	sf::Sprite& getHoldSprite();
 	Label& getLabel();
 
-	void setString(const std::string& label);
+	void setStdString(const std::string& label);
 	std::string getString() const;
 	
 	void setSize(const Vector2f& size);

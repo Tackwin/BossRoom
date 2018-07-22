@@ -6,21 +6,23 @@
 #include "./../../Managers/InputsManager.hpp"
 
 #include "Label.hpp"
+#include "ValuePicker.hpp"
 
-const Widget::Callback::type Widget::Callback::ZERO = []() { return false; };
+const Widget::Callback::type Widget::Callback::FALSE = []() { return false; };
+const Widget::Callback::type Widget::Callback::TRUE =  []() { return true; };
 
 Widget::Widget() {
 }
 
 Widget::Widget(nlohmann::json json) noexcept {
 	if (auto it = json.find("pos"); it != json.end()) {
-		setPosition(Vector2f::load(*it));
+		setPosition(Vector2f::loadJson(*it));
 	} if (auto it = json.find("origin"); it != json.end()) {
-		setOrigin(Vector2f::load(*it));
+		setOrigin(Vector2f::loadJson(*it));
 	} if (auto it = json.find("originAbs"); it != json.end()) {
-		setOriginAbs(Vector2f::load(*it));
+		setOriginAbs(Vector2f::loadJson(*it));
 	} if (auto it = json.find("size"); it != json.end()) {
-		setSize(Vector2f::load(*it));
+		setSize(Vector2f::loadJson(*it));
 	} if (auto it = json.find("visible"); it != json.end()) {
 		setVisible(it->get<bool>());
 	} if (auto it = json.find("name"); it != json.end()) {
@@ -31,24 +33,35 @@ Widget::Widget(nlohmann::json json) noexcept {
 		for (auto child : *it) {
 			if (auto typeIt = child.find("type"); typeIt != child.end()) {
 				std::string type = typeIt->get<std::string>();
+				if (type == Label::NAME) {
 
-				if (type == "Label") {
-					addChild(new Label(child));
+					auto p = new Label(child);
+					_allocatedChilds.push_back(p);
+					addChild(p);
+				}
+				if (type == ValuePicker::NAME) {
+					auto p = new ValuePicker(child);
+					_allocatedChilds.push_back(p);
+					addChild(p);
 				}
 			}
 			else {
-				addChild(new Widget(child));
+				auto p = new Widget(child);
+				_allocatedChilds.push_back(p);
+				addChild(p);
 			}
 		}
 	}
 }
 
 Widget::Widget(Widget* const parent) :
-	_parent(parent) 
+	_parent(parent)
 {
 }
 
 Widget::~Widget() {
+	for (auto c : _allocatedChilds)
+		delete c;
 }
 
 void Widget::emancipate(){
@@ -257,16 +270,42 @@ std::bitset<9u> Widget::input(const std::bitset<9u>& mask) {
 
 	if (getGlobalBoundingBox().in(InputsManager::getMouseScreenPos())) {
 		if (InputsManager::isMouseJustPressed(sf::Mouse::Left) && !mask[0]) {
-			if (_onClick.began) 
-				result[0] = _onClick.began();
+			result[0] = _onClick.began();
 		}
 		if (InputsManager::isMousePressed(sf::Mouse::Left) && !mask[1]) {
-			if (_onClick.going)
-				result[1] = _onClick.going();
+			result[1] = _onClick.going();
 		}
 		if (InputsManager::isMouseJustReleased(sf::Mouse::Left) && !mask[2]) {
-			if (_onClick.ended)
-				result[2] = _onClick.ended();
+			result[2] = _onClick.ended();
+		}
+		if (!_hovered) {
+			if (!mask[3]) {
+				result[3] = _onHover.began();
+				_hovered = true;
+			}
+		}
+		else {
+			if (!mask[4]) {
+				result[4] = _onHover.going();
+			}
+		}
+	}
+	else {
+		if (_hovered) {
+			_hovered = false;
+			if (!mask[5]) {
+				result[5] = _onHover.ended();
+			}
+		}
+	}
+
+	if (_focused) {
+		if (IM::isKeyJustPressed() && !mask[6]) {
+			result[6] = _onKey.began();
+		} if (IM::isKeyPressed() && !mask[7]) {
+			result[7] = _onKey.going();
+		} if (IM::isKeyJustReleased() && !mask[8]) {
+			result[8] = _onKey.ended();
 		}
 	}
 

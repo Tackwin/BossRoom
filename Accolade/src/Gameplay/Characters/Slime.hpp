@@ -15,7 +15,8 @@ struct SlimeInfo {
 	std::string sprite{ "slime" };
 	Vector2f size{ 1.f, 1.f };
 
-	static SlimeInfo loadFromJson(nlohmann::json json) noexcept;
+	static SlimeInfo loadJson(nlohmann::json json) noexcept;
+	static nlohmann::json saveJson(SlimeInfo info) noexcept;
 };
 
 class Slime : public Object, public Removable {

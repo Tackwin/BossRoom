@@ -1,5 +1,7 @@
 #include "EditSectionScreen.hpp"
 
+#include <fstream>
+
 #include "Managers/InputsManager.hpp"
 #include "Managers/AssetsManager.hpp"
 
@@ -8,13 +10,12 @@
 #include "LevelScreen.hpp"
 
 #include "Graphics/GUI/Label.hpp"
+#include "Graphics/GUI/ValuePicker.hpp"
 
 EditSectionScreen::EditSectionScreen(SectionInfo section) :
 	Screen(), _section(section),
 	_uiView({ WIDTH / 2.f, HEIGHT / 2.f }, { (float)WIDTH, (float)HEIGHT })
 {
-	_plateformes = _section.plateformes;
-	_slimes = _section.slimes;
 	_cameraView.setCenter(_section.maxRectangle.fitUpRatio(RATIO).center());
 	_cameraView.setSize(_section.viewSize.fitUpRatio(RATIO));
 }
@@ -23,6 +24,7 @@ void EditSectionScreen::update(double dt) {
 	if (IM::isKeyPressed(sf::Keyboard::LControl) &&
 		IM::isKeyJustPressed(sf::Keyboard::E)
 	) {
+		saveSection("rooms/roomA.json");
 		C::game->exitScreen();
 		return;
 	}
@@ -36,6 +38,10 @@ void EditSectionScreen::update(double dt) {
 		break;
 	case place_slime:
 		updatePlaceSlime();
+		break;
+	case nothing:
+		updateNothing();
+		break;
 	default:
 		break;
 	}
@@ -46,7 +52,7 @@ void EditSectionScreen::update(double dt) {
 void EditSectionScreen::updatePlaceSlime() noexcept {
 	_newSlime->startPos = IM::getMousePosInView(_cameraView);
 	if (IM::isMouseJustPressed(sf::Mouse::Left)) {
-		_slimes.push_back(*_newSlime);
+		_section.slimes.push_back(*_newSlime);
 	}
 }
 void EditSectionScreen::updateDrawPlateforme() noexcept {
@@ -63,10 +69,28 @@ void EditSectionScreen::updateDrawPlateforme() noexcept {
 	else if (IM::isMouseJustReleased(sf::Mouse::Left)) {
 		switch (_toolState)
 		{
-		case draw_plateforme:
-			_plateformes.push_back(_newPlateforme.value());
+		case draw_plateforme: {
+			if (_newPlateforme->rectangle.w < 0.f) {
+				_newPlateforme->rectangle.x += _newPlateforme->rectangle.w;
+				_newPlateforme->rectangle.w *= -1;
+			} if (_newPlateforme->rectangle.h < 0.f) {
+				_newPlateforme->rectangle.y += _newPlateforme->rectangle.h;
+				_newPlateforme->rectangle.h *= -1;
+			}
+
+			_section.plateformes.push_back(_newPlateforme.value());
+			std::vector<Rectangle2f> rectangles;
+			std::transform(
+				std::begin(_section.plateformes),
+				std::end(_section.plateformes),
+				std::back_inserter(rectangles),
+				[](PlateformeInfo info) {
+					return info.rectangle;
+				}
+			);
+			_section.maxRectangle = Rectangle2f::hull(rectangles);
 			_newPlateforme.reset();
-			break;
+		} break;
 		default:
 			break;
 		}
@@ -77,6 +101,11 @@ void EditSectionScreen::updateDrawPlateforme() noexcept {
 			IM::getMousePosInView(_cameraView) - _newPlateforme->rectangle.pos;
 	}
 }
+
+void EditSectionScreen::updateNothing() noexcept {
+	
+}
+
 void EditSectionScreen::updateCameraMovement(double dt) noexcept {
 	if (IM::isKeyPressed(sf::Keyboard::Left)) {
 		_cameraView.move({ -(float)(dt * _section.maxRectangle.w / 5.f), 0.f });
@@ -123,15 +152,12 @@ void EditSectionScreen::inputSwitchState() noexcept {
 
 void EditSectionScreen::render(sf::RenderTarget& target) {
 	auto old = target.getView();
-	target.setView(_uiView);
-
-	_widgets.at("root")->propagateRender(target);
-
+	
 	target.setView(_cameraView);
-	for (auto plateforme : _plateformes) {
+	for (auto plateforme : _section.plateformes) {
 		renderDebug(target, plateforme);
 	}
-	for (auto slime : _slimes) {
+	for (auto slime : _section.slimes) {
 		renderDebug(target, slime);
 	}
 
@@ -141,6 +167,9 @@ void EditSectionScreen::render(sf::RenderTarget& target) {
 	if (_newSlime.has_value()) {
 		renderDebug(target, *_newSlime);
 	}
+
+	target.setView(_uiView);
+	_widgets.at("root")->propagateRender(target);
 
 	target.setView(old);
 }
@@ -152,8 +181,11 @@ void EditSectionScreen::onEnter() {
 		auto json = value;
 		if (auto it = json.find("type"); it != json.end()) {
 			auto type = it->get<std::string>();
-			if (type == "Label") {
+			if (type == Label::NAME) {
 				_widgets[key] = new Label(json);
+			}
+			if (type == ValuePicker::NAME) {
+				_widgets[key] = new ValuePicker(json);
 			}
 		}
 		else {
@@ -213,7 +245,7 @@ void EditSectionScreen::renderDebug(
 	sf::RenderTarget& target, SlimeInfo info
 ) noexcept {
 	info.startPos.plot(
-		target, info.size.x, { 1.0,1.0, 1.0, 1.0 }, {0.0, 0.0, 0.0, 0.0}, 0.f
+		target, info.size.x / 2.f, { 1.0,1.0, 1.0, 1.0 }, {0.0, 0.0, 0.0, 0.0}, 0.f
 	);
 }
 
@@ -223,4 +255,14 @@ void EditSectionScreen::changeColorLabel(std::string name, Vector4f color) noexc
 	if (auto it = root->findChild(name); dynamic_cast<const Label*>(it)) {
 		((Label*)it)->setTextColor(color);
 	}
+}
+
+void EditSectionScreen::saveSection(std::string path) const noexcept {
+	auto json = SectionInfo::saveJson(_section);
+	std::ofstream file;
+	file.open(ASSETS_PATH + path);
+
+	file << json;
+
+	file.close();
 }

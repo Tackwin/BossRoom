@@ -203,21 +203,21 @@ Shop::_InfoPanel::_InfoPanel(Shop* shop) :
 	setVisible(false);
 
 	auto& name = labels["name"];
-	name.setString("Name: ");
+	name.setStdString("Name: ");
 	name.setFont("consola");
 	name.setCharSize(25);
 	name.setPosition({ 50, 25 });
 	name.setParent(this, 1);
 
 	auto& effect = labels["effect"];
-	effect.setString("Effect: nique ta mère");
+	effect.setStdString("Effect: nique ta mère");
 	effect.setFont("consola");
 	effect.setCharSize(22);
 	effect.setPosition({ 70, 50 });
 	effect.setParent(this, 1);
 
 	auto& cost = labels["cost"];
-	cost.setString("cost: ");
+	cost.setStdString("cost: ");
 	cost.setFont("consola");
 	cost.setCharSize(22);
 	cost.setPosition({ 70, 75 });
@@ -231,7 +231,7 @@ Shop::_InfoPanel::_InfoPanel(Shop* shop) :
 	buy.setSprite(sf::Sprite(AssetsManager::getTexture("panel_a")));
 	buy.getSprite().setColor(sf::Color(150, 160, 150));
 	buy.setSize({ 200, 65 });
-	buy.setString("Buy");
+	buy.setStdString("Buy");
 	buy.setOrigin({ .5f, .5f });
 	buy.setPosition({ getSize().x / 2, getSize().y * 0.75f });
 	buy.setParent(this, 1);
@@ -251,10 +251,10 @@ void Shop::_InfoPanel::populateBy(const std::string& weapon) {
 	icon.setPosition({ 50, 120 });
 
 	auto& name = labels["name"];
-	name.setString("Name: " + w.name);
+	name.setStdString("Name: " + w.name);
 
 	auto& cost = labels["cost"];
-	cost.setString("Cost: " + std::to_string(w.cost));
+	cost.setStdString("Cost: " + std::to_string(w.cost));
 
 	_weapon = weapon;
 }

@@ -10,6 +10,12 @@ private:
 	~InputsManager();
 
 private:
+	static bool wasKeyJustPressed;
+	static bool wasKeyJustReleased;
+	static int nKeyPressed;
+
+	static sf::Uint32 textEntered;
+
 	static bool keyPressed[sf::Keyboard::KeyCount];
 	static bool keyJustPressed[sf::Keyboard::KeyCount];
 	static bool keyJustReleased[sf::Keyboard::KeyCount];
@@ -31,14 +37,20 @@ private:
 public:
 	static void update(sf::RenderWindow &window);
 
+	static sf::Uint32 getTextEntered() noexcept;
+
 	static bool isLastSequence(std::initializer_list<sf::Keyboard::Key> keys) noexcept;
 	static bool isLastSequenceJustFinished(
 		std::initializer_list<sf::Keyboard::Key> keys
 	) noexcept;
 
+	static int countKeyPressed() noexcept;
+
+	static bool isKeyPressed() noexcept;
 	static bool isKeyPressed(const int &key) {
 		return isKeyPressed(static_cast<sf::Keyboard::Key>(key));
 	};
+	static bool isKeyJustPressed() noexcept;
 	static bool isKeyPressed(const sf::Keyboard::Key &key);
 
 	static bool isKeyJustPressed(const int &key) {
@@ -46,6 +58,7 @@ public:
 	};
 	static bool isKeyJustPressed(const sf::Keyboard::Key &key);
 	
+	static bool isKeyJustReleased() noexcept;
 	static bool isKeyJustReleased(const int &key) {
 		return isKeyJustReleased(static_cast<sf::Keyboard::Key>(key));
 	};

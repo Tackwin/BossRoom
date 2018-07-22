@@ -14,10 +14,10 @@ Label::Label(nlohmann::json json) noexcept : Widget(json) {
 		setCharSize(*it);
 	}
 	if (auto it = json.find("text"); it != json.end()) {
-		setString(*it);
+		setStdString(*it);
 	}
 	if (auto it = json.find("textColor"); it != json.end()) {
-		setTextColor(Vector4f::load(*it));
+		setTextColor(Vector4f::loadJson(*it));
 	}
 	computeSize();
 }
@@ -26,7 +26,11 @@ void Label::setFont(const std::string& fontKey) {
 	_text.setFont(AssetsManager::getFont(fontKey));
 	computeSize();
 }
-void Label::setString(const std::string& message) {
+void Label::setStdString(const std::string& message) {
+	_text.setString(message);
+	computeSize();
+}
+void Label::setSfString(const sf::String& message) {
 	_text.setString(message);
 	computeSize();
 }

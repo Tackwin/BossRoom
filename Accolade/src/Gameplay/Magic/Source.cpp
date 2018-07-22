@@ -2,14 +2,23 @@
 
 #include "./../../Managers/AssetsManager.hpp"
 
-SourceInfo SourceInfo::load(nlohmann::json json) noexcept {
+SourceInfo SourceInfo::loadJson(nlohmann::json json) noexcept {
 	SourceInfo info;
 	info.id = json.at("id");
 	info.reloadTime = json.at("reloadTime");
-	info.pos = Vector2f::load(json.at("pos"));
-	info.size = Vector2f::load(json.at("size"));
+	info.pos = Vector2f::loadJson(json.at("pos"));
+	info.size = Vector2f::loadJson(json.at("size"));
 	info.sprite = json.at("sprite").get<std::string>();
 	return info;
+}
+nlohmann::json SourceInfo::saveJson(SourceInfo info) noexcept {
+	nlohmann::json json;
+	json["id"] = info.id;
+	json["reloadTime"] = info.reloadTime;
+	json["pos"] = Vector2f::saveJson(info.pos);
+	json["size"] = Vector2f::saveJson(info.size);
+	json["sprite"] = info.sprite;
+	return json;
 }
 
 Source::Source(SourceInfo info) noexcept : 

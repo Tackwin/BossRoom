@@ -107,7 +107,7 @@ struct Vector : public __vec_member<D, T> {
 
 #pragma region STATIC
 
-	static Vector<D, T> load(nlohmann::json json) noexcept {
+	static Vector<D, T> loadJson(nlohmann::json json) noexcept {
 		auto vec = json.get<std::vector<T>>();
 		Vector<D, T> vector;
 
@@ -115,6 +115,14 @@ struct Vector : public __vec_member<D, T> {
 			vector.components[i] = vec[i];
 		}
 		return vector;
+	}
+
+	static nlohmann::json saveJson(Vector<D, T> vec) noexcept {
+		nlohmann::json json;
+		for (int i = 0; i < D; ++i) {
+			json.push_back(vec.components[i]);
+		}
+		return json;
 	}
 
 	static Vector<D, T> createUnitVector(float angles[D]) {

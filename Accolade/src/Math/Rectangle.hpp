@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Vector.hpp"
+#include "3rd/json.hpp"
 
 template<typename T>
 struct Rectangle {
@@ -102,6 +103,36 @@ struct Rectangle {
 	}
 
 #endif
+
+	static Rectangle<T> loadJson(nlohmann::json json) noexcept {
+		Rectangle<T> rec;
+		if (json.is_array()) {
+			rec.x = json.get<std::vector<T>>()[0];
+			rec.y = json.get<std::vector<T>>()[1];
+			rec.w = json.get<std::vector<T>>()[2];
+			rec.h = json.get<std::vector<T>>()[3];
+		}
+		return rec;
+	}
+	static nlohmann::json saveJson(Rectangle<T> rec) noexcept {
+		return nlohmann::json::array({rec.x, rec.y, rec.w, rec.h});
+	}
+
+
+	static Rectangle<T> hull(std::vector<Rectangle<T>> recs) noexcept {
+		Rectangle<T> hull = recs[0];
+
+		for (auto rec : recs) {
+			hull.x = std::min(rec.x, hull.x);
+			hull.y = std::min(rec.y, hull.y);
+		}
+		for (auto rec : recs) {
+			hull.w = std::max(rec.x + rec.w, hull.w + hull.x) - hull.x;
+			hull.h = std::max(rec.y + rec.h, hull.h + hull.y) - hull.y;
+		}
+		return hull;
+	}
+
 };
 
 template<typename T>

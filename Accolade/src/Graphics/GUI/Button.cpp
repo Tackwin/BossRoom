@@ -54,8 +54,8 @@ void Button::computeSize() {
 
 void Button::render(sf::RenderTarget&) {}
 
-void Button::setString(const std::string& label) {
-	_label.setString(label);
+void Button::setStdString(const std::string& label) {
+	_label.setStdString(label);
 }
 std::string Button::getString() const {
 	return _label.getString();

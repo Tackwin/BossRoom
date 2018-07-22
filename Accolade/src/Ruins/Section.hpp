@@ -20,7 +20,8 @@ struct SectionInfo {
 	Vector2f startPos;
 	Vector2f viewSize;
 
-	static SectionInfo load(const nlohmann::json& json) noexcept;
+	static SectionInfo loadJson(const nlohmann::json& json) noexcept;
+	static nlohmann::json saveJson(SectionInfo info) noexcept;
 };
 
 class Section {

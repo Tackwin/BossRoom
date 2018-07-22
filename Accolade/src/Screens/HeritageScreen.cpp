@@ -39,7 +39,7 @@ void HeritageScreen::PlayerPanel::populateWith(PlayerInfo& info_) {
 	name = std::make_shared<Label>();
 	name->setFont("consola");
 	name->setCharSize(20u);
-	name->setString(std::string("Name: ") + info.name);
+	name->setStdString(std::string("Name: ") + info.name);
 	name->setOrigin({ 0.5f, 0.f });
 	name->setPosition({ getSize().x * 0.5f, 10.f });
 	name->setParent(this, 2);
@@ -63,7 +63,7 @@ void HeritageScreen::PlayerPanel::populateWith(PlayerInfo& info_) {
 	speed = std::make_shared<Label>();
 	speed->setFont("consola");
 	speed->setCharSize(15u);
-	speed->setString(std::string("Speed: ") + std::to_string((u32)info.speed));
+	speed->setStdString(std::string("Speed: ") + std::to_string((u32)info.speed));
 	speed->setPosition({ 
 		15.f - infoPanel->getSize().x / 2.f, 
 		10.f 
@@ -74,7 +74,7 @@ void HeritageScreen::PlayerPanel::populateWith(PlayerInfo& info_) {
 	specialSpeed = std::make_shared<Label>();
 	specialSpeed->setFont("consola");
 	specialSpeed->setCharSize(15u);
-	specialSpeed->setString(
+	specialSpeed->setStdString(
 		std::string("Special speed: ") + std::to_string((u32)info.specialSpeed)
 	);
 	specialSpeed->setOrigin({ 1.f, 0.f });
@@ -88,7 +88,7 @@ void HeritageScreen::PlayerPanel::populateWith(PlayerInfo& info_) {
 	jumpHeight = std::make_shared<Label>();
 	jumpHeight->setFont("consola");
 	jumpHeight->setCharSize(15u);
-	jumpHeight->setString(
+	jumpHeight->setStdString(
 		std::string("Jump: ") + std::to_string((u32)info.jumpHeight)
 	);
 	jumpHeight->setPosition({ 
