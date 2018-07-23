@@ -30,12 +30,14 @@ class Projectile;
 class StartScreen : public Screen {
 public:
 	StartScreen();
+	
+	virtual Type getType() const noexcept override { return start_screen; }
 
-	virtual void onEnter();
-	virtual void onExit();
+	virtual void onEnter(std::any) override;
+	virtual std::any onExit() override;
 
-	virtual void update(double dt);
-	virtual void render(sf::RenderTarget& target);
+	virtual void update(double dt) override;
+	virtual void render(sf::RenderTarget& target) override;
 	void renderGui(sf::RenderTarget& target);
 
 	void enterShop();

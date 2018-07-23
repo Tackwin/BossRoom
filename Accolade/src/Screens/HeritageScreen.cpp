@@ -9,12 +9,13 @@ HeritageScreen::HeritageScreen(const PlayerInfo& info) :
 
 }
 
-void HeritageScreen::onEnter() {
+void HeritageScreen::onEnter(std::any) {
 	_root = Widget();
 	_playerPanel.populateWith(_info);
 	_root.addChild(&_playerPanel);
 }
-void HeritageScreen::onExit() {
+std::any HeritageScreen::onExit() {
+	return {};
 }
 
 void HeritageScreen::update(double) {

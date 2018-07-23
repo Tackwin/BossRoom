@@ -12,6 +12,8 @@
 #include "Graphics/GUI/Label.hpp"
 #include "Graphics/GUI/ValuePicker.hpp"
 
+#include "Utils/string_algorithms.hpp"
+
 EditSectionScreen::EditSectionScreen(SectionInfo section) :
 	Screen(), _section(section),
 	_uiView({ WIDTH / 2.f, HEIGHT / 2.f }, { (float)WIDTH, (float)HEIGHT })
@@ -24,10 +26,29 @@ void EditSectionScreen::update(double dt) {
 	if (IM::isKeyPressed(sf::Keyboard::LControl) &&
 		IM::isKeyJustPressed(sf::Keyboard::E)
 	) {
-		saveSection("rooms/roomA.json");
+		saveSection(str::trim_whitespace(_savePicker->getText()));
 		C::game->exitScreen();
 		return;
 	}
+
+	if (IM::isLastSequenceJustFinished({ sf::Keyboard::LControl, sf::Keyboard::D }) ||
+		IM::isMousePressed(sf::Mouse::Right)) {
+		deleteHovered();
+	}
+
+	if (IM::isLastSequenceJustFinished({ sf::Keyboard::LShift, sf::Keyboard::Add })) {
+		_snapLevel *= 10.f;
+	}
+	else if (
+		IM::isLastSequenceJustFinished({ sf::Keyboard::LShift, sf::Keyboard::Subtract })
+	) {
+		_snapLevel /= 10.f;
+	}
+
+	_snapLevel = std::clamp(_snapLevel, 0.0001f, 1.f);
+
+	_snapGrid->setStdString("Snap grid " + std::to_string(_snapLevel) + "m");
+
 	inputSwitchState();
 	_widgets.at("root")->propagateInput();
 
@@ -39,9 +60,14 @@ void EditSectionScreen::update(double dt) {
 	case place_slime:
 		updatePlaceSlime();
 		break;
+	case place_start_pos:
+		updatePlaceStartPos();
+		break;
 	case nothing:
 		updateNothing();
 		break;
+	case place_source:
+		updateSource();
 	default:
 		break;
 	}
@@ -49,10 +75,19 @@ void EditSectionScreen::update(double dt) {
 	updateCameraMovement(dt);
 }
 
+void EditSectionScreen::updateSource() noexcept {
+
+}
 void EditSectionScreen::updatePlaceSlime() noexcept {
-	_newSlime->startPos = IM::getMousePosInView(_cameraView);
+	_newSlime->startPos = getSnapedMouseCameraPos();
 	if (IM::isMouseJustPressed(sf::Mouse::Left)) {
 		_section.slimes.push_back(*_newSlime);
+	}
+}
+void EditSectionScreen::updatePlaceStartPos() noexcept {
+	if (IM::isMouseJustPressed(sf::Mouse::Left)) {
+		_section.startPos = getSnapedMouseCameraPos();
+		exitToolState();
 	}
 }
 void EditSectionScreen::updateDrawPlateforme() noexcept {
@@ -60,7 +95,7 @@ void EditSectionScreen::updateDrawPlateforme() noexcept {
 		switch (_toolState) {
 		case draw_plateforme:
 			auto p = PlateformeInfo();
-			p.rectangle.pos = IM::getMousePosInView(_cameraView);
+			p.rectangle.pos = getSnapedMouseCameraPos();
 
 			_newPlateforme = p;
 			break;
@@ -98,7 +133,7 @@ void EditSectionScreen::updateDrawPlateforme() noexcept {
 
 	if (_newPlateforme.has_value()) {
 		_newPlateforme->rectangle.size =
-			IM::getMousePosInView(_cameraView) - _newPlateforme->rectangle.pos;
+			getSnapedMouseCameraPos() - _newPlateforme->rectangle.pos;
 	}
 }
 
@@ -107,17 +142,21 @@ void EditSectionScreen::updateNothing() noexcept {
 }
 
 void EditSectionScreen::updateCameraMovement(double dt) noexcept {
-	if (IM::isKeyPressed(sf::Keyboard::Left)) {
-		_cameraView.move({ -(float)(dt * _section.maxRectangle.w / 5.f), 0.f });
+	if (IM::isKeyPressed(sf::Keyboard::LControl)) return;
+
+	float speedFactor = IM::isKeyPressed(sf::Keyboard::LShift) ? 3.f : 1.f;
+
+	if (IM::isKeyPressed(sf::Keyboard::Z)) {
+		_cameraView.move({ 0.f, -(float)(dt * _section.maxRectangle.h / 3.f * speedFactor) });
 	}
-	if (IM::isKeyPressed(sf::Keyboard::Right)) {
-		_cameraView.move({ +(float)(dt * _section.maxRectangle.w / 5.f), 0.f });
+	if (IM::isKeyPressed(sf::Keyboard::Q)) {
+		_cameraView.move({ -(float)(dt * _section.maxRectangle.w / 3.f) * speedFactor , 0.f });
 	}
-	if (IM::isKeyPressed(sf::Keyboard::Up)) {
-		_cameraView.move({ 0.f, -(float)(dt * _section.maxRectangle.h / 5.f) });
+	if (IM::isKeyPressed(sf::Keyboard::S)) {
+		_cameraView.move({ 0.f, +(float)(dt * _section.maxRectangle.h / 3.f) * speedFactor });
 	}
-	if (IM::isKeyPressed(sf::Keyboard::Down)) {
-		_cameraView.move({ 0.f, +(float)(dt * _section.maxRectangle.h / 5) });
+	if (IM::isKeyPressed(sf::Keyboard::D)) {
+		_cameraView.move({ +(float)(dt * _section.maxRectangle.w / 3.f) * speedFactor , 0.f});
 	}
 }
 void EditSectionScreen::inputSwitchState() noexcept {
@@ -132,14 +171,23 @@ void EditSectionScreen::inputSwitchState() noexcept {
 			exitToolState();
 		}
 	}
-
-
 	else if (IM::isLastSequenceJustFinished({
 		sf::Keyboard::LControl, sf::Keyboard::Q, sf::Keyboard::S
 	})){
 		if (_toolState != place_slime) {
 			exitToolState();
 			enterToolState(place_slime);
+		}
+		else {
+			exitToolState();
+		}
+	}
+	else if (IM::isLastSequenceJustFinished({
+		sf::Keyboard::LControl, sf::Keyboard::S, sf::Keyboard::S
+	})){
+		if (_toolState != place_start_pos) {
+			exitToolState();
+			enterToolState(place_start_pos);
 		}
 		else {
 			exitToolState();
@@ -168,13 +216,19 @@ void EditSectionScreen::render(sf::RenderTarget& target) {
 		renderDebug(target, *_newSlime);
 	}
 
+	Vector2f startPos = _section.startPos;
+	if (_toolState == place_start_pos) {
+		startPos = getSnapedMouseCameraPos();
+	}
+	startPos.plot(target, 0.1f, { 1.0, 0.0, 0.0, 1.0 }, {}, 0.f);
+
 	target.setView(_uiView);
 	_widgets.at("root")->propagateRender(target);
 
 	target.setView(old);
 }
 
-void EditSectionScreen::onEnter() {
+void EditSectionScreen::onEnter(std::any) {
 	_json = AM::getJson("editScreen");
 
 	for (auto&[key, value] : _json.get<nlohmann::json::object_t>()) {
@@ -192,12 +246,16 @@ void EditSectionScreen::onEnter() {
 			_widgets[key] = new Widget(json);
 		}
 	}
+
+	_savePicker = (ValuePicker*)(_widgets.at("root")->findChild("savePicker"));
+	_snapGrid = (Label*)(_widgets.at("root")->findChild("snapGrid"));
 }
 
-void EditSectionScreen::onExit() {
+std::any EditSectionScreen::onExit() {
 	for (auto&[key, value] : _widgets) {
 		delete value;
 	}
+	return { _section };
 }
 
 void EditSectionScreen::enterToolState(
@@ -211,8 +269,11 @@ void EditSectionScreen::enterToolState(
 		break;
 	case place_slime:
 		_newSlime = SlimeInfo();
-		_newSlime->startPos = IM::getMousePosInView(_cameraView);
+		_newSlime->startPos = getSnapedMouseCameraPos();
 		changeColorLabel(PLACE_SLIME, { 0.0, 1.0, 0.0, 1.0 });
+		break;
+	case place_start_pos:
+		changeColorLabel(PLACE_START_POS, { 0.0, 1.0, 0.0, 1.0 });
 		break;
 	default:
 		break;
@@ -230,6 +291,9 @@ void EditSectionScreen::exitToolState() noexcept {
 		_newSlime.reset();
 		changeColorLabel(PLACE_SLIME, { 1.0, 1.0, 1.0, 1.0 });
 		break;
+	case place_start_pos:
+		changeColorLabel(PLACE_START_POS, { 1.0, 1.0, 1.0, 1.0 });
+		break;
 	default:
 		break;
 	}
@@ -239,13 +303,22 @@ void EditSectionScreen::exitToolState() noexcept {
 void EditSectionScreen::renderDebug(
 	sf::RenderTarget& target, PlateformeInfo info
 ) noexcept {
-	info.rectangle.render(target, { 1.0, 1.0, 0.0, 1.0 });
+	Vector4f color{ 0.8f, 0.8f, 0.0f, 1.0f };
+	if (info.rectangle.in(IM::getMousePosInView(_cameraView))) {
+		color = { 1.0f, 0.7f, 0.0f, 1.0f };
+	}
+	info.rectangle.render(target, color);
 }
 void EditSectionScreen::renderDebug(
 	sf::RenderTarget& target, SlimeInfo info
 ) noexcept {
+	Vector4d color{ 0.0, 0.8, 0.8, 1.0 };
+	auto dist2 = (info.startPos - IM::getMousePosInView(_cameraView)).length2();
+	if (dist2 < info.size.x * info.size.x / 4.f) {
+		color = { 0.0, 0.7, 1.0, 1.0 };
+	}
 	info.startPos.plot(
-		target, info.size.x / 2.f, { 1.0,1.0, 1.0, 1.0 }, {0.0, 0.0, 0.0, 0.0}, 0.f
+		target, info.size.x / 2.f, color, {0.0, 0.0, 0.0, 0.0}, 0.f
 	);
 }
 
@@ -255,14 +328,63 @@ void EditSectionScreen::changeColorLabel(std::string name, Vector4f color) noexc
 	if (auto it = root->findChild(name); dynamic_cast<const Label*>(it)) {
 		((Label*)it)->setTextColor(color);
 	}
+	else {
+		std::abort();
+	}
 }
 
 void EditSectionScreen::saveSection(std::string path) const noexcept {
 	auto json = SectionInfo::saveJson(_section);
 	std::ofstream file;
 	file.open(ASSETS_PATH + path);
+	
+	static char buffer[512];
+	strerror_s(buffer, errno);
+
+	if (!file.is_open()) {
+		printf("Error on saving the file %s, %s\n", path.c_str(), buffer);
+	}
 
 	file << json;
 
 	file.close();
+}
+
+void EditSectionScreen::deleteHovered() noexcept {
+	auto& plateformes = _section.plateformes;
+	auto& slimes = _section.slimes;
+
+	for (size_t i = plateformes.size(); i > 0; --i) {
+		if (plateformes[i - 1].rectangle.in(IM::getMousePosInView(_cameraView))) {
+			plateformes.erase(std::begin(plateformes) + i - 1);
+			return;
+		}
+	}
+
+	for (size_t i = slimes.size(); i > 0; --i) {
+
+		auto dist2 = (slimes[i - 1].startPos - IM::getMousePosInView(_cameraView)).length2();
+		if (dist2 < slimes[i - 1].size.x * slimes[i - 1].size.x / 4.f) {
+			slimes.erase(std::begin(slimes) + i - 1);
+			return;
+		}
+	}
+}
+
+Vector2f EditSectionScreen::getSnapedMouseScreenPos() const noexcept {
+	auto pos = IM::getMouseScreenPos();
+
+	return {
+		(unsigned long)(pos.x / _snapLevel) * _snapLevel,
+		(unsigned long)(pos.y / _snapLevel) * _snapLevel
+	};
+}
+
+Vector2f EditSectionScreen::getSnapedMouseCameraPos() const noexcept {
+	auto pos = IM::getMousePosInView(_cameraView);
+
+	return {
+		(long long)(pos.x / _snapLevel - 0.5f) * _snapLevel,
+		(long long)(pos.y / _snapLevel - 0.5f) * _snapLevel
+	};
 }

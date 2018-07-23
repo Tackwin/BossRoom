@@ -17,8 +17,10 @@ public:
 	LevelScreen(u32 n);
 	~LevelScreen();
 
-	virtual void onEnter() override;
-	virtual void onExit() override;
+	virtual Type getType() const noexcept override { return level_screen; }
+
+	virtual void onEnter(std::any) override;
+	virtual std::any onExit() override;
 
 	virtual void update(double dt) override;
 	virtual void render(sf::RenderTarget& target) override;

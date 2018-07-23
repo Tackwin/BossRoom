@@ -260,10 +260,7 @@ paket-files/
 __pycache__/
 *.pyc
 
-*.sln
-*.zip
-*.psd
-*.vcxproj
-*.vcxproj.filters
 /Deps/SFML
 /Accolade/gcc_compile.cmd
+/Accolade/test
+/glad.zip

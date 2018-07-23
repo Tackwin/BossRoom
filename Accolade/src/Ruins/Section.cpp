@@ -150,19 +150,19 @@ void Section::unsubscribeToEvents() noexcept {
 }
 
 void Section::removeDeadObject() noexcept {
-	for (int i = _projectiles.size() - 1; i >= 0; --i) {
+	for (int i = (int)_projectiles.size() - 1; i >= 0; --i) {
 		if (_projectiles[i]->toRemove()) {
 			_world.delObject(_projectiles[i]->uuid);
 			_projectiles.erase(_projectiles.begin() + i);
 		}
 	}
-	for (int i = _slimes.size() - 1; i >= 0; --i) {
+	for (int i = (int)_slimes.size() - 1; i >= 0; --i) {
 		if (_slimes[i]->toRemove()) {
 			_world.delObject(_slimes[i]->uuid);
 			_slimes.erase(_slimes.begin() + i);
 		}
 	}
-	for (int i = _sources.size() - 1; i >= 0; --i) {
+	for (int i = (int)_sources.size() - 1; i >= 0; --i) {
 		if (_sources[i]->toRemove()) {
 			_world.delObject(_sources[i]->uuid);
 			_sources.erase(_sources.begin() + i);
@@ -215,7 +215,7 @@ SectionInfo SectionInfo::loadJson(const nlohmann::json& json) noexcept {
 		info.viewSize = Vector2f::loadJson(json.at("viewSize"));
 	}
 
-	if (auto slimes = json.find("slimes"); slimes != json.end()) {
+	if (auto slimes = json.find("slimes"); slimes != json.end() && !slimes->is_null()) {
 		for (auto slime : slimes->get<nlohmann::json::array_t>()) {
 			info.slimes.push_back(SlimeInfo::loadJson(slime));
 		}

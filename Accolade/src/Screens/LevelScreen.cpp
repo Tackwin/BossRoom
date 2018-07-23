@@ -47,7 +47,10 @@ LevelScreen::LevelScreen(u32 n) :
 LevelScreen::~LevelScreen() {
 }
 
-void LevelScreen::onEnter() {
+void LevelScreen::onEnter(std::any input) {
+	if (game->getLastScreen() == Screen::edit_screen) {
+		_section = std::make_unique<Section>(std::any_cast<SectionInfo>(input));
+	}
 	_section->enter();
 	//_level->start(this);
 
@@ -70,19 +73,16 @@ void LevelScreen::onEnter() {
 	}
 }
 
-void LevelScreen::onExit() {
+std::any LevelScreen::onExit() {
 	//if (_level) 
 	//	_level->stop();
 
 	_section->exit();
 	_playerLife.clear();
+	return {};
 }
 
 void LevelScreen::update(double dt) {
-	if (IM::isLastSequenceJustFinished({sf::Keyboard::LControl, sf::Keyboard::E})) {
-		C::game->enterScreen(std::make_shared<EditSectionScreen>(_section->getInfo()));
-	}
-
 	if (_gameViewPos != _gameView.getCenter())
 		_gameView.setCenter(_gameViewPos);
 	if (_gameViewSize != _gameView.getSize())
@@ -109,6 +109,10 @@ void LevelScreen::update(double dt) {
 			game->enterHeritage();
 		}
 	}*/
+	if (IM::isLastSequenceJustFinished({ sf::Keyboard::LControl, sf::Keyboard::E })) {
+		C::game->enterScreen(std::make_shared<EditSectionScreen>(_section->getInfo()));
+		return;
+	}
 }
 
 void LevelScreen::render(sf::RenderTarget& target) {

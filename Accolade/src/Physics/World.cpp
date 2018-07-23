@@ -1,5 +1,6 @@
 #include "World.hpp"
 
+#include <unordered_set>
 #include <algorithm>
 #include <numeric>
 
@@ -141,6 +142,26 @@ void World::addObject(std::weak_ptr<Object> obj) noexcept {
 	buildUnionCache();
 }
 
+void World::addObjects(const std::vector<std::weak_ptr<Object>>& objs) noexcept {
+	for (auto& o : objs) {
+		auto id = o.lock()->uuid;
+
+		_objectsMap[id] = o;
+
+		for (u32 i = 0; i < Object::SIZE; ++i) {
+			if (!o.lock()->idMask[i]) continue;
+
+			_objectsPool[i].push_back(id);
+		}
+	}
+
+	for (auto& pool : _objectsPool) {
+		std::sort(std::begin(pool), std::end(pool));
+	}
+
+	buildUnionCache();
+}
+
 void World::delObject(UUID uuid) {
 	using map_pair = std::pair<UUID, std::weak_ptr<Object>>;
 	auto object_map_it = std::find_if(
@@ -214,18 +235,16 @@ void World::purge() {
 std::vector<UUID>
 	World::getUnionOfMask(const std::bitset<Object::SIZE>& mask)
 {
-	std::vector<UUID> result;
+	std::unordered_set<UUID> result;
 	result.reserve(_objectsMap.size() * Object::SIZE);
 
 	for (size_t i = 0u; i < Object::SIZE; ++i) {
 		if (!mask[i]) continue;
 
-		std::set_union(	_objectsPool[i].begin()	, _objectsPool[i].end(),
-						result.begin()			, result.end(),
-						std::back_inserter(result));
+		result.insert(std::begin(_objectsPool[i]), std::end(_objectsPool[i]));
 	}
 
-	return result;
+	return std::vector(std::begin(result), std::end(result));
 }
 
 void World::buildUnionCache() {

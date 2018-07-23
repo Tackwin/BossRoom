@@ -37,6 +37,9 @@ private:
 public:
 	static void update(sf::RenderWindow &window);
 
+	static sf::Keyboard::Key getLastKeyPressed() noexcept;
+
+	static bool isTextJustEntered() noexcept;
 	static sf::Uint32 getTextEntered() noexcept;
 
 	static bool isLastSequence(std::initializer_list<sf::Keyboard::Key> keys) noexcept;

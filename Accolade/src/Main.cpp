@@ -2,8 +2,6 @@
 
 #include <SFML/Graphics.hpp>
 
-#include <GLFW/glfw3.h>
-
 #include <functional>
 #include <queue>
 
@@ -171,3 +169,5 @@ void loadJsonsFromJson(const nlohmann::json& json) {
 		AssetsManager::loadJson(key, ASSETS_PATH + path);
 	}
 }
+
+#include <typeinfo>

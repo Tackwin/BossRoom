@@ -60,7 +60,7 @@ void Shop::setPlayer(std::weak_ptr<Player> player) {
 void Shop::addWeapon(const std::string& weapon) {
 	constexpr u32 itemPerRow = 7;
 
-	u32 size = _itemPanels.size();
+	u32 size = (u32)_itemPanels.size();
 	u32 nId = 0u;
 	bool flag = false;
 	do {

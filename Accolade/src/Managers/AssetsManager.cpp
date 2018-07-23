@@ -226,21 +226,25 @@ bool AssetsManager::loadJson(const std::string &key, const std::string &path) {
 		printf(" Couldn't load file /!\\\n");
 	}
 	else {
-		try {
+		_TRY_BEGIN
 			stream >> _jsons[key];
 			stubSetConsoleTextAttribute(
 				GetStdHandle(STD_OUTPUT_HANDLE), 
 				FOREGROUND_GREEN
 			);
 			printf(" Succes !\n");
-		}
-		catch (const std::exception& e) {
+#if _HAS_EXCEPTIONS
+		_CATCH(const std::exception& e)
+#else
+		_CATCH_ALL
+			struct { const char* what() { return nullptr; } } e;
+#endif
 			stubSetConsoleTextAttribute(
 				GetStdHandle(STD_OUTPUT_HANDLE), 
 				FOREGROUND_RED
 			);
 			printf(" Couldn't load file /!\\ err: %s \n", e.what());
-		}
+		_CATCH_END
 	}
 	stubSetConsoleTextAttribute(
 		GetStdHandle(STD_OUTPUT_HANDLE), 

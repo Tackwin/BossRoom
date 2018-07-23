@@ -25,23 +25,48 @@
 				"charSize": 14,
 				"text": "Place slime: Ctrl + Q S"
 			},
-			"valueLabel": {
-				"name": "valueLabel",
+			"saveLabel": {
+				"name": "saveLabel",
 				"type": "Label",
 				"font": "consola",
 				"charSize": 14,
 				"pos": [0, 45],
-				"text": "test value: ",
+				"text": "Save file to: ",
 				"childs": [{
-					"name": "ValuePicker",
+					"name": "savePicker",
 					"type": "ValuePicker",
 					"font": "consola",
+					"text": "rooms/roomA.json",
 					"charSize": 14,
-					"pos": [ 45, 3 ],
-					"size": [ 100, 14 ],
+					"pos": [ 105, 2 ],
+					"size": [ 100, 15 ],
 					"unfocusedColor": [ 0.3, 0.3, 0.3, 0.8],
 					"focusedColor": [0.5, 0.5, 0.5, 0.95]
 				}]
+			},
+			"startPosLabel": {
+				"name": "placeStartPos",
+				"type": "Label",
+				"font": "consola",
+				"text": "startPos Ctrl + S S",
+				"charSize" : 14,
+				"pos": [0, 60]
+			},
+			"snapGrid":{
+				"name": "snapGrid",
+				"type": "Label",
+				"font": "consola",
+				"text": "Snap grid 1cm",
+				"charSize": 14,
+				"pos": [0, 75]
+			},
+			"placeSource": {
+				"name": "placeSource",
+				"type": "Label",
+				"font": "consola",
+				"text": "Place source Ctrl + S O",
+				"charSize": 14,
+				"pos": [0, 90]
 			}
 		}
 	}

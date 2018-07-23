@@ -1,0 +1,50 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2009
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Accolade", "Accolade\Accolade.vcxproj", "{58ABA2CD-F09D-4EE3-9B9F-8BCAA80494DB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C631BE3E-B7D8-45DD-8DE5-726668C9311C}"
+	ProjectSection(SolutionItems) = preProject
+		Readme.md = Readme.md
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Saturn", "Saturn\Saturn.vcxproj", "{2D746A8E-CFC7-4F94-8B59-37EA7C118876}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{58ABA2CD-F09D-4EE3-9B9F-8BCAA80494DB}.Debug|x64.ActiveCfg = Debug|x64
+		{58ABA2CD-F09D-4EE3-9B9F-8BCAA80494DB}.Debug|x64.Build.0 = Debug|x64
+		{58ABA2CD-F09D-4EE3-9B9F-8BCAA80494DB}.Debug|x86.ActiveCfg = Debug|Win32
+		{58ABA2CD-F09D-4EE3-9B9F-8BCAA80494DB}.Debug|x86.Build.0 = Debug|Win32
+		{58ABA2CD-F09D-4EE3-9B9F-8BCAA80494DB}.Release|x64.ActiveCfg = Release|x64
+		{58ABA2CD-F09D-4EE3-9B9F-8BCAA80494DB}.Release|x64.Build.0 = Release|x64
+		{58ABA2CD-F09D-4EE3-9B9F-8BCAA80494DB}.Release|x86.ActiveCfg = Release|Win32
+		{58ABA2CD-F09D-4EE3-9B9F-8BCAA80494DB}.Release|x86.Build.0 = Release|Win32
+		{2D746A8E-CFC7-4F94-8B59-37EA7C118876}.Debug|x64.ActiveCfg = Debug|x64
+		{2D746A8E-CFC7-4F94-8B59-37EA7C118876}.Debug|x86.ActiveCfg = Debug|Win32
+		{2D746A8E-CFC7-4F94-8B59-37EA7C118876}.Release|x64.ActiveCfg = Release|x64
+		{2D746A8E-CFC7-4F94-8B59-37EA7C118876}.Release|x64.Build.0 = Release|x64
+		{2D746A8E-CFC7-4F94-8B59-37EA7C118876}.Release|x86.ActiveCfg = Release|Win32
+		{2D746A8E-CFC7-4F94-8B59-37EA7C118876}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3B6E1956-A4BC-414F-AE09-DC950E4F20A0}
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
+EndGlobal

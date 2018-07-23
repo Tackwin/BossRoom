@@ -17,11 +17,12 @@ public:
 
 	virtual void render(sf::RenderTarget& target);
 
-	sf::String getText() const noexcept;
+	std::string getText() const noexcept;
 
 private:
 	std::string _font;
-	sf::String _inputString;
+	std::string _defaultText{ "" };
+	std::string _inputString;
 
 	int _charSize{ 14 };
 
@@ -30,5 +31,4 @@ private:
 	Vector4f _inputColor = _unfocusedColor;
 
 	Label _label;
-
 };

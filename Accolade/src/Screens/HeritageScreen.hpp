@@ -15,11 +15,14 @@ class HeritageScreen : public Screen {
 public:
 	HeritageScreen(const PlayerInfo& info);
 
-	virtual void onEnter();
-	virtual void onExit();
 
-	virtual void update(double);
-	virtual void render(sf::RenderTarget& target);
+	virtual Type getType() const noexcept override { return edit_screen; }
+
+	virtual void onEnter(std::any) override;
+	virtual std::any onExit() override;
+
+	virtual void update(double) override;
+	virtual void render(sf::RenderTarget& target) override;
 private:
 
 	struct PlayerPanel : public Panel {

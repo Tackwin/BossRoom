@@ -1,6 +1,5 @@
 #pragma once
 #include <stack>
-#include <GLFW/glfw3.h>
 
 #include "../Math/Vector.hpp"
 

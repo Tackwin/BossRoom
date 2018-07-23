@@ -47,12 +47,13 @@ RoomSelectorScreen::RoomSelectorScreen(u32 n):
 RoomSelectorScreen::~RoomSelectorScreen() {
 };
 
-void RoomSelectorScreen::onEnter() {
+void RoomSelectorScreen::onEnter(std::any) {
 	//...
 }
 
-void RoomSelectorScreen::onExit() {
+std::any RoomSelectorScreen::onExit() {
 	//...
+	return {};
 }
 
 void RoomSelectorScreen::update(float) {

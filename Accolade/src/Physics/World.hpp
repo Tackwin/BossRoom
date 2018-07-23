@@ -23,6 +23,7 @@ public:
 	void render(sf::RenderTarget& target) const noexcept;
 
 	void addObject(std::weak_ptr<Object> obj) noexcept;
+	void addObjects(const std::vector<std::weak_ptr<Object>>& objs) noexcept;
 	void delObject(UUID uuid);
 
 	void purge();

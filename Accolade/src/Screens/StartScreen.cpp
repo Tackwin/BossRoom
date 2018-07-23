@@ -47,7 +47,7 @@ void StartScreen::initializeGui() {
 	}
 }
 
-void StartScreen::onEnter() {
+void StartScreen::onEnter(std::any) {
 	_json = AssetsManager::getJson("startZone");
 	auto startingPos = _json.at("startPos").get<std::vector<double>>();
 
@@ -72,7 +72,7 @@ void StartScreen::onEnter() {
 	_generator.loadJson(AM::getJson(JSON_KEY)["particlesGenerator"]["particleBurstFeather"]);
 	_generator.setPos({ 1, 1 });
 }
-void StartScreen::onExit() {
+std::any StartScreen::onExit() {
 	unsubscribeToEvents();
 	if (_enteredShop)
 		unActivateShop();
@@ -82,6 +82,7 @@ void StartScreen::onExit() {
 	_player->unmount();
 	_projectiles.clear();
 	_world.purge();
+	return {};
 }
 
 void StartScreen::initializeWorld() {

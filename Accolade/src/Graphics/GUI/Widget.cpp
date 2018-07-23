@@ -232,7 +232,7 @@ Widget* Widget::findChild(std::string name) const noexcept {
 		}
 		);
 		if (it != std::end(c)) {
-			return w;
+			return it->second;
 		}
 
 		for (auto child : c) {

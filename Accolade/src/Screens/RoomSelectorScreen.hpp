@@ -27,9 +27,10 @@ public: //TODO:Make this private
 public:
 	RoomSelectorScreen(u32 n);
 	~RoomSelectorScreen();
+	virtual Type getType() const noexcept override { return edit_screen; }
 
-	virtual void onEnter();
-	virtual void onExit();
+	virtual void onEnter(std::any) override;
+	virtual std::any onExit() override;
 
 	virtual void update(float dt);
 	virtual void render(sf::RenderTarget& target);

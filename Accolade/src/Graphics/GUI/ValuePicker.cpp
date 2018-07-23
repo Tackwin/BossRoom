@@ -15,6 +15,10 @@ ValuePicker::ValuePicker(nlohmann::json json) noexcept : Widget(json) {
 	if (auto it = json.find("charSize"); it != json.end()) {
 		_charSize = it->get<int>();
 	}
+	if (auto it = json.find("text"); it != json.end()) {
+		_defaultText = it->get<std::string>();
+		_inputString = _defaultText;
+	}
 
 	Callback onClick;
 	Callback onHover;
@@ -23,12 +27,6 @@ ValuePicker::ValuePicker(nlohmann::json json) noexcept : Widget(json) {
 	onClick.going = Callback::TRUE;
 	onClick.ended = [&]() -> bool {
 		_focused = !_focused;
-		if (_focused) {
-			_inputColor = _focusedColor;
-		}
-		else {
-			_inputColor = _unfocusedColor;
-		}
 		return true;
 	};
 
@@ -44,11 +42,11 @@ ValuePicker::ValuePicker(nlohmann::json json) noexcept : Widget(json) {
 
 	onKey.began = [&]() -> bool {
 		if (IM::isKeyJustPressed(sf::Keyboard::BackSpace)) {
-			if (_inputString.getSize() != 0) _inputString.erase(_inputString.getSize() - 1);
+			if (_inputString.length() != 0) _inputString.erase(_inputString.length() - 1);
 		}
 		// Only ascii
-		else if (IM::getTextEntered() < 125){
-			_inputString += IM::getTextEntered();
+		else if (IM::isTextJustEntered() && IM::getTextEntered() < 125){
+			_inputString += (char)IM::getTextEntered();
 		}
 		return true;
 	};
@@ -60,7 +58,7 @@ ValuePicker::ValuePicker(nlohmann::json json) noexcept : Widget(json) {
 	setOnKey(onKey);
 
 	_label.setOrigin({ 0.f, 0.f });
-	_label.setPosition({ 0.f, 0.f });
+	_label.setPosition({ 0.f, -2.f });
 	_label.setCharSize(_charSize);
 	_label.setFont(_font);
 	addChild(&_label);
@@ -70,9 +68,11 @@ void ValuePicker::render(sf::RenderTarget& target) {
 	Rectangle2f inputBox{ getGlobalPosition(), getSize() };
 	_label.setSfString(_inputString);
 
+	if (_focused) _inputColor = _focusedColor;
+
 	inputBox.render(target, _inputColor);
 }
 
-sf::String ValuePicker::getText() const noexcept {
+std::string ValuePicker::getText() const noexcept {
 	return _inputString;
 }

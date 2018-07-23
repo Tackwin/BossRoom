@@ -150,7 +150,8 @@ using json = basic_json<>;
 #endif
 
 // allow to disable exceptions
-#if (defined(__cpp_exceptions) || defined(__EXCEPTIONS) || defined(_CPPUNWIND)) && !defined(JSON_NOEXCEPTION)
+#if (defined(__cpp_exceptions) || defined(__EXCEPTIONS) || defined(_CPPUNWIND)) \
+	&& !defined(JSON_NOEXCEPTION) && _HAS_EXCEPTIONS
     #define JSON_THROW(exception) throw exception
     #define JSON_TRY try
     #define JSON_CATCH(exception) catch(exception)

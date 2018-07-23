@@ -192,7 +192,7 @@ bool Player::isInvicible() const {
 }
 
 void Player::collision(Object* obj) {
-	if (auto ptr = static_cast<Projectile*>(obj); 
+	if (auto ptr = (Projectile*)obj; 
 		ptr->idMask.test((size_t)Object::BIT_TAGS::PROJECTILE) &&
 		!ptr->isFromPlayer()
 	) {

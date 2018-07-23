@@ -1,4 +1,5 @@
 #pragma once
+#include <any>
 #include <stack>
 #include <memory>
 
@@ -9,8 +10,7 @@
 #include "Options/KeyBindings.hpp"
 
 #include "Gameplay/Player/Player.hpp"
-
-class Screen;
+#include "Screens/Screen.hpp"
 class Player;
 class Game {
 public:
@@ -40,8 +40,13 @@ public:
 
 	const KeyBindings& getCurrentKeyBindings() const noexcept;
 
+	Screen::Type getLastScreen() const noexcept;
+
 	PlayerInfo loadPlayerInfo(std::string character) const noexcept;
-private: //TODO: Make this private
+private:
+
+	std::any _returnedFromScreen;
+
 	u08 _debugTimeClockColor;
     sf::CircleShape _debugTimeClockShape;
 
@@ -56,4 +61,6 @@ private: //TODO: Make this private
 
 	std::vector<KeyBindings> _keyBindings;
 	int _currentKeyBindings;
+
+	Screen::Type _lastScreen;
 };

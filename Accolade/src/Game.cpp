@@ -67,6 +67,10 @@ void Game::updateDebugText(double) {
 	}
 }
 
+Screen::Type Game::getLastScreen() const noexcept {
+	return _lastScreen;
+}
+
 void Game::update(double dt) noexcept {
 	updateDebugText(dt);
 	_screens.top()->update(dt);
@@ -75,14 +79,15 @@ void Game::update(double dt) noexcept {
 void Game::exitScreen() {
 	pop();
 	if (!_screens.empty())
-		_screens.top()->onEnter();
+		_screens.top()->onEnter(_returnedFromScreen);
 }
 
 void Game::enterScreen(std::shared_ptr<Screen> s) {
 	if (!_screens.empty()) {
-		_screens.top()->onExit();
+		_lastScreen = _screens.top()->getType();
+		_returnedFromScreen = _screens.top()->onExit();
 	}
-	s->onEnter();
+	s->onEnter(_lastScreen);
 	_screens.push(s);
 }
 
@@ -92,7 +97,7 @@ void Game::enterRoom(u32 n) {
 }
 
 Game::~Game() {
-	for (u32 i = _screens.size(); i > 0u; --i) {
+	for (size_t i = _screens.size(); i > 0u; --i) {
 		pop();
 	}
 
@@ -120,7 +125,8 @@ Game::Game()
 void Game::pop() {
 	if (_screens.empty()) return;
 
-	_screens.top()->onExit();
+	_lastScreen = _screens.top()->getType();
+	_returnedFromScreen = _screens.top()->onExit();
 	_screens.pop();
 }
 

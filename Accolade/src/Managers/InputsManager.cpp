@@ -32,14 +32,21 @@ InputsManager::InputsManager() {
 InputsManager::~InputsManager() {
 }
 
+sf::Keyboard::Key InputsManager::getLastKeyPressed() noexcept {
+	return lastKey;
+}
+
+bool InputsManager::isTextJustEntered() noexcept {
+	return textEntered != 0;
+}
 sf::Uint32 InputsManager::getTextEntered() noexcept {
 	return textEntered;
 }
 
 bool InputsManager::isLastSequence(std::initializer_list<sf::Keyboard::Key> keys) noexcept {
 	unsigned i{ 0u };
+	if (keys.size() != currentSequence.size()) return false;
 	for (auto k : keys) {
-		if (i >= currentSequence.size()) return false;
 		if (k != currentSequence[i++])
 			return false;
 	}
@@ -50,9 +57,9 @@ bool InputsManager::isLastSequenceJustFinished(
 ) noexcept {
 	unsigned i = { 0u };
 	sf::Keyboard::Key last;
+	if (keys.size() != currentSequence.size()) return false;
 	for (auto k : keys) {
 		last = k;
-		if (i >= currentSequence.size()) return false;
 		if (k != currentSequence[i++])
 			return false;
 	}
@@ -120,11 +127,13 @@ void InputsManager::update(sf::RenderWindow &window) {
 	wasKeyJustReleased = false;
 	nKeyPressed = std::max(nKeyPressed, 0);
 	
+	textEntered = 0;
+
 	memset(keyJustPressed   , 0, sizeof(keyJustPressed));
 	memset(keyJustReleased  , 0, sizeof(keyJustReleased));
 	memset(mouseJustPressed , 0, sizeof(mouseJustPressed));
 	memset(mouseJustReleased, 0, sizeof(mouseJustReleased));
-	
+
 	sf::Event event;
 	while(window.pollEvent(event)) {
 		if(event.type == sf::Event::Closed)
@@ -143,7 +152,9 @@ void InputsManager::update(sf::RenderWindow &window) {
 
 			if (
 				InputsManager::isKeyJustPressed(sf::Keyboard::LControl) ||
-				InputsManager::isKeyJustPressed(sf::Keyboard::RControl)
+				InputsManager::isKeyJustPressed(sf::Keyboard::RControl) ||
+				InputsManager::isKeyJustPressed(sf::Keyboard::LShift) ||
+				InputsManager::isKeyJustPressed(sf::Keyboard::RShift)
 			) {
 				currentSequence.clear();
 				currentSequence.push_back(lastKey);
