@@ -396,10 +396,7 @@
       "sounds": {
         "active": [ "shoot" ]
       },
-      "recoil": {
-        "force": 0.5,
-        "time": 1.0
-      },
+      "recoil": 5,
 
       "projectile": {
         "damage": 1,

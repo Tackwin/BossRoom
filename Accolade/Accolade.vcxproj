@@ -388,6 +388,7 @@
     <ClCompile Include="src\Screens\TestScreen.cpp" />
     <ClCompile Include="src\System\Window.cpp" />
     <ClCompile Include="src\Time\Clock.cpp" />
+    <ClCompile Include="src\Time\Scheduler.cpp" />
     <ClCompile Include="src\Utils\string_algorithms.cpp" />
     <ClCompile Include="src\Utils\UUID.cpp" />
   </ItemGroup>
@@ -444,8 +445,10 @@
     <ClInclude Include="src\Screens\TestScreen.hpp" />
     <ClInclude Include="src\System\Window.hpp" />
     <ClInclude Include="src\Time\Clock.hpp" />
+    <ClInclude Include="src\Time\Scheduler.hpp" />
     <ClInclude Include="src\Utils\string_algorithms.hpp" />
     <ClInclude Include="src\Utils\UUID.hpp" />
+    <ClInclude Include="src\Utils\vector_algorithms.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\characters\boloss.json" />

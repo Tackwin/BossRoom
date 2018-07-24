@@ -147,7 +147,6 @@ public: //TODO: Make private
 	nlohmann::basic_json<> _json;
 
 	bool _floored{ false };
-	bool _invincible{ false };
 	bool _freeze{ false };
 
 	bool _jumping{ false };
@@ -156,6 +155,9 @@ public: //TODO: Make private
 	bool _focus{ true };
 
 	float _facingDir{ 0.f };
+
+	bool _invincible{ false };
+	double _invincibleTime{ 0.f };
 
 	Level* _level{ nullptr };
 

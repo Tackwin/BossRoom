@@ -1,3 +1,14 @@
+/**
+	L'opération Accolade est un assaut amphibie britannique,
+	planifié sur l'île de Rhodes et les îles du Dodécanèse dans la mer Égée,
+	durant la Seconde Guerre mondiale.
+
+	Préconisée par Winston Churchill comme un suivi de la prise de la Sicile en 1943,
+	cette opération n'est jamais exécutée.
+*/
+
+
+
 #include <cstdio>
 
 #include <SFML/Graphics.hpp>

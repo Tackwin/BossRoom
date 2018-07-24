@@ -76,7 +76,10 @@ void EditSectionScreen::update(double dt) {
 }
 
 void EditSectionScreen::updateSource() noexcept {
-
+	_newSource->pos = getSnapedMouseCameraPos();
+	if (IM::isMouseJustPressed(sf::Mouse::Left)) {
+		_section.sources.push_back(*_newSource);
+	}
 }
 void EditSectionScreen::updatePlaceSlime() noexcept {
 	_newSlime->startPos = getSnapedMouseCameraPos();
@@ -193,6 +196,17 @@ void EditSectionScreen::inputSwitchState() noexcept {
 			exitToolState();
 		}
 	}
+	else if (IM::isLastSequenceJustFinished({
+		sf::Keyboard::LControl, sf::Keyboard::S, sf::Keyboard::O
+	})) {
+		if (_toolState != place_source) {
+			exitToolState();
+			enterToolState(place_source);
+		}
+		else {
+			exitToolState();
+		}
+	}
 	else if (IM::isKeyJustPressed(sf::Keyboard::Escape) && _toolState != nothing) {
 		exitToolState();
 	}
@@ -208,12 +222,18 @@ void EditSectionScreen::render(sf::RenderTarget& target) {
 	for (auto slime : _section.slimes) {
 		renderDebug(target, slime);
 	}
+	for (auto source : _section.sources) {
+		renderDebug(target, source);
+	}
 
 	if (_newPlateforme.has_value()) {
 		renderDebug(target, *_newPlateforme);
 	}
 	if (_newSlime.has_value()) {
 		renderDebug(target, *_newSlime);
+	}
+	if (_newSource.has_value()) {
+		renderDebug(target, *_newSource);
 	}
 
 	Vector2f startPos = _section.startPos;
@@ -269,11 +289,14 @@ void EditSectionScreen::enterToolState(
 		break;
 	case place_slime:
 		_newSlime = SlimeInfo();
-		_newSlime->startPos = getSnapedMouseCameraPos();
 		changeColorLabel(PLACE_SLIME, { 0.0, 1.0, 0.0, 1.0 });
 		break;
 	case place_start_pos:
 		changeColorLabel(PLACE_START_POS, { 0.0, 1.0, 0.0, 1.0 });
+		break;
+	case place_source:
+		_newSource = SourceInfo();
+		changeColorLabel(PLACE_SOURCE, { 0.0, 1.0, 0.0, 1.0 });
 		break;
 	default:
 		break;
@@ -293,6 +316,9 @@ void EditSectionScreen::exitToolState() noexcept {
 		break;
 	case place_start_pos:
 		changeColorLabel(PLACE_START_POS, { 1.0, 1.0, 1.0, 1.0 });
+		break;
+	case place_source:
+		changeColorLabel(PLACE_SOURCE, { 1.0, 1.0, 1.0, 1.0 });
 		break;
 	default:
 		break;
@@ -319,6 +345,18 @@ void EditSectionScreen::renderDebug(
 	}
 	info.startPos.plot(
 		target, info.size.x / 2.f, color, {0.0, 0.0, 0.0, 0.0}, 0.f
+	);
+}
+void EditSectionScreen::renderDebug(
+	sf::RenderTarget& target, SourceInfo info
+) noexcept {
+	Vector4d color{ 0.8, 0.0, 0.8, 1.0 };
+	auto dist2 = (info.pos - IM::getMousePosInView(_cameraView)).length2();
+	if (dist2 < info.size.x * info.size.x / 4.f) {
+		color = { 0.7, 0.0, 1.0, 1.0 };
+	}
+	info.pos.plot(
+		target, info.size.x / 2.f, color, { 0.0, 0.0, 0.0, 0.0 }, 0.f
 	);
 }
 
@@ -353,6 +391,7 @@ void EditSectionScreen::saveSection(std::string path) const noexcept {
 void EditSectionScreen::deleteHovered() noexcept {
 	auto& plateformes = _section.plateformes;
 	auto& slimes = _section.slimes;
+	auto& sources = _section.sources;
 
 	for (size_t i = plateformes.size(); i > 0; --i) {
 		if (plateformes[i - 1].rectangle.in(IM::getMousePosInView(_cameraView))) {
@@ -366,6 +405,15 @@ void EditSectionScreen::deleteHovered() noexcept {
 		auto dist2 = (slimes[i - 1].startPos - IM::getMousePosInView(_cameraView)).length2();
 		if (dist2 < slimes[i - 1].size.x * slimes[i - 1].size.x / 4.f) {
 			slimes.erase(std::begin(slimes) + i - 1);
+			return;
+		}
+	}
+
+	for (size_t i = sources.size(); i > 0; --i) {
+
+		auto dist2 = (sources[i - 1].pos - IM::getMousePosInView(_cameraView)).length2();
+		if (dist2 < sources[i - 1].size.x * sources[i - 1].size.x / 4.f) {
+			sources.erase(std::begin(sources) + i - 1);
 			return;
 		}
 	}

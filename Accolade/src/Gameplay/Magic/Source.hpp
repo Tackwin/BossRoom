@@ -14,9 +14,9 @@ struct SourceInfo {
 	float reloadTime{ 0.f };
 
 	Vector2f pos;
-	Vector2f size;
+	Vector2f size{ 0.66f, 0.66f };
 
-	std::string sprite;
+	std::string sprite{"source"};
 
 	static SourceInfo loadJson(nlohmann::json json) noexcept;
 	static nlohmann::json saveJson(SourceInfo info) noexcept;

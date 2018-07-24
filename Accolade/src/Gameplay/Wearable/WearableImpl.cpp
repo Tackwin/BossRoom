@@ -41,10 +41,7 @@ void Wearable::InitWearable() {
 		me._properties["countdown"] = 0.0;
 		me._properties["evenShot"] = false;
 		me._properties["projectile"] = json.at("projectile");
-		me._properties["recoil"] = std::tuple<double, double>{
-			json.at("recoil").at("force").get<double>(),
-			json.at("recoil").at("time").get<double>()
-		};
+		me._properties["recoil"] = json.at("recoil").get<double>();
 		me._properties["countdownTime"] = json.at("countdownTime").get<double>();
 	};
 	fireBall.onUnmount = [](Wearable& me) {
@@ -65,7 +62,7 @@ void Wearable::InitWearable() {
 		if (countdown > 0.0 || !player->eventFired(Event::FIRE)) return;
 
 		bool& evenShot = me.getPropsRef<bool>("evenShot");
-		std::tuple<double, double>& recoil = me.getPropsRef<std::tuple<double, double>>("recoil");
+		double& recoil = me.getPropsRef<double>("recoil");
 		double& countdownTime = me.getPropsRef<double>("countdownTime");
 		nlohmann::json projectile = me.getPropsRef<nlohmann::json>("projectile");
 
@@ -74,9 +71,7 @@ void Wearable::InitWearable() {
 		countdown = countdownTime;
 
 		Vector2f dir = player->getFacingDir();
-		player->knockBack(
-			dir * -std::get<0>(recoil), (float)std::get<1>(recoil)
-		);
+		player->applyVelocity(dir * -recoil);
 
 		float a = (float)dir.angleX();
 		a += static_cast<float>((evenShot ? -1 : 1) * PIf / 15);

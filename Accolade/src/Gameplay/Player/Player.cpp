@@ -57,6 +57,13 @@ void Player::update(double dt) {
 		_events.emplace(Event::FIRE);
 	}
 
+	if (_invincible) {
+		_invincibleTime -= dt;
+		if (_invincibleTime < 0.0) {
+			_invincible = false;
+		}
+	}
+
 	_weapon.update(dt);
 
 	if (!_freeze) {
@@ -287,7 +294,7 @@ void Player::clearZonesToApply() {
 }
 
 void Player::applyVelocity(Vector2f v) {
-	velocity += v;
+	flatVelocities.push_back(v);
 }
 
 PlayerInfo Player::getPlayerInfo() const {
@@ -311,6 +318,11 @@ void Player::unmount() {
 }
 
 void Player::knockBack(Vector2f recoil, float time) noexcept {
+	if (_invincible) return;
+
+	_invincible = true;
+	_invincibleTime = _info.invincibilityTime;
+
 	_knockBack = recoil;
 	_knockBackTime = time;
 }

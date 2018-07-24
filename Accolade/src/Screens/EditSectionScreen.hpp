@@ -44,6 +44,7 @@ private:
 	void updateSource() noexcept;
 
 	void renderDebug(sf::RenderTarget& target, PlateformeInfo info) noexcept;
+	void renderDebug(sf::RenderTarget& target, SourceInfo info) noexcept;
 	void renderDebug(sf::RenderTarget& target, SlimeInfo info) noexcept;
 
 	void changeColorLabel(std::string name, Vector4f color) noexcept;
@@ -66,6 +67,7 @@ private:
 	nlohmann::json _json;
 
 	std::optional<PlateformeInfo> _newPlateforme;
+	std::optional<SourceInfo> _newSource;
 	std::optional<SlimeInfo> _newSlime;
 
 	enum EditorToolState {
@@ -81,6 +83,7 @@ private:
 	void exitToolState() noexcept;
 
 	static constexpr auto DRAW_PLATEFORME = "drawPlateforme";
+	static constexpr auto PLACE_SOURCE= "placeSource";
 	static constexpr auto PLACE_SLIME = "placeSlime";
 	static constexpr auto PLACE_START_POS = "placeStartPos";
 };
