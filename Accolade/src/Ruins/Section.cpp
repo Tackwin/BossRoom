@@ -189,7 +189,7 @@ SectionInfo SectionInfo::loadJson(const nlohmann::json& json) noexcept {
 		info.maxRectangle.w = json.at("maxRect").get<std::vector<float>>()[2];
 		info.maxRectangle.h = json.at("maxRect").get<std::vector<float>>()[3];
 	}
-
+	
 	if (json.count("plateformes") != 0) {
 		const auto& plateformes = json.at("plateformes");
 		info.plateformes.reserve(plateformes.size());
@@ -226,9 +226,9 @@ SectionInfo SectionInfo::loadJson(const nlohmann::json& json) noexcept {
 
 nlohmann::json SectionInfo::saveJson(SectionInfo info) noexcept {
 	nlohmann::json json;
-	nlohmann::json slimeArray;
-	nlohmann::json sourceArray;
-	nlohmann::json plateformeArray;
+	nlohmann::json slimeArray = nlohmann::json::array();
+	nlohmann::json sourceArray = nlohmann::json::array();
+	nlohmann::json plateformeArray = nlohmann::json::array();
 
 	for (auto& slime : info.slimes) {
 		slimeArray.push_back(SlimeInfo::saveJson(slime));

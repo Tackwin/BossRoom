@@ -322,6 +322,16 @@ struct Vector : public __vec_member<D, T> {
 		}
 	}
 
+	template<size_t Dp = D>
+	std::enable_if_t<Dp == 2, Vector<D, T>> fitDownRatio(double ratio) const noexcept {
+		if (x < y) {
+			return { x, (T)(x / ratio) };
+		}
+		else {
+			return { (T)(y * ratio), y };
+		}
+	}
+
 #pragma region COLORS
 
 	template<size_t Dp = D>

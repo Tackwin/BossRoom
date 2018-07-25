@@ -7,11 +7,13 @@
 
 #include "Label.hpp"
 #include "ValuePicker.hpp"
+#include "Switcher.hpp"
 
 const Widget::Callback::type Widget::Callback::FALSE = []() { return false; };
 const Widget::Callback::type Widget::Callback::TRUE =  []() { return true; };
 
-Widget::Widget() {
+Widget::Widget() : Widget(nlohmann::json{}) { 
+	1+1;
 }
 
 Widget::Widget(nlohmann::json json) noexcept {
@@ -41,6 +43,16 @@ Widget::Widget(nlohmann::json json) noexcept {
 				}
 				if (type == ValuePicker::NAME) {
 					auto p = new ValuePicker(child);
+					_allocatedChilds.push_back(p);
+					addChild(p);
+				}
+				if (type == SpriteSwitcher::NAME) {
+					auto p = new SpriteSwitcher(child);
+					_allocatedChilds.push_back(p);
+					addChild(p);
+				}
+				if (type == Panel::NAME) {
+					auto p = new Panel(child);
 					_allocatedChilds.push_back(p);
 					addChild(p);
 				}

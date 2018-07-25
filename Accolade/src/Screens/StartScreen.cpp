@@ -227,7 +227,7 @@ void StartScreen::renderGui(sf::RenderTarget& target) {
 	_weaponIcon.setVisible(_player->isEquiped());
 	if (_player->isEquiped()) {
 		auto texture = Wearable::GetWearableinfo(_player->getWeapon().value()).uiTexture;
-		_weaponIcon.setSprite(sf::Sprite{ AM::getTexture(texture) });
+		_weaponIcon.setTexture(texture);
 		_weaponLabel.setPosition(_weaponIcon.getSize() * (-1.f));
 	}
 

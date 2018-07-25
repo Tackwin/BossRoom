@@ -16,7 +16,7 @@ Shop::Shop() :
 	Widget(),
 	_infoPanel(this)
 {
-	_merchantPanel.setSprite(sf::Sprite(AssetsManager::getTexture("panel_a")));
+	_merchantPanel.setTexture("panel_a");
 	_merchantPanel.setOrigin({ 0, 0 });
 	_merchantPanel.setPosition({ 50, 50 });
 	_merchantPanel.setSize({ WIDTH * 0.8f, HEIGHT * 0.7f });
@@ -29,7 +29,7 @@ Shop::Shop() :
 	_merchantPanel.getSprite().setColor(sf::Color(100, 100, 100));
 	_merchantPanel.setParent(this, 0);
 	
-	_quitPanel.setSprite(sf::Sprite(AssetsManager::getTexture("quit")));
+	_quitPanel.setTexture("quit");
 	_quitPanel.setSize({ 20, 20 });
 	_quitPanel.setOrigin({ 1, 0 });
 	_quitPanel.setPosition({
@@ -41,7 +41,7 @@ Shop::Shop() :
 	_infoPanel.setParent(&_merchantPanel, 2);
 	
 
-	_focusPanel.setSprite(sf::Sprite(AssetsManager::getTexture("panel_a")));
+	_focusPanel.setTexture("panel_a");
 	_focusPanel.setSize({ _ItemPanel::PANEL_SIZE + 2, _ItemPanel::PANEL_SIZE + 2 });
 	_focusPanel.setOriginAbs({ 3, 3});
 	_focusPanel.setVisible(true);
@@ -162,13 +162,11 @@ Shop::_ItemPanel::_ItemPanel(Shop* shop, const std::string& weapon, u32 id) :
 	_id(id)
 {
 
-	setSprite(sf::Sprite(AssetsManager::getTexture("panel_a")));
+	setTexture("panel_a");
 	getSprite().setColor({ 80, 80, 80 });
 	setSize({ PANEL_SIZE, PANEL_SIZE });
 
-	sprite.setSprite(
-		sf::Sprite{ AM::getTexture(Wearable::GetWearableinfo(weapon).uiTexture) }
-	);
+	sprite.setTexture(Wearable::GetWearableinfo(weapon).uiTexture);
 	sprite.setSize({ PANEL_SIZE - 4, PANEL_SIZE - 4 });
 	sprite.setPosition({ 2, 2 });
 	sprite.setOnClick({
@@ -195,7 +193,7 @@ bool Shop::_ItemPanel::onClickGoing() {
 Shop::_InfoPanel::_InfoPanel(Shop* shop) :
 	_shop(shop)
 {
-	setSprite(sf::Sprite(AssetsManager::getTexture("panel_a")));
+	setTexture("panel_a");
 	setOrigin({ 0, 0 });
 	setPosition({ WIDTH * 0.4f - 25, 25.f });
 	setSize({ WIDTH * 0.4f - 25, HEIGHT * 0.7f - 25 });
@@ -228,7 +226,7 @@ Shop::_InfoPanel::_InfoPanel(Shop* shop) :
 
 	auto& buy = buttons["buy"];
 	buy.getLabel().setFont("consola");
-	buy.setSprite(sf::Sprite(AssetsManager::getTexture("panel_a")));
+	buy.setTexture("panel_a");
 	buy.getSprite().setColor(sf::Color(150, 160, 150));
 	buy.setSize({ 200, 65 });
 	buy.setStdString("Buy");
@@ -246,7 +244,7 @@ void Shop::_InfoPanel::populateBy(const std::string& weapon) {
 	const auto& w = Wearable::GetWearableinfo(weapon);
 
 	auto& icon = panels["icon"];
-	icon.setSprite(sf::Sprite{AM::getTexture(w.uiTexture)});
+	icon.setTexture(w.uiTexture);
 	icon.setSize({ 150, 150 });
 	icon.setPosition({ 50, 120 });
 

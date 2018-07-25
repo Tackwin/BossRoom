@@ -67,6 +67,26 @@
 				"text": "Place source Ctrl + S O",
 				"charSize": 14,
 				"pos": [0, 90]
+			},
+			"sourceSwitcher": {
+				"name": "sourceSwitcher",
+				"type": "SpriteSwitcher",
+				"pos": [0, 800],
+				"origin": [0, 1],
+				"size": [100, 100],
+				"visible": false,
+				"panels": [
+					{
+						"name": "demo source",
+						"type": "Panel",
+						"sprite": "source"
+					},
+					{
+						"name": "demo",
+						"type": "Panel",
+						"sprite": "source2"
+					}
+				]
 			}
 		}
 	}

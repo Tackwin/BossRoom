@@ -31,7 +31,7 @@ HeritageScreen::PlayerPanel::PlayerPanel() {
 void HeritageScreen::PlayerPanel::populateWith(PlayerInfo& info_) {
 	info = info_;
 
-	setSprite(sf::Sprite(AM::getTexture("panel_a")));
+	setTexture("panel_a");
 	setSize({ (WIDTH - 50.f) * 0.33f, HEIGHT * 0.9f });
 	setPosition({ 25.f, HEIGHT * 0.05f });
 	getSprite().setColor(sf::Color(100, 200, 100));
@@ -47,7 +47,7 @@ void HeritageScreen::PlayerPanel::populateWith(PlayerInfo& info_) {
 
 	auto& infoPanel = panels["infoPanel"];
 	infoPanel = std::make_shared<Panel>();
-	infoPanel->setSprite(sf::Sprite(AM::getTexture("panel_a")));
+	infoPanel->setTexture("panel_a");
 	infoPanel->setSize({
 		getSize().x * .8f,
 		(getSize().y - 40.f - name->getSize().y) * 0.5f
@@ -100,7 +100,7 @@ void HeritageScreen::PlayerPanel::populateWith(PlayerInfo& info_) {
 
 	auto& viewPanel = panels["viewPanel"];
 	viewPanel = std::make_shared<Panel>();
-	viewPanel->setSprite(sf::Sprite(AM::getTexture("panel_a")));
+	viewPanel->setTexture("panel_a");
 	viewPanel->setSize({
 		getSize().x * .4f,
 		(getSize().y - 40.f - name->getSize().y) * .45f
@@ -115,7 +115,7 @@ void HeritageScreen::PlayerPanel::populateWith(PlayerInfo& info_) {
 
 	auto& playerViewPanel = panels["playerViewPanel"];
 	playerViewPanel = std::make_shared<Panel>();
-	playerViewPanel->setSprite(sf::Sprite(AM::getTexture(info.sprite)));
+	playerViewPanel->setTexture(info.sprite);
 	playerViewPanel->setOrigin({ 0.5f, 1.f });
 	playerViewPanel->setPosition({
 		0,

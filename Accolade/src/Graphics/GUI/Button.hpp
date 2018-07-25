@@ -21,8 +21,8 @@ public:
 	void setSize(const Vector2f& size);
 	void setOrigin(const Vector2f& origin);
 
-	void setSprite(const sf::Sprite& sprite);
-	void setHoldSprite(const sf::Sprite& sprite);
+	void setTexture(std::string texture);
+	void setHoldSprite(std::string sprite);
 
 	void computeSize();
 

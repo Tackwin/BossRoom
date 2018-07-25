@@ -26,12 +26,12 @@ sf::Sprite& Button::getHoldSprite() {
 	return _hold.getSprite();
 }
 
-void Button::setSprite(const sf::Sprite& sprite) {
-	_normal.setSprite(sprite);
+void Button::setTexture(std::string texture) {
+	_normal.setTexture(texture);
 	computeSize();
 }
-void Button::setHoldSprite(const sf::Sprite& sprite) {
-	_hold.setSprite(sprite);
+void Button::setHoldSprite(std::string texture) {
+	_hold.setTexture(texture);
 	computeSize();
 }
 

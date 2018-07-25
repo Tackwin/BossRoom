@@ -343,6 +343,7 @@
     <ClCompile Include="src\Components\Removable.cpp" />
     <ClCompile Include="src\Gameplay\Characters\Slime.cpp" />
     <ClCompile Include="src\Gameplay\Magic\Source.cpp" />
+    <ClCompile Include="src\Graphics\GUI\Switcher.cpp" />
     <ClCompile Include="src\Graphics\GUI\ValuePicker.cpp" />
     <ClCompile Include="src\Ruins\Structure\Plateforme.cpp" />
     <ClCompile Include="src\Events\Event.cpp" />
@@ -395,6 +396,7 @@
   <ItemGroup>
     <ClInclude Include="src\Components\Removable.hpp" />
     <ClInclude Include="src\Gameplay\Characters\Slime.hpp" />
+    <ClInclude Include="src\Graphics\GUI\Switcher.hpp" />
     <ClInclude Include="src\Graphics\GUI\ValuePicker.hpp" />
     <ClInclude Include="src\Ruins\Structure\Plateforme.hpp" />
     <ClInclude Include="src\3rd\json.hpp" />

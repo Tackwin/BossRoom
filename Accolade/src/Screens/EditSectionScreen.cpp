@@ -9,6 +9,7 @@
 
 #include "LevelScreen.hpp"
 
+#include "Graphics/GUI/Switcher.hpp"
 #include "Graphics/GUI/Label.hpp"
 #include "Graphics/GUI/ValuePicker.hpp"
 
@@ -29,6 +30,15 @@ void EditSectionScreen::update(double dt) {
 		saveSection(str::trim_whitespace(_savePicker->getText()));
 		C::game->exitScreen();
 		return;
+	}
+
+	if (IM::isKeyJustPressed(sf::Keyboard::Left) && _toolState == place_source) {
+		auto switcher = (SpriteSwitcher*)_widgets.at("root")->findChild("sourceSwitcher");
+		switcher->left();
+	}
+	if (IM::isKeyJustPressed(sf::Keyboard::Right) && _toolState == place_source) {
+		auto switcher = (SpriteSwitcher*)_widgets.at("root")->findChild("sourceSwitcher");
+		switcher->right();
 	}
 
 	if (IM::isLastSequenceJustFinished({ sf::Keyboard::LControl, sf::Keyboard::D }) ||
@@ -78,6 +88,9 @@ void EditSectionScreen::update(double dt) {
 void EditSectionScreen::updateSource() noexcept {
 	_newSource->pos = getSnapedMouseCameraPos();
 	if (IM::isMouseJustPressed(sf::Mouse::Left)) {
+		auto* switcher = (SpriteSwitcher*)_widgets.at("root")->findChild("sourceSwitcher");
+
+		_newSource->sprite = switcher->getCurrentPanel()->getTexture();
 		_section.sources.push_back(*_newSource);
 	}
 }
@@ -296,7 +309,12 @@ void EditSectionScreen::enterToolState(
 		break;
 	case place_source:
 		_newSource = SourceInfo();
-		changeColorLabel(PLACE_SOURCE, { 0.0, 1.0, 0.0, 1.0 });
+		changeColorLabel(PLACE_SOURCE, { 0.0, 1.0, 0.0, 1.0 }); 
+		{
+			auto switcher = 
+				(SpriteSwitcher*)_widgets.at("root")->findChild("sourceSwitcher");
+			switcher->setVisible(true);
+		}
 		break;
 	default:
 		break;
@@ -318,7 +336,13 @@ void EditSectionScreen::exitToolState() noexcept {
 		changeColorLabel(PLACE_START_POS, { 1.0, 1.0, 1.0, 1.0 });
 		break;
 	case place_source:
+		_newSource.reset();
 		changeColorLabel(PLACE_SOURCE, { 1.0, 1.0, 1.0, 1.0 });
+		{
+			auto switcher = 
+				(SpriteSwitcher*)_widgets.at("root")->findChild("sourceSwitcher");
+			switcher->setVisible(false);
+		}
 		break;
 	default:
 		break;
