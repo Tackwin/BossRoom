@@ -2,12 +2,11 @@
 
 #include "Widget.hpp"
 #include "Panel.hpp"
+#include "Label.hpp"
 
 #include "3rd/json.hpp"
 
 #include <vector>
-
-
 
 class SpriteSwitcher : public Widget {
 
@@ -32,5 +31,11 @@ public:
 
 private:
 
+	void setCurrentLabel() noexcept;
+
+	Vector4f _backColor;
+
 	std::vector<std::unique_ptr<Panel>> _panels;
+	std::unique_ptr<Panel> _backPanel;
+	std::unique_ptr<Label> _label;
 };

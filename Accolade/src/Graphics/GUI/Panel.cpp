@@ -33,7 +33,7 @@ float Panel::getSizeRatio() const noexcept {
 void Panel::render(sf::RenderTarget& target) {
 	Widget::render(target);
 	if (!_visible) return;
-		
+
 	sf::CircleShape marker{ 2.0f };
 	marker.setOrigin(marker.getRadius(), marker.getRadius());
 	marker.setPosition(getGlobalPosition());

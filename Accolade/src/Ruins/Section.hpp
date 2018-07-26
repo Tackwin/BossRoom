@@ -1,21 +1,26 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
-#include "./../3rd/json.hpp"
-#include "./../Math/Vector.hpp"
-#include "./../Physics/World.hpp"
-#include "./Structure/Structure.hpp"
-#include "./../Gameplay/Player/Player.hpp"
-#include "./../Gameplay/Boss.hpp"
-#include "../Math/Rectangle.hpp"
+#include "3rd/json.hpp"
+
+#include "Math/Vector.hpp"
+#include "Math/Rectangle.hpp"
+
+#include "Physics/World.hpp"
+
+#include "Structure/Structure.hpp"
 #include "Structure/Plateforme.hpp"
-#include "./../Gameplay/Magic/Source.hpp"
+
+#include "Gameplay/Magic/Sources/Source.hpp"
 #include "Gameplay/Characters/Slime.hpp"
+#include "Gameplay/Player/Player.hpp"
+#include "Gameplay/Boss.hpp"
 
 struct SectionInfo {
 	std::vector<SlimeInfo> slimes;
 	std::vector<PlateformeInfo> plateformes;
 	std::vector<SourceInfo> sources;
+	std::vector<SourceBoomerangInfo> sourcesBoomerang;
 	Rectangle2f maxRectangle;
 	Vector2f startPos;
 	Vector2f viewSize;
@@ -39,6 +44,7 @@ public:
 
 	void addStructure(const std::shared_ptr<Structure>& ptr) noexcept;
 	void addSource(const std::shared_ptr<Source>& ptr) noexcept;
+	void addSourceBoomerang(const std::shared_ptr<SourceBoomerang>& ptr) noexcept;
 	void addSlime(const std::shared_ptr<Slime>& ptr) noexcept;
 
 	Vector2f getPlayerPos() const noexcept;
@@ -67,11 +73,12 @@ private:
 
 	std::shared_ptr<Player> _player;
 
-	std::vector<std::shared_ptr<Slime>> _slimes;
-	std::vector<std::shared_ptr<Projectile>> _projectiles;
-	std::vector<std::shared_ptr<Structure>> _structures;
-	std::vector<std::shared_ptr<Zone>> _playerZones;
-	std::vector<std::shared_ptr<Source>> _sources;
+	std::vector<std::shared_ptr<SourceBoomerang>>	_sourcesBoomerang;
+	std::vector<std::shared_ptr<Projectile>>		_projectiles;
+	std::vector<std::shared_ptr<Structure>>			_structures;
+	std::vector<std::shared_ptr<Source>>			_sources;
+	std::vector<std::shared_ptr<Slime>>				_slimes;
+	std::vector<std::shared_ptr<Zone>>				_zones;
 
 	UUID _keyPressedEvent{ UUID::null };
 	UUID _keyReleasedEvent{ UUID::null };

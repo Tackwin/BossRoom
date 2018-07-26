@@ -12,14 +12,31 @@ SpriteSwitcher::SpriteSwitcher(nlohmann::json json) noexcept : Widget(json) {
 			ptr->setOrigin(getOrigin());
 			ptr->setVisible(false);
 			ptr->setSize(getSize().fitDownRatio(ptr->getSizeRatio()));
-			addChild(ptr.get());
+			ptr->setPosition({ (getSize().x - ptr->getSize().x) / 2.f, 0.f });
+			addChild(ptr.get(), 1);
 			_panels.push_back(std::move(ptr));
 		}
 
 		if (!_panels.empty()) _panels.front()->setVisible(true);
 	}
 
+	if (auto it = json.find("backColor"); it != json.end()) {
+		_backColor = Vector4f::loadJson(*it);
+	}
 
+	if (auto it = json.find("label"); it != json.end()) {
+		_label = std::make_unique<Label>(*it);
+		addChild(_label.get(), 2);
+		setCurrentLabel();
+	}
+	
+	_backPanel = std::make_unique<Panel>();
+	_backPanel->setOrigin(getOrigin());
+	_backPanel->setTexture("panel_a");
+	_backPanel->setSize(getSize());
+	_backPanel->getSprite().setColor(_backColor);
+
+	addChild(_backPanel.get(), 0);
 }
 
 void SpriteSwitcher::add(std::string texture, std::string name) noexcept {
@@ -58,6 +75,8 @@ void SpriteSwitcher::left(size_t n) noexcept {
 	_panels.front()->setVisible(false);
 	std::rotate(std::begin(_panels), std::begin(_panels) + n, std::end(_panels));
 	_panels.front()->setVisible(true);
+
+	setCurrentLabel();
 }
 void SpriteSwitcher::right(size_t n) noexcept {
 	if (_panels.empty()) return;
@@ -65,6 +84,8 @@ void SpriteSwitcher::right(size_t n) noexcept {
 	_panels.front()->setVisible(false);
 	std::rotate(std::rbegin(_panels), std::rbegin(_panels) + n, std::rend(_panels));
 	_panels.front()->setVisible(true);
+
+	setCurrentLabel();
 }
 
 void SpriteSwitcher::render(sf::RenderTarget& target) noexcept {
@@ -74,3 +95,8 @@ void SpriteSwitcher::render(sf::RenderTarget& target) noexcept {
 	target.draw(marker);
 }
 
+void SpriteSwitcher::setCurrentLabel() noexcept {
+	if (_label) {
+		_label->setStdString(getCurrentPanel()->getName());
+	}
+}

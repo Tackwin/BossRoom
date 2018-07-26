@@ -91,7 +91,17 @@ void EditSectionScreen::updateSource() noexcept {
 		auto* switcher = (SpriteSwitcher*)_widgets.at("root")->findChild("sourceSwitcher");
 
 		_newSource->sprite = switcher->getCurrentPanel()->getTexture();
-		_section.sources.push_back(*_newSource);
+
+		if (switcher->getCurrentPanel()->getName() == "source") {
+			_section.sources.push_back(*_newSource);
+		}
+		else if (switcher->getCurrentPanel()->getName() == "source_boomerang") {
+			SourceBoomerangInfo info;
+			info.source = *_newSource;
+
+			_section.sourcesBoomerang.push_back(info);
+		}
+
 	}
 }
 void EditSectionScreen::updatePlaceSlime() noexcept {
@@ -237,6 +247,9 @@ void EditSectionScreen::render(sf::RenderTarget& target) {
 	}
 	for (auto source : _section.sources) {
 		renderDebug(target, source);
+	}
+	for (auto source : _section.sourcesBoomerang) {
+		renderDebug(target, source.source);
 	}
 
 	if (_newPlateforme.has_value()) {
@@ -416,6 +429,7 @@ void EditSectionScreen::deleteHovered() noexcept {
 	auto& plateformes = _section.plateformes;
 	auto& slimes = _section.slimes;
 	auto& sources = _section.sources;
+	auto& sourcesBoomerang = _section.sourcesBoomerang;
 
 	for (size_t i = plateformes.size(); i > 0; --i) {
 		if (plateformes[i - 1].rectangle.in(IM::getMousePosInView(_cameraView))) {
@@ -438,6 +452,15 @@ void EditSectionScreen::deleteHovered() noexcept {
 		auto dist2 = (sources[i - 1].pos - IM::getMousePosInView(_cameraView)).length2();
 		if (dist2 < sources[i - 1].size.x * sources[i - 1].size.x / 4.f) {
 			sources.erase(std::begin(sources) + i - 1);
+			return;
+		}
+	}
+
+	for (size_t i = sourcesBoomerang.size(); i > 0; --i) {
+
+		auto dist2 = (sourcesBoomerang[i - 1].source.pos - IM::getMousePosInView(_cameraView)).length2();
+		if (dist2 < sourcesBoomerang[i - 1].source.size.x * sourcesBoomerang[i - 1].source.size.x / 4.f) {
+			sourcesBoomerang.erase(std::begin(sourcesBoomerang) + i - 1);
 			return;
 		}
 	}

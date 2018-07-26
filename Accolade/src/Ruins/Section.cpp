@@ -1,14 +1,16 @@
 #include "Section.hpp"
 
-#include "./../Game.hpp"
+#include "Game.hpp"
 
-#include "./../Managers/AssetsManager.hpp"
-#include "./../Managers/InputsManager.hpp"
-#include "./../Managers/EventManager.hpp"
-#include "./Structure/Plateforme.hpp"
+#include "Managers/AssetsManager.hpp"
+#include "Managers/InputsManager.hpp"
+#include "Managers/EventManager.hpp"
+#include "Structure/Plateforme.hpp"
 
 #include "Gameplay/Projectile.hpp"
 #include "Gameplay/Zone.hpp"
+
+#include "Utils/json_algorithms.hpp"
 
 Section::Section(SectionInfo info) noexcept : _info(info) {
 	_cameraView.setCenter(_info.maxRectangle.fitUpRatio(RATIO).center());
@@ -22,6 +24,11 @@ Section::Section(SectionInfo info) noexcept : _info(info) {
 	for (auto& source : _info.sources) {
 		auto ptr = std::make_shared<Source>(source);
 		addSource(ptr);
+	}
+
+	for (auto& source : _info.sourcesBoomerang) {
+		auto ptr = std::make_shared<SourceBoomerang>(source);
+		addSourceBoomerang(ptr);
 	}
 
 	for (auto& slime : _info.slimes) {
@@ -55,7 +62,7 @@ void Section::enter() noexcept {
 void Section::exit() noexcept {
 	unsubscribeToEvents();
 
-	_playerZones.clear();
+	_zones.clear();
 	_projectiles.clear();
 	_slimes.clear();
 	_world.purge();
@@ -73,6 +80,9 @@ void Section::update(double dt) noexcept {
 		spatial->update(dt);
 	}
 	for (auto& source : _sources) {
+		source->update(dt);
+	}
+	for (auto& source : _sourcesBoomerang) {
 		source->update(dt);
 	}
 	for (auto& slime : _slimes) {
@@ -102,6 +112,9 @@ void Section::render(sf::RenderTarget& target) const noexcept {
 	for (auto& source : _sources) {
 		source->render(target);
 	}
+	for (auto& source : _sourcesBoomerang) {
+		source->render(target);
+	}
 	for (auto& slime : _slimes) {
 		slime->render(target);
 	}
@@ -126,6 +139,9 @@ void Section::addStructure(const std::shared_ptr<Structure>& ptr) noexcept {
 }
 void Section::addSource(const std::shared_ptr<Source>& ptr) noexcept {
 	_sources.push_back(ptr);
+}
+void Section::addSourceBoomerang(const std::shared_ptr<SourceBoomerang>& ptr) noexcept {
+	_sourcesBoomerang.push_back(ptr);
 }
 
 void Section::subscribeToEvents() noexcept {
@@ -180,6 +196,7 @@ void Section::playerOnExit(Object*) noexcept {
 
 }
 
+
 SectionInfo SectionInfo::loadJson(const nlohmann::json& json) noexcept {
 	SectionInfo info;
 
@@ -191,19 +208,16 @@ SectionInfo SectionInfo::loadJson(const nlohmann::json& json) noexcept {
 	}
 	
 	if (json.count("plateformes") != 0) {
-		const auto& plateformes = json.at("plateformes");
-		info.plateformes.reserve(plateformes.size());
-		for (auto plateforme : plateformes.get<nlohmann::json::array_t>()) {
-			info.plateformes.push_back(PlateformeInfo::loadJson(plateforme));
-		}
+		info.plateformes = load_json_vector<PlateformeInfo>(json.at("plateformes"));
 	}
 
 	if (json.count("sources") != 0) {
-		const auto& sources = json.at("sources");
-		info.sources.reserve(sources.size());
-		for (auto source : sources.get<nlohmann::json::array_t>()) {
-			info.sources.push_back(SourceInfo::loadJson(source));
-		}
+		info.sources = load_json_vector<SourceInfo>(json.at("sources"));
+	}
+	if (json.count(SourceBoomerangInfo::JSON_ID) != 0) {
+		info.sourcesBoomerang = 
+			load_json_vector<SourceBoomerangInfo>(json.at(SourceBoomerangInfo::JSON_ID)
+		);
 	}
 
 	if (json.count("startPos") != 0) {
@@ -228,6 +242,7 @@ nlohmann::json SectionInfo::saveJson(SectionInfo info) noexcept {
 	nlohmann::json json;
 	nlohmann::json slimeArray = nlohmann::json::array();
 	nlohmann::json sourceArray = nlohmann::json::array();
+	nlohmann::json sourceBoomerangArray = nlohmann::json::array();
 	nlohmann::json plateformeArray = nlohmann::json::array();
 
 	for (auto& slime : info.slimes) {
@@ -240,12 +255,17 @@ nlohmann::json SectionInfo::saveJson(SectionInfo info) noexcept {
 		plateformeArray.push_back(PlateformeInfo::saveJson(plateforme));
 	}
 
-	json["maxRect"]		= Rectangle2f::saveJson(info.maxRectangle);
-	json["startPos"]	= Vector2f::saveJson(info.startPos);
-	json["viewSize"]	= Vector2f::saveJson(info.viewSize);
-	json["plateformes"] = plateformeArray;
-	json["sources"]		= sourceArray;
-	json["slimes"]		= slimeArray;
+	for (auto& source : info.sourcesBoomerang) {
+		sourceBoomerangArray.push_back(SourceBoomerangInfo::saveJson(source));
+	}
+
+	json["maxRect"]						= Rectangle2f::saveJson(info.maxRectangle);
+	json["startPos"]					= Vector2f::saveJson(info.startPos);
+	json["viewSize"]					= Vector2f::saveJson(info.viewSize);
+	json["plateformes"]					= plateformeArray;
+	json[SourceBoomerangInfo::JSON_ID]	= sourceBoomerangArray;
+	json["sources"]						= sourceArray;
+	json["slimes"]						= slimeArray;
 
 	return json;
 }
@@ -271,7 +291,7 @@ void Section::pullPlayerObjects() {
 
 	for (auto& p : _player->getZonesToApply()) {
 		_world.addObject(p);
-		_playerZones.push_back(p);
+		_zones.push_back(p);
 	}
 	_player->clearZonesToApply();
 }

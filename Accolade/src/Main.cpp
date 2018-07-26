@@ -45,7 +45,7 @@ bool update(sf::RenderWindow& window, double dt) {
 	InputsManager::update(window);
 	//if (dt - FIXED_DT == dt) return false;
 	C::DT = dt;
-	C::game->update(dt);
+	C::game->update(dt > 0.016 ? 0.016 : dt);
 	return false;
 }
 

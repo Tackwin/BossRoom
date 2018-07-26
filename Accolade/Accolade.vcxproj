@@ -342,7 +342,7 @@
   <ItemGroup>
     <ClCompile Include="src\Components\Removable.cpp" />
     <ClCompile Include="src\Gameplay\Characters\Slime.cpp" />
-    <ClCompile Include="src\Gameplay\Magic\Source.cpp" />
+    <ClCompile Include="src\Gameplay\Magic\Sources\Source.cpp" />
     <ClCompile Include="src\Graphics\GUI\Switcher.cpp" />
     <ClCompile Include="src\Graphics\GUI\ValuePicker.cpp" />
     <ClCompile Include="src\Ruins\Structure\Plateforme.cpp" />
@@ -390,6 +390,7 @@
     <ClCompile Include="src\System\Window.cpp" />
     <ClCompile Include="src\Time\Clock.cpp" />
     <ClCompile Include="src\Time\Scheduler.cpp" />
+    <ClCompile Include="src\Utils\json_algorithms.cpp" />
     <ClCompile Include="src\Utils\string_algorithms.cpp" />
     <ClCompile Include="src\Utils\UUID.cpp" />
   </ItemGroup>
@@ -448,6 +449,7 @@
     <ClInclude Include="src\System\Window.hpp" />
     <ClInclude Include="src\Time\Clock.hpp" />
     <ClInclude Include="src\Time\Scheduler.hpp" />
+    <ClInclude Include="src\Utils\json_algorithms.hpp" />
     <ClInclude Include="src\Utils\string_algorithms.hpp" />
     <ClInclude Include="src\Utils\UUID.hpp" />
     <ClInclude Include="src\Utils\vector_algorithms.hpp" />
@@ -459,7 +461,7 @@
     <None Include="res\rooms\roomA.json" />
     <None Include="res\rooms\roomOG.json" />
     <None Include="res\rooms\start.json" />
-    <None Include="src\Gameplay\Magic\Source.hpp" />
+    <None Include="src\Gameplay\Magic\Sources\Source.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
