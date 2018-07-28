@@ -148,7 +148,8 @@
     "default_key": "keys/default.json",
     "roomA": "rooms/roomA.json",
     "startZone": "rooms/start.json",
-    "editScreen": "screens/edit.json"
+    "editScreen": "screens/edit.json",
+    "boomerangSpell": "spells/boomerang.json"
   },
   "bosses": [
     {

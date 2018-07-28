@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <optional>
 
 #include "3rd/json.hpp"
 
@@ -11,7 +12,9 @@
 #include "Structure/Structure.hpp"
 #include "Structure/Plateforme.hpp"
 
+#include "Gameplay/Magic/Sources/SourceBoomerang.hpp"
 #include "Gameplay/Magic/Sources/Source.hpp"
+#include "Gameplay/Magic/Spells/Spell.hpp"
 #include "Gameplay/Characters/Slime.hpp"
 #include "Gameplay/Player/Player.hpp"
 #include "Gameplay/Boss.hpp"
@@ -44,7 +47,7 @@ public:
 
 	void addStructure(const std::shared_ptr<Structure>& ptr) noexcept;
 	void addSource(const std::shared_ptr<Source>& ptr) noexcept;
-	void addSourceBoomerang(const std::shared_ptr<SourceBoomerang>& ptr) noexcept;
+	void addSpell(const std::shared_ptr<Spell>& ptr) noexcept;
 	void addSlime(const std::shared_ptr<Slime>& ptr) noexcept;
 
 	Vector2f getPlayerPos() const noexcept;
@@ -52,6 +55,8 @@ public:
 	std::shared_ptr<Player> getPlayer() const noexcept;
 
 	SectionInfo getInfo() const noexcept;
+
+	std::shared_ptr<Object> getTargetEnnemyFromMouse() noexcept;
 
 private:
 	// remove all object wich has the remove flag set
@@ -63,6 +68,8 @@ private:
 	void subscribeToEvents() noexcept;
 	void unsubscribeToEvents() noexcept;
 
+	void renderCrossOnTarget(sf::RenderTarget& target) const noexcept;
+
 	void pullPlayerObjects();
 
 	nlohmann::json _levelJson;
@@ -73,11 +80,13 @@ private:
 
 	std::shared_ptr<Player> _player;
 
-	std::vector<std::shared_ptr<SourceBoomerang>>	_sourcesBoomerang;
+	std::shared_ptr<Object> targetEnnemy_;
+
 	std::vector<std::shared_ptr<Projectile>>		_projectiles;
 	std::vector<std::shared_ptr<Structure>>			_structures;
 	std::vector<std::shared_ptr<Source>>			_sources;
 	std::vector<std::shared_ptr<Slime>>				_slimes;
+	std::vector<std::shared_ptr<Spell>>				spells_;
 	std::vector<std::shared_ptr<Zone>>				_zones;
 
 	UUID _keyPressedEvent{ UUID::null };

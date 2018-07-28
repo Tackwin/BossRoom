@@ -359,3 +359,17 @@ PlayerInfo::PlayerInfo(nlohmann::json json) :
 	auto vec = json.at("hit_box").get<std::vector<double>>();
 	hitBox = { (float)vec[0], (float)vec[1] };
 }
+
+// Magic spell stuff.
+
+void Player::setBoomerangSpellAvailable(bool value) noexcept {
+	boomerangSpellAvailable_ = value;
+}
+
+bool Player::isBoomerangSpellAvailable() const noexcept {
+	return boomerangSpellAvailable_;
+}
+
+void Player::updateBoomerangSpell(double) noexcept {
+	
+}

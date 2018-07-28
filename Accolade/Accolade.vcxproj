@@ -343,6 +343,9 @@
     <ClCompile Include="src\Components\Removable.cpp" />
     <ClCompile Include="src\Gameplay\Characters\Slime.cpp" />
     <ClCompile Include="src\Gameplay\Magic\Sources\Source.cpp" />
+    <ClCompile Include="src\Gameplay\Magic\Sources\SourceBoomerang.cpp" />
+    <ClCompile Include="src\Gameplay\Magic\Spells\SpellBoomerang.cpp" />
+    <ClCompile Include="src\Gameplay\Magic\Spells\Spell.cpp" />
     <ClCompile Include="src\Graphics\GUI\Switcher.cpp" />
     <ClCompile Include="src\Graphics\GUI\ValuePicker.cpp" />
     <ClCompile Include="src\Ruins\Structure\Plateforme.cpp" />
@@ -397,6 +400,9 @@
   <ItemGroup>
     <ClInclude Include="src\Components\Removable.hpp" />
     <ClInclude Include="src\Gameplay\Characters\Slime.hpp" />
+    <ClInclude Include="src\Gameplay\Magic\Sources\SourceBoomerang.hpp" />
+    <ClInclude Include="src\Gameplay\Magic\Spells\SpellBoomerang.hpp" />
+    <ClInclude Include="src\Gameplay\Magic\Spells\Spell.hpp" />
     <ClInclude Include="src\Graphics\GUI\Switcher.hpp" />
     <ClInclude Include="src\Graphics\GUI\ValuePicker.hpp" />
     <ClInclude Include="src\Ruins\Structure\Plateforme.hpp" />
@@ -461,6 +467,7 @@
     <None Include="res\rooms\roomA.json" />
     <None Include="res\rooms\roomOG.json" />
     <None Include="res\rooms\start.json" />
+    <None Include="res\spells\boomerang.json" />
     <None Include="src\Gameplay\Magic\Sources\Source.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

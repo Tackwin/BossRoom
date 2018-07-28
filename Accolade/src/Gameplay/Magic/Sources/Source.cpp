@@ -2,7 +2,9 @@
 
 #include "Managers/AssetsManager.hpp"
 
-#include "Utils/json_algorithms.hpp"
+#include "Ruins/Section.hpp"
+
+#include "Gameplay/Magic/Spells/SpellBoomerang.hpp"
 
 SourceInfo SourceInfo::loadJson(nlohmann::json json) noexcept {
 	SourceInfo info;
@@ -11,13 +13,6 @@ SourceInfo SourceInfo::loadJson(nlohmann::json json) noexcept {
 	info.pos = Vector2f::loadJson(json.at("pos"));
 	info.size = Vector2f::loadJson(json.at("size"));
 	info.sprite = json.at("sprite").get<std::string>();
-	return info;
-}
-
-SourceBoomerangInfo SourceBoomerangInfo::loadJson(nlohmann::json json) noexcept {
-	SourceBoomerangInfo info;
-	info.source = SourceInfo::loadJson(json);
-	
 	return info;
 }
 
@@ -30,41 +25,31 @@ nlohmann::json SourceInfo::saveJson(SourceInfo info) noexcept {
 	json["sprite"] = info.sprite;
 	return json;
 }
-nlohmann::json SourceBoomerangInfo::saveJson(SourceBoomerangInfo info) noexcept {
-	nlohmann::json json = nlohmann::json::object();
-
-	json = merge(json, SourceInfo::saveJson(info.source));
-
-	return json;
-}
-
 Source::Source(SourceInfo info) noexcept :
 	Object(),
-	_info(info)
+	info_(info)
 {
-	pos = _info.pos;
-	_sprite.setTexture(AM::getTexture(_info.sprite));
+	pos = info_.pos;
+	sprite_.setTexture(AM::getTexture(info_.sprite));
 }
-SourceBoomerang::SourceBoomerang(SourceBoomerangInfo info) noexcept :
-	Source(info.source),
-	_info(info)
-{}
 
+void Source::enter(Section* section) noexcept {
+	section_ = section;
+}
+void Source::exit() noexcept {
+	section_ = nullptr;
+}
 
 void Source::update(double) noexcept {}
-void SourceBoomerang::update(double dt) noexcept { Source::update(dt); }
 
 void Source::render(sf::RenderTarget& target) noexcept {
-	double ratio = (double)_sprite.getTextureRect().width / _sprite.getTextureRect().height;
+	double ratio = (double)sprite_.getTextureRect().width / sprite_.getTextureRect().height;
 
-	_sprite.setScale(
-		_info.size.fitUpRatio(ratio).x / _sprite.getTextureRect().width,
-		_info.size.fitUpRatio(ratio).y / _sprite.getTextureRect().height
+	sprite_.setScale(
+		info_.size.fitUpRatio(ratio).x / sprite_.getTextureRect().width,
+		info_.size.fitUpRatio(ratio).y / sprite_.getTextureRect().height
 	);
-	_sprite.setPosition(pos);
+	sprite_.setPosition(pos);
 
-	target.draw(_sprite);
-}
-void SourceBoomerang::render(sf::RenderTarget& target) noexcept {
-	Source::render(target);
+	target.draw(sprite_);
 }

@@ -168,4 +168,20 @@ public: //TODO: Make private
 
 	std::vector<std::shared_ptr<Projectile>> _projectilesToShoot;
 	std::vector<std::shared_ptr<Zone>> _zonesToApply;
+
+
+	// Now there is stuff for the magic spells, i need to figure out
+	// a way to make that generics, i'll wait for a number of spell to be implemented
+	// before id do that. Right now i don't see pattern to generalize, maybe there isn't,
+	// we'll see
+public:
+
+	void setBoomerangSpellAvailable(bool value) noexcept;
+	bool isBoomerangSpellAvailable() const noexcept;
+
+private:
+	bool boomerangSpellAvailable_{ false };
+
+	void updateBoomerangSpell(double dt) noexcept;
+
 };

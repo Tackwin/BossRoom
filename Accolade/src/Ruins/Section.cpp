@@ -25,10 +25,9 @@ Section::Section(SectionInfo info) noexcept : _info(info) {
 		auto ptr = std::make_shared<Source>(source);
 		addSource(ptr);
 	}
-
 	for (auto& source : _info.sourcesBoomerang) {
 		auto ptr = std::make_shared<SourceBoomerang>(source);
-		addSourceBoomerang(ptr);
+		addSource(std::dynamic_pointer_cast<Source>(ptr));
 	}
 
 	for (auto& slime : _info.slimes) {
@@ -54,6 +53,10 @@ void Section::enter() noexcept {
 		slime->enterSection(this);
 		_world.addObject(slime);
 	}
+	for (auto& source : _sources) {
+		source->enter(this);
+		_world.addObject(source);
+	}
 	_world.addObject(_player);
 
 	subscribeToEvents();
@@ -62,9 +65,14 @@ void Section::enter() noexcept {
 void Section::exit() noexcept {
 	unsubscribeToEvents();
 
+	for (auto& source : _sources) {
+		source->exit();
+	}
+
 	_zones.clear();
 	_projectiles.clear();
 	_slimes.clear();
+	spells_.clear();
 	_world.purge();
 }
 
@@ -82,11 +90,11 @@ void Section::update(double dt) noexcept {
 	for (auto& source : _sources) {
 		source->update(dt);
 	}
-	for (auto& source : _sourcesBoomerang) {
-		source->update(dt);
-	}
 	for (auto& slime : _slimes) {
 		slime->update(dt);
+	}
+	for (auto& spell : spells_) {
+		spell->update(dt);
 	}
 
 	removeDeadObject();
@@ -94,6 +102,8 @@ void Section::update(double dt) noexcept {
 	pullPlayerObjects();
 
 	_world.updateInc(dt, 1);
+
+	targetEnnemy_ = getTargetEnnemyFromMouse();
 }
 void Section::render(sf::RenderTarget& target) const noexcept {
 	auto oldView = target.getView();
@@ -112,12 +122,14 @@ void Section::render(sf::RenderTarget& target) const noexcept {
 	for (auto& source : _sources) {
 		source->render(target);
 	}
-	for (auto& source : _sourcesBoomerang) {
-		source->render(target);
-	}
 	for (auto& slime : _slimes) {
 		slime->render(target);
 	}
+	for (auto& spell : spells_) {
+		spell->render(target);
+	}
+
+	renderCrossOnTarget(target);
 
 	target.setView(oldView);
 }
@@ -134,14 +146,14 @@ void Section::renderDebug(sf::RenderTarget& target) const noexcept {
 	target.setView(oldView);
 }
 
+void Section::addSpell(const std::shared_ptr<Spell>& ptr) noexcept {
+	spells_.push_back(ptr);
+}
 void Section::addStructure(const std::shared_ptr<Structure>& ptr) noexcept {
 	_structures.push_back(ptr);
 }
 void Section::addSource(const std::shared_ptr<Source>& ptr) noexcept {
 	_sources.push_back(ptr);
-}
-void Section::addSourceBoomerang(const std::shared_ptr<SourceBoomerang>& ptr) noexcept {
-	_sourcesBoomerang.push_back(ptr);
 }
 
 void Section::subscribeToEvents() noexcept {
@@ -182,6 +194,11 @@ void Section::removeDeadObject() noexcept {
 		if (_sources[i]->toRemove()) {
 			_world.delObject(_sources[i]->uuid);
 			_sources.erase(_sources.begin() + i);
+		}
+	}
+	for (int i = (int)spells_.size() - 1; i >= 0; --i) {
+		if (spells_[i]->toRemove()) {
+			spells_.erase(spells_.begin() + i);
 		}
 	}
 }
@@ -298,4 +315,36 @@ void Section::pullPlayerObjects() {
 
 SectionInfo Section::getInfo() const noexcept {
 	return _info;
+}
+
+std::shared_ptr<Object> Section::getTargetEnnemyFromMouse() noexcept {
+	if (_player->isBoomerangSpellAvailable()) {
+		auto dist = [&](const std::shared_ptr<Object>& obj) {
+			return obj->pos - IM::getMousePosInView(_cameraView);
+		};
+
+		std::pair<Vector2f, std::shared_ptr<Object>> minPair{dist(_slimes[0]), _slimes[0]};
+
+		for (auto& slime : _slimes) {
+			if (minPair.first.length2() > dist(slime).length2()) {
+				minPair = { dist(slime), slime };
+			}
+		}
+
+		return minPair.second;
+	}
+	return {};
+}
+
+void Section::renderCrossOnTarget(sf::RenderTarget& target) const noexcept {
+	if (!targetEnnemy_) return;
+
+	sf::CircleShape shape{ 1.f };
+	shape.setOrigin(shape.getRadius(), shape.getRadius());
+	shape.setOutlineThickness(0.1f);
+	shape.setFillColor(Vector4f{ 0., 0., 0., 0. });
+	shape.setOutlineColor(Vector4f{ 1.0, 0.0, 1.0, 1.0 });
+	shape.setPosition(targetEnnemy_->pos);
+
+	target.draw(shape);
 }

@@ -2,17 +2,20 @@
 #include <SFML/Graphics.hpp>
 
 #include "3rd/json.hpp"
+
 #include "Math/Vector.hpp"
 
 #include "Components/Removable.hpp"
+
 #include "Physics/Object.hpp"
 
+class Section;
 struct SourceInfo {
 	static constexpr auto JSON_ID = "Source";
 
 	int id{ 0 };
 
-	float reloadTime{ 0.f };
+	float reloadTime{ 0.5f };
 
 	Vector2f pos;
 	Vector2f size{ 0.66f, 0.66f };
@@ -21,15 +24,6 @@ struct SourceInfo {
 
 	static SourceInfo loadJson(nlohmann::json json) noexcept;
 	static nlohmann::json saveJson(SourceInfo info) noexcept;
-};
-
-struct SourceBoomerangInfo {
-	static constexpr auto JSON_ID = "SourceBoomerang";
-
-	SourceInfo source;
-
-	static SourceBoomerangInfo loadJson(nlohmann::json json) noexcept;
-	static nlohmann::json saveJson(SourceBoomerangInfo info) noexcept;
 };
 
 class Source : public Object, public Removable {
@@ -42,25 +36,20 @@ public:
 	Source(Source&&) = default;
 	Source& operator=(Source&&) = default;
 
+	virtual void enter(Section* section) noexcept;
+	virtual void exit() noexcept;
+
 	virtual void update(double dt) noexcept;
 	virtual void render(sf::RenderTarget& target) noexcept;
 
-private:
-	SourceInfo _info;
+protected:
+	// Well... looks like _.* identifier are reserved by the standard...
+	// I need to eventually phase _all of them_ out.
 
-	sf::Sprite _sprite;
-};
+	Section* section_{ nullptr };
 
-class SourceBoomerang : public Source {
-public:
-
-	SourceBoomerang(SourceBoomerangInfo info) noexcept;
-
-	virtual void update(double dt) noexcept override;
-	virtual void render(sf::RenderTarget& target) noexcept override;
+	sf::Sprite sprite_;
 
 private:
-
-	SourceBoomerangInfo _info;
-
+	SourceInfo info_;
 };
