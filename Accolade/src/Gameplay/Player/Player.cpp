@@ -386,9 +386,17 @@ bool Player::isBoomerangSpellAvailable() const noexcept {
 
 void Player::updateBoomerangSpell(double) noexcept {
 	if (IM::isMouseJustPressed(sf::Mouse::Left)) {
-		spellBoomerang_->launch(section_->getTargetEnnemyFromMouse());
+		auto target = section_->getTargetEnnemyFromMouse();
+		if (!target) return;
 
-		// Now the object only live in the Section object.
-		spellBoomerang_.reset();
+
+		auto info = spellBoomerang_->getSpellInfo();
+
+		if ((target->pos - pos).length2() <= info.range * info.range) {
+			spellBoomerang_->launch(target);
+
+			// Now the object only live in the Section object.
+			spellBoomerang_.reset();
+		}
 	}
 }

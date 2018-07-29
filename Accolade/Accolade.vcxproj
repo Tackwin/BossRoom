@@ -405,6 +405,7 @@
     <ClInclude Include="src\Gameplay\Magic\Spells\Spell.hpp" />
     <ClInclude Include="src\Graphics\GUI\Switcher.hpp" />
     <ClInclude Include="src\Graphics\GUI\ValuePicker.hpp" />
+    <ClInclude Include="src\Math\Segment.hpp" />
     <ClInclude Include="src\Ruins\Structure\Plateforme.hpp" />
     <ClInclude Include="src\3rd\json.hpp" />
     <ClInclude Include="src\Common.hpp" />
@@ -464,6 +465,7 @@
     <None Include="res\characters\boloss.json" />
     <None Include="res\config.json" />
     <None Include="res\keys\default.json" />
+    <None Include="res\particles\genericMagic.json" />
     <None Include="res\rooms\roomA.json" />
     <None Include="res\rooms\roomOG.json" />
     <None Include="res\rooms\start.json" />

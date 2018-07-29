@@ -149,7 +149,8 @@
     "roomA": "rooms/roomA.json",
     "startZone": "rooms/start.json",
     "editScreen": "screens/edit.json",
-    "boomerangSpell": "spells/boomerang.json"
+    "boomerangSpell": "spells/boomerang.json",
+    "genericParticuleGenerator": "particles/genericMagic.json"
   },
   "bosses": [
     {

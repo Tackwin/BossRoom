@@ -24,16 +24,21 @@ SlimeInfo SlimeInfo::loadJson(nlohmann::json json) noexcept {
 	if (auto it = json.find("maxHealth"); it != json.end()) {
 		info.maxHealth = *it;
 	}
+	if (auto it = json.find("viewRange"); it != json.end()) {
+		info.viewRange = *it;
+	}
 	return info;
 }
 
 nlohmann::json SlimeInfo::saveJson(SlimeInfo info) noexcept {
 	nlohmann::json json;
-	json["startPos"] = Vector2f::saveJson(info.startPos);
-	json["health"] = info.health;
-	json["maxHealth"] = info.maxHealth;
-	json["sprite"] = info.sprite;
+
 	json["speed"] = info.speed;
+	json["health"] = info.health;
+	json["sprite"] = info.sprite;
+	json["maxHealth"] = info.maxHealth;
+	json["viewRange"] = info.viewRange;
+	json["startPos"] = Vector2f::saveJson(info.startPos);
 
 	return json;
 }

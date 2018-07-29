@@ -7,13 +7,18 @@
 #include "Physics/Object.hpp"
 #include "Physics/Collider.hpp"
 
+#include "Graphics/ParticleGenerator.hpp"
+
 struct SpellBoomerangInfo {
 	static constexpr auto JSON_ID = "SpellBoomerangInfo";
 
 	float speed{ 1.f};
-	float radius{ 0.05f };
+	float range{ 5.0f };
 	float damage{ 1.f };
+	float radius{ 0.05f };
 	float rotateSpeed{ 3.f };
+
+	std::string particleGenerator;
 
 	static SpellBoomerangInfo loadJson(nlohmann::json json) noexcept;
 	static nlohmann::json saveJson(SpellBoomerangInfo info) noexcept;
@@ -22,7 +27,6 @@ struct SpellBoomerangInfo {
 class SpellBoomerang : public Spell, public Object {
 public:
 	SpellBoomerang(Section* section, SpellBoomerangInfo info) noexcept;
-	~SpellBoomerang() noexcept;
 
 	SpellBoomerang(SpellBoomerang&) = delete;
 	SpellBoomerang(SpellBoomerang&&) = delete;
@@ -34,6 +38,8 @@ public:
 	virtual void render(sf::RenderTarget& target) noexcept override;
 
 	void launch(std::weak_ptr<Object> obj) noexcept;
+
+	SpellBoomerangInfo getSpellInfo() const noexcept;
 private:
 
 	void onEnter(Object* obj) noexcept;
@@ -44,6 +50,8 @@ private:
 	float angleToPlayer_{ 0.f };
 
 	SpellBoomerangInfo info_;
+
+	ParticleGenerator particleGenerator_;
 
 	std::weak_ptr<Object> target_;
 };

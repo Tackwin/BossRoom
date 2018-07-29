@@ -6,6 +6,8 @@
 
 #include "Ruins/Section.hpp"
 
+#include "Managers/AssetsManager.hpp"
+
 #include "Gameplay/Characters/Slime.hpp"
 
 SpellBoomerangInfo SpellBoomerangInfo::loadJson(nlohmann::json json) noexcept {
@@ -14,14 +16,20 @@ SpellBoomerangInfo SpellBoomerangInfo::loadJson(nlohmann::json json) noexcept {
 	if (auto it = json.find("speed"); it != json.end()) {
 		info.speed = *it;
 	}
-	if (auto it = json.find("radius"); it != json.end()) {
-		info.radius = *it;
+	if (auto it = json.find("range"); it != json.end()) {
+		info.range = *it;
 	}
 	if (auto it = json.find("damage"); it != json.end()) {
 		info.damage = *it;
 	}
+	if (auto it = json.find("radius"); it != json.end()) {
+		info.radius = *it;
+	}
 	if (auto it = json.find("rotateSpeed"); it != json.end()) {
 		info.rotateSpeed = *it;
+	}
+	if (auto it = json.find("particleGenerator"); it != json.end()) {
+		info.particleGenerator = it->get<decltype(info.particleGenerator)>();
 	}
 
 	return info;
@@ -30,9 +38,11 @@ nlohmann::json SpellBoomerangInfo::saveJson(SpellBoomerangInfo info) noexcept {
 	nlohmann::json json = nlohmann::json::object();
 
 	json["speed"] = info.speed;
+	json["range"] = info.range;
 	json["radius"] = info.speed;
 	json["damage"] = info.damage;
 	json["rotateSpeed"] = info.rotateSpeed;
+	json["particleGenerator"] = info.particleGenerator;
 
 	return json;
 }
@@ -53,10 +63,12 @@ SpellBoomerang::SpellBoomerang(Section* section, SpellBoomerangInfo info) noexce
 	collider = std::move(disk);
 	collider->onEnter = std::bind(&SpellBoomerang::onEnter, this, std::placeholders::_1);
 	collider->onExit  = std::bind(&SpellBoomerang::onExit , this, std::placeholders::_1);
-}
 
-SpellBoomerang::~SpellBoomerang() noexcept {
- }
+
+	particleGenerator_ = ParticleGenerator(
+		AM::getJson(info_.particleGenerator), pos
+	);
+}
 
 void SpellBoomerang::update(double dt) noexcept {
 	if (launched_ && target_.expired()) {
@@ -71,6 +83,9 @@ void SpellBoomerang::update(double dt) noexcept {
 		auto wanted = target->pos;
 
 		flatVelocities.push_back((wanted - pos).normalize() * info_.speed);
+
+		particleGenerator_.setPos(pos);
+		particleGenerator_.update(dt);
 	}
 	else {
 		auto wanted = section_->getPlayer()->support(angleToPlayer_, 0.f);
@@ -89,6 +104,7 @@ void SpellBoomerang::render(sf::RenderTarget& target) noexcept {
 
 	if (launched_) {
 		point.setFillColor(Vector4f{ 0.f,1.f,0.f,1.f });
+		particleGenerator_.render(target);
 	}
 	else {
 		point.setFillColor(Vector4f{ 1.f,0.f,0.f,1.f });
@@ -115,4 +131,8 @@ void SpellBoomerang::launch(std::weak_ptr<Object> obj) noexcept {
 	collisionMask.set(Object::SLIME);
 	maskChanged = true;
 	launched_ = true;
+}
+
+SpellBoomerangInfo SpellBoomerang::getSpellInfo() const noexcept {
+	return info_;
 }

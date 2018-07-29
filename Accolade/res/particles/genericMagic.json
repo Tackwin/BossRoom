@@ -1,0 +1,36 @@
+{
+ "nParticles": -1,
+  "iTime": {
+    "mean": 0.01,
+    "range": 0.005,
+    "type": "normal",
+    "min": 0,
+    "real": true
+  },
+  "lifetime": 0,
+  "particle": {
+    "sprite": "particle_simple",
+    "size": {
+      "mean": 0.12,
+      "range": 0.03,
+      "real": true,
+      "min": 0
+    },
+    "lifetime": {
+      "mean": 0.1,
+      "range": 0.02,
+      "type": "normal"
+    },
+    "a": {
+      "mean": 0,
+      "range": 3.14159265,
+      "type": "uniform",
+      "real": true
+    },
+    "speed": {
+      "mean": 1.5,
+      "range": 0.25,
+      "type": "normal"
+    }
+  }
+}

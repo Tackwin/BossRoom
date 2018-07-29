@@ -43,6 +43,10 @@ void Source::exit() noexcept {
 void Source::update(double) noexcept {}
 
 void Source::render(sf::RenderTarget& target) noexcept {
+	sf::CircleShape point{ 0.05f };
+	point.setOrigin(point.getRadius(), point.getRadius());
+	point.setPosition(pos);
+	
 	double ratio = (double)sprite_.getTextureRect().width / sprite_.getTextureRect().height;
 
 	sprite_.setScale(
@@ -52,4 +56,5 @@ void Source::render(sf::RenderTarget& target) noexcept {
 	sprite_.setPosition(pos);
 
 	target.draw(sprite_);
+	target.draw(point);
 }

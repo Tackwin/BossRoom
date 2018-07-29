@@ -12,6 +12,7 @@ struct SlimeInfo {
 	Vector2f startPos{ 0., 0. };
 	float speed{ 1.f };
 	float health{ 10.f };
+	float viewRange{ 7.f };
 	float maxHealth{ 10.f };
 	std::string sprite{ "slime" };
 	Vector2f size{ 1.f, 1.f };
