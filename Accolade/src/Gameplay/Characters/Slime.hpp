@@ -12,6 +12,7 @@ struct SlimeInfo {
 	Vector2f startPos{ 0., 0. };
 	float speed{ 1.f };
 	float health{ 10.f };
+	float maxHealth{ 10.f };
 	std::string sprite{ "slime" };
 	Vector2f size{ 1.f, 1.f };
 
@@ -30,6 +31,8 @@ public:
 
 	void onEnter(Object* collider) noexcept;
 	void onExit(Object* collider) noexcept;
+
+	void hit(float damage) noexcept;
 
 private:
 	SlimeInfo _info;

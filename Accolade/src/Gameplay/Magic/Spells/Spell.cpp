@@ -18,3 +18,7 @@ void Spell::enter(Section* section) noexcept {
 void Spell::leave() noexcept {
 	section_ = nullptr;
 }
+
+UUID Spell::getUuid() const noexcept {
+	return id_;
+}

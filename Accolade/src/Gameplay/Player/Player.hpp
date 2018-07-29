@@ -1,31 +1,30 @@
 #pragma once
+#include <string>
 #include <memory>
 #include <vector>
+#include <optional>
 #include <unordered_set>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 
-#include "./../../3rd/json.hpp"
+#include "Common.hpp"
 
-#include "./../../Common.hpp"
+#include "3rd/json.hpp"
 
-#include "./../../Math/Vector.hpp"
+#include "Math/Vector.hpp"
 
-#include "./../../Physics/Object.hpp"
+#include "Physics/Object.hpp"
 
-#include "./../../Graphics/AnimatedSprite.hpp"
+#include "Graphics/AnimatedSprite.hpp"
 
-#include "./../../Managers/MemoryManager.hpp"
+#include "Managers/MemoryManager.hpp"
 
-#include "./../Wearable/Wearable.hpp"
+#include "Gameplay/Magic/Spells/SpellBoomerang.hpp"
+#include "Gameplay/Wearable/Wearable.hpp"
 
-#pragma once
-#include <string>
-#include <optional>
+#include "Utils/UUID.hpp"
 
-#include "./../../Utils/UUID.hpp"
-#include "./../../3rd/json.hpp"
 
 struct PlayerInfo {
 	static constexpr auto BOLOSS = "char_boloss";
@@ -51,6 +50,7 @@ struct PlayerInfo {
 class Zone;
 class Game;
 class Level;
+class Section;
 class Projectile;
 class Player : public Object, public std::enable_shared_from_this<Player> {
 public:
@@ -59,6 +59,9 @@ public:
 
 	void enterLevel(Level* level);
 	void exitLevel();
+
+	void enter(Section* section)	noexcept;
+	void leave()					noexcept;
 
 	void update(double dt);
 	void render(sf::RenderTarget& target);
@@ -159,7 +162,9 @@ public: //TODO: Make private
 	bool _invincible{ false };
 	double _invincibleTime{ 0.f };
 
+	//Todo clean up level.
 	Level* _level{ nullptr };
+	Section* section_{ nullptr };
 
 	AnimatedSprite _sprite;
 	sf::Sound _hitSound;
@@ -176,11 +181,13 @@ public: //TODO: Make private
 	// we'll see
 public:
 
-	void setBoomerangSpellAvailable(bool value) noexcept;
+	void giveSpell(SpellBoomerangInfo info) noexcept;
+
 	bool isBoomerangSpellAvailable() const noexcept;
 
 private:
-	bool boomerangSpellAvailable_{ false };
+
+	std::shared_ptr<SpellBoomerang> spellBoomerang_;
 
 	void updateBoomerangSpell(double dt) noexcept;
 

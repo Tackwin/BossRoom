@@ -39,19 +39,14 @@ void SourceBoomerang::update(double dt) noexcept {
 	gened -= (float)dt;
 
 	auto player = section_->getPlayer();
+	if (player->isBoomerangSpellAvailable()) return;
 
 	auto playerPos = section_->getPlayerPos();
 	if (gened < 0.f && Vector2f::equal(pos, playerPos, info_.range)) {
-		player->setBoomerangSpellAvailable(true);
+		auto spellInfo = SpellBoomerangInfo::loadJson(AM::getJson("boomerangSpell"));
+		player->giveSpell(spellInfo);
+
 		gened = info_.source.reloadTime;
-
-		auto ptr = std::make_shared<SpellBoomerang>(
-			section_,
-			section_->getTargetEnnemyFromMouse(),
-			SpellBoomerangInfo::loadJson(AM::getJson("boomerangSpell"))
-		);
-		section_->addSpell(std::dynamic_pointer_cast<Spell>(ptr));
-
 	}
 }
 void SourceBoomerang::render(sf::RenderTarget& target) noexcept {

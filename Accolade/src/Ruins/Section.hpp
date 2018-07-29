@@ -37,6 +37,12 @@ public:
 
 	Section(SectionInfo info) noexcept;
 
+	Section(Section&) = delete;
+	Section(Section&&) = delete;
+
+	Section& operator=(Section&) = delete;
+	Section& operator=(Section&&) = delete;
+
 	void enter() noexcept;
 	void exit() noexcept;
 

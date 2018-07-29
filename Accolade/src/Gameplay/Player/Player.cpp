@@ -1,15 +1,17 @@
 #include "Player.hpp"
 
-#include "./../../Game.hpp"
-#include "./../../Common.hpp"
+#include "Game.hpp"
+#include "Common.hpp"
 
-#include "./../../Managers/InputsManager.hpp"
-#include "./../../Managers/AssetsManager.hpp"
-#include "./../../Managers/TimerManager.hpp"
-#include "./../../Managers/EventManager.hpp"
+#include "Managers/InputsManager.hpp"
+#include "Managers/AssetsManager.hpp"
+#include "Managers/TimerManager.hpp"
+#include "Managers/EventManager.hpp"
 
-#include "./../Projectile.hpp"
-#include "./../Wearable/Wearable.hpp"
+#include "Ruins/Section.hpp"
+
+#include "Gameplay/Projectile.hpp"
+#include "Gameplay/Wearable/Wearable.hpp"
 
 Player::Player() noexcept : Player(C::game->getPlayerInfo()) {}
 
@@ -102,6 +104,10 @@ void Player::update(double dt) {
 			flatVelocities.push_back(_dir);
 		}
 		flatForces.push_back({ 0, G });
+
+		if (isBoomerangSpellAvailable()) {
+			updateBoomerangSpell(dt);
+		}
 	}
 
 	velocity *= (float)std::pow(0.2, dt);
@@ -360,16 +366,29 @@ PlayerInfo::PlayerInfo(nlohmann::json json) :
 	hitBox = { (float)vec[0], (float)vec[1] };
 }
 
+void Player::enter(Section* section) noexcept {
+	section_ = section;
+}
+void Player::leave() noexcept {
+	section_ = nullptr;
+}
+
 // Magic spell stuff.
 
-void Player::setBoomerangSpellAvailable(bool value) noexcept {
-	boomerangSpellAvailable_ = value;
+void Player::giveSpell(SpellBoomerangInfo info) noexcept {
+	spellBoomerang_ = std::make_shared<SpellBoomerang>(section_, info);
+	section_->addSpell(spellBoomerang_);
 }
 
 bool Player::isBoomerangSpellAvailable() const noexcept {
-	return boomerangSpellAvailable_;
+	return spellBoomerang_ != nullptr;
 }
 
 void Player::updateBoomerangSpell(double) noexcept {
-	
+	if (IM::isMouseJustPressed(sf::Mouse::Left)) {
+		spellBoomerang_->launch(section_->getTargetEnnemyFromMouse());
+
+		// Now the object only live in the Section object.
+		spellBoomerang_.reset();
+	}
 }

@@ -39,6 +39,7 @@ Section::Section(SectionInfo info) noexcept : _info(info) {
 void Section::enter() noexcept {
 	_player = std::make_shared<Player>(C::game->getPlayerInfo());
 	_player->setPos(_info.startPos);
+	_player->enter(this);
 	_player->collider->onEnter =
 		std::bind(&Section::playerOnEnter, this, std::placeholders::_1);
 
@@ -148,6 +149,9 @@ void Section::renderDebug(sf::RenderTarget& target) const noexcept {
 
 void Section::addSpell(const std::shared_ptr<Spell>& ptr) noexcept {
 	spells_.push_back(ptr);
+	if (auto objPtr = std::dynamic_pointer_cast<Object>(ptr); objPtr) {
+		_world.addObject(objPtr);
+	}
 }
 void Section::addStructure(const std::shared_ptr<Structure>& ptr) noexcept {
 	_structures.push_back(ptr);
@@ -198,6 +202,9 @@ void Section::removeDeadObject() noexcept {
 	}
 	for (int i = (int)spells_.size() - 1; i >= 0; --i) {
 		if (spells_[i]->toRemove()) {
+			if (auto objPtr = std::dynamic_pointer_cast<Object>(spells_[i]); objPtr) {
+				_world.delObject(spells_[i]->getUuid());
+			}
 			spells_.erase(spells_.begin() + i);
 		}
 	}
@@ -318,6 +325,7 @@ SectionInfo Section::getInfo() const noexcept {
 }
 
 std::shared_ptr<Object> Section::getTargetEnnemyFromMouse() noexcept {
+	if (_slimes.empty()) return {};
 	if (_player->isBoomerangSpellAvailable()) {
 		auto dist = [&](const std::shared_ptr<Object>& obj) {
 			return obj->pos - IM::getMousePosInView(_cameraView);

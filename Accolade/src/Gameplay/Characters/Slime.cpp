@@ -21,6 +21,9 @@ SlimeInfo SlimeInfo::loadJson(nlohmann::json json) noexcept {
 	if (auto it = json.find("health"); it != json.end()) {
 		info.health = *it;
 	}
+	if (auto it = json.find("maxHealth"); it != json.end()) {
+		info.maxHealth = *it;
+	}
 	return info;
 }
 
@@ -28,6 +31,7 @@ nlohmann::json SlimeInfo::saveJson(SlimeInfo info) noexcept {
 	nlohmann::json json;
 	json["startPos"] = Vector2f::saveJson(info.startPos);
 	json["health"] = info.health;
+	json["maxHealth"] = info.maxHealth;
 	json["sprite"] = info.sprite;
 	json["speed"] = info.speed;
 
@@ -84,6 +88,14 @@ void Slime::render(sf::RenderTarget& target) noexcept {
 	mark.setPosition(pos);
 	target.draw(_sprite);
 	target.draw(mark);
+}
+
+void Slime::hit(float damage) noexcept {
+	_info.health -= damage;
+
+	if (_info.health < 0.f) {
+		remove();
+	}
 }
 
 void Slime::onEnter(Object* object) noexcept {

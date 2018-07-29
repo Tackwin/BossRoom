@@ -23,10 +23,20 @@ void World::updateInc(double dt, u32 itLevel) {
 #pragma warning(disable:4239)
 void World::update(double dt) {
 	removeNeeded();
+	//buildUnionCache();
 
 	for (auto& it : _objectsMap) {
 		auto obj1Id = it.first;
 		auto obj1 = it.second.lock();
+
+		// TODO
+		// Really it's a bit of a hack, we might want to revisit this whole system
+		// It's kind of slow in debug, and not really robust...
+		// I like the API though.
+		if (obj1->maskChanged) {
+			buildUnionCache();
+			obj1->maskChanged = false;
+		}
 
 		Vector2f flatForces = std::accumulate(
 			obj1->flatForces.begin(), 
@@ -60,7 +70,7 @@ void World::update(double dt) {
 				obj1->collider->setPos({ nPos.x, pos.y });
 
 				if (obj1->collider->collideWith(obj2->collider.get())) {
-					if (!obj2->collider->sensor) {
+					if (!obj1->collider->sensor) {
 						nVel.x = 0;
 						obj1->pos.x = pos.x;
 						nPos.x = pos.x;
@@ -76,7 +86,7 @@ void World::update(double dt) {
 				obj1->collider->setPos({ pos.x, nPos.y });
 
 				if (obj1->collider->collideWith(obj2->collider.get())) {
-					if (!obj2->collider->sensor){
+					if (!obj1->collider->sensor){
 						nVel.y = 0;
 						obj1->pos.y = pos.y;
 						nPos.y = pos.y;

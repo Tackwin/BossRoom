@@ -332,6 +332,17 @@ struct Vector : public __vec_member<D, T> {
 		}
 	}
 
+	template<typename L>
+	std::enable_if_t<
+		std::is_invocable_r_v<T, L, T>, Vector<D, T>
+	> applyCW(L lamb) const noexcept {
+		Vector<D, T> res;
+		for (size_t i = 0; i < D; ++i) {
+			res[i] = lamb(components[i]);
+		}
+		return res;
+	}
+
 #pragma region COLORS
 
 	template<size_t Dp = D>

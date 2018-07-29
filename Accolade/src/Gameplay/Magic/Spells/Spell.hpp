@@ -4,6 +4,8 @@
 
 #include "3rd/json.hpp"
 
+#include "Utils/UUID.hpp"
+
 #include "Components/Removable.hpp"
 
 class Section;
@@ -25,9 +27,12 @@ public:
 	virtual void update(double dt) noexcept = 0;
 	virtual void render(sf::RenderTarget& target) noexcept = 0;
 
+	UUID getUuid() const noexcept;
+
 protected:
 
 	Section* section_{ nullptr };
 	SpellInfo info_;
 
+	UUID id_;
 };

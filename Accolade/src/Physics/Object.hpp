@@ -20,6 +20,7 @@ struct Object {
 		ZONE,
 		STRUCTURE,
 		SLIME,
+		SPELL,
 		SIZE
 	};
 
@@ -40,6 +41,8 @@ struct Object {
 	std::bitset<SIZE> idMask = {};
 
 	std::unique_ptr<Collider> collider{ nullptr };
+
+	bool maskChanged = false;
 
 	const UUID uuid;
 };
