@@ -36,6 +36,9 @@ public:
 	void hit(float damage) noexcept;
 
 private:
+	float minX_{ 0.f };
+	float maxX_{ 0.f };
+
 	SlimeInfo _info;
 
 	Section* _section{ nullptr };

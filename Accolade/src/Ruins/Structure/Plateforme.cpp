@@ -26,6 +26,9 @@ void Plateforme::renderDebug(sf::RenderTarget&) noexcept {
 	target.draw(rectangle);*/
 }
 
+Rectangle2f Plateforme::getBoundingBox() const noexcept {
+	return _info.rectangle;
+}
 
 PlateformeInfo PlateformeInfo::loadJson(const nlohmann::json& json) noexcept {
 	PlateformeInfo info;

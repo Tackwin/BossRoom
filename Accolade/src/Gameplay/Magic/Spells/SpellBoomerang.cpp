@@ -82,7 +82,8 @@ void SpellBoomerang::update(double dt) noexcept {
 	if (launched_) {
 		auto wanted = target->pos;
 
-		flatVelocities.push_back((wanted - pos).normalize() * info_.speed);
+		auto vel = (wanted - pos).normalize() * info_.speed;
+		flatVelocities.push_back(vel);
 
 		particleGenerator_.setPos(pos);
 		particleGenerator_.update(dt);
@@ -90,10 +91,12 @@ void SpellBoomerang::update(double dt) noexcept {
 	else {
 		auto wanted = section_->getPlayer()->support(angleToPlayer_, 0.f);
 
+		auto vel = (wanted - pos);
+		vel = vel * info_.speed;
 		//if (velocity.length2() > 5.f) {
 		//	velocity = velocity.normalize() * 5.f;
 		//}
-		flatVelocities.push_back((wanted - pos) * info_.rotateSpeed);
+		flatVelocities.push_back(vel);
 		// flatForces.push_back(nor.applyCW(fabs).applyCW(sqrtf));
 	}
 }

@@ -71,14 +71,14 @@ void Slime::enterSection(Section* section) noexcept {
 void Slime::update(double) noexcept {
 	auto playerPos = _section->getPlayerPos();
 
-	if (pos.x < playerPos.x) {
+	flatForces.push_back({ 0, C::G });
+
+	if (pos.x < maxX_ && pos.x < playerPos.x) {
 		flatVelocities.push_back({ +_info.speed, 0 });
 	}
-	else {
+	else if (pos.x > minX_) {
 		flatVelocities.push_back({ -_info.speed, 0 });
 	}
-
-	flatForces.push_back({ 0, C::G });
 }
 
 void Slime::render(sf::RenderTarget& target) noexcept {
@@ -116,6 +116,19 @@ void Slime::onEnter(Object* object) noexcept {
 			2 * ((player->getPos() - pos).normalize() * 5 + Vector2f{0.f, -10.f}),
 			0.5f
 		);
+	}
+	if (auto floor = (Structure*)object; object->idMask[Object::STRUCTURE]) {
+		if (auto plateforme = (Plateforme*)floor; 
+			floor->getType() == Structure::Plateforme
+		) {
+			Rectangle2f rec{ pos + collider->dtPos, _info.size };
+			auto plateformeBox = plateforme->getBoundingBox();
+
+			if (rec.isOnTopOf(plateformeBox)) {
+				minX_ = plateformeBox.x;
+				maxX_ = plateformeBox.x + plateformeBox.w;
+			}
+		}
 	}
 }
 

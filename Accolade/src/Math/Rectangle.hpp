@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdio.h>
+
 #include "Vector.hpp"
 #include "3rd/json.hpp"
 
@@ -30,6 +32,15 @@ struct Rectangle {
 				pos.x + size.x < other.pos.x || pos.x > other.pos.x + other.size.x ||
 				pos.y + size.y < other.pos.y || pos.y > other.pos.y + other.size.y
 			);
+	}
+
+	bool isOnTopOf(Rectangle<T> other) const {
+		T dBotTop = (y + h) - (other.y);
+		T dTopBot = (y) - (other.y + other.h);
+
+		printf("dBotTop %f, dTopBot%f\n", (float)dBotTop, (float)dTopBot);
+
+		return dBotTop > dTopBot;
 	}
 
 	Vector<2, T> center() const {

@@ -19,6 +19,10 @@ public:
 	void render(sf::RenderTarget& target) noexcept override;
 	void renderDebug(sf::RenderTarget& target) noexcept override;
 
+	Kind getType() const noexcept override { return Kind::Plateforme; }
+
+	Rectangle2f getBoundingBox() const noexcept;
+
 private:
 	PlateformeInfo _info;
 };
