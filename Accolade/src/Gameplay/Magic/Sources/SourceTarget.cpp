@@ -1,4 +1,4 @@
-#include "SourceBoomerang.hpp"
+#include "SourceTarget.hpp"
 
 #include "Managers/AssetsManager.hpp"
 
@@ -6,10 +6,10 @@
 
 #include "Ruins/Section.hpp"
 
-#include "Gameplay/Magic/Spells/SpellBoomerang.hpp"
+#include "Gameplay/Magic/Spells/SpellTarget.hpp"
 
-SourceBoomerangInfo SourceBoomerangInfo::loadJson(nlohmann::json json) noexcept {
-	SourceBoomerangInfo info;
+SourceTargetInfo SourceTargetInfo::loadJson(nlohmann::json json) noexcept {
+	SourceTargetInfo info;
 	info.source = SourceInfo::loadJson(json);
 	if (auto it = json.find("range"); it != json.end()) {
 		info.range = json.at("range");
@@ -17,7 +17,7 @@ SourceBoomerangInfo SourceBoomerangInfo::loadJson(nlohmann::json json) noexcept 
 	return info;
 }
 
-nlohmann::json SourceBoomerangInfo::saveJson(SourceBoomerangInfo info) noexcept {
+nlohmann::json SourceTargetInfo::saveJson(SourceTargetInfo info) noexcept {
 	nlohmann::json json = nlohmann::json::object();
 
 	json = merge(json, SourceInfo::saveJson(info.source));
@@ -26,14 +26,14 @@ nlohmann::json SourceBoomerangInfo::saveJson(SourceBoomerangInfo info) noexcept 
 	return json;
 }
 
-SourceBoomerang::SourceBoomerang(SourceBoomerangInfo info) noexcept :
+SourceTarget::SourceTarget(SourceTargetInfo info) noexcept :
 	Source(info.source),
 	info_(info)
 {
 	gened = info_.source.reloadTime;
 }
 
-void SourceBoomerang::update(double dt) noexcept {
+void SourceTarget::update(double dt) noexcept {
 	Source::update(dt);
 
 	gened -= (float)dt;
@@ -43,12 +43,22 @@ void SourceBoomerang::update(double dt) noexcept {
 
 	auto playerPos = section_->getPlayerPos();
 	if (gened < 0.f && Vector2f::equal(pos, playerPos, info_.range)) {
-		auto spellInfo = SpellBoomerangInfo::loadJson(AM::getJson("boomerangSpell"));
+		auto spellInfo =
+			SpellTargetInfo::loadJson(AM::getJson(SpellTargetInfo::JSON_ID));
 		player->giveSpell(spellInfo);
 
 		gened = info_.source.reloadTime;
 	}
 }
-void SourceBoomerang::render(sf::RenderTarget& target) noexcept {
+void SourceTarget::render(sf::RenderTarget& target) noexcept {
 	Source::render(target);
+
+	sf::CircleShape range{ info_.range };
+	range.setOrigin(range.getRadius(), range.getRadius());
+	range.setPosition(pos);
+
+	range.setOutlineThickness(0.01f);
+	range.setFillColor(Vector4f{ 0.5f, 0.0f, 0.f, 0.2f });
+	range.setOutlineColor(Vector4f{ 0.5f, 0.0f, 0.f, 1.f });
+	target.draw(range);
 }

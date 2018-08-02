@@ -9,8 +9,8 @@
 
 #include "Graphics/ParticleGenerator.hpp"
 
-struct SpellBoomerangInfo {
-	static constexpr auto JSON_ID = "SpellBoomerangInfo";
+struct SpellTargetInfo {
+	static constexpr auto JSON_ID = "SpellTargetInfo";
 
 	float speed{ 1.f};
 	float range{ 5.0f };
@@ -20,26 +20,28 @@ struct SpellBoomerangInfo {
 
 	std::string particleGenerator;
 
-	static SpellBoomerangInfo loadJson(nlohmann::json json) noexcept;
-	static nlohmann::json saveJson(SpellBoomerangInfo info) noexcept;
+	static SpellTargetInfo loadJson(nlohmann::json json) noexcept;
+	static nlohmann::json saveJson(SpellTargetInfo info) noexcept;
 };
 
-class SpellBoomerang : public Spell, public Object {
+class SpellTarget : public Spell, public Object {
 public:
-	SpellBoomerang(Section* section, SpellBoomerangInfo info) noexcept;
+	SpellTarget(
+		Section* section, std::weak_ptr<Object> sender, SpellTargetInfo info
+	) noexcept;
 
-	SpellBoomerang(SpellBoomerang&) = delete;
-	SpellBoomerang(SpellBoomerang&&) = delete;
+	SpellTarget(SpellTarget&) = delete;
+	SpellTarget(SpellTarget&&) = delete;
 
-	SpellBoomerang& operator=(SpellBoomerang&) = delete;
-	SpellBoomerang& operator=(SpellBoomerang&&) = delete;
+	SpellTarget& operator=(SpellTarget&) = delete;
+	SpellTarget& operator=(SpellTarget&&) = delete;
 
 	virtual void update(double dt) noexcept override;
 	virtual void render(sf::RenderTarget& target) noexcept override;
 
 	void launch(std::weak_ptr<Object> obj) noexcept;
 
-	SpellBoomerangInfo getSpellInfo() const noexcept;
+	SpellTargetInfo getSpellInfo() const noexcept;
 private:
 
 	void onEnter(Object* obj) noexcept;
@@ -47,11 +49,12 @@ private:
 
 	bool launched_{ false };
 
-	float angleToPlayer_{ 0.f };
+	float angleToSender_{ 0.f };
 
-	SpellBoomerangInfo info_;
+	SpellTargetInfo info_;
 
 	ParticleGenerator particleGenerator_;
 
 	std::weak_ptr<Object> target_;
+	std::weak_ptr<Object> sender_;
 };

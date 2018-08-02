@@ -1,13 +1,17 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "3rd/json.hpp"
+
 #include "Physics/Object.hpp"
+
 #include "Graphics/AnimatedSprite.hpp"
+
 #include "Components/Removable.hpp"
 
 class Section;
 
 struct SlimeInfo {
+	static constexpr auto JSON_ID = "Slime";
 
 	Vector2f startPos{ 0., 0. };
 	float speed{ 1.f };

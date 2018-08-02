@@ -1,4 +1,4 @@
-#include "SpellBoomerang.hpp"
+#include "SpellTarget.hpp"
 
 #include <cmath>
 #include <random>
@@ -9,9 +9,10 @@
 #include "Managers/AssetsManager.hpp"
 
 #include "Gameplay/Characters/Slime.hpp"
+#include "Gameplay/Characters/DistanceGuy.hpp"
 
-SpellBoomerangInfo SpellBoomerangInfo::loadJson(nlohmann::json json) noexcept {
-	SpellBoomerangInfo info;
+SpellTargetInfo SpellTargetInfo::loadJson(nlohmann::json json) noexcept {
+	SpellTargetInfo info;
 
 	if (auto it = json.find("speed"); it != json.end()) {
 		info.speed = *it;
@@ -34,7 +35,7 @@ SpellBoomerangInfo SpellBoomerangInfo::loadJson(nlohmann::json json) noexcept {
 
 	return info;
 }
-nlohmann::json SpellBoomerangInfo::saveJson(SpellBoomerangInfo info) noexcept {
+nlohmann::json SpellTargetInfo::saveJson(SpellTargetInfo info) noexcept {
 	nlohmann::json json = nlohmann::json::object();
 
 	json["speed"] = info.speed;
@@ -47,8 +48,10 @@ nlohmann::json SpellBoomerangInfo::saveJson(SpellBoomerangInfo info) noexcept {
 	return json;
 }
 
-SpellBoomerang::SpellBoomerang(Section* section, SpellBoomerangInfo info) noexcept : 
-	Spell(section), info_(info)
+SpellTarget::SpellTarget(
+	Section* section, std::weak_ptr<Object> sender, SpellTargetInfo info
+) noexcept :
+	Spell(section), info_(info), sender_(sender)
 {
 	pos = section->getPlayer()->support(0.f, 0.2f);
 
@@ -61,16 +64,18 @@ SpellBoomerang::SpellBoomerang(Section* section, SpellBoomerangInfo info) noexce
 	idMask.set(Object::SPELL);
 
 	collider = std::move(disk);
-	collider->onEnter = std::bind(&SpellBoomerang::onEnter, this, std::placeholders::_1);
-	collider->onExit  = std::bind(&SpellBoomerang::onExit , this, std::placeholders::_1);
+	collider->onEnter = std::bind(&SpellTarget::onEnter, this, std::placeholders::_1);
+	collider->onExit  = std::bind(&SpellTarget::onExit , this, std::placeholders::_1);
 
 
 	particleGenerator_ = ParticleGenerator(
 		AM::getJson(info_.particleGenerator), pos
 	);
+
+	angleToSender_ = unitaryRng(RD) * PIf * 2;
 }
 
-void SpellBoomerang::update(double dt) noexcept {
+void SpellTarget::update(double dt) noexcept {
 	if (launched_ && target_.expired()) {
 		remove();
 		return;
@@ -78,7 +83,7 @@ void SpellBoomerang::update(double dt) noexcept {
 
 	auto target = target_.lock();
 
-	angleToPlayer_ += (float)dt * info_.rotateSpeed;
+	angleToSender_ += (float)dt * info_.rotateSpeed;
 	if (launched_) {
 		auto wanted = target->pos;
 
@@ -89,7 +94,8 @@ void SpellBoomerang::update(double dt) noexcept {
 		particleGenerator_.update(dt);
 	}
 	else {
-		auto wanted = section_->getPlayer()->support(angleToPlayer_, 0.f);
+		auto wanted =
+			section_->getPlayer()->support(angleToSender_, 0.f);
 
 		auto vel = (wanted - pos);
 		vel = vel * info_.speed;
@@ -100,7 +106,7 @@ void SpellBoomerang::update(double dt) noexcept {
 		// flatForces.push_back(nor.applyCW(fabs).applyCW(sqrtf));
 	}
 }
-void SpellBoomerang::render(sf::RenderTarget& target) noexcept {
+void SpellTarget::render(sf::RenderTarget& target) noexcept {
 	sf::CircleShape point{ info_.radius };
 	point.setOrigin(point.getRadius(), point.getRadius());
 	point.setPosition(pos);
@@ -116,26 +122,44 @@ void SpellBoomerang::render(sf::RenderTarget& target) noexcept {
 	target.draw(point);
 }
 
-void SpellBoomerang::onEnter(Object* obj) noexcept {
+void SpellTarget::onEnter(Object* obj) noexcept {
 	if (!launched_) return;
-	remove();
+	if (target_.expired()) return remove();
 
-	if (obj->idMask[Object::SLIME]) {
-		auto ptr = (Slime*)obj;
+	if (obj->uuid == target_.lock()->uuid) {
+		if (obj->idMask[Object::SLIME]) {
+			auto ptr = (Slime*)obj;
 
-		ptr->hit(info_.damage);
+			ptr->hit(info_.damage);
+			remove();
+		}
+		else if (obj->idMask[Object::DISTANCE]) {
+			auto ptr = (DistanceGuy*)obj;
+
+			ptr->hit(info_.damage);
+			remove();
+		}
+		else if (obj->idMask[Object::PLAYER]) {
+			auto ptr = (Player*)obj;
+
+			ptr->hit(info_.damage);
+			remove();
+		}
 	}
-}
-void SpellBoomerang::onExit(Object*) noexcept {}
 
-void SpellBoomerang::launch(std::weak_ptr<Object> obj) noexcept {
+}
+void SpellTarget::onExit(Object*) noexcept {}
+
+void SpellTarget::launch(std::weak_ptr<Object> obj) noexcept {
 	target_ = obj;
 
-	collisionMask.set(Object::SLIME);
+	assert(!obj.expired());
+
+	collisionMask |= obj.lock()->idMask;
 	maskChanged = true;
 	launched_ = true;
 }
 
-SpellBoomerangInfo SpellBoomerang::getSpellInfo() const noexcept {
+SpellTargetInfo SpellTarget::getSpellInfo() const noexcept {
 	return info_;
 }

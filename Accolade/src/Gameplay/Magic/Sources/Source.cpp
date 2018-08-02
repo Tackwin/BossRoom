@@ -4,15 +4,20 @@
 
 #include "Ruins/Section.hpp"
 
-#include "Gameplay/Magic/Spells/SpellBoomerang.hpp"
+#include "Gameplay/Magic/Spells/SpellTarget.hpp"
 
 SourceInfo SourceInfo::loadJson(nlohmann::json json) noexcept {
 	SourceInfo info;
-	info.id = json.at("id");
-	info.reloadTime = json.at("reloadTime");
-	info.pos = Vector2f::loadJson(json.at("pos"));
-	info.size = Vector2f::loadJson(json.at("size"));
-	info.sprite = json.at("sprite").get<std::string>();
+
+#define X(x, y) if (auto i = json.find(#x); i != json.end()) { info.x = y(*i); }
+	X(id,);
+	X(reloadTime,);
+	X(pos, Vector2f::loadJson);
+	X(size, Vector2f::loadJson);
+	X(origin, Vector2f::loadJson);
+	X(sprite, [](auto a) {return a.get<std::string>(); });
+#undef X
+
 	return info;
 }
 
@@ -23,6 +28,7 @@ nlohmann::json SourceInfo::saveJson(SourceInfo info) noexcept {
 	json["pos"] = Vector2f::saveJson(info.pos);
 	json["size"] = Vector2f::saveJson(info.size);
 	json["sprite"] = info.sprite;
+	json["origin"] = Vector2f::saveJson(info.origin);
 	return json;
 }
 Source::Source(SourceInfo info) noexcept :
@@ -49,6 +55,10 @@ void Source::render(sf::RenderTarget& target) noexcept {
 	
 	double ratio = (double)sprite_.getTextureRect().width / sprite_.getTextureRect().height;
 
+	sprite_.setOrigin(
+		info_.origin.x * sprite_.getTextureRect().width,
+		info_.origin.y * sprite_.getTextureRect().height
+	);
 	sprite_.setScale(
 		info_.size.fitUpRatio(ratio).x / sprite_.getTextureRect().width,
 		info_.size.fitUpRatio(ratio).y / sprite_.getTextureRect().height

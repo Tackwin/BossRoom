@@ -20,6 +20,7 @@ struct Object {
 		ZONE,
 		STRUCTURE,
 		SLIME,
+		DISTANCE,
 		SPELL,
 		SIZE
 	};

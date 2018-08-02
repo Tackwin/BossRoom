@@ -95,6 +95,34 @@
 						"sprite": "source_boomerang"
 					}
 				]
+			},
+			"ennemySwitcher": {
+				"label": {
+					"font": "consola",
+					"name": "label",
+					"charSize": 10,
+					"pos": [50, -100],
+					"origin": [0.5, 2]
+				},
+				"name": "ennemySwitcher",
+				"type": "SpriteSwitcher",
+				"pos": [0, 800],
+				"origin": [0, 1],
+				"size": [100, 100],
+				"visible": false,
+				"backColor": [0.4, 0.3, 0.2, 1.0],
+				"panels": [
+					{
+						"name": "Slime",
+						"type": "Panel",
+						"sprite": "slime"
+					},
+					{
+						"name": "Distance",
+						"type": "Panel",
+						"sprite": "distance"
+					}
+				]
 			}
 		}
 	}

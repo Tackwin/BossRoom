@@ -12,7 +12,8 @@
 #include "Structure/Structure.hpp"
 #include "Structure/Plateforme.hpp"
 
-#include "Gameplay/Magic/Sources/SourceBoomerang.hpp"
+#include "Gameplay/Magic/Sources/SourceTarget.hpp"
+#include "Gameplay/Characters/DistanceGuy.hpp"
 #include "Gameplay/Magic/Sources/Source.hpp"
 #include "Gameplay/Magic/Spells/Spell.hpp"
 #include "Gameplay/Characters/Slime.hpp"
@@ -20,10 +21,11 @@
 #include "Gameplay/Boss.hpp"
 
 struct SectionInfo {
+	std::vector<DistanceGuyInfo> distanceGuys;
 	std::vector<SlimeInfo> slimes;
 	std::vector<PlateformeInfo> plateformes;
 	std::vector<SourceInfo> sources;
-	std::vector<SourceBoomerangInfo> sourcesBoomerang;
+	std::vector<SourceTargetInfo> sourcesBoomerang;
 	Rectangle2f maxRectangle;
 	Vector2f startPos;
 	Vector2f viewSize;
@@ -54,6 +56,7 @@ public:
 	void addStructure(const std::shared_ptr<Structure>& ptr) noexcept;
 	void addSource(const std::shared_ptr<Source>& ptr) noexcept;
 	void addSpell(const std::shared_ptr<Spell>& ptr) noexcept;
+	void addDistanceGuy(const std::shared_ptr<DistanceGuy>& ptr) noexcept;
 	void addSlime(const std::shared_ptr<Slime>& ptr) noexcept;
 
 	Vector2f getPlayerPos() const noexcept;
@@ -63,6 +66,7 @@ public:
 	SectionInfo getInfo() const noexcept;
 
 	std::shared_ptr<Object> getTargetEnnemyFromMouse() noexcept;
+	std::weak_ptr<Object> getObject(UUID id) const noexcept;
 
 private:
 	// remove all object wich has the remove flag set
@@ -88,6 +92,7 @@ private:
 
 	std::shared_ptr<Object> targetEnnemy_;
 
+	std::vector<std::shared_ptr<DistanceGuy>>		distanceGuys_;
 	std::vector<std::shared_ptr<Projectile>>		_projectiles;
 	std::vector<std::shared_ptr<Structure>>			_structures;
 	std::vector<std::shared_ptr<Source>>			_sources;

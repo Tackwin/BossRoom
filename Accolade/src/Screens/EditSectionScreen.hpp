@@ -14,9 +14,11 @@
 #include "Ruins/Structure/Plateforme.hpp"
 
 #include "Gameplay/Characters/Slime.hpp"
+#include "Gameplay/Characters/DistanceGuy.hpp"
 
-class ValuePicker;
 class Label;
+class ValuePicker;
+class SpriteSwitcher;
 class EditSectionScreen : public Screen {
 public:
 	EditSectionScreen(SectionInfo section);
@@ -43,6 +45,7 @@ private:
 	void updateNothing() noexcept;
 	void updateSource() noexcept;
 
+	void renderDebug(sf::RenderTarget& target, DistanceGuyInfo info) noexcept;
 	void renderDebug(sf::RenderTarget& target, PlateformeInfo info) noexcept;
 	void renderDebug(sf::RenderTarget& target, SourceInfo info) noexcept;
 	void renderDebug(sf::RenderTarget& target, SlimeInfo info) noexcept;
@@ -58,6 +61,8 @@ private:
 
 	std::unordered_map<std::string, Widget*> _widgets;
 
+	SpriteSwitcher* ennemySwitcher_{ nullptr };
+	SpriteSwitcher* sourceSwitcher_{ nullptr };
 	ValuePicker* _savePicker{ nullptr };
 	Label* _snapGrid{ nullptr };
 
@@ -68,12 +73,11 @@ private:
 
 	std::optional<PlateformeInfo> _newPlateforme;
 	std::optional<SourceInfo> _newSource;
-	std::optional<SlimeInfo> _newSlime;
 
 	enum EditorToolState {
 		nothing,
 		draw_plateforme,
-		place_slime,
+		place_ennemy,
 		place_start_pos,
 		place_source,
 		size

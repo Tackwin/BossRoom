@@ -1,0 +1,7 @@
+{
+    "health": 10.0,
+    "maxHealth": 10.0,
+    "speed": 1.0,
+    "sprite": "slime",
+    "viewRange": 7.0
+}

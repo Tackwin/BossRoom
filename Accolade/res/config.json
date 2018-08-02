@@ -31,6 +31,9 @@
     "health_tile": {
       "sheet": "images/health_tile.png"
     },
+    "distance": {
+      "sheet": "images/distance.png"
+    },
     "bossFace": {
       "sheet": "images/boss0_idle.png",
       "rect": [ 1000, 1000 ],
@@ -149,9 +152,14 @@
     "roomA": "rooms/roomA.json",
     "startZone": "rooms/start.json",
     "editScreen": "screens/edit.json",
-    "boomerangSpell": "spells/boomerang.json",
-    "genericParticuleGenerator": "particles/genericMagic.json"
+    "SpellTargetInfo": "spells/target.json",
+    "genericParticuleGenerator": "particles/genericMagic.json",
+    "SourceTargetInfo": "sources/target.json",
+    "source": "sources/common.json",
+    "Slime": "characters/slime.json",
+    "Distance": "characters/distance.json"
   },
+  "StartRoom": "rooms/enter2.json",
   "bosses": [
     {
       "name": "boss 0",

@@ -26,6 +26,8 @@ public:
 	void addObjects(const std::vector<std::weak_ptr<Object>>& objs) noexcept;
 	void delObject(UUID uuid);
 
+	std::weak_ptr<Object> getObject(UUID id) const noexcept;
+
 	void purge();
 private:
 

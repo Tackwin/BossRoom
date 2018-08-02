@@ -268,3 +268,11 @@ void World::buildUnionCache() {
 		_unionsCache[id] = getUnionOfMask(obj.lock()->collisionMask);
 	}
 }
+
+std::weak_ptr<Object> World::getObject(UUID id) const noexcept {
+	if (auto it = _objectsMap.find(id); it != _objectsMap.end()) {
+		return it->second;
+	}
+
+	return {};
+}

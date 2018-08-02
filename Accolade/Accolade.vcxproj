@@ -341,10 +341,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Components\Removable.cpp" />
+    <ClCompile Include="src\Gameplay\Characters\DistanceGuy.cpp" />
     <ClCompile Include="src\Gameplay\Characters\Slime.cpp" />
     <ClCompile Include="src\Gameplay\Magic\Sources\Source.cpp" />
-    <ClCompile Include="src\Gameplay\Magic\Sources\SourceBoomerang.cpp" />
-    <ClCompile Include="src\Gameplay\Magic\Spells\SpellBoomerang.cpp" />
+    <ClCompile Include="src\Gameplay\Magic\Sources\SourceTarget.cpp" />
+    <ClCompile Include="src\Gameplay\Magic\Spells\SpellTarget.cpp" />
     <ClCompile Include="src\Gameplay\Magic\Spells\Spell.cpp" />
     <ClCompile Include="src\Graphics\GUI\Switcher.cpp" />
     <ClCompile Include="src\Graphics\GUI\ValuePicker.cpp" />
@@ -399,9 +400,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Components\Removable.hpp" />
+    <ClInclude Include="src\Gameplay\Characters\DistanceGuy.hpp" />
     <ClInclude Include="src\Gameplay\Characters\Slime.hpp" />
-    <ClInclude Include="src\Gameplay\Magic\Sources\SourceBoomerang.hpp" />
-    <ClInclude Include="src\Gameplay\Magic\Spells\SpellBoomerang.hpp" />
+    <ClInclude Include="src\Gameplay\Magic\Sources\SourceTarget.hpp" />
+    <ClInclude Include="src\Gameplay\Magic\Spells\SpellTarget.hpp" />
     <ClInclude Include="src\Gameplay\Magic\Spells\Spell.hpp" />
     <ClInclude Include="src\Graphics\GUI\Switcher.hpp" />
     <ClInclude Include="src\Graphics\GUI\ValuePicker.hpp" />
@@ -469,6 +471,7 @@
     <None Include="res\rooms\roomA.json" />
     <None Include="res\rooms\roomOG.json" />
     <None Include="res\rooms\start.json" />
+    <None Include="res\sources\boomerang.json" />
     <None Include="res\spells\boomerang.json" />
     <None Include="src\Gameplay\Magic\Sources\Source.hpp" />
   </ItemGroup>

@@ -20,10 +20,12 @@
 
 #include "Managers/MemoryManager.hpp"
 
-#include "Gameplay/Magic/Spells/SpellBoomerang.hpp"
+#include "Gameplay/Magic/Spells/SpellTarget.hpp"
 #include "Gameplay/Wearable/Wearable.hpp"
 
 #include "Utils/UUID.hpp"
+
+#include "Components/Removable.hpp"
 
 
 struct PlayerInfo {
@@ -52,7 +54,8 @@ class Game;
 class Level;
 class Section;
 class Projectile;
-class Player : public Object, public std::enable_shared_from_this<Player> {
+class Player : 
+	public Object, public Removable, public std::enable_shared_from_this<Player> {
 public:
 	Player() noexcept;
 	Player(PlayerInfo info) noexcept;
@@ -181,13 +184,13 @@ public: //TODO: Make private
 	// we'll see
 public:
 
-	void giveSpell(SpellBoomerangInfo info) noexcept;
+	void giveSpell(SpellTargetInfo info) noexcept;
 
 	bool isBoomerangSpellAvailable() const noexcept;
 
 private:
 
-	std::shared_ptr<SpellBoomerang> spellBoomerang_;
+	std::shared_ptr<SpellTarget> spellBoomerang_;
 
 	void updateBoomerangSpell(double dt) noexcept;
 

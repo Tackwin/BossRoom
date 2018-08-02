@@ -12,6 +12,8 @@
 
 #include "Utils/json_algorithms.hpp"
 
+#include "Gameplay/Magic/Sources/SourceTarget.hpp"
+
 Section::Section(SectionInfo info) noexcept : _info(info) {
 	_cameraView.setCenter(_info.maxRectangle.fitUpRatio(RATIO).center());
 	_cameraView.setSize(_info.viewSize.fitUpRatio(RATIO));
@@ -26,13 +28,18 @@ Section::Section(SectionInfo info) noexcept : _info(info) {
 		addSource(ptr);
 	}
 	for (auto& source : _info.sourcesBoomerang) {
-		auto ptr = std::make_shared<SourceBoomerang>(source);
+		auto ptr = std::make_shared<SourceTarget>(source);
 		addSource(std::dynamic_pointer_cast<Source>(ptr));
 	}
 
 	for (auto& slime : _info.slimes) {
 		auto ptr = std::make_shared<Slime>(slime);
 		addSlime(ptr);
+	}
+
+	for (auto& slime : _info.distanceGuys) {
+		auto ptr = std::make_shared<DistanceGuy>(slime);
+		addDistanceGuy(ptr);
 	}
 }
 
@@ -58,6 +65,10 @@ void Section::enter() noexcept {
 		source->enter(this);
 		_world.addObject(source);
 	}
+	for (auto& distance: distanceGuys_) {
+		distance->enterSection(this);
+		_world.addObject(distance);
+	}
 	_world.addObject(_player);
 
 	subscribeToEvents();
@@ -73,6 +84,7 @@ void Section::exit() noexcept {
 	_zones.clear();
 	_projectiles.clear();
 	_slimes.clear();
+	distanceGuys_.clear();
 	spells_.clear();
 	_world.purge();
 }
@@ -93,6 +105,9 @@ void Section::update(double dt) noexcept {
 	}
 	for (auto& slime : _slimes) {
 		slime->update(dt);
+	}
+	for (auto& distance : distanceGuys_) {
+		distance->update(dt);
 	}
 	for (auto& spell : spells_) {
 		spell->update(dt);
@@ -125,6 +140,9 @@ void Section::render(sf::RenderTarget& target) const noexcept {
 	}
 	for (auto& slime : _slimes) {
 		slime->render(target);
+	}
+	for (auto& distance : distanceGuys_) {
+		distance->render(target);
 	}
 	for (auto& spell : spells_) {
 		spell->render(target);
@@ -159,6 +177,9 @@ void Section::addStructure(const std::shared_ptr<Structure>& ptr) noexcept {
 void Section::addSource(const std::shared_ptr<Source>& ptr) noexcept {
 	_sources.push_back(ptr);
 }
+void Section::addDistanceGuy(const std::shared_ptr<DistanceGuy>& ptr) noexcept {
+	distanceGuys_.push_back(ptr);
+}
 
 void Section::subscribeToEvents() noexcept {
 	_keyPressedEvent = EventManager::subscribe("keyPressed",
@@ -192,6 +213,12 @@ void Section::removeDeadObject() noexcept {
 		if (_slimes[i]->toRemove()) {
 			_world.delObject(_slimes[i]->uuid);
 			_slimes.erase(_slimes.begin() + i);
+		}
+	}
+	for (int i = (int)distanceGuys_.size() - 1; i >= 0; --i) {
+		if (distanceGuys_[i]->toRemove()) {
+			_world.delObject(distanceGuys_[i]->uuid);
+			distanceGuys_.erase(distanceGuys_.begin() + i);
 		}
 	}
 	for (int i = (int)_sources.size() - 1; i >= 0; --i) {
@@ -238,9 +265,9 @@ SectionInfo SectionInfo::loadJson(const nlohmann::json& json) noexcept {
 	if (json.count("sources") != 0) {
 		info.sources = load_json_vector<SourceInfo>(json.at("sources"));
 	}
-	if (json.count(SourceBoomerangInfo::JSON_ID) != 0) {
+	if (json.count(SourceTargetInfo::JSON_ID) != 0) {
 		info.sourcesBoomerang = 
-			load_json_vector<SourceBoomerangInfo>(json.at(SourceBoomerangInfo::JSON_ID)
+			load_json_vector<SourceTargetInfo>(json.at(SourceTargetInfo::JSON_ID)
 		);
 	}
 
@@ -258,6 +285,13 @@ SectionInfo SectionInfo::loadJson(const nlohmann::json& json) noexcept {
 			info.slimes.push_back(SlimeInfo::loadJson(slime));
 		}
 	}
+	if (auto distance = json.find("distanceGuys");
+		distance != json.end() && !distance->is_null()
+	) {
+		for (auto slime : distance->get<nlohmann::json::array_t>()) {
+			info.distanceGuys.push_back(DistanceGuyInfo::loadJson(slime));
+		}
+	}
 
 	return info;
 }
@@ -265,12 +299,16 @@ SectionInfo SectionInfo::loadJson(const nlohmann::json& json) noexcept {
 nlohmann::json SectionInfo::saveJson(SectionInfo info) noexcept {
 	nlohmann::json json;
 	nlohmann::json slimeArray = nlohmann::json::array();
+	nlohmann::json distanceArray = nlohmann::json::array();
 	nlohmann::json sourceArray = nlohmann::json::array();
 	nlohmann::json sourceBoomerangArray = nlohmann::json::array();
 	nlohmann::json plateformeArray = nlohmann::json::array();
 
 	for (auto& slime : info.slimes) {
 		slimeArray.push_back(SlimeInfo::saveJson(slime));
+	}
+	for (auto& distance : info.distanceGuys) {
+		distanceArray.push_back(DistanceGuyInfo::saveJson(distance));
 	}
 	for (auto& source : info.sources) {
 		sourceArray.push_back(SourceInfo::saveJson(source));
@@ -280,15 +318,16 @@ nlohmann::json SectionInfo::saveJson(SectionInfo info) noexcept {
 	}
 
 	for (auto& source : info.sourcesBoomerang) {
-		sourceBoomerangArray.push_back(SourceBoomerangInfo::saveJson(source));
+		sourceBoomerangArray.push_back(SourceTargetInfo::saveJson(source));
 	}
 
 	json["maxRect"]						= Rectangle2f::saveJson(info.maxRectangle);
 	json["startPos"]					= Vector2f::saveJson(info.startPos);
 	json["viewSize"]					= Vector2f::saveJson(info.viewSize);
 	json["plateformes"]					= plateformeArray;
-	json[SourceBoomerangInfo::JSON_ID]	= sourceBoomerangArray;
+	json[SourceTargetInfo::JSON_ID]		= sourceBoomerangArray;
 	json["sources"]						= sourceArray;
+	json["distanceGuys"]				= distanceArray;
 	json["slimes"]						= slimeArray;
 
 	return json;
@@ -325,17 +364,34 @@ SectionInfo Section::getInfo() const noexcept {
 }
 
 std::shared_ptr<Object> Section::getTargetEnnemyFromMouse() noexcept {
-	if (_slimes.empty()) return {};
+	if (_slimes.empty() && distanceGuys_.empty()) return {};
 	if (_player->isBoomerangSpellAvailable()) {
+		bool loopStart = true;
+
 		auto dist = [&](const std::shared_ptr<Object>& obj) {
 			return obj->pos - IM::getMousePosInView(_cameraView);
 		};
 
-		std::pair<Vector2f, std::shared_ptr<Object>> minPair{dist(_slimes[0]), _slimes[0]};
+		std::pair<Vector2f, std::shared_ptr<Object>> minPair;
 
 		for (auto& slime : _slimes) {
+			if (loopStart) {
+				minPair = { dist(slime), slime };
+				loopStart = false;
+				continue;
+			}
 			if (minPair.first.length2() > dist(slime).length2()) {
 				minPair = { dist(slime), slime };
+			}
+		}
+		for (auto& distance : distanceGuys_) {
+			if (loopStart) {
+				minPair = { dist(distance), distance };
+				loopStart = false;
+				continue;
+			}
+			if (minPair.first.length2() > dist(distance).length2()) {
+				minPair = { dist(distance), distance };
 			}
 		}
 
@@ -355,4 +411,8 @@ void Section::renderCrossOnTarget(sf::RenderTarget& target) const noexcept {
 	shape.setPosition(targetEnnemy_->pos);
 
 	target.draw(shape);
+}
+
+std::weak_ptr<Object> Section::getObject(UUID id) const noexcept {
+	return _world.getObject(id);
 }

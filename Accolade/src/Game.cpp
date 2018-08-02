@@ -61,6 +61,8 @@ void Game::updateDebugText(double) {
 		_debugText["ups"].setString(
 			"Fps: " + std::to_string(fps) + "\tµs: " + std::to_string(µs)
 		);
+		_debugText["ups"].setCharacterSize(10);
+		_debugText["ups"].setFillColor(sf::Color::White);
 
 		avgN = 0;
 		avgMs = 0;

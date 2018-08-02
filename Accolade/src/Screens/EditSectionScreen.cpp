@@ -15,6 +15,8 @@
 
 #include "Utils/string_algorithms.hpp"
 
+#include "Gameplay/Magic/Sources/SourceTarget.hpp"
+
 EditSectionScreen::EditSectionScreen(SectionInfo section) :
 	Screen(), _section(section),
 	_uiView({ WIDTH / 2.f, HEIGHT / 2.f }, { (float)WIDTH, (float)HEIGHT })
@@ -32,13 +34,14 @@ void EditSectionScreen::update(double dt) {
 		return;
 	}
 
-	if (IM::isKeyJustPressed(sf::Keyboard::Left) && _toolState == place_source) {
-		auto switcher = (SpriteSwitcher*)_widgets.at("root")->findChild("sourceSwitcher");
-		switcher->left();
+	if (IM::isKeyJustPressed(sf::Keyboard::Left)) {
+		if (_toolState == place_source) sourceSwitcher_->left();
+		if (_toolState == place_ennemy) ennemySwitcher_->left();
 	}
-	if (IM::isKeyJustPressed(sf::Keyboard::Right) && _toolState == place_source) {
-		auto switcher = (SpriteSwitcher*)_widgets.at("root")->findChild("sourceSwitcher");
-		switcher->right();
+
+	if (IM::isKeyJustPressed(sf::Keyboard::Right)) {
+		if (_toolState == place_source) sourceSwitcher_->right();
+		if (_toolState == place_ennemy) ennemySwitcher_->right();
 	}
 
 	if (IM::isLastSequenceJustFinished({ sf::Keyboard::LControl, sf::Keyboard::D }) ||
@@ -67,7 +70,7 @@ void EditSectionScreen::update(double dt) {
 	case draw_plateforme:
 		updateDrawPlateforme();
 		break;
-	case place_slime:
+	case place_ennemy:
 		updatePlaceSlime();
 		break;
 	case place_start_pos:
@@ -88,16 +91,15 @@ void EditSectionScreen::update(double dt) {
 void EditSectionScreen::updateSource() noexcept {
 	_newSource->pos = getSnapedMouseCameraPos();
 	if (IM::isMouseJustPressed(sf::Mouse::Left)) {
-		auto* switcher = (SpriteSwitcher*)_widgets.at("root")->findChild("sourceSwitcher");
+		_newSource->sprite = sourceSwitcher_->getCurrentPanel()->getTexture();
 
-		_newSource->sprite = switcher->getCurrentPanel()->getTexture();
-
-		if (switcher->getCurrentPanel()->getName() == "source") {
+		if (sourceSwitcher_->getCurrentPanel()->getName() == "source") {
 			_section.sources.push_back(*_newSource);
 		}
-		else if (switcher->getCurrentPanel()->getName() == "source_boomerang") {
-			SourceBoomerangInfo info;
-			info.source = *_newSource;
+		else if (sourceSwitcher_->getCurrentPanel()->getName() == "source_boomerang") {
+			auto info = 
+				SourceTargetInfo::loadJson(AM::getJson(SourceTargetInfo::JSON_ID));
+			info.source.pos = getSnapedMouseCameraPos();
 
 			_section.sourcesBoomerang.push_back(info);
 		}
@@ -105,9 +107,19 @@ void EditSectionScreen::updateSource() noexcept {
 	}
 }
 void EditSectionScreen::updatePlaceSlime() noexcept {
-	_newSlime->startPos = getSnapedMouseCameraPos();
 	if (IM::isMouseJustPressed(sf::Mouse::Left)) {
-		_section.slimes.push_back(*_newSlime);
+		if (ennemySwitcher_->getCurrentPanel()->getName() == SlimeInfo::JSON_ID) {
+			auto info = SlimeInfo::loadJson(AM::getJson(SlimeInfo::JSON_ID));
+			info.startPos = getSnapedMouseCameraPos();
+			_section.slimes.push_back(info);
+		}
+		else if (
+			ennemySwitcher_->getCurrentPanel()->getName() == DistanceGuyInfo::JSON_ID
+		) {
+			auto info = DistanceGuyInfo::loadJson(AM::getJson(DistanceGuyInfo::JSON_ID));
+			info.startPos = getSnapedMouseCameraPos();
+			_section.distanceGuys.push_back(info);
+		}
 	}
 }
 void EditSectionScreen::updatePlaceStartPos() noexcept {
@@ -200,9 +212,9 @@ void EditSectionScreen::inputSwitchState() noexcept {
 	else if (IM::isLastSequenceJustFinished({
 		sf::Keyboard::LControl, sf::Keyboard::Q, sf::Keyboard::S
 	})){
-		if (_toolState != place_slime) {
+		if (_toolState != place_ennemy) {
 			exitToolState();
-			enterToolState(place_slime);
+			enterToolState(place_ennemy);
 		}
 		else {
 			exitToolState();
@@ -245,6 +257,9 @@ void EditSectionScreen::render(sf::RenderTarget& target) {
 	for (auto slime : _section.slimes) {
 		renderDebug(target, slime);
 	}
+	for (auto distance : _section.distanceGuys) {
+		renderDebug(target, distance);
+	}
 	for (auto source : _section.sources) {
 		renderDebug(target, source);
 	}
@@ -255,8 +270,8 @@ void EditSectionScreen::render(sf::RenderTarget& target) {
 	if (_newPlateforme.has_value()) {
 		renderDebug(target, *_newPlateforme);
 	}
-	if (_newSlime.has_value()) {
-		renderDebug(target, *_newSlime);
+	if (_toolState == place_ennemy) {
+		getSnapedMouseCameraPos().plot(target, 0.1f, { 1.0, 0.0, 0.0, 1.0 }, {}, 0.f);
 	}
 	if (_newSource.has_value()) {
 		renderDebug(target, *_newSource);
@@ -293,6 +308,8 @@ void EditSectionScreen::onEnter(std::any) {
 		}
 	}
 
+	ennemySwitcher_ = (SpriteSwitcher*)(_widgets.at("root")->findChild("ennemySwitcher"));
+	sourceSwitcher_ = (SpriteSwitcher*)(_widgets.at("root")->findChild("sourceSwitcher"));
 	_savePicker = (ValuePicker*)(_widgets.at("root")->findChild("savePicker"));
 	_snapGrid = (Label*)(_widgets.at("root")->findChild("snapGrid"));
 }
@@ -313,8 +330,8 @@ void EditSectionScreen::enterToolState(
 	case draw_plateforme:
 		changeColorLabel(DRAW_PLATEFORME, { 0.0, 1.0, 0.0, 1.0 });
 		break;
-	case place_slime:
-		_newSlime = SlimeInfo();
+	case place_ennemy:
+		ennemySwitcher_->setVisible(true);
 		changeColorLabel(PLACE_SLIME, { 0.0, 1.0, 0.0, 1.0 });
 		break;
 	case place_start_pos:
@@ -323,11 +340,7 @@ void EditSectionScreen::enterToolState(
 	case place_source:
 		_newSource = SourceInfo();
 		changeColorLabel(PLACE_SOURCE, { 0.0, 1.0, 0.0, 1.0 }); 
-		{
-			auto switcher = 
-				(SpriteSwitcher*)_widgets.at("root")->findChild("sourceSwitcher");
-			switcher->setVisible(true);
-		}
+		sourceSwitcher_->setVisible(true);
 		break;
 	default:
 		break;
@@ -341,8 +354,8 @@ void EditSectionScreen::exitToolState() noexcept {
 		_newPlateforme.reset();
 		changeColorLabel(DRAW_PLATEFORME, { 1.0, 1.0, 1.0, 1.0 });
 		break;
-	case place_slime:
-		_newSlime.reset();
+	case place_ennemy:
+		ennemySwitcher_->setVisible(false);
 		changeColorLabel(PLACE_SLIME, { 1.0, 1.0, 1.0, 1.0 });
 		break;
 	case place_start_pos:
@@ -351,11 +364,7 @@ void EditSectionScreen::exitToolState() noexcept {
 	case place_source:
 		_newSource.reset();
 		changeColorLabel(PLACE_SOURCE, { 1.0, 1.0, 1.0, 1.0 });
-		{
-			auto switcher = 
-				(SpriteSwitcher*)_widgets.at("root")->findChild("sourceSwitcher");
-			switcher->setVisible(false);
-		}
+		sourceSwitcher_->setVisible(false);
 		break;
 	default:
 		break;
@@ -381,7 +390,19 @@ void EditSectionScreen::renderDebug(
 		color = { 0.0, 0.7, 1.0, 1.0 };
 	}
 	info.startPos.plot(
-		target, info.size.x / 2.f, color, {0.0, 0.0, 0.0, 0.0}, 0.f
+		target, info.size.x / 2.f, color, { 0.0, 0.0, 0.0, 0.0 }, 0.f
+	);
+}
+void EditSectionScreen::renderDebug(
+	sf::RenderTarget& target, DistanceGuyInfo info
+) noexcept {
+	Vector4d color{ 0.1, 0.7, 0.7, 1.0 };
+	auto dist2 = (info.startPos - IM::getMousePosInView(_cameraView)).length2();
+	if (dist2 < info.size.x * info.size.x / 4.f) {
+		color = { 0.0, 0.6, 0.9, 1.0 };
+	}
+	info.startPos.plot(
+		target, info.size.x / 2.f, color, { 0.0, 0.0, 0.0, 0.0 }, 0.f
 	);
 }
 void EditSectionScreen::renderDebug(
@@ -428,6 +449,7 @@ void EditSectionScreen::saveSection(std::string path) const noexcept {
 void EditSectionScreen::deleteHovered() noexcept {
 	auto& plateformes = _section.plateformes;
 	auto& slimes = _section.slimes;
+	auto& distance = _section.distanceGuys;
 	auto& sources = _section.sources;
 	auto& sourcesBoomerang = _section.sourcesBoomerang;
 
@@ -446,6 +468,15 @@ void EditSectionScreen::deleteHovered() noexcept {
 			return;
 		}
 	}
+	for (size_t i = distance.size(); i > 0; --i) {
+
+		auto dist2 = (distance[i - 1].startPos - IM::getMousePosInView(_cameraView))
+			.length2();
+		if (dist2 < distance[i - 1].size.x * distance[i - 1].size.x / 4.f) {
+			distance.erase(std::begin(distance) + i - 1);
+			return;
+		}
+	}
 
 	for (size_t i = sources.size(); i > 0; --i) {
 
@@ -458,8 +489,14 @@ void EditSectionScreen::deleteHovered() noexcept {
 
 	for (size_t i = sourcesBoomerang.size(); i > 0; --i) {
 
-		auto dist2 = (sourcesBoomerang[i - 1].source.pos - IM::getMousePosInView(_cameraView)).length2();
-		if (dist2 < sourcesBoomerang[i - 1].source.size.x * sourcesBoomerang[i - 1].source.size.x / 4.f) {
+		auto dist2 = 
+			(sourcesBoomerang[i - 1].source.pos - IM::getMousePosInView(_cameraView))
+			.length2();
+
+		if (
+			dist2 < sourcesBoomerang[i - 1].source.size.x *
+			sourcesBoomerang[i - 1].source.size.x / 4.f
+		) {
 			sourcesBoomerang.erase(std::begin(sourcesBoomerang) + i - 1);
 			return;
 		}

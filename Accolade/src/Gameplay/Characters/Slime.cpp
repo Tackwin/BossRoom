@@ -57,7 +57,6 @@ Slime::Slime(SlimeInfo info) noexcept : _info(info) {
 	collider = std::unique_ptr<Collider>((Collider*)box.release());
 	idMask.set(Object::SLIME);
 	collisionMask.set(Object::STRUCTURE);
-	collisionMask.set(Object::PROJECTILE);
 	collisionMask.set(Object::PLAYER);
 
 	collider->onEnter	= std::bind(&Slime::onEnter, this, std::placeholders::_1);

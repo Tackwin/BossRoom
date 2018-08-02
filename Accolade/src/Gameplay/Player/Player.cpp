@@ -375,8 +375,9 @@ void Player::leave() noexcept {
 
 // Magic spell stuff.
 
-void Player::giveSpell(SpellBoomerangInfo info) noexcept {
-	spellBoomerang_ = std::make_shared<SpellBoomerang>(section_, info);
+void Player::giveSpell(SpellTargetInfo info) noexcept {
+	spellBoomerang_ = 
+		std::make_shared<SpellTarget>(section_, section_->getObject(uuid), info);
 	section_->addSpell(spellBoomerang_);
 }
 

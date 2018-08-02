@@ -11,13 +11,14 @@
 
 class Section;
 struct SourceInfo {
-	static constexpr auto JSON_ID = "Source";
+	static constexpr auto JSON_ID = "source";
 
 	int id{ 0 };
 
 	float reloadTime{ 0.5f };
 
 	Vector2f pos;
+	Vector2f origin{ 0.f, 0.f };
 	Vector2f size{ 0.66f, 0.66f };
 
 	std::string sprite{ "source" };

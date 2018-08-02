@@ -1,7 +1,4 @@
 #pragma once
-
-#include <stdio.h>
-
 #include "Vector.hpp"
 #include "3rd/json.hpp"
 
@@ -37,8 +34,6 @@ struct Rectangle {
 	bool isOnTopOf(Rectangle<T> other) const {
 		T dBotTop = (y + h) - (other.y);
 		T dTopBot = (y) - (other.y + other.h);
-
-		printf("dBotTop %f, dTopBot%f\n", (float)dBotTop, (float)dTopBot);
 
 		return dBotTop > dTopBot;
 	}
