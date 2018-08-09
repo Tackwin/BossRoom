@@ -90,9 +90,19 @@
 						"sprite": "source"
 					},
 					{
-						"name": "source_boomerang",
+						"name": "SourceTarget",
 						"type": "Panel",
 						"sprite": "source_boomerang"
+					},
+					{
+						"name": "SourceVaccum",
+						"type": "Panel",
+						"sprite": "SourceVaccum"
+					},
+					{
+						"name": "SourceDirection",
+						"type": "Panel",
+						"sprite": "SourceDirection"
 					}
 				]
 			},

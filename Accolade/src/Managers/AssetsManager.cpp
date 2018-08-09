@@ -255,7 +255,7 @@ bool AssetsManager::loadJson(const std::string &key, const std::string &path) {
 
 const nlohmann::json& AssetsManager::getJson(const std::string &key) {
 	auto it = _jsons.find(key);
-	assert(it != std::end(_jsons) && "Sound don't exist");
+	assert(it != std::end(_jsons) && "Json don't exist");
 	return it->second;
 }
 

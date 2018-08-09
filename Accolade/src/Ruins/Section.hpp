@@ -12,7 +12,9 @@
 #include "Structure/Structure.hpp"
 #include "Structure/Plateforme.hpp"
 
+#include "Gameplay/Magic/Sources/SourceDirection.hpp"
 #include "Gameplay/Magic/Sources/SourceTarget.hpp"
+#include "Gameplay/Magic/Sources/SourceVaccum.hpp"
 #include "Gameplay/Characters/DistanceGuy.hpp"
 #include "Gameplay/Magic/Sources/Source.hpp"
 #include "Gameplay/Magic/Spells/Spell.hpp"
@@ -26,6 +28,8 @@ struct SectionInfo {
 	std::vector<PlateformeInfo> plateformes;
 	std::vector<SourceInfo> sources;
 	std::vector<SourceTargetInfo> sourcesBoomerang;
+	std::vector<SourceVaccumInfo> sourcesVaccum;
+	std::vector<SourceDirectionInfo> sourcesDirection;
 	Rectangle2f maxRectangle;
 	Vector2f startPos;
 	Vector2f viewSize;
@@ -68,6 +72,7 @@ public:
 	std::shared_ptr<Object> getTargetEnnemyFromMouse() noexcept;
 	std::weak_ptr<Object> getObject(UUID id) const noexcept;
 
+	sf::View getCameraView() const noexcept;
 private:
 	// remove all object wich has the remove flag set
 	void removeDeadObject() noexcept;

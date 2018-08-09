@@ -3,14 +3,10 @@
 #include "./../Common.hpp"
 
 class UUID {
-private:
-
-	char uuid[16];
-	friend std::hash<UUID>;
-
 public:
 
 	static const UUID null;
+	static constexpr auto SIZE = 16;
 
 	UUID() {
 		std::uniform_int_distribution<int> rng{ 
@@ -53,6 +49,10 @@ public:
 		}
 		return false;
 	}
+private:
+
+	char uuid[SIZE];
+	friend std::hash<UUID>;
 };
 
 namespace std {

@@ -40,6 +40,10 @@ public:
 	void changeLifespan(float lifeSpan);
 
 	const nlohmann::json& getJson() const;
+
+	virtual void remove() noexcept override;
+	virtual bool toRemove() const noexcept override;
+
 private:
 	nlohmann::json _json;
 
@@ -58,6 +62,7 @@ private:
 	bool _exploded = false;
 	bool _damageable = true;
 	bool _destroyOthers = false;
+	bool _remove{ false };
 
 	sf::Sprite _sprite;
 };

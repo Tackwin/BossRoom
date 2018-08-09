@@ -29,10 +29,15 @@ public:
 
 	UUID getUuid() const noexcept;
 
+	virtual void remove() noexcept override;
+	virtual bool toRemove() const noexcept override;
+
 protected:
 
 	Section* section_{ nullptr };
 	SpellInfo info_;
 
 	UUID id_;
+
+	bool _remove{ false };
 };

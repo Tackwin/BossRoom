@@ -35,6 +35,10 @@ public:
 	float getRadius() const;
 
 	Zone& operator=(const Zone& other);
+
+	virtual void remove() noexcept override;
+	virtual bool toRemove() const noexcept override;
+
 protected:
 	std::vector<Object*> _objectsColliding;
 
@@ -43,6 +47,7 @@ protected:
 	std::unordered_map<std::string, sf::Sprite> _sprites;
 
 	float _radius = 0.f;
+	bool _remove{ false };
 
 	void collision(Object* obj);
 };

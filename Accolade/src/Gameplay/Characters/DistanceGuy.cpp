@@ -3,6 +3,8 @@
 #include "Managers/AssetsManager.hpp"
 
 #include "Gameplay/Player/Player.hpp"
+#include "Gameplay/Magic/Spells/SpellDirection.hpp"
+
 #include "Ruins/Section.hpp"
 
 #define X(x, y) if (auto i = json.find(#x); i != json.end()) info.x = y(*i);
@@ -69,15 +71,19 @@ void DistanceGuy::update(double dt) noexcept {
 
 
 	if ((playerPos - pos).length2() < info_.range * info_.range && reloadTimer_ < 0.f) {
-		SpellTargetInfo info =
-			SpellTargetInfo::loadJson(AM::getJson(SpellTargetInfo::JSON_ID));
+		SpellDirectionInfo info =
+			SpellDirectionInfo::loadJson(AM::getJson(SpellDirectionInfo::JSON_ID));
 
-		auto ptr = std::make_shared<SpellTarget>(
+		auto ptr = std::make_shared<SpellDirection>(
 			section_, section_->getObject(uuid), info
 		);
-		ptr->pos = support(unitaryRng(RD) * 2 * PIf, 0.f);
-		ptr->launch(section_->getPlayer());
-		
+		auto targetMask = std::bitset<Object::SIZE>();
+		targetMask.set(Object::PLAYER);
+		auto dir = (section_->getPlayerPos() - pos).normalize();
+
+
+		ptr->launch(dir, targetMask);
+		ptr->setPos(support((float)dir.angleX(), 0.f));
 		section_->addSpell(ptr);
 
 		reloadTimer_ = info_.reloadTime;
@@ -123,4 +129,12 @@ void DistanceGuy::hit(float damage) noexcept {
 
 Vector2f DistanceGuy::support(float a, float d) const noexcept {
 	return pos + Vector2f::createUnitVector(a) * (info_.size.x / 2.f + d);
+}
+
+void DistanceGuy::remove() noexcept {
+	_remove = true;
+}
+
+bool DistanceGuy::toRemove() const noexcept {
+	return _remove;
 }

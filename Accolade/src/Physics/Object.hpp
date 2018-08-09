@@ -22,13 +22,15 @@ struct Object {
 		SLIME,
 		DISTANCE,
 		SPELL,
+		SOURCE,
+		MAGIC,
 		SIZE
 	};
 
 	static u64 N;
 
 	Object();
-
+	virtual ~Object();
 
 	Vector2f pos = { 0, 0 };
 

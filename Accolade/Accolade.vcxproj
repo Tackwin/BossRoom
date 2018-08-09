@@ -340,11 +340,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Components\Removable.cpp" />
     <ClCompile Include="src\Gameplay\Characters\DistanceGuy.cpp" />
     <ClCompile Include="src\Gameplay\Characters\Slime.cpp" />
     <ClCompile Include="src\Gameplay\Magic\Sources\Source.cpp" />
+    <ClCompile Include="src\Gameplay\Magic\Sources\SourceDirection.cpp" />
     <ClCompile Include="src\Gameplay\Magic\Sources\SourceTarget.cpp" />
+    <ClCompile Include="src\Gameplay\Magic\Sources\SourceVaccum.cpp" />
+    <ClCompile Include="src\Gameplay\Magic\Spells\SpellDirection.cpp" />
     <ClCompile Include="src\Gameplay\Magic\Spells\SpellTarget.cpp" />
     <ClCompile Include="src\Gameplay\Magic\Spells\Spell.cpp" />
     <ClCompile Include="src\Graphics\GUI\Switcher.cpp" />
@@ -399,10 +401,14 @@
     <ClCompile Include="src\Utils\UUID.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Components\Hitable.hpp" />
     <ClInclude Include="src\Components\Removable.hpp" />
     <ClInclude Include="src\Gameplay\Characters\DistanceGuy.hpp" />
     <ClInclude Include="src\Gameplay\Characters\Slime.hpp" />
+    <ClInclude Include="src\Gameplay\Magic\Sources\SourceDirection.hpp" />
     <ClInclude Include="src\Gameplay\Magic\Sources\SourceTarget.hpp" />
+    <ClInclude Include="src\Gameplay\Magic\Sources\SourceVaccum.hpp" />
+    <ClInclude Include="src\Gameplay\Magic\Spells\SpellDirection.hpp" />
     <ClInclude Include="src\Gameplay\Magic\Spells\SpellTarget.hpp" />
     <ClInclude Include="src\Gameplay\Magic\Spells\Spell.hpp" />
     <ClInclude Include="src\Graphics\GUI\Switcher.hpp" />

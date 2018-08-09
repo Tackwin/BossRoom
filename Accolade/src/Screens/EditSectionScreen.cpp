@@ -16,6 +16,8 @@
 #include "Utils/string_algorithms.hpp"
 
 #include "Gameplay/Magic/Sources/SourceTarget.hpp"
+#include "Gameplay/Magic/Sources/SourceVaccum.hpp"
+#include "Gameplay/Magic/Sources/SourceDirection.hpp"
 
 EditSectionScreen::EditSectionScreen(SectionInfo section) :
 	Screen(), _section(section),
@@ -96,12 +98,28 @@ void EditSectionScreen::updateSource() noexcept {
 		if (sourceSwitcher_->getCurrentPanel()->getName() == "source") {
 			_section.sources.push_back(*_newSource);
 		}
-		else if (sourceSwitcher_->getCurrentPanel()->getName() == "source_boomerang") {
-			auto info = 
+		else if (sourceSwitcher_->getCurrentPanel()->getName() == SourceTarget::JSON_ID) {
+			auto info =
 				SourceTargetInfo::loadJson(AM::getJson(SourceTargetInfo::JSON_ID));
 			info.source.pos = getSnapedMouseCameraPos();
 
 			_section.sourcesBoomerang.push_back(info);
+		}
+		else if (sourceSwitcher_->getCurrentPanel()->getName() == SourceVaccum::JSON_ID) {
+			auto info =
+				SourceVaccumInfo::loadJson(AM::getJson(SourceVaccum::JSON_ID));
+			info.source.pos = getSnapedMouseCameraPos();
+
+			_section.sourcesVaccum.push_back(info);
+		}
+		else if (
+			sourceSwitcher_->getCurrentPanel()->getName() == SourceDirection::JSON_ID
+		) {
+			auto info =
+				SourceDirectionInfo::loadJson(AM::getJson(SourceDirectionInfo::JSON_ID));
+			info.source.pos = getSnapedMouseCameraPos();
+
+			_section.sourcesDirection.push_back(info);
 		}
 
 	}
@@ -196,6 +214,9 @@ void EditSectionScreen::updateCameraMovement(double dt) noexcept {
 	if (IM::isKeyPressed(sf::Keyboard::D)) {
 		_cameraView.move({ +(float)(dt * _section.maxRectangle.w / 3.f) * speedFactor , 0.f});
 	}
+	if (float delta = IM::getLastScroll(); delta != 0.f) {
+		_cameraView.zoom(std::powf(1.2f, -delta));
+	}
 }
 void EditSectionScreen::inputSwitchState() noexcept {
 	if (IM::isLastSequenceJustFinished({
@@ -264,6 +285,12 @@ void EditSectionScreen::render(sf::RenderTarget& target) {
 		renderDebug(target, source);
 	}
 	for (auto source : _section.sourcesBoomerang) {
+		renderDebug(target, source.source);
+	}
+	for (auto source : _section.sourcesVaccum) {
+		renderDebug(target, source.source);
+	}
+	for (auto source : _section.sourcesDirection) {
 		renderDebug(target, source.source);
 	}
 
@@ -452,6 +479,8 @@ void EditSectionScreen::deleteHovered() noexcept {
 	auto& distance = _section.distanceGuys;
 	auto& sources = _section.sources;
 	auto& sourcesBoomerang = _section.sourcesBoomerang;
+	auto& sourcesDirection = _section.sourcesDirection;
+	auto& sourcesVaccum = _section.sourcesVaccum;
 
 	for (size_t i = plateformes.size(); i > 0; --i) {
 		if (plateformes[i - 1].rectangle.in(IM::getMousePosInView(_cameraView))) {
@@ -489,15 +518,43 @@ void EditSectionScreen::deleteHovered() noexcept {
 
 	for (size_t i = sourcesBoomerang.size(); i > 0; --i) {
 
-		auto dist2 = 
+		auto dist2 =
 			(sourcesBoomerang[i - 1].source.pos - IM::getMousePosInView(_cameraView))
 			.length2();
 
 		if (
 			dist2 < sourcesBoomerang[i - 1].source.size.x *
 			sourcesBoomerang[i - 1].source.size.x / 4.f
-		) {
+			) {
 			sourcesBoomerang.erase(std::begin(sourcesBoomerang) + i - 1);
+			return;
+		}
+	}
+	for (size_t i = sourcesVaccum.size(); i > 0; --i) {
+
+		auto dist2 =
+			(sourcesVaccum[i - 1].source.pos - IM::getMousePosInView(_cameraView))
+			.length2();
+
+		if (
+			dist2 < sourcesVaccum[i - 1].source.size.x *
+			sourcesVaccum[i - 1].source.size.x / 4.f
+			) {
+			sourcesVaccum.erase(std::begin(sourcesVaccum) + i - 1);
+			return;
+		}
+	}
+	for (size_t i = sourcesDirection.size(); i > 0; --i) {
+
+		auto dist2 =
+			(sourcesDirection[i - 1].source.pos - IM::getMousePosInView(_cameraView))
+			.length2();
+
+		if (
+			dist2 < sourcesDirection[i - 1].source.size.x *
+			sourcesDirection[i - 1].source.size.x / 4.f
+			) {
+			sourcesDirection.erase(std::begin(sourcesDirection) + i - 1);
 			return;
 		}
 	}

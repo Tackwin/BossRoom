@@ -1,0 +1,7 @@
+{
+	"speed": 20.0,
+	"damage": 3.0,
+	"radius": 0.1,
+	"lifeTime": 2.5,
+	"particleGenerator": "genericParticuleGenerator"
+}

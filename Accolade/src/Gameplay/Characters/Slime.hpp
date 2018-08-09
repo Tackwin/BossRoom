@@ -7,6 +7,7 @@
 #include "Graphics/AnimatedSprite.hpp"
 
 #include "Components/Removable.hpp"
+#include "Components/Hitable.hpp"
 
 class Section;
 
@@ -25,7 +26,7 @@ struct SlimeInfo {
 	static nlohmann::json saveJson(SlimeInfo info) noexcept;
 };
 
-class Slime : public Object, public Removable {
+class Slime : public Object, public Removable, public Hitable {
 public:
 	Slime(SlimeInfo info) noexcept;
 
@@ -37,7 +38,10 @@ public:
 	void onEnter(Object* collider) noexcept;
 	void onExit(Object* collider) noexcept;
 
-	void hit(float damage) noexcept;
+	virtual void hit(float damage) noexcept override;
+
+	virtual void remove() noexcept override;
+	virtual bool toRemove() const noexcept override;
 
 private:
 	float minX_{ 0.f };
@@ -48,4 +52,6 @@ private:
 	Section* _section{ nullptr };
 
 	sf::Sprite _sprite;
+
+	bool _remove{ false };
 };

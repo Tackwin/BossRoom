@@ -8,6 +8,7 @@
 #include "Physics/Object.hpp"
 
 #include "Components/Removable.hpp"
+#include "Components/Hitable.hpp"
 
 struct DistanceGuyInfo {
 	static constexpr auto JSON_ID = "Distance";
@@ -26,7 +27,7 @@ struct DistanceGuyInfo {
 };
 
 class Section;
-class DistanceGuy : public Removable, public Object {
+class DistanceGuy : public Removable, public Object, public Hitable {
 
 public:
 
@@ -37,14 +38,19 @@ public:
 	void update(double dt) noexcept;
 	void render(sf::RenderTarget& target) noexcept;
 
-	void hit(float damage) noexcept;
+	virtual void hit(float damage) noexcept override;
 
 	Vector2f support(float a, float d) const noexcept;
+
+	virtual void remove() noexcept override;
+	virtual bool toRemove() const noexcept override;
 
 private:
 
 	void onEnter(Object* obj) noexcept;
 	void onExit(Object* obj) noexcept;
+
+	bool _remove{ false };
 
 	float reloadTimer_{ 0.f };
 

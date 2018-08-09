@@ -5,3 +5,5 @@ u64 Object::N = 0u;
 Object::Object() : uuid() {
 	N++;
 }
+
+Object::~Object() {}

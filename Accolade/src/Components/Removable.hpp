@@ -3,9 +3,6 @@
 class Removable {
 public:
 
-	void remove() noexcept;
-	bool toRemove() const noexcept;
-
-protected:
-	bool _toRemove{ false };
+	virtual void remove() noexcept = 0;
+	virtual bool toRemove() const noexcept = 0;
 };

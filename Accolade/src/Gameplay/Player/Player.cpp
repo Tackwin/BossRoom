@@ -105,9 +105,8 @@ void Player::update(double dt) {
 		}
 		flatForces.push_back({ 0, G });
 
-		if (isBoomerangSpellAvailable()) {
-			updateBoomerangSpell(dt);
-		}
+		if (isBoomerangSpellAvailable()) updateBoomerangSpell(dt);
+		if (isDirectionSpellAvailable()) updateDirectionSpell(dt);
 	}
 
 	velocity *= (float)std::pow(0.2, dt);
@@ -139,7 +138,7 @@ void Player::shoot() noexcept {
 	_sprite.pushAnim("action");
 }
 
-void Player::hit(float d) {
+void Player::hit(float d) noexcept {
 	if (_invincible) return;
 	_invincible = true;
 
@@ -376,13 +375,20 @@ void Player::leave() noexcept {
 // Magic spell stuff.
 
 void Player::giveSpell(SpellTargetInfo info) noexcept {
-	spellBoomerang_ = 
+	spellBoomerang_ =
 		std::make_shared<SpellTarget>(section_, section_->getObject(uuid), info);
 	section_->addSpell(spellBoomerang_);
+}
+void Player::giveSpell(SpellDirectionInfo info) noexcept {
+	spellDirection_ =
+		std::make_shared<SpellDirection>(section_, section_->getObject(uuid), info);
 }
 
 bool Player::isBoomerangSpellAvailable() const noexcept {
 	return spellBoomerang_ != nullptr;
+}
+bool Player::isDirectionSpellAvailable() const noexcept {
+	return spellDirection_ != nullptr;
 }
 
 void Player::updateBoomerangSpell(double) noexcept {
@@ -400,4 +406,29 @@ void Player::updateBoomerangSpell(double) noexcept {
 			spellBoomerang_.reset();
 		}
 	}
+}
+void Player::updateDirectionSpell(double) noexcept {
+	if (IM::isMouseJustPressed(sf::Mouse::Left)) {
+		// launch
+		
+		auto dir = (IM::getMousePosInView(section_->getCameraView()) - pos).normalize();
+		std::bitset<Object::SIZE> targetMask;
+		targetMask.set(Object::SLIME);
+		targetMask.set(Object::DISTANCE);
+
+		spellDirection_->launch(dir, targetMask);
+		spellDirection_->setPos(pos);
+		section_->addSpell(spellDirection_);
+		spellDirection_.reset();
+	}
+
+}
+
+
+void Player::remove() noexcept {
+	remove_ = true;
+}
+
+bool Player::toRemove() const noexcept {
+	return remove_;
 }

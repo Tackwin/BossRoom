@@ -14,6 +14,8 @@ private:
 	static bool wasKeyJustReleased;
 	static int nKeyPressed;
 
+	static float lastScroll;
+
 	static sf::Uint32 textEntered;
 
 	static bool keyPressed[sf::Keyboard::KeyCount];
@@ -81,6 +83,8 @@ public:
 		return isMouseJustReleased(static_cast<sf::Mouse::Button>(button));
 	};
 	static bool isMouseJustReleased(const sf::Mouse::Button &button);
+
+	static float getLastScroll() noexcept;
 
 	static Vector2f getMousePosInView(const sf::View& view);
 	static Vector2f getMouseScreenPos();

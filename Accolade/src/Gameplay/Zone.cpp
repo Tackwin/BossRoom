@@ -113,3 +113,11 @@ sf::Sprite& Zone::getSprite(const std::string& key) {
 void Zone::cleanSprites() {
 	_sprites.clear();
 }
+
+void Zone::remove() noexcept {
+	_remove = true;
+}
+
+bool Zone::toRemove() const noexcept {
+	return _remove;
+}

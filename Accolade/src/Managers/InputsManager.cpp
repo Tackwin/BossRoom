@@ -10,6 +10,8 @@ bool InputsManager::wasKeyJustPressed = false;
 bool InputsManager::wasKeyJustReleased = false;
 int InputsManager::nKeyPressed = 0;
 
+float InputsManager::lastScroll = 0.f;
+
 bool InputsManager::keyPressed[sf::Keyboard::KeyCount];
 bool InputsManager::keyJustPressed[sf::Keyboard::KeyCount];
 bool InputsManager::keyJustReleased[sf::Keyboard::KeyCount];
@@ -121,6 +123,9 @@ Vector2f InputsManager::getMousePosInView(const sf::View& view) {
 Vector2f InputsManager::getMouseScreenPos() {
 	return mouseScreenPos;
 }
+float InputsManager::getLastScroll() noexcept {
+	return lastScroll;
+}
 
 void InputsManager::update(sf::RenderWindow &window) {
 	wasKeyJustPressed = false;
@@ -128,6 +133,7 @@ void InputsManager::update(sf::RenderWindow &window) {
 	nKeyPressed = std::max(nKeyPressed, 0);
 	
 	textEntered = 0;
+	lastScroll = 0;
 
 	memset(keyJustPressed   , 0, sizeof(keyJustPressed));
 	memset(keyJustReleased  , 0, sizeof(keyJustReleased));
@@ -197,6 +203,9 @@ void InputsManager::update(sf::RenderWindow &window) {
 		}
 		if (event.type == sf::Event::TextEntered) {
 			textEntered = event.text.unicode;
+		}
+		if (event.type == sf::Event::MouseWheelScrolled) {
+			lastScroll = event.mouseWheelScroll.delta;
 		}
 	}
 	for (i32 i = 0u; i < sf::Keyboard::KeyCount; ++i) {

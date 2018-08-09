@@ -22,3 +22,11 @@ void Spell::leave() noexcept {
 UUID Spell::getUuid() const noexcept {
 	return id_;
 }
+
+void Spell::remove() noexcept {
+	_remove = true;
+}
+
+bool Spell::toRemove() const noexcept {
+	return _remove;
+}

@@ -132,3 +132,11 @@ void Slime::onEnter(Object* object) noexcept {
 }
 
 void Slime::onExit(Object*) noexcept {}
+
+void Slime::remove() noexcept {
+	_remove = true;
+}
+
+bool Slime::toRemove() const noexcept {
+	return _remove;
+}

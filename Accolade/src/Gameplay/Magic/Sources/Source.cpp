@@ -12,6 +12,7 @@ SourceInfo SourceInfo::loadJson(nlohmann::json json) noexcept {
 #define X(x, y) if (auto i = json.find(#x); i != json.end()) { info.x = y(*i); }
 	X(id,);
 	X(reloadTime,);
+	X(kind, (SourceInfo::Kind));
 	X(pos, Vector2f::loadJson);
 	X(size, Vector2f::loadJson);
 	X(origin, Vector2f::loadJson);
@@ -23,12 +24,13 @@ SourceInfo SourceInfo::loadJson(nlohmann::json json) noexcept {
 
 nlohmann::json SourceInfo::saveJson(SourceInfo info) noexcept {
 	nlohmann::json json;
-	json["id"] = info.id;
-	json["reloadTime"] = info.reloadTime;
-	json["pos"] = Vector2f::saveJson(info.pos);
-	json["size"] = Vector2f::saveJson(info.size);
-	json["sprite"] = info.sprite;
-	json["origin"] = Vector2f::saveJson(info.origin);
+	json["id"]			= info.id;
+	json["sprite"]		= info.sprite;
+	json["kind"]		= (int)info.kind;
+	json["reloadTime"]	= info.reloadTime;
+	json["pos"]			= Vector2f::saveJson(info.pos);
+	json["size"]		= Vector2f::saveJson(info.size);
+	json["origin"]		= Vector2f::saveJson(info.origin);
 	return json;
 }
 Source::Source(SourceInfo info) noexcept :
@@ -67,4 +69,12 @@ void Source::render(sf::RenderTarget& target) noexcept {
 
 	target.draw(sprite_);
 	target.draw(point);
+}
+
+void Source::remove() noexcept {
+	_remove = true;
+}
+
+bool Source::toRemove() const noexcept {
+	return _remove;
 }

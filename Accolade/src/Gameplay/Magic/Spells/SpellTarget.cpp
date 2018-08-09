@@ -53,20 +53,21 @@ SpellTarget::SpellTarget(
 ) noexcept :
 	Spell(section), info_(info), sender_(sender)
 {
-	pos = section->getPlayer()->support(0.f, 0.2f);
 
 	auto disk = std::make_unique<Disk>();
 	disk->sensor = true;
 	disk->r = info_.radius;
-	
-	id_ = Object::uuid;
+	pos = section->getPlayer()->support(0.f, 0.2f);
+
+	id_ = uuid;
 
 	idMask.set(Object::SPELL);
+	idMask.set(Object::MAGIC);
 
 	collider = std::move(disk);
 	collider->onEnter = std::bind(&SpellTarget::onEnter, this, std::placeholders::_1);
 	collider->onExit  = std::bind(&SpellTarget::onExit , this, std::placeholders::_1);
-
+	collider->setPos(pos);
 
 	particleGenerator_ = ParticleGenerator(
 		AM::getJson(info_.particleGenerator), pos
@@ -76,6 +77,7 @@ SpellTarget::SpellTarget(
 }
 
 void SpellTarget::update(double dt) noexcept {
+
 	if (launched_ && target_.expired()) {
 		remove();
 		return;
@@ -162,4 +164,8 @@ void SpellTarget::launch(std::weak_ptr<Object> obj) noexcept {
 
 SpellTargetInfo SpellTarget::getSpellInfo() const noexcept {
 	return info_;
+}
+
+void SpellTarget::remove() noexcept {
+	if (launched_) Spell::remove();
 }

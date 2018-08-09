@@ -98,22 +98,16 @@ void World::update(double dt) {
 			}
 
 			auto& collisionStateRef = collisionState[obj2Id];
-			if (!flag) {
-				if (collisionStateRef) {
-					obj1->collider->onExit(obj2.get());
-					obj2->collider->onExit(obj1.get());
-				}
 
-				collisionStateRef = false;
+			if (!flag && collisionStateRef) {
+				obj1->collider->onExit(obj2.get());
+				//obj2->collider->onExit(obj1.get());
 			}
-			else {
-				if (!collisionStateRef) {
-					obj1->collider->onEnter(obj2.get());
-					obj2->collider->onEnter(obj1.get());
-				}
-
-				collisionStateRef = true;
+			if (flag && !collisionStateRef) {
+				obj1->collider->onEnter(obj2.get());
+				//obj2->collider->onEnter(obj1.get());
 			}
+			collisionStateRef = flag;
 
 			if (xCollider && yCollider) {
 				break;

@@ -31,6 +31,14 @@ Section::Section(SectionInfo info) noexcept : _info(info) {
 		auto ptr = std::make_shared<SourceTarget>(source);
 		addSource(std::dynamic_pointer_cast<Source>(ptr));
 	}
+	for (auto& source : _info.sourcesVaccum) {
+		auto ptr = std::make_shared<SourceVaccum>(source);
+		addSource(std::dynamic_pointer_cast<Source>(ptr));
+	}
+	for (auto& source : _info.sourcesDirection) {
+		auto ptr = std::make_shared<SourceDirection>(source);
+		addSource(std::dynamic_pointer_cast<Source>(ptr));
+	}
 
 	for (auto& slime : _info.slimes) {
 		auto ptr = std::make_shared<Slime>(slime);
@@ -270,6 +278,14 @@ SectionInfo SectionInfo::loadJson(const nlohmann::json& json) noexcept {
 			load_json_vector<SourceTargetInfo>(json.at(SourceTargetInfo::JSON_ID)
 		);
 	}
+	if (json.count(SourceVaccumInfo::JSON_ID) != 0) {
+		info.sourcesVaccum =
+			load_json_vector<SourceVaccumInfo>(json.at(SourceVaccumInfo::JSON_ID));
+	}
+	if (json.count(SourceDirectionInfo::JSON_ID) != 0) {
+		info.sourcesDirection =
+			load_json_vector<SourceDirectionInfo>(json.at(SourceDirectionInfo::JSON_ID));
+	}
 
 	if (json.count("startPos") != 0) {
 		info.startPos.x = json.at("startPos").get<std::vector<float>>()[0];
@@ -302,6 +318,8 @@ nlohmann::json SectionInfo::saveJson(SectionInfo info) noexcept {
 	nlohmann::json distanceArray = nlohmann::json::array();
 	nlohmann::json sourceArray = nlohmann::json::array();
 	nlohmann::json sourceBoomerangArray = nlohmann::json::array();
+	nlohmann::json sourceVaccumArray = nlohmann::json::array();
+	nlohmann::json sourceDirectionArray = nlohmann::json::array();
 	nlohmann::json plateformeArray = nlohmann::json::array();
 
 	for (auto& slime : info.slimes) {
@@ -320,12 +338,20 @@ nlohmann::json SectionInfo::saveJson(SectionInfo info) noexcept {
 	for (auto& source : info.sourcesBoomerang) {
 		sourceBoomerangArray.push_back(SourceTargetInfo::saveJson(source));
 	}
+	for (auto& source : info.sourcesVaccum) {
+		sourceVaccumArray.push_back(SourceVaccumInfo::saveJson(source));
+	}
+	for (auto& source : info.sourcesDirection) {
+		sourceDirectionArray.push_back(SourceDirectionInfo::saveJson(source));
+	}
 
 	json["maxRect"]						= Rectangle2f::saveJson(info.maxRectangle);
 	json["startPos"]					= Vector2f::saveJson(info.startPos);
 	json["viewSize"]					= Vector2f::saveJson(info.viewSize);
 	json["plateformes"]					= plateformeArray;
 	json[SourceTargetInfo::JSON_ID]		= sourceBoomerangArray;
+	json[SourceVaccumInfo::JSON_ID]		= sourceVaccumArray;
+	json[SourceDirectionInfo::JSON_ID]	= sourceDirectionArray;
 	json["sources"]						= sourceArray;
 	json["distanceGuys"]				= distanceArray;
 	json["slimes"]						= slimeArray;
@@ -415,4 +441,8 @@ void Section::renderCrossOnTarget(sf::RenderTarget& target) const noexcept {
 
 std::weak_ptr<Object> Section::getObject(UUID id) const noexcept {
 	return _world.getObject(id);
+}
+
+sf::View Section::getCameraView() const noexcept {
+	return _cameraView;
 }

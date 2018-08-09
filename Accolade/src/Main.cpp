@@ -10,6 +10,7 @@
 
 
 #include <cstdio>
+#include <typeinfo>
 
 #include <SFML/Graphics.hpp>
 
@@ -60,6 +61,7 @@ bool render(sf::RenderWindow& window) {
 }
 
 int main(int, char**) {
+
 	/*if (!glfwInit()) {
 		printf("couldn't init glfw");
 		assert(true);

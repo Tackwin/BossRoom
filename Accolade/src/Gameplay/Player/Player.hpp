@@ -20,13 +20,14 @@
 
 #include "Managers/MemoryManager.hpp"
 
+#include "Gameplay/Magic/Spells/SpellDirection.hpp"
 #include "Gameplay/Magic/Spells/SpellTarget.hpp"
 #include "Gameplay/Wearable/Wearable.hpp"
 
 #include "Utils/UUID.hpp"
 
 #include "Components/Removable.hpp"
-
+#include "Components/Hitable.hpp"
 
 struct PlayerInfo {
 	static constexpr auto BOLOSS = "char_boloss";
@@ -55,7 +56,11 @@ class Level;
 class Section;
 class Projectile;
 class Player : 
-	public Object, public Removable, public std::enable_shared_from_this<Player> {
+	public Object,
+	public Removable,
+	public Hitable,
+	public std::enable_shared_from_this<Player>
+{
 public:
 	Player() noexcept;
 	Player(PlayerInfo info) noexcept;
@@ -70,7 +75,7 @@ public:
 	void render(sf::RenderTarget& target);
 
 	void shoot() noexcept;
-	void hit(float damage);
+	virtual void hit(float damage) noexcept override;
 
 	bool isAlive() const;
 	float getLife() const;
@@ -131,6 +136,10 @@ public:
 	Vector2f support(float a, float d) const noexcept;
 
 	bool eventFired(const std::string& name) const noexcept;
+
+	virtual void remove() noexcept override;
+	virtual bool toRemove() const noexcept override;
+
 public: //TODO: Make private
 
 	void jumpKeyPressed();
@@ -154,7 +163,7 @@ public: //TODO: Make private
 
 	bool _floored{ false };
 	bool _freeze{ false };
-
+	bool remove_{ false };
 	bool _jumping{ false };
 	bool _boostingJump{ false };
 
@@ -185,13 +194,15 @@ public: //TODO: Make private
 public:
 
 	void giveSpell(SpellTargetInfo info) noexcept;
+	void giveSpell(SpellDirectionInfo info) noexcept;
 
 	bool isBoomerangSpellAvailable() const noexcept;
-
+	bool isDirectionSpellAvailable() const noexcept;
 private:
 
 	std::shared_ptr<SpellTarget> spellBoomerang_;
+	std::shared_ptr<SpellDirection> spellDirection_;
 
 	void updateBoomerangSpell(double dt) noexcept;
-
+	void updateDirectionSpell(double dt) noexcept;
 };

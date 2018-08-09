@@ -118,3 +118,11 @@ bool Projectile::isFromPlayer() const {
 const nlohmann::json& Projectile::getJson() const {
 	return _json;
 }
+
+void Projectile::remove() noexcept {
+	_remove = true;
+}
+
+bool Projectile::toRemove() const noexcept {
+	return _remove;
+}

@@ -136,6 +136,12 @@
     },
     "white_disk": {
       "sheet": "images/white_disk.png"
+    },
+    "SourceVaccum": {
+      "sheet": "images/vaccum.png"
+    },
+    "SourceDirection": {
+      "sheet": "images/direction.png"
     }
   },
   "sounds": {
@@ -153,13 +159,16 @@
     "startZone": "rooms/start.json",
     "editScreen": "screens/edit.json",
     "SpellTargetInfo": "spells/target.json",
+    "SpellDirectionInfo": "spells/direction.json",
     "genericParticuleGenerator": "particles/genericMagic.json",
     "SourceTargetInfo": "sources/target.json",
     "source": "sources/common.json",
     "Slime": "characters/slime.json",
-    "Distance": "characters/distance.json"
+    "Distance": "characters/distance.json",
+    "SourceVaccum": "sources/vaccum.json",
+    "SourceDirectionInfo": "sources/direction.json"
   },
-  "StartRoom": "rooms/enter2.json",
+  "StartRoom": "rooms/roomA.json",
   "bosses": [
     {
       "name": "boss 0",

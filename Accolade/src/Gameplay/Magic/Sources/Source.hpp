@@ -13,6 +13,13 @@ class Section;
 struct SourceInfo {
 	static constexpr auto JSON_ID = "source";
 
+	enum Kind {
+		SourceTarget,
+		SourceVaccum,
+		SourceDirection,
+		Count
+	};
+
 	int id{ 0 };
 
 	float reloadTime{ 0.5f };
@@ -22,6 +29,8 @@ struct SourceInfo {
 	Vector2f size{ 0.66f, 0.66f };
 
 	std::string sprite{ "source" };
+
+	Kind kind;
 
 	static SourceInfo loadJson(nlohmann::json json) noexcept;
 	static nlohmann::json saveJson(SourceInfo info) noexcept;
@@ -43,6 +52,9 @@ public:
 	virtual void update(double dt) noexcept;
 	virtual void render(sf::RenderTarget& target) noexcept;
 
+	virtual void remove() noexcept override;
+	virtual bool toRemove() const noexcept override;
+
 protected:
 	// Well... looks like _.* identifier are reserved by the standard...
 	// I need to eventually phase _all of them_ out.
@@ -53,4 +65,6 @@ protected:
 
 private:
 	SourceInfo info_;
+
+	bool _remove{ false };
 };
