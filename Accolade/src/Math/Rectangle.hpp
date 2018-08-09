@@ -107,6 +107,16 @@ struct Rectangle {
 		shape.setFillColor(color);
 		target.draw(shape);
 	}
+	void render(
+		sf::RenderTarget& target, Vector4f in, Vector4f on, float thick = 0.01f
+	) const noexcept {
+		sf::RectangleShape shape{ size };
+		shape.setPosition(pos);
+		shape.setFillColor(in);
+		shape.setOutlineColor(on);
+		shape.setOutlineThickness(thick * std::min(w, h));
+		target.draw(shape);
+	}
 
 #endif
 

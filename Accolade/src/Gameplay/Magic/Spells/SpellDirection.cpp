@@ -60,6 +60,7 @@ void SpellDirection::update(double dt) noexcept {
 		setPos(pos + dir_ * info_.speed * dt);
 
 		if (lifeTimer_ < 0.f) remove();
+		particleGenerator_.update(dt);
 	}
 }
 void SpellDirection::render(sf::RenderTarget& target) noexcept {
@@ -69,6 +70,8 @@ void SpellDirection::render(sf::RenderTarget& target) noexcept {
 	mark.setPosition(pos);
 
 	target.draw(mark);
+
+	particleGenerator_.render(target);
 }
 
 void SpellDirection::launch(Vector2f dir, std::bitset<Object::SIZE> target) noexcept {

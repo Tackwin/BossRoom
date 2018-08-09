@@ -25,6 +25,8 @@ EditSectionScreen::EditSectionScreen(SectionInfo section) :
 {
 	_cameraView.setCenter(_section.maxRectangle.fitUpRatio(RATIO).center());
 	_cameraView.setSize(_section.viewSize.fitUpRatio(RATIO));
+	viewSize_.pos = _cameraView.getCenter();
+	viewSize_.size = _section.viewSize;
 }
 
 void EditSectionScreen::update(double dt) {
@@ -44,6 +46,14 @@ void EditSectionScreen::update(double dt) {
 	if (IM::isKeyJustPressed(sf::Keyboard::Right)) {
 		if (_toolState == place_source) sourceSwitcher_->right();
 		if (_toolState == place_ennemy) ennemySwitcher_->right();
+	}
+
+	if (IM::isLastSequenceJustFinished({
+		sf::Keyboard::LControl, sf::Keyboard::T, sf::Keyboard::V
+	})) {
+		viewSize_.pos = _cameraView.getCenter() - _cameraView.getSize() / 2.f;
+		viewSize_.size = _cameraView.getSize();
+		_section.viewSize = viewSize_.size;
 	}
 
 	if (IM::isLastSequenceJustFinished({ sf::Keyboard::LControl, sf::Keyboard::D }) ||
@@ -309,6 +319,10 @@ void EditSectionScreen::render(sf::RenderTarget& target) {
 		startPos = getSnapedMouseCameraPos();
 	}
 	startPos.plot(target, 0.1f, { 1.0, 0.0, 0.0, 1.0 }, {}, 0.f);
+
+	viewSize_.render(
+		target, Vector4f{ 0.f, 0.f, 0.f, 0.f }, Vector4f{ 1.f, 0.f, 0.f, 1.f }
+	);
 
 	target.setView(_uiView);
 	_widgets.at("root")->propagateRender(target);

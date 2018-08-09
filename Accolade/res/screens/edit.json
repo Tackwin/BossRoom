@@ -1,139 +1,149 @@
 {
-	"root": {
-		"childs": {
-			"titleLabel": {
-				"name": "titleLabel",
-				"type": "Label",
-				"font": "consola",
-				"pos": [ 0, 0 ],
-				"charSize": 10,
-				"text": "Welcome in the editor :D !"
-			},
-			"drawPlateforme": {
-				"name": "drawPlateforme",
-				"type": "Label",
-				"font": "consola",
-				"pos": [ 0, 15 ],
-				"charSize": 10,
-				"text": "Draw structure: Ctrl + Q P"
-			},
-			"placeSlime": {
-				"name": "placeSlime",
-				"type": "Label",
-				"font": "consola",
-				"pos": [ 0, 30 ],
-				"charSize": 10,
-				"text": "Place slime: Ctrl + Q S"
-			},
-			"saveLabel": {
-				"name": "saveLabel",
-				"type": "Label",
-				"font": "consola",
-				"charSize": 10,
-				"pos": [0, 45],
-				"text": "Save file to: ",
-				"childs": [{
-					"name": "savePicker",
-					"type": "ValuePicker",
-					"font": "consola",
-					"text": "rooms/roomA.json",
-					"charSize": 10,
-					"pos": [ 105, 2 ],
-					"size": [ 100, 15 ],
-					"unfocusedColor": [ 0.3, 0.3, 0.3, 0.8],
-					"focusedColor": [0.5, 0.5, 0.5, 0.95]
-				}]
-			},
-			"startPosLabel": {
-				"name": "placeStartPos",
-				"type": "Label",
-				"font": "consola",
-				"text": "startPos Ctrl + S S",
-				"charSize" : 10,
-				"pos": [0, 60]
-			},
-			"snapGrid":{
-				"name": "snapGrid",
-				"type": "Label",
-				"font": "consola",
-				"text": "Snap grid 1cm",
-				"charSize": 10,
-				"pos": [0, 75]
-			},
-			"placeSource": {
-				"name": "placeSource",
-				"type": "Label",
-				"font": "consola",
-				"text": "Place source Ctrl + S O",
-				"charSize": 10,
-				"pos": [0, 90]
-			},
-			"sourceSwitcher": {
-				"label": {
-					"font": "consola",
-					"name": "label",
-					"charSize": 10,
-					"pos": [50, -100],
-					"origin": [0.5, 2]
-				},
-				"name": "sourceSwitcher",
-				"type": "SpriteSwitcher",
-				"pos": [0, 800],
-				"origin": [0, 1],
-				"size": [100, 100],
-				"visible": false,
-				"backColor": [0.4, 0.3, 0.2, 1.0],
-				"panels": [
-					{
-						"name": "source",
-						"type": "Panel",
-						"sprite": "source"
-					},
-					{
-						"name": "SourceTarget",
-						"type": "Panel",
-						"sprite": "source_boomerang"
-					},
-					{
-						"name": "SourceVaccum",
-						"type": "Panel",
-						"sprite": "SourceVaccum"
-					},
-					{
-						"name": "SourceDirection",
-						"type": "Panel",
-						"sprite": "SourceDirection"
-					}
-				]
-			},
-			"ennemySwitcher": {
-				"label": {
-					"font": "consola",
-					"name": "label",
-					"charSize": 10,
-					"pos": [50, -100],
-					"origin": [0.5, 2]
-				},
-				"name": "ennemySwitcher",
-				"type": "SpriteSwitcher",
-				"pos": [0, 800],
-				"origin": [0, 1],
-				"size": [100, 100],
-				"visible": false,
-				"backColor": [0.4, 0.3, 0.2, 1.0],
-				"panels": [
-					{
-						"name": "Slime",
-						"type": "Panel",
-						"sprite": "slime"
-					},
-					{
-						"name": "Distance",
-						"type": "Panel",
-						"sprite": "distance"
-					}
-				]
-			}
-		}
-	}
+  "root": {
+    "childs": {
+      "titleLabel": {
+        "name": "titleLabel",
+        "type": "Label",
+        "font": "consola",
+        "pos": [0, 0],
+        "charSize": 10,
+        "text": "Welcome in the editor :D !"
+      },
+      "drawPlateforme": {
+        "name": "drawPlateforme",
+        "type": "Label",
+        "font": "consola",
+        "pos": [0, 15],
+        "charSize": 10,
+        "text": "Draw structure: Ctrl + Q P"
+      },
+      "placeSlime": {
+        "name": "placeSlime",
+        "type": "Label",
+        "font": "consola",
+        "pos": [0, 30],
+        "charSize": 10,
+        "text": "Place slime: Ctrl + Q S"
+      },
+      "saveLabel": {
+        "name": "saveLabel",
+        "type": "Label",
+        "font": "consola",
+        "charSize": 10,
+        "pos": [0, 45],
+        "text": "Save file to: ",
+        "childs": [
+          {
+            "name": "savePicker",
+            "type": "ValuePicker",
+            "font": "consola",
+            "text": "rooms/roomA.json",
+            "charSize": 10,
+            "pos": [105, 2],
+            "size": [100, 15],
+            "unfocusedColor": [0.3, 0.3, 0.3, 0.8],
+            "focusedColor": [0.5, 0.5, 0.5, 0.95]
+          }
+        ]
+      },
+      "startPosLabel": {
+        "name": "placeStartPos",
+        "type": "Label",
+        "font": "consola",
+        "text": "startPos Ctrl + S S",
+        "charSize": 10,
+        "pos": [0, 60]
+      },
+      "snapGrid": {
+        "name": "snapGrid",
+        "type": "Label",
+        "font": "consola",
+        "text": "Snap grid 1cm",
+        "charSize": 10,
+        "pos": [0, 75]
+      },
+      "placeSource": {
+        "name": "placeSource",
+        "type": "Label",
+        "font": "consola",
+        "text": "Place source Ctrl + S O",
+        "charSize": 10,
+        "pos": [0, 90]
+      },
+      "snapshotView": {
+        "name": "snapshotView",
+        "type": "Label",
+        "charSize": 10,
+        "font": "consola",
+        "text": "Take snapshot of view Ctrl + T V",
+        "pos": [0, 105]
+      },
+      "sourceSwitcher": {
+        "label": {
+          "font": "consola",
+          "name": "label",
+          "charSize": 10,
+          "pos": [50, -100],
+          "origin": [0.5, 2]
+        },
+        "name": "sourceSwitcher",
+        "type": "SpriteSwitcher",
+        "pos": [0, 800],
+        "origin": [0, 1],
+        "size": [100, 100],
+        "visible": false,
+        "backColor": [0.4, 0.3, 0.2, 1.0],
+        "panels": [
+          {
+            "name": "source",
+            "type": "Panel",
+            "sprite": "source"
+          },
+          {
+            "name": "SourceTarget",
+            "type": "Panel",
+            "sprite": "source_boomerang"
+          },
+          {
+            "name": "SourceVaccum",
+            "type": "Panel",
+            "sprite": "SourceVaccum"
+          },
+          {
+            "name": "SourceDirection",
+            "type": "Panel",
+            "sprite": "SourceDirection"
+          }
+        ]
+      },
+      "ennemySwitcher": {
+        "label": {
+          "font": "consola",
+          "name": "label",
+          "charSize": 10,
+          "pos": [50, -100],
+          "origin": [0.5, 2]
+        },
+        "name": "ennemySwitcher",
+        "type": "SpriteSwitcher",
+        "pos": [0, 800],
+        "origin": [0, 1],
+        "size": [100, 100],
+        "visible": false,
+        "backColor": [0.4, 0.3, 0.2, 1.0],
+        "panels": [
+          {
+            "name": "Slime",
+            "type": "Panel",
+            "sprite": "slime"
+          },
+          {
+            "name": "Distance",
+            "type": "Panel",
+            "sprite": "distance"
+          }
+        ]
+      }
+    }
+  }
 }

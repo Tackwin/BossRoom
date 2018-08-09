@@ -69,6 +69,7 @@ private:
 	sf::View _uiView;
 	sf::View _cameraView;
 
+	Rectangle2f viewSize_;
 	nlohmann::json _json;
 
 	std::optional<PlateformeInfo> _newPlateforme;
