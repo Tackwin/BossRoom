@@ -20,6 +20,14 @@ public:
 	std::string getText() const noexcept;
 
 private:
+
+	bool onClickEnded() noexcept;
+
+	bool onHoverBegan() noexcept;
+	bool onHoverEnded() noexcept;
+
+	bool onKeyBegan() noexcept;
+
 	std::string _font;
 	std::string _defaultText{ "" };
 	std::string _inputString;

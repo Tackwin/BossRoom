@@ -25,31 +25,13 @@ ValuePicker::ValuePicker(nlohmann::json json) noexcept : Widget(json) {
 	Callback onKey;
 	onClick.began = Callback::TRUE;
 	onClick.going = Callback::TRUE;
-	onClick.ended = [&]() -> bool {
-		_focused = !_focused;
-		return true;
-	};
+	onClick.ended = std::bind(&ValuePicker::onClickEnded, this);
 
-	onHover.began = [&]() -> bool {
-		_inputColor = _focusedColor;
-		return true;
-	};
+	onHover.began = std::bind(&ValuePicker::onHoverBegan, this);
 	onHover.going = Callback::TRUE;
-	onHover.ended = [&]() -> bool {
-		_inputColor = _unfocusedColor;
-		return true;
-	};
+	onHover.ended = std::bind(&ValuePicker::onHoverEnded, this);
 
-	onKey.began = [&]() -> bool {
-		if (IM::isKeyJustPressed(sf::Keyboard::BackSpace)) {
-			if (_inputString.length() != 0) _inputString.erase(_inputString.length() - 1);
-		}
-		// Only ascii
-		else if (IM::isTextJustEntered() && IM::getTextEntered() < 125){
-			_inputString += (char)IM::getTextEntered();
-		}
-		return true;
-	};
+	onKey.began = std::bind(&ValuePicker::onKeyBegan, this);
 	onKey.going = Callback::TRUE;
 	onKey.ended = Callback::TRUE;
 
@@ -76,3 +58,34 @@ void ValuePicker::render(sf::RenderTarget& target) {
 std::string ValuePicker::getText() const noexcept {
 	return _inputString;
 }
+
+bool ValuePicker::onClickEnded() noexcept {
+	_focused = !_focused;
+	return true;
+}
+
+bool ValuePicker::onHoverBegan() noexcept {
+	if (_focused) return true;
+	_inputColor = _focusedColor;
+	return true;
+}
+bool ValuePicker::onHoverEnded() noexcept {
+	if (_focused) return true;
+	_inputColor = _unfocusedColor;
+	return true;
+}
+
+bool ValuePicker::onKeyBegan() noexcept {
+	if (IM::isKeyJustPressed(sf::Keyboard::BackSpace)) {
+		if (_inputString.length() != 0) _inputString.erase(_inputString.length() - 1);
+	}
+	else if (IM::isKeyJustPressed(sf::Keyboard::Return)) {
+		_focused = false;
+		_inputColor = _unfocusedColor;
+	}
+	// Only ascii
+	else if (IM::isTextJustEntered() && IM::getTextEntered() < 125) {
+		_inputString += (char)IM::getTextEntered();
+	}
+	return true;
+};
