@@ -162,7 +162,7 @@ void SpellTarget::launch(std::weak_ptr<Object> obj) noexcept {
 	launched_ = true;
 }
 
-SpellTargetInfo SpellTarget::getSpellInfo() const noexcept {
+SpellTargetInfo SpellTarget::getInfo() const noexcept {
 	return info_;
 }
 

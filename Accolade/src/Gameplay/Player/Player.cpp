@@ -323,10 +323,7 @@ void Player::unmount() {
 }
 
 void Player::knockBack(Vector2f recoil, float time) noexcept {
-	if (_invincible) return;
-
-	_invincible = true;
-	_invincibleTime = _info.invincibilityTime;
+	if (_knockBack.has_value()) return;
 
 	_knockBack = recoil;
 	_knockBackTime = time;
@@ -397,7 +394,7 @@ void Player::updateBoomerangSpell(double) noexcept {
 		if (!target) return;
 
 
-		auto info = spellBoomerang_->getSpellInfo();
+		auto info = spellBoomerang_->getInfo();
 
 		if ((target->pos - pos).length2() <= info.range * info.range) {
 			spellBoomerang_->launch(target);

@@ -1,521 +1,512 @@
 {
-  "sprites": {
-    "slime": {
-      "sheet": "images/slime.png",
-      "origin": [0.5, 0.15]
-    },
-    "phoenix": {
-      "sheet": "images/phoenix_fire.png",
-      "rect": [ 600, 500 ],
-      "idle": {
-        "row": 0,
-        "frames": 1,
-        "loop": true,
-        "time": 10
-      },
-      "action": {
-        "row": 0,
-        "frames": 6,
-        "time": 0.2
-      }
-    },
-    "source": {
-      "sheet": "images/source.png"
-    },
-    "source_boomerang": {
-      "sheet": "images/source2.png"
-    },
-    "aim": {
-      "sheet": "images/aim.png"
-    },
-    "health_tile": {
-      "sheet": "images/health_tile.png"
-    },
-    "distance": {
-      "sheet": "images/distance.png"
-    },
-    "bossFace": {
-      "sheet": "images/boss0_idle.png",
-      "rect": [ 1000, 1000 ],
-      "idle": {
-        "frames": 1,
-        "loop": true,
-        "time": 10
-      },
-      "action": {
-        "frames": 1,
-        "loop": true,
-        "time": 10
-      }
-    },
-    "player": {
-      "sheet": "images/player.png",
-      "rect": [ 60, 60 ],
-      "idle": {
-        "row": 0,
-        "col": 0,
-        "frames": 1,
-        "loop": true,
-        "time": 10
-      },
-      "action": {
-        "row": 0,
-        "col": 1,
-        "frames": 1,
-        "time": 0.05
-      }
-    },
-    "projectiles-1": {
-      "sheet": "images/projectiles.png"
-    },
-    "projectiles-2": {
-      "sheet": "images/projectiles-2.png"
-    },
-    "particle_feather": {
-      "sheet": "images/particle_feather.png"
-    },
-    "particle_simple": {
-      "sheet": "images/particle.png"
-    },
-    "weapon0": {
-      "sheet": "images/weapon0.png"
-    },
-    "weapon1": {
-      "sheet": "images/weapon1.png"
-    },
-    "weapon2": {
-      "sheet": "images/weapon2.png"
-    },
-    "merchant_shop": {
-      "sheet": "images/merchant_shop.png"
-    },
-    "dungeon_door": {
-      "sheet": "images/dungeon_door.png"
-    },
-    "dungeon": {
-      "sheet": "images/dungeon.png"
-    },
-    "start_background": {
-      "sheet": "images/start_background.png"
-    },
-    "shop_screen": {
-      "sheet": "images/shop_screen.png"
-    },
-    "panel": {
-      "sheet": "images/panel.png"
-    },
-    "panel2": {
-      "sheet": "images/panel2.png"
-    },
-    "button_up": {
-      "sheet": "images/button_up.png"
-    },
-    "button_down": {
-      "sheet": "images/button_down.png"
-    },
-    "potion_feu": {
-      "sheet": "images/pot_feu.png"
-    },
-    "sword": {
-      "sheet": "images/sword.png"
-    },
-    "panel_a": {
-      "sheet": "images/panel_a.png"
-    },
-    "panel_b": {
-      "sheet": "images/panel_b.png"
-    },
-    "quit": {
-      "sheet": "images/quit.png"
-    },
-    "slash": {
-      "sheet": "images/slash.png"
-    },
-    "boulefeu": {
-      "sheet": "images/boulefeu.png"
-    },
-    "white_disk": {
-      "sheet": "images/white_disk.png"
-    },
-    "SourceVaccum": {
-      "sheet": "images/vaccum.png"
-    },
-    "SourceDirection": {
-      "sheet": "images/direction.png"
-    }
-  },
-  "sounds": {
-    "shoot": "sounds/shoot.wav",
-    "shoot2": "sounds/shoot2.wav",
-    "hit": "sounds/hit.wav",
-    "sword": "sounds/sword.wav"
-  },
-  "fonts": {
-    "consola": "fonts/consola.ttf"
-  },
-  "jsons": {
-    "default_key": "keys/default.json",
-    "roomA": "rooms/roomA.json",
-    "startZone": "rooms/start.json",
-    "editScreen": "screens/edit.json",
-    "SpellTargetInfo": "spells/target.json",
-    "SpellDirectionInfo": "spells/direction.json",
-    "genericParticuleGenerator": "particles/genericMagic.json",
-    "SourceTargetInfo": "sources/target.json",
-    "source": "sources/common.json",
-    "Slime": "characters/slime.json",
-    "Distance": "characters/distance.json",
-    "SourceVaccum": "sources/vaccum.json",
-    "SourceDirectionInfo": "sources/direction.json"
-  },
-  "StartRoom": "rooms/roomA.json",
-  "bosses": [
-    {
-      "name": "boss 0",
-      "sprite": "phoenix",
-      "life": 400,
-      "radius": 65,
-      "color": "FFFFFFFF",
-      "hitParticle": "particleBurstFeather",
-      "blinkColor": "FFBBBBBB",
-      "startpos": {
-        "x": 1100,
-        "y": 360
-      }
-    },
-    {
-      "name": "boss 1",
-      "sprite": "bossFace",
-      "life": 150,
-      "radius": 65,
-      "color": "FF3C8320",
-      "blinkColor": "FFBBBBBB",
-      "hitParticle": "particleBurstFeather",
-      "startpos": {
-        "x": 1100,
-        "y": 360
-      }
-    },
-    {
-      "name": "boss 2",
-      "sprite": "bossFace",
-      "life": 200,
-      "radius": 65,
-      "color": "FF3C8320",
-      "hitParticle": "particleBurstFeather",
-      "blinkColor": "FFBBBBBB",
-      "startpos": {
-        "x": 1100,
-        "y": 360
-      }
-    },
-    {
-      "name": "boss 3",
-      "sprite": "bossFace",
-      "life": 200,
-      "radius": 65,
-      "color": "FF3C8320",
-      "hitParticle": "particleBurstFeather",
-      "blinkColor": "FFBBBBBB",
-      "startpos": {
-        "x": 1100,
-        "y": 360
-      }
-    },
-    {
-      "name": "boss 4",
-      "sprite": "bossFace",
-      "life": 200,
-      "radius": 65,
-      "color": "FF3C8320",
-      "hitParticle": "particleBurstFeather",
-      "blinkColor": "FFBBBBBB",
-      "startpos": {
-        "x": 1100,
-        "y": 360
-      }
-    }
-  ],
-  "player": {
-    "characters": {
-      "char_boloss": "characters/boloss.json"
-    }
-  },
-  "patterns": {
-    "randomFire": {
-      "nOrbs": 300,
-      "eTime": 2.5,
-      "a": 0,
-      "dtA": 6.28318530718,
-
-      "projectile": {
-        "damage": 1,
-        "speed": 1700,
-        "radius": 10,
-        "lifespan": 7.5,
-        "destroyOthers": false,
-
-        "sprite": "boulefeu",
-
-        "explosion": {
-          "radius": 20,
-          "damage": 1,
-          "force": 100,
-          "time": 0.05
-        }
-      }
-    },
-    "directionalFire": {
-      "fireRate": 10,
-      "time": 0.7,
-
-      "projectile": {
-        "damage": 1,
-        "speed": 1800,
-        "radius": 10,
-        "lifespan": 5,
-        "destroyOthers": false,
-
-        "sprite": "boulefeu",
-
-        "explosion": {
-          "radius": 45,
-          "damage": 1,
-          "force": 300,
-          "time": 0.05
-        }
-      }
-    },
-    "barage": {
-      "nOrbs": 6,
-      "nWaves": 2,
-      "iTime": 0,
-
-      "projectile": {
-        "damage": 1,
-        "speed": 1500,
-        "radius": 5,
-        "lifespan": 4,
-        "destroyOthers": false,
-
-        "sprite": "boulefeu"
-      }
-    },
-    "snipe": {
-      "nShots": 2,
-      "aimTime": 1,
-      "iTime": 0.2,
-
-      "projectile": {
-        "damage": 1,
-        "speed": 3800,
-        "radius": 7,
-        "lifespan": 2,
-        "destroyOthers": false,
-
-        "sprite": "boulefeu"
-      }
-    },
-    "broyeur": {
-      "nOrbs": 20,
-
-      "projectile": {
-        "damage": 1,
-        "speed": 300,
-        "radius": 5,
-        "lifespan": 3,
-        "destroyOthers": false,
-
-        "sprite": "boulefeu"
-      }
-    },
-    "cerclique": {
-      "radius": 150,
-      "vA": 1.4,
-      "height": 0.5,
-      "dtHeight": 0.25,
-      "nOrbs": 3,
-      "iTime": 0.75,
-
-      "projectile": {
-        "damage": 1,
-        "speed": 200,
-        "radius": 5,
-        "lifespan": 30,
-        "destroyOthers": false,
-
-        "sprite": "boulefeu"
-      }
-    },
-    "rapprochement": {
-      "nOrbs": 4,
-      "eTime": 1.5,
-      "inSpawnRadius": 300,
-      "outSpawnRadius": 350,
-
-      "projectile": {
-        "damage": 1,
-        "speed": 400,
-        "radius": 5,
-        "lifespan": 7,
-        "destroyOthers": false,
-
-        "sprites": "boulefeu"
-      }
-    },
-    "boomerang": {
-      "nBooms": 2,
-      "waitTime": 0.5,
-      "overShoot": 300,
-
-      "projectile": {
-        "damage": 1,
-        "speed": 800,
-        "radius": 5,
-        "lifespan": 5,
-        "destroyOthers": false,
-
-        "sprite": "boulefeu"
-      }
-    },
-    "entonnoir": {
-      "nOrbs": 20,
-      "x": 0.1,
-
-      "projectile": {
-        "damage": 1,
-        "speed": 400,
-        "radius": 5,
-        "lifespan": 4,
-        "destroyOthers": false,
-
-        "sprite": "boulefeu"
-      }
-    },
-    "blastCosmopolitain": {
-      "nBlasts": 3,
-      "nOrbs": 7,
-      "r": 50,
-      "iTime": 0.2,
-      "waitTime": 1.5,
-
-      "projectile": {
-        "damage": 1,
-        "speed": 500,
-        "radius": 5,
-        "lifespan": 3,
-        "destroyOthers": false,
-
-        "sprite": "boulefeu"
-      }
-    }
-  },
-  "weapons": {
-    "Fire ball": {
-      "countdownTime": 0.1,
-      "radius": 30,
-      "sprite": "weapon1",
-      "sounds": {
-        "active": [ "shoot" ]
-      },
-      "recoil": 5,
-
-      "projectile": {
-        "damage": 1,
-        "speed": 25,
-        "radius": 0.05,
-        "lifespan": 5,
-        "destroyOthers": false,
-        "sprite": "projectiles-1"
-      }
-    },
-    "Sword": {
-      "countdownTime": 0.7,
-      "sprite": "sword",
-      "spriteZone": "slash",
-      "radius": 50,
-      "offset": 40,
-      "damage": 40,
-      "remainTime": 0.1
-    }
-  },
-  "particlesGenerator": {
-    "particleBurstFeather": {
-      "nParticles": {
-        "mean": 1000000,
-        "range": 5,
-        "type": "normal",
-        "min": 0,
-        "real": false
-      },
-      "iTime": {
-        "mean": 0.0000005,
-        "range": 0.0000005,
-        "type": "normal",
-        "min": 0,
-        "real": true
-      },
-      "lifetime": 0,
-      "particle": {
-        "sprite": "particle_feather",
-        "size": {
-          "mean": 0.5,
-          "range": 0.05,
-          "real": true,
-          "min": 0
-        },
-        "lifetime": {
-          "mean": 0.7,
-          "range": 0.1,
-          "type": "normal"
-        },
-        "a": {
-          "mean": 0,
-          "range": 3.14159265,
-          "type": "uniform",
-          "real": true
-        },
-        "speed": {
-          "mean": 6,
-          "range": 1,
-          "type": "normal"
-        }
-      }
-    },
-    "particleBurstHit": {
-      "nParticles": {
-        "mean": 20,
-        "range": 5,
-        "type": "normal",
-        "min": 0,
-        "real": false
-      },
-      "lifetime": 0,
-      "particle": {
-        "sprite": "particle_simple",
-        "size": {
-          "mean": 1,
-          "range": 0.3,
-          "real": true,
-          "min": 0
-        },
-        "lifetime": {
-          "mean": 0.17,
-          "range": 0.07,
-          "type": "normal"
-        },
-        "a": {
-          "mean": 0,
-          "range": 3.14159265,
-          "type": "uniform",
-          "real": true
-        },
-        "speed": {
-          "mean": 270,
-          "range": 80,
-          "type": "normal"
-        }
-      }
-    }
-  }
+	"sprites": {
+		"slime": {
+			"sheet": "images/slime.png",
+			"origin": [
+				0.5,
+				0.15
+			]
+		},
+		"phoenix": {
+			"sheet": "images/phoenix_fire.png",
+			"rect": [
+				600,
+				500
+			],
+			"idle": {
+				"row": 0,
+				"frames": 1,
+				"loop": true,
+				"time": 10
+			},
+			"action": {
+				"row": 0,
+				"frames": 6,
+				"time": 0.2
+			}
+		},
+		"source": {
+			"sheet": "images/source.png"
+		},
+		"source_boomerang": {
+			"sheet": "images/source2.png"
+		},
+		"aim": {
+			"sheet": "images/aim.png"
+		},
+		"health_tile": {
+			"sheet": "images/health_tile.png"
+		},
+		"distance": {
+			"sheet": "images/distance.png"
+		},
+		"bossFace": {
+			"sheet": "images/boss0_idle.png",
+			"rect": [
+				1000,
+				1000
+			],
+			"idle": {
+				"frames": 1,
+				"loop": true,
+				"time": 10
+			},
+			"action": {
+				"frames": 1,
+				"loop": true,
+				"time": 10
+			}
+		},
+		"player": {
+			"sheet": "images/player.png",
+			"rect": [
+				60,
+				60
+			],
+			"idle": {
+				"row": 0,
+				"col": 0,
+				"frames": 1,
+				"loop": true,
+				"time": 10
+			},
+			"action": {
+				"row": 0,
+				"col": 1,
+				"frames": 1,
+				"time": 0.05
+			}
+		},
+		"projectiles-1": {
+			"sheet": "images/projectiles.png"
+		},
+		"projectiles-2": {
+			"sheet": "images/projectiles-2.png"
+		},
+		"particle_feather": {
+			"sheet": "images/particle_feather.png"
+		},
+		"particle_simple": {
+			"sheet": "images/particle.png"
+		},
+		"weapon0": {
+			"sheet": "images/weapon0.png"
+		},
+		"weapon1": {
+			"sheet": "images/weapon1.png"
+		},
+		"weapon2": {
+			"sheet": "images/weapon2.png"
+		},
+		"merchant_shop": {
+			"sheet": "images/merchant_shop.png"
+		},
+		"dungeon_door": {
+			"sheet": "images/dungeon_door.png"
+		},
+		"dungeon": {
+			"sheet": "images/dungeon.png"
+		},
+		"start_background": {
+			"sheet": "images/start_background.png"
+		},
+		"shop_screen": {
+			"sheet": "images/shop_screen.png"
+		},
+		"panel": {
+			"sheet": "images/panel.png"
+		},
+		"panel2": {
+			"sheet": "images/panel2.png"
+		},
+		"button_up": {
+			"sheet": "images/button_up.png"
+		},
+		"button_down": {
+			"sheet": "images/button_down.png"
+		},
+		"potion_feu": {
+			"sheet": "images/pot_feu.png"
+		},
+		"sword": {
+			"sheet": "images/sword.png"
+		},
+		"panel_a": {
+			"sheet": "images/panel_a.png"
+		},
+		"panel_b": {
+			"sheet": "images/panel_b.png"
+		},
+		"quit": {
+			"sheet": "images/quit.png"
+		},
+		"slash": {
+			"sheet": "images/slash.png"
+		},
+		"boulefeu": {
+			"sheet": "images/boulefeu.png"
+		},
+		"white_disk": {
+			"sheet": "images/white_disk.png"
+		},
+		"SourceVaccum": {
+			"sheet": "images/vaccum.png"
+		},
+		"SourceDirection": {
+			"sheet": "images/direction.png"
+		}
+	},
+	"sounds": {
+		"shoot": "sounds/shoot.wav",
+		"shoot2": "sounds/shoot2.wav",
+		"hit": "sounds/hit.wav",
+		"sword": "sounds/sword.wav"
+	},
+	"fonts": {
+		"consola": "fonts/consola.ttf"
+	},
+	"jsons": {
+		"default_key": "keys/default.json",
+		"roomA": "rooms/roomA.json",
+		"startZone": "rooms/start.json",
+		"editScreen": "screens/edit.json",
+		"SpellTargetInfo": "spells/target.json",
+		"SpellDirectionInfo": "spells/direction.json",
+		"genericParticuleGenerator": "particles/genericMagic.json",
+		"SourceTargetInfo": "sources/target.json",
+		"source": "sources/common.json",
+		"Slime": "characters/slime.json",
+		"Distance": "characters/distance.json",
+		"SourceVaccum": "sources/vaccum.json",
+		"SourceDirectionInfo": "sources/direction.json"
+	},
+	"StartRoom": "rooms/roomA.json",
+	"bosses": [
+		{
+			"name": "boss 0",
+			"sprite": "phoenix",
+			"life": 400,
+			"radius": 65,
+			"color": "FFFFFFFF",
+			"hitParticle": "particleBurstFeather",
+			"blinkColor": "FFBBBBBB",
+			"startpos": {
+				"x": 1100,
+				"y": 360
+			}
+		},
+		{
+			"name": "boss 1",
+			"sprite": "bossFace",
+			"life": 150,
+			"radius": 65,
+			"color": "FF3C8320",
+			"blinkColor": "FFBBBBBB",
+			"hitParticle": "particleBurstFeather",
+			"startpos": {
+				"x": 1100,
+				"y": 360
+			}
+		},
+		{
+			"name": "boss 2",
+			"sprite": "bossFace",
+			"life": 200,
+			"radius": 65,
+			"color": "FF3C8320",
+			"hitParticle": "particleBurstFeather",
+			"blinkColor": "FFBBBBBB",
+			"startpos": {
+				"x": 1100,
+				"y": 360
+			}
+		},
+		{
+			"name": "boss 3",
+			"sprite": "bossFace",
+			"life": 200,
+			"radius": 65,
+			"color": "FF3C8320",
+			"hitParticle": "particleBurstFeather",
+			"blinkColor": "FFBBBBBB",
+			"startpos": {
+				"x": 1100,
+				"y": 360
+			}
+		},
+		{
+			"name": "boss 4",
+			"sprite": "bossFace",
+			"life": 200,
+			"radius": 65,
+			"color": "FF3C8320",
+			"hitParticle": "particleBurstFeather",
+			"blinkColor": "FFBBBBBB",
+			"startpos": {
+				"x": 1100,
+				"y": 360
+			}
+		}
+	],
+	"player": {
+		"characters": {
+			"char_boloss": "characters/boloss.json"
+		}
+	},
+	"patterns": {
+		"randomFire": {
+			"nOrbs": 300,
+			"eTime": 2.5,
+			"a": 0,
+			"dtA": 6.28318530718,
+			"projectile": {
+				"damage": 1,
+				"speed": 1700,
+				"radius": 10,
+				"lifespan": 7.5,
+				"destroyOthers": false,
+				"sprite": "boulefeu",
+				"explosion": {
+					"radius": 20,
+					"damage": 1,
+					"force": 100,
+					"time": 0.05
+				}
+			}
+		},
+		"directionalFire": {
+			"fireRate": 10,
+			"time": 0.7,
+			"projectile": {
+				"damage": 1,
+				"speed": 1800,
+				"radius": 10,
+				"lifespan": 5,
+				"destroyOthers": false,
+				"sprite": "boulefeu",
+				"explosion": {
+					"radius": 45,
+					"damage": 1,
+					"force": 300,
+					"time": 0.05
+				}
+			}
+		},
+		"barage": {
+			"nOrbs": 6,
+			"nWaves": 2,
+			"iTime": 0,
+			"projectile": {
+				"damage": 1,
+				"speed": 1500,
+				"radius": 5,
+				"lifespan": 4,
+				"destroyOthers": false,
+				"sprite": "boulefeu"
+			}
+		},
+		"snipe": {
+			"nShots": 2,
+			"aimTime": 1,
+			"iTime": 0.2,
+			"projectile": {
+				"damage": 1,
+				"speed": 3800,
+				"radius": 7,
+				"lifespan": 2,
+				"destroyOthers": false,
+				"sprite": "boulefeu"
+			}
+		},
+		"broyeur": {
+			"nOrbs": 20,
+			"projectile": {
+				"damage": 1,
+				"speed": 300,
+				"radius": 5,
+				"lifespan": 3,
+				"destroyOthers": false,
+				"sprite": "boulefeu"
+			}
+		},
+		"cerclique": {
+			"radius": 150,
+			"vA": 1.4,
+			"height": 0.5,
+			"dtHeight": 0.25,
+			"nOrbs": 3,
+			"iTime": 0.75,
+			"projectile": {
+				"damage": 1,
+				"speed": 200,
+				"radius": 5,
+				"lifespan": 30,
+				"destroyOthers": false,
+				"sprite": "boulefeu"
+			}
+		},
+		"rapprochement": {
+			"nOrbs": 4,
+			"eTime": 1.5,
+			"inSpawnRadius": 300,
+			"outSpawnRadius": 350,
+			"projectile": {
+				"damage": 1,
+				"speed": 400,
+				"radius": 5,
+				"lifespan": 7,
+				"destroyOthers": false,
+				"sprites": "boulefeu"
+			}
+		},
+		"boomerang": {
+			"nBooms": 2,
+			"waitTime": 0.5,
+			"overShoot": 300,
+			"projectile": {
+				"damage": 1,
+				"speed": 800,
+				"radius": 5,
+				"lifespan": 5,
+				"destroyOthers": false,
+				"sprite": "boulefeu"
+			}
+		},
+		"entonnoir": {
+			"nOrbs": 20,
+			"x": 0.1,
+			"projectile": {
+				"damage": 1,
+				"speed": 400,
+				"radius": 5,
+				"lifespan": 4,
+				"destroyOthers": false,
+				"sprite": "boulefeu"
+			}
+		},
+		"blastCosmopolitain": {
+			"nBlasts": 3,
+			"nOrbs": 7,
+			"r": 50,
+			"iTime": 0.2,
+			"waitTime": 1.5,
+			"projectile": {
+				"damage": 1,
+				"speed": 500,
+				"radius": 5,
+				"lifespan": 3,
+				"destroyOthers": false,
+				"sprite": "boulefeu"
+			}
+		}
+	},
+	"weapons": {
+		"Fire ball": {
+			"countdownTime": 0.1,
+			"radius": 30,
+			"sprite": "weapon1",
+			"sounds": {
+				"active": [
+					"shoot"
+				]
+			},
+			"recoil": 5,
+			"projectile": {
+				"damage": 0.5,
+				"speed": 25,
+				"radius": 0.05,
+				"lifespan": 5,
+				"destroyOthers": false,
+				"sprite": "projectiles-1"
+			}
+		},
+		"Sword": {
+			"countdownTime": 0.7,
+			"sprite": "sword",
+			"spriteZone": "slash",
+			"radius": 0.5,
+			"offset": -0.3,
+			"damage": 5,
+			"remainTime": 0.1
+		}
+	},
+	"particlesGenerator": {
+		"particleBurstFeather": {
+			"nParticles": {
+				"mean": 1000000,
+				"range": 5,
+				"type": "normal",
+				"min": 0,
+				"real": false
+			},
+			"iTime": {
+				"mean": 5e-7,
+				"range": 5e-7,
+				"type": "normal",
+				"min": 0,
+				"real": true
+			},
+			"lifetime": 0,
+			"particle": {
+				"sprite": "particle_feather",
+				"size": {
+					"mean": 0.5,
+					"range": 0.05,
+					"real": true,
+					"min": 0
+				},
+				"lifetime": {
+					"mean": 0.7,
+					"range": 0.1,
+					"type": "normal"
+				},
+				"a": {
+					"mean": 0,
+					"range": 3.14159265,
+					"type": "uniform",
+					"real": true
+				},
+				"speed": {
+					"mean": 6,
+					"range": 1,
+					"type": "normal"
+				}
+			}
+		},
+		"particleBurstHit": {
+			"nParticles": {
+				"mean": 20,
+				"range": 5,
+				"type": "normal",
+				"min": 0,
+				"real": false
+			},
+			"lifetime": 0,
+			"particle": {
+				"sprite": "particle_simple",
+				"size": {
+					"mean": 1,
+					"range": 0.3,
+					"real": true,
+					"min": 0
+				},
+				"lifetime": {
+					"mean": 0.17,
+					"range": 0.07,
+					"type": "normal"
+				},
+				"a": {
+					"mean": 0,
+					"range": 3.14159265,
+					"type": "uniform",
+					"real": true
+				},
+				"speed": {
+					"mean": 270,
+					"range": 80,
+					"type": "normal"
+				}
+			}
+		}
+	}
 }

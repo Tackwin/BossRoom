@@ -27,6 +27,9 @@ SlimeInfo SlimeInfo::loadJson(nlohmann::json json) noexcept {
 	if (auto it = json.find("viewRange"); it != json.end()) {
 		info.viewRange = *it;
 	}
+	if (auto it = json.find("contactDamage"); it != json.end()) {
+		info.contactDamage = *it;
+	}
 	return info;
 }
 
@@ -35,6 +38,7 @@ nlohmann::json SlimeInfo::saveJson(SlimeInfo info) noexcept {
 
 	json["speed"] = info.speed;
 	json["health"] = info.health;
+	json["contactDamage"] = info.contactDamage;
 	json["sprite"] = info.sprite;
 	json["maxHealth"] = info.maxHealth;
 	json["viewRange"] = info.viewRange;
@@ -56,6 +60,7 @@ Slime::Slime(SlimeInfo info) noexcept : _info(info) {
 	box->dtPos.y -= _info.size.y * 0.9f;
 	collider = std::unique_ptr<Collider>((Collider*)box.release());
 	idMask.set(Object::SLIME);
+	collisionMask.set(Object::PROJECTILE);
 	collisionMask.set(Object::STRUCTURE);
 	collisionMask.set(Object::PLAYER);
 
@@ -103,19 +108,6 @@ void Slime::hit(float damage) noexcept {
 }
 
 void Slime::onEnter(Object* object) noexcept {
-	if (auto proj = (Projectile*)object;  object->idMask[Object::PROJECTILE]) {
-		_info.health -= proj->getDamage();
-		if (_info.health < 0) {
-			remove();
-		}
-		proj->remove();
-	}
-	else if (auto player = (Player*)object; object->idMask[Object::PLAYER]) {
-		player->knockBack(
-			2 * ((player->getPos() - pos).normalize() * 5 + Vector2f{0.f, -10.f}),
-			0.5f
-		);
-	}
 	if (auto floor = (Structure*)object; object->idMask[Object::STRUCTURE]) {
 		if (auto plateforme = (Plateforme*)floor; 
 			floor->getType() == Structure::Plateforme
@@ -128,6 +120,20 @@ void Slime::onEnter(Object* object) noexcept {
 				maxX_ = plateformeBox.x + plateformeBox.w;
 			}
 		}
+	}
+	if (auto proj = (Projectile*)object;  object->idMask[Object::PROJECTILE]) {
+		_info.health -= proj->getDamage();
+		if (_info.health < 0) {
+			remove();
+		}
+		proj->remove();
+	}
+	else if (auto player = (Player*)object; object->idMask[Object::PLAYER]) {
+		player->knockBack(
+			2 * ((player->getPos() - pos).normalize() * 5 + Vector2f{0.f, -10.f}),
+			0.5f
+		);
+		player->hit(_info.contactDamage);
 	}
 }
 

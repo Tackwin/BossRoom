@@ -143,6 +143,9 @@ void Section::render(sf::RenderTarget& target) const noexcept {
 
 	_player->render(target);
 
+	for (auto& proj : _projectiles) {
+		proj->render(target);
+	}
 	for (auto& source : _sources) {
 		source->render(target);
 	}
@@ -154,6 +157,9 @@ void Section::render(sf::RenderTarget& target) const noexcept {
 	}
 	for (auto& spell : spells_) {
 		spell->render(target);
+	}
+	for (auto& zone : _zones) {
+		zone->render(target);
 	}
 
 	renderCrossOnTarget(target);
@@ -221,6 +227,12 @@ void Section::removeDeadObject() noexcept {
 		if (_slimes[i]->toRemove()) {
 			_world.delObject(_slimes[i]->uuid);
 			_slimes.erase(_slimes.begin() + i);
+		}
+	}
+	for (int i = (int)_zones.size() - 1; i >= 0; --i) {
+		if (_zones[i]->toRemove()) {
+			_world.delObject(_zones[i]->uuid);
+			_zones.erase(_zones.begin() + i);
 		}
 	}
 	for (int i = (int)distanceGuys_.size() - 1; i >= 0; --i) {

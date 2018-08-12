@@ -12,10 +12,11 @@
 nlohmann::json SpellDirectionInfo::saveJson(SpellDirectionInfo info) noexcept {
 	nlohmann::json json = nlohmann::json::object();
 
+	SAVE(speed, );
 	SAVE(damage, );
 	SAVE(radius, );
-	SAVE(speed, );
 	SAVE(lifeTime, );
+	SAVE(capacity, );
 	SAVE(particleGenerator, (std::string));
 
 	return json;
@@ -24,10 +25,11 @@ nlohmann::json SpellDirectionInfo::saveJson(SpellDirectionInfo info) noexcept {
 SpellDirectionInfo SpellDirectionInfo::loadJson(nlohmann::json json) noexcept {
 	SpellDirectionInfo info;
 
+	LOAD(speed, (float));
 	LOAD(damage, (float));
 	LOAD(radius, (float));
-	LOAD(speed, (float));
 	LOAD(lifeTime, (float));
+	LOAD(capacity, (float));
 	LOAD(particleGenerator, ([](auto x) { return x.get<std::string>(); }));
 
 	return info;
@@ -38,11 +40,15 @@ SpellDirectionInfo SpellDirectionInfo::loadJson(nlohmann::json json) noexcept {
 SpellDirection::SpellDirection(
 	Section* section, std::weak_ptr<Object> sender, SpellDirectionInfo info
 ) noexcept : Spell(section), sender_(sender), info_(info) {
+	senderUuid_ = sender.lock()->uuid;
+
+
 	id_ = uuid;
 
 	idMask.set(Object::MAGIC);
 	idMask.set(Object::SPELL);
 
+	capacity_ = info_.capacity;
 	particleGenerator_ = ParticleGenerator(AM::getJson(info_.particleGenerator), pos);
 	angleToSender_ = (float)(C::unitaryRng(C::RD) * 2 * C::PId);
 }
@@ -96,12 +102,23 @@ void SpellDirection::remove() noexcept {
 }
 
 void SpellDirection::onEnter(Object* object) noexcept {
-	remove();
-	
-	auto hitable = dynamic_cast<Hitable*>(object);
-	assert(hitable != nullptr);
+	if (object->uuid == senderUuid_) return;
 
-	hitable->hit(info_.damage);
+	dealCapacity(info_.damage, dynamic_cast<Hitable*>(object));
 }
 
 void SpellDirection::onExit(Object*) noexcept {}
+
+SpellDirectionInfo SpellDirection::getInfo() const noexcept {
+	return info_;
+}
+
+void SpellDirection::dealCapacity(float damage, Hitable* hitable) noexcept {
+	float dmg = std::fminf(damage, capacity_);
+
+	assert(hitable != nullptr);
+	hitable->hit(dmg);
+
+	capacity_ -= dmg;
+	if (capacity_ <= 0.f) remove();
+}

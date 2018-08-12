@@ -7,13 +7,16 @@
 
 #include "Graphics/ParticleGenerator.hpp"
 
+#include "Components/Hitable.hpp"
+
 struct SpellDirectionInfo {
 	static constexpr auto JSON_ID = "SpellDirectionInfo";
 
-	float speed{ 1.f };
-	float damage{ 1.f };
-	float radius{ 0.05f };
-	float lifeTime{ 5.f };
+	float speed{ NAN };
+	float damage{ NAN };
+	float radius{ NAN };
+	float lifeTime{ NAN };
+	float capacity{ NAN };
 
 	std::string particleGenerator{ "" };
 
@@ -40,11 +43,16 @@ public:
 	virtual void remove() noexcept override;
 
 	void setPos(Vector2f pos) noexcept;
+
+	SpellDirectionInfo getInfo() const noexcept;
 private:
+
+	void dealCapacity(float damage, Hitable* hitable) noexcept;
 
 	void onEnter(Object* object) noexcept;
 	void onExit(Object* object) noexcept;
 
+	float capacity_{ NAN };
 	bool launched_{ false };
 	float angleToSender_{ 0.f };
 	float lifeTimer_{ 0.f };
@@ -53,6 +61,7 @@ private:
 
 	ParticleGenerator particleGenerator_;
 
+	UUID senderUuid_;
 	std::weak_ptr<Object> sender_;
 	Vector2f dir_;
 };

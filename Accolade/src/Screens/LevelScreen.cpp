@@ -93,7 +93,7 @@ void LevelScreen::update(double dt) {
 
 	auto player = _section->getPlayer();
 
-	/*for (int i = 0; i < player->getPlayerInfo().maxLife; i++) {
+	for (int i = 0; i < player->getPlayerInfo().maxLife; i++) {
 		_playerLife[i].setFillColor(
 			i < player->getLife()
 				? sf::Color(180, 50, 50) 
@@ -104,7 +104,7 @@ void LevelScreen::update(double dt) {
 			(C::HEIGHT - 10) - _playerLife[i].getSize().y
 		);
 	}
-	*/
+	
 	_section->update(dt);
 	/*if (_level) {
 		_level->update(dt);

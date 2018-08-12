@@ -41,7 +41,7 @@ public:
 
 	void launch(std::weak_ptr<Object> obj) noexcept;
 
-	SpellTargetInfo getSpellInfo() const noexcept;
+	SpellTargetInfo getInfo() const noexcept;
 
 	virtual void remove() noexcept override;
 

@@ -62,12 +62,12 @@ void EditSectionScreen::update(double dt) {
 	}
 
 	if (IM::isLastSequenceJustFinished({ sf::Keyboard::LShift, sf::Keyboard::Add })) {
-		_snapLevel *= 10.f;
+		_snapLevel *= 2.f;
 	}
 	else if (
 		IM::isLastSequenceJustFinished({ sf::Keyboard::LShift, sf::Keyboard::Subtract })
 	) {
-		_snapLevel /= 10.f;
+		_snapLevel /= 2.f;
 	}
 
 	_snapLevel = std::clamp(_snapLevel, 0.0001f, 1.f);

@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <functional>
+#include <unordered_set>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
@@ -15,11 +16,12 @@
 #include "./../Physics/Object.hpp"
 
 #include "./../Common.hpp"
-#include <unordered_set>
+
+#include "Components/Hitable.hpp"
 
 class Level;
 class Projectile;
-class Boss : public Object {
+class Boss : public Object, public Hitable {
 public:
 	Boss() {};
 	//TODO
@@ -39,7 +41,7 @@ public:
 	void update(double dt);
 	void render(sf::RenderTarget& target);
 
-	void hit(float damage);
+	virtual void hit(float damage) noexcept override;
 	void shoot(const std::shared_ptr<Projectile>& projectile);
 	void shoot(
 		const nlohmann::json& json, 

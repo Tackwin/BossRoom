@@ -1,7 +1,8 @@
 {
-    "health": 10.0,
-    "maxHealth": 10.0,
-    "speed": 1.0,
-    "sprite": "slime",
-    "viewRange": 7.0
+	"health": 10.0,
+	"contactDamage": 1,
+	"maxHealth": 10.0,
+	"speed": 5.0,
+	"sprite": "slime",
+	"viewRange": 7.0
 }

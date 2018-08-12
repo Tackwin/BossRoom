@@ -4,22 +4,23 @@
 #include <unordered_map>
 #include <unordered_map>
 
-#include "./../../Game.hpp"
-#include "./../../Common.hpp"
+#include "Game.hpp"
+#include "Common.hpp"
 
-#include "./../../Managers/AssetsManager.hpp"
-#include "./../../Managers/InputsManager.hpp"
-#include "./../../Managers/MemoryManager.hpp"
-#include "./../../Managers/TimerManager.hpp"
+#include "Managers/AssetsManager.hpp"
+#include "Managers/InputsManager.hpp"
+#include "Managers/MemoryManager.hpp"
+#include "Managers/TimerManager.hpp"
+#include "Managers/EventManager.hpp"
 
-#include "./../../Managers/EventManager.hpp"
+#include "Physics/Collider.hpp"
 
-#include "./../../Physics/Collider.hpp"
+#include "Gameplay/Player/Player.hpp"
+#include "Gameplay/Projectile.hpp"
+#include "Gameplay/Level.hpp"
+#include "Gameplay/Boss.hpp"
 
-#include "./../Projectile.hpp"
-#include "./../Player/Player.hpp"
-#include "./../Level.hpp"
-#include "./../Boss.hpp"
+#include "Components/Hitable.hpp"
 
 std::unordered_map<std::string, WearableInfo> Wearable::_wearables;
 
@@ -145,7 +146,9 @@ void Wearable::InitWearable() {
 
 		std::shared_ptr<Zone> zone = std::make_shared<Zone>(radius);
 
-		zone->pos = player->support((float)player->getFacingDir().angleX(), offset);
+		bool front = player->getFacingDir().x > 0.f;
+
+		zone->pos = player->support(front ? 0 : PIf, offset);
 
 		zone->addSprite(
 			spriteZone,
@@ -153,9 +156,13 @@ void Wearable::InitWearable() {
 		);
 
 		zone->collisionMask.set((u08)Object::BIT_TAGS::BOSS);
-		zone->entered = [damage](Object* boss_) { // boss is Boss*
-			auto boss = static_cast<Boss*>(boss_);
-			boss->hit(damage);
+		zone->collisionMask.set((u08)Object::BIT_TAGS::SLIME);
+		zone->collisionMask.set((u08)Object::BIT_TAGS::DISTANCE);
+		zone->entered = [damage](Object* object) {
+			if (auto hited = dynamic_cast<Hitable*>(object); hited) {
+				hited->hit(damage);
+			}
+
 		};
 
 		player->addZone(zone);

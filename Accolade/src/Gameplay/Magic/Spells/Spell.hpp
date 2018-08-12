@@ -9,12 +9,6 @@
 #include "Components/Removable.hpp"
 
 class Section;
-struct SpellInfo {
-	static constexpr auto JSON_ID = "SpellInfo";
-
-	static SpellInfo loadJson(nlohmann::json json) noexcept;
-	static nlohmann::json saveJson(SpellInfo info) noexcept;
-};
 
 class Spell : public Removable {
 
@@ -35,7 +29,6 @@ public:
 protected:
 
 	Section* section_{ nullptr };
-	SpellInfo info_;
 
 	UUID id_;
 

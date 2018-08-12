@@ -134,7 +134,7 @@ void Boss::render(sf::RenderTarget &target) {
 		fx->render(target);
 }
 
-void Boss::hit(float d) {
+void Boss::hit(float d) noexcept {
 	_life -= d;
 	_life = _life < 0 ? 0 : _life;
 

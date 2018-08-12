@@ -20,6 +20,9 @@ struct DistanceGuyInfo {
 	float range{ 10.f };
 	float maxHealth{ 10.f };
 	float reloadTime{ 1.5f };
+	float lifeTimeBoost{ 2.f };
+	float contactDamage{ NAN };
+	float spellDamage{ NAN };
 	std::string sprite{ "distanceGuy" };
 
 	static DistanceGuyInfo loadJson(nlohmann::json json) noexcept;
@@ -54,6 +57,8 @@ private:
 
 	float reloadTimer_{ 0.f };
 
+
+	Vector4f colorToAttack_{ 1.f, 1.f, 1.f, 1.f };
 	Section * section_{ nullptr };
 	DistanceGuyInfo info_;
 	sf::Sprite sprite_;
