@@ -351,6 +351,7 @@
     <ClCompile Include="src\Gameplay\Magic\Spells\Spell.cpp" />
     <ClCompile Include="src\Graphics\GUI\Switcher.cpp" />
     <ClCompile Include="src\Graphics\GUI\ValuePicker.cpp" />
+    <ClCompile Include="src\Navigation\NavigationPoint.cpp" />
     <ClCompile Include="src\Ruins\Structure\Plateforme.cpp" />
     <ClCompile Include="src\Events\Event.cpp" />
     <ClCompile Include="src\Game.cpp" />
@@ -414,6 +415,7 @@
     <ClInclude Include="src\Graphics\GUI\Switcher.hpp" />
     <ClInclude Include="src\Graphics\GUI\ValuePicker.hpp" />
     <ClInclude Include="src\Math\Segment.hpp" />
+    <ClInclude Include="src\Navigation\NavigationPoint.hpp" />
     <ClInclude Include="src\Ruins\Structure\Plateforme.hpp" />
     <ClInclude Include="src\3rd\json.hpp" />
     <ClInclude Include="src\Common.hpp" />

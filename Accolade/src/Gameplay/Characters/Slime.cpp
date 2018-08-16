@@ -77,11 +77,16 @@ void Slime::update(double) noexcept {
 
 	flatForces.push_back({ 0, C::G });
 
-	if (pos.x < maxX_ && pos.x < playerPos.x) {
-		flatVelocities.push_back({ +_info.speed, 0 });
+	// if the player isn't in our direction
+	if (
+		std::signbit(pos.x - playerPos.x) != std::signbit(currentPoint_->getPos().x - pos.x)
+	) {
+		// we need to steer
+		currentPoint_ = currentPoint_->next(playerPos);
 	}
-	else if (pos.x > minX_) {
-		flatVelocities.push_back({ -_info.speed, 0 });
+
+	walkToward();
+	else {
 	}
 }
 
@@ -108,19 +113,6 @@ void Slime::hit(float damage) noexcept {
 }
 
 void Slime::onEnter(Object* object) noexcept {
-	if (auto floor = (Structure*)object; object->idMask[Object::STRUCTURE]) {
-		if (auto plateforme = (Plateforme*)floor; 
-			floor->getType() == Structure::Plateforme
-		) {
-			Rectangle2f rec{ pos + collider->dtPos, _info.size };
-			auto plateformeBox = plateforme->getBoundingBox();
-
-			if (rec.isOnTopOf(plateformeBox)) {
-				minX_ = plateformeBox.x;
-				maxX_ = plateformeBox.x + plateformeBox.w;
-			}
-		}
-	}
 	if (auto proj = (Projectile*)object;  object->idMask[Object::PROJECTILE]) {
 		_info.health -= proj->getDamage();
 		if (_info.health < 0) {
@@ -145,4 +137,12 @@ void Slime::remove() noexcept {
 
 bool Slime::toRemove() const noexcept {
 	return _remove;
+}
+
+void Slime::walkToward() noexcept {
+	if (currentPoint_->getPos().x < pos.x) {
+		flatVelocities.push_back({ -_info.speed, 0 });
+	} else {
+		flatVelocities.push_back({ +_info.speed, 0 });
+	}
 }

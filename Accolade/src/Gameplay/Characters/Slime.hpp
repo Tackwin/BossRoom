@@ -9,6 +9,8 @@
 #include "Components/Removable.hpp"
 #include "Components/Hitable.hpp"
 
+#include "Navigation/NavigationPoint.hpp"
+
 class Section;
 
 struct SlimeInfo {
@@ -44,13 +46,16 @@ public:
 	virtual void remove() noexcept override;
 	virtual bool toRemove() const noexcept override;
 
+	void attachTo(NavigationPoint* point) noexcept;
+
 private:
-	float minX_{ 0.f };
-	float maxX_{ 0.f };
+	void walkToward() noexcept;
 
 	SlimeInfo _info;
 
 	Section* _section{ nullptr };
+
+	NavigationPoint* currentPoint_{ nullptr };
 
 	sf::Sprite _sprite;
 

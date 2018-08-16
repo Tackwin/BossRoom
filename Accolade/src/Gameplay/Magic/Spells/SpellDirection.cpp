@@ -42,7 +42,6 @@ SpellDirection::SpellDirection(
 ) noexcept : Spell(section), sender_(sender), info_(info) {
 	senderUuid_ = sender.lock()->uuid;
 
-
 	id_ = uuid;
 
 	idMask.set(Object::MAGIC);
