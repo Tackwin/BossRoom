@@ -1,6 +1,9 @@
 #pragma once
 #include <random>
-#include "./../Common.hpp"
+
+#include "3rd/json.hpp"
+
+#include "Common.hpp"
 
 class UUID {
 public:
@@ -51,6 +54,9 @@ public:
 	}
 private:
 
+	friend void to_json(nlohmann::json& json, const UUID& id);
+	friend void from_json(const nlohmann::json& json, UUID& id);
+
 	char uuid[SIZE];
 	friend std::hash<UUID>;
 };
@@ -62,4 +68,7 @@ namespace std {
 			return	*reinterpret_cast<const unsigned*>(&id.uuid[0]);
 		}
 	};
-}
+};
+
+extern void to_json(nlohmann::json& json, const UUID& id);
+extern void from_json(const nlohmann::json& json, UUID& id);

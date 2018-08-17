@@ -46,7 +46,7 @@ public:
 	virtual void remove() noexcept override;
 	virtual bool toRemove() const noexcept override;
 
-	void attachTo(NavigationPoint* point) noexcept;
+	void attachTo(NavigationPointInfo point) noexcept;
 
 private:
 	void walkToward() noexcept;
@@ -55,7 +55,7 @@ private:
 
 	Section* _section{ nullptr };
 
-	NavigationPoint* currentPoint_{ nullptr };
+	NavigationPointInfo currentPoint_;
 
 	sf::Sprite _sprite;
 

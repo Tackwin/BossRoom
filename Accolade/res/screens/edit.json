@@ -78,6 +78,22 @@
         "text": "Take snapshot of view Ctrl + T V",
         "pos": [0, 105]
       },
+      "placeNavigationPoint": {
+        "name": "placeNavigationPoint",
+        "type": "Label",
+        "font": "consola",
+        "text": "place a new navigation point Ctrl + N",
+        "charSize": 10,
+        "pos": [0, 120]
+      },
+      "placeNavigationLink": {
+        "name": "placeNavigationLink",
+        "type": "Label",
+        "font": "consola",
+        "text": "place a new navigation link Ctrl + L",
+        "charSize": 10,
+        "pos": [0, 135]
+      },
       "sourceSwitcher": {
         "label": {
           "font": "consola",

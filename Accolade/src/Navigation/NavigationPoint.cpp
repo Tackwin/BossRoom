@@ -1,42 +1,29 @@
 #include "NavigationPoint.hpp"
 
+#define LOAD(x, y) if (auto i = json.find(#x); i != json.end()) info.x = y(*i);
+#define SAVE(x, y) json[#x] = y(info.x);
 
-NavigationPoint::NavigationPoint() noexcept {
+NavigationPointInfo NavigationPointInfo::loadJson(nlohmann::json json) noexcept {
+	NavigationPointInfo info;
 
+	LOAD(id, );
+	LOAD(range, );
+	LOAD(pos, Vector2f::loadJson);
+	LOAD(links, [](auto x) {return x->get<std::vector<UUID>>(); });
+
+	return info;
 }
 
-void NavigationPoint::severe(NavigationPoint* linked) noexcept {
-	for (int i = neighboors.size() - 1; i <= 0; --i) {
-		if (neighboors[i] == linked) {
-			neighboors.erase(neighboors.begin() + i);
-			return;
-		}
-	}
-	assert(false);
+nlohmann::json NavigationPointInfo::saveJson(NavigationPointInfo info) noexcept {
+	nlohmann::json json;
+
+	SAVE(pos, );
+	SAVE(range, );
+	SAVE(id, );
+	SAVE(links, );
+
+	return json;
 }
 
-void NavigationPoint::link(NavigationPoint* other) noexcept {
-	neighboors.push_back(other);
-}
-
-NavigationPoint* NavigationPoint::next(Vector2f point) const noexcept {
-	NavigationPoint* closest = nullptr;
-	for (auto neighboor : neighboors) {
-		if (!closest) {
-			closest = neighboor;
-			continue;
-		}
-
-		auto d1 = closest->getPos() - getPos();
-		auto d2 = neighboor->getPos() - getPos();
-		if (d1.length2() > d2.length2()) {
-			closest = neighboor;
-		}
-	}
-
-	return closest;
-}
-
-Vector2f NavigationPoint::getPos() const noexcept {
-	return pos;
-}
+#undef LOAD;
+#undef SAVE;

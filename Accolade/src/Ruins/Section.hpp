@@ -12,6 +12,9 @@
 #include "Structure/Structure.hpp"
 #include "Structure/Plateforme.hpp"
 
+#include "Navigation/NavigationPoint.hpp"
+#include "Navigation/NavigationLink.hpp"
+
 #include "Gameplay/Magic/Sources/SourceDirection.hpp"
 #include "Gameplay/Magic/Sources/SourceTarget.hpp"
 #include "Gameplay/Magic/Sources/SourceVaccum.hpp"
@@ -23,6 +26,8 @@
 #include "Gameplay/Boss.hpp"
 
 struct SectionInfo {
+	std::vector<NavigationPointInfo> navigationPoints;
+	std::vector<NavigationLinkInfo> navigationLinks;
 	std::vector<DistanceGuyInfo> distanceGuys;
 	std::vector<SlimeInfo> slimes;
 	std::vector<PlateformeInfo> plateformes;
@@ -62,6 +67,12 @@ public:
 	void addSpell(const std::shared_ptr<Spell>& ptr) noexcept;
 	void addDistanceGuy(const std::shared_ptr<DistanceGuy>& ptr) noexcept;
 	void addSlime(const std::shared_ptr<Slime>& ptr) noexcept;
+
+	// Get NavigationPoint from id
+	NavigationPointInfo getNavigationPoint(UUID id) const noexcept;
+	// Get NavigationPoint from a link, specifying the one we _don't_ want
+	NavigationPointInfo getNavigationPoint(UUID link, UUID current) const noexcept;
+	NavigationPointInfo getNextNavigationPointFrom(UUID id, Vector2f to) const noexcept;
 
 	Vector2f getPlayerPos() const noexcept;
 

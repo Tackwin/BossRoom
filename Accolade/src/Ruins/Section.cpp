@@ -458,3 +458,52 @@ std::weak_ptr<Object> Section::getObject(UUID id) const noexcept {
 sf::View Section::getCameraView() const noexcept {
 	return _cameraView;
 }
+
+NavigationPointInfo Section::getNavigationPoint(UUID id) const noexcept {
+	auto it = std::find_if(
+		std::begin(_info.navigationPoints),
+		std::end(_info.navigationPoints),
+		[id](auto x) { return x.id == id; }
+	);
+
+	assert(it != std::end(_info.navigationPoints));
+
+	return *it;
+}
+
+NavigationPointInfo Section::getNavigationPoint(UUID link, UUID current) const noexcept {
+	auto it = std::find_if(
+		std::begin(_info.navigationLinks),
+		std::end(_info.navigationLinks),
+		[link](auto x) { return x.id == link; }
+	);
+
+	assert(it != std::end(_info.navigationLinks));
+
+	return getNavigationPoint(it->A == current ? it->B : it->A);
+}
+
+NavigationPointInfo Section::getNextNavigationPointFrom(
+	UUID id, Vector2f to
+) const noexcept {
+	auto navPoint = getNavigationPoint(id);
+
+	NavigationPointInfo closest;
+	for (auto link : navPoint.links) {
+		auto next = getNavigationPoint(link, navPoint.id);
+
+		if (!closest.id) {
+			closest = next;
+			continue;
+		}
+
+		auto d1 = next.pos - to;
+		auto d2 = closest.pos - to;
+
+		if (d1.length2() < d2.length2()) {
+			closest = next;
+		}
+	}
+
+	return closest;
+}

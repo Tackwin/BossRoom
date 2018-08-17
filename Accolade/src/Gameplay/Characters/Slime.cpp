@@ -76,18 +76,20 @@ void Slime::update(double) noexcept {
 	auto playerPos = _section->getPlayerPos();
 
 	flatForces.push_back({ 0, C::G });
+	
+	if (!Vector2f::equalf(playerPos, pos, _info.viewRange)) return;
+
+	auto navPointPos = currentPoint_.pos;
 
 	// if the player isn't in our direction
 	if (
-		std::signbit(pos.x - playerPos.x) != std::signbit(currentPoint_->getPos().x - pos.x)
+		std::signbit(pos.x - playerPos.x) != std::signbit(navPointPos.x - pos.x)
 	) {
 		// we need to steer
-		currentPoint_ = currentPoint_->next(playerPos);
+		currentPoint_ = _section->getNextNavigationPointFrom(currentPoint_.id, playerPos);
 	}
 
 	walkToward();
-	else {
-	}
 }
 
 void Slime::render(sf::RenderTarget& target) noexcept {
@@ -140,9 +142,15 @@ bool Slime::toRemove() const noexcept {
 }
 
 void Slime::walkToward() noexcept {
-	if (currentPoint_->getPos().x < pos.x) {
+	if (!currentPoint_.id) return;
+
+	if (currentPoint_.pos.x < pos.x) {
 		flatVelocities.push_back({ -_info.speed, 0 });
 	} else {
 		flatVelocities.push_back({ +_info.speed, 0 });
 	}
+}
+
+void Slime::attachTo(NavigationPointInfo point) noexcept {
+	currentPoint_ = point;
 }

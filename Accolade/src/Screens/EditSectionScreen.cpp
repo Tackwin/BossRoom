@@ -9,6 +9,8 @@
 
 #include "LevelScreen.hpp"
 
+#include "Math/algorithms.hpp"
+
 #include "Graphics/GUI/Switcher.hpp"
 #include "Graphics/GUI/Label.hpp"
 #include "Graphics/GUI/ValuePicker.hpp"
@@ -93,11 +95,56 @@ void EditSectionScreen::update(double dt) {
 		break;
 	case place_source:
 		updateSource();
+		break;
+	case place_navigation_point:
+		updatePlaceNavigationPoint();
+		break;
+	case place_navigation_link:
+		updatePlaceNavigationLink();
+		break;
 	default:
 		break;
 	}
 
 	updateCameraMovement(dt);
+}
+
+void EditSectionScreen::updatePlaceNavigationLink() noexcept {
+	if (IM::isMouseJustPressed(sf::Mouse::Left)) {
+		for (auto point : _section.navigationPoints) {
+			if (Vector2f::equal(point.pos, getSnapedMouseCameraPos(), point.range)) {
+				if (firstPoint_ && *firstPoint_ == point.id) {
+					firstPoint_.reset();
+					return;
+				}
+
+				if (!firstPoint_) {
+					firstPoint_ = point.id;
+					return;
+				}
+
+				NavigationLinkInfo info;
+				info.A = *firstPoint_;
+				info.B = point.id;
+				info.id = UUID();
+
+				_section.navigationLinks.push_back(info);
+
+				firstPoint_.reset();
+			}
+		}
+	}
+}
+
+void EditSectionScreen::updatePlaceNavigationPoint() noexcept {
+	if (IM::isMouseJustPressed(sf::Mouse::Left)) {
+		NavigationPointInfo info;
+		info.pos = getSnapedMouseCameraPos();
+		info.id = UUID();
+		info.range = 0.1f;
+
+		_section.navigationPoints.push_back(info);
+	}
 }
 
 void EditSectionScreen::updateSource() noexcept {
@@ -273,6 +320,28 @@ void EditSectionScreen::inputSwitchState() noexcept {
 			exitToolState();
 		}
 	}
+	else if (
+		IM::isKeyPressed(sf::Keyboard::LControl) && IM::isKeyJustPressed(sf::Keyboard::N)
+	) {
+		if (_toolState != place_navigation_point) {
+			exitToolState();
+			enterToolState(place_navigation_point);
+		}
+		else {
+			exitToolState();
+		}
+	}
+	else if (
+		IM::isKeyPressed(sf::Keyboard::LControl) && IM::isKeyJustPressed(sf::Keyboard::L)
+	) {
+		if (_toolState != place_navigation_link) {
+			exitToolState();
+			enterToolState(place_navigation_link);
+		}
+		else {
+			exitToolState();
+		}
+	}
 	else if (IM::isKeyJustPressed(sf::Keyboard::Escape) && _toolState != nothing) {
 		exitToolState();
 	}
@@ -303,12 +372,34 @@ void EditSectionScreen::render(sf::RenderTarget& target) {
 	for (auto source : _section.sourcesDirection) {
 		renderDebug(target, source.source);
 	}
+	for (auto p : _section.navigationPoints) {
+		renderDebug(target, p);
+	}
+	for (auto p : _section.navigationLinks) {
+		renderDebug(target, p);
+	}
 
 	if (_newPlateforme.has_value()) {
 		renderDebug(target, *_newPlateforme);
 	}
 	if (_toolState == place_ennemy) {
 		getSnapedMouseCameraPos().plot(target, 0.1f, { 1.0, 0.0, 0.0, 1.0 }, {}, 0.f);
+	}
+	if (_toolState == place_navigation_point) {
+		getSnapedMouseCameraPos().plot(target, 0.15f, { 1.0, 0.0, 0.0, 1.0 }, {}, 0.f);
+	}
+	if (_toolState == place_navigation_link && firstPoint_) {
+		auto point = std::find_if(
+			std::begin(_section.navigationPoints),
+			std::end(_section.navigationPoints),
+			[id = *firstPoint_](auto x) {return x.id == id; }
+		);
+
+		assert(point != std::end(_section.navigationPoints));
+
+		point->pos.plot(
+			target, point->range * 1.2f, { 1.0, 1.0, 0.0, 1.0 }, {1.0, 1.0, 1.0, 1.0}, 0.1f
+		);
 	}
 	if (_newSource.has_value()) {
 		renderDebug(target, *_newSource);
@@ -383,6 +474,12 @@ void EditSectionScreen::enterToolState(
 		changeColorLabel(PLACE_SOURCE, { 0.0, 1.0, 0.0, 1.0 }); 
 		sourceSwitcher_->setVisible(true);
 		break;
+	case place_navigation_point:
+		changeColorLabel(PLACE_NAVIGATION_POINT, { 0.0, 1.0, 0.0, 1.0 });
+		break;
+	case place_navigation_link:
+		changeColorLabel(PLACE_NAVIGATION_LINK, { 0.0, 1.0, 0.0, 1.0 });
+		break;
 	default:
 		break;
 	}
@@ -406,6 +503,12 @@ void EditSectionScreen::exitToolState() noexcept {
 		_newSource.reset();
 		changeColorLabel(PLACE_SOURCE, { 1.0, 1.0, 1.0, 1.0 });
 		sourceSwitcher_->setVisible(false);
+		break;
+	case place_navigation_point:
+		changeColorLabel(PLACE_NAVIGATION_POINT, { 1.0, 1.0, 1.0, 1.0 });
+		break;
+	case place_navigation_link:
+		changeColorLabel(PLACE_NAVIGATION_LINK, { 1.0, 1.0, 1.0, 1.0 });
 		break;
 	default:
 		break;
@@ -458,6 +561,41 @@ void EditSectionScreen::renderDebug(
 		target, info.size.x / 2.f, color, { 0.0, 0.0, 0.0, 0.0 }, 0.f
 	);
 }
+void EditSectionScreen::renderDebug(
+	sf::RenderTarget& target, NavigationPointInfo info
+) noexcept {
+	Vector4d color{ 0.8, 0.0, 0.8, 1.0 };
+	auto dist2 = (info.pos - IM::getMousePosInView(_cameraView)).length2();
+	if (dist2 < info.range * info.range) {
+		color = { 0.7, 0.0, 1.0, 1.0 };
+	}
+	info.pos.plot(target, info.range, color, { 0.0, 0.0, 0.0, 0.0 }, 0.f);
+}
+void EditSectionScreen::renderDebug(
+	sf::RenderTarget& target, NavigationLinkInfo info
+) noexcept {
+	Vector4d color{ 0.8, 0.0, 0.8, 1.0 };
+
+	auto a = std::find_if(
+		std::begin(_section.navigationPoints),
+		std::end(_section.navigationPoints),
+		[a = info.A](auto x) {return x.id == a; }
+	);
+	auto b = std::find_if(
+		std::begin(_section.navigationPoints),
+		std::end(_section.navigationPoints),
+		[b = info.B](auto x) {return x.id == b; }
+	);
+
+	assert(a != std::end(_section.navigationPoints));
+	assert(b != std::end(_section.navigationPoints));
+
+	if (is_in_ellipse(a->pos, b->pos, 10, IM::getMouseScreenPos())) {
+		color = { 0.7, 0.0, 1.0, 1.0 };
+	}
+
+	Vector2f::renderLine(target, a->pos, b->pos, color);
+}
 
 void EditSectionScreen::changeColorLabel(std::string name, Vector4f color) noexcept {
 	auto root = _widgets.at("root");
@@ -495,6 +633,8 @@ void EditSectionScreen::deleteHovered() noexcept {
 	auto& sourcesBoomerang = _section.sourcesBoomerang;
 	auto& sourcesDirection = _section.sourcesDirection;
 	auto& sourcesVaccum = _section.sourcesVaccum;
+	auto& navigationPoints = _section.navigationPoints;
+	auto& navigationLinks = _section.navigationLinks;
 
 	for (size_t i = plateformes.size(); i > 0; --i) {
 		if (plateformes[i - 1].rectangle.in(IM::getMousePosInView(_cameraView))) {
@@ -567,8 +707,40 @@ void EditSectionScreen::deleteHovered() noexcept {
 		if (
 			dist2 < sourcesDirection[i - 1].source.size.x *
 			sourcesDirection[i - 1].source.size.x / 4.f
-			) {
+		) {
 			sourcesDirection.erase(std::begin(sourcesDirection) + i - 1);
+			return;
+		}
+	}
+	for (size_t i = navigationPoints.size(); i > 0; --i) {
+		auto dist2 =
+			(navigationPoints[i - 1].pos - IM::getMousePosInView(_cameraView))
+			.length2();
+
+		if (dist2 < navigationPoints[i - 1].range * navigationPoints[i - 1].range) {
+			navigationPoints.erase(std::begin(navigationPoints) + i - 1);
+			return;
+		}
+	}
+	for (size_t i = navigationLinks.size(); i > 0; --i) {
+		auto link = navigationLinks[i - 1];
+
+		auto a = std::find_if(
+			std::begin(_section.navigationPoints),
+			std::end(_section.navigationPoints),
+			[a = link.A](auto x) {return x.id == a; }
+		);
+		auto b = std::find_if(
+			std::begin(_section.navigationPoints),
+			std::end(_section.navigationPoints),
+			[b = link.B](auto x) {return x.id == b; }
+		);
+
+		assert(a != std::end(_section.navigationPoints));
+		assert(b != std::end(_section.navigationPoints));
+
+		if (is_in_ellipse(a->pos, b->pos, 10, IM::getMouseScreenPos())) {
+			navigationLinks.erase(std::begin(navigationLinks) + i - 1);
 			return;
 		}
 	}
