@@ -1,13 +1,17 @@
 #include "UUID.hpp"
 
-const UUID UUID::null;
+const UUID UUID::null = UUID::zero();
+
+UUID UUID::zero() noexcept {
+	static UUID i;
+	i.uuid = 0;
+	return i;
+}
 
 void to_json(nlohmann::json& json, const UUID& id) {
-	std::string str{ std::begin(id.uuid), std::end(id.uuid) };
-
-	json = { {"id", str} };
+	json = id.uuid;
 }
 
 void from_json(const nlohmann::json& json, UUID& id) {
-	memcpy(&id.uuid, json.at("id").get<std::string>().c_str(), 16);
+	id.uuid = json.get<unsigned long long>();
 }

@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "Slime.hpp"
 #include "Ruins/Section.hpp"
 
@@ -83,7 +85,7 @@ void Slime::update(double) noexcept {
 
 	// if the player isn't in our direction
 	if (
-		std::signbit(pos.x - playerPos.x) != std::signbit(navPointPos.x - pos.x)
+		std::signbit(pos.x - playerPos.x) != std::signbit(pos.x - navPointPos.x)
 	) {
 		// we need to steer
 		currentPoint_ = _section->getNextNavigationPointFrom(currentPoint_.id, playerPos);
@@ -143,6 +145,15 @@ bool Slime::toRemove() const noexcept {
 
 void Slime::walkToward() noexcept {
 	if (!currentPoint_.id) return;
+
+	if (Vector2f::equal(currentPoint_.pos, pos, currentPoint_.range)) {
+		auto next = _section->getNextNavigationPointFrom(
+			currentPoint_.id, _section->getPlayerPos()
+		);
+
+		if (next.id != currentPoint_.id) currentPoint_ = next;
+		return;
+	}
 
 	if (currentPoint_.pos.x < pos.x) {
 		flatVelocities.push_back({ -_info.speed, 0 });

@@ -24,7 +24,9 @@ class ValuePicker;
 class SpriteSwitcher;
 class EditSectionScreen : public Screen {
 public:
-	EditSectionScreen(SectionInfo section);
+	using ReturnType = std::tuple<SectionInfo, std::string>;
+
+	EditSectionScreen(Section* section);
 
 	virtual Type getType() const noexcept override { return edit_screen; };
 
@@ -62,7 +64,8 @@ private:
 	Vector2f getSnapedMouseScreenPos() const noexcept;
 	Vector2f getSnapedMouseCameraPos() const noexcept;
 
-	SectionInfo _section;
+	Section* section_{ nullptr };
+	SectionInfo sectionInfo_;
 
 	float _snapLevel{ 0.01f };
 
@@ -83,6 +86,8 @@ private:
 	std::optional<SourceInfo> _newSource;
 
 	std::optional<UUID> firstPoint_;
+
+	std::string fileName_{ "" };
 
 	enum EditorToolState {
 		nothing,

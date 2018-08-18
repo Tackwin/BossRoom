@@ -35,7 +35,8 @@ SpellDirectionInfo SpellDirectionInfo::loadJson(nlohmann::json json) noexcept {
 	return info;
 }
 
-#undef X
+#undef SAVE
+#undef LOAD
 
 SpellDirection::SpellDirection(
 	Section* section, std::weak_ptr<Object> sender, SpellDirectionInfo info

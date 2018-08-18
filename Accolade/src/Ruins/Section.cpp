@@ -14,6 +14,137 @@
 
 #include "Gameplay/Magic/Sources/SourceTarget.hpp"
 
+
+SectionInfo SectionInfo::loadJson(const nlohmann::json& json) noexcept {
+	SectionInfo info;
+
+	if (json.count("maxRect") != 0) {
+		info.maxRectangle.x = json.at("maxRect").get<std::vector<float>>()[0];
+		info.maxRectangle.y = json.at("maxRect").get<std::vector<float>>()[1];
+		info.maxRectangle.w = json.at("maxRect").get<std::vector<float>>()[2];
+		info.maxRectangle.h = json.at("maxRect").get<std::vector<float>>()[3];
+	}
+
+	if (json.count("plateformes") != 0) {
+		info.plateformes = load_json_vector<PlateformeInfo>(json.at("plateformes"));
+	}
+
+	if (json.count("sources") != 0) {
+		info.sources = load_json_vector<SourceInfo>(json.at("sources"));
+	}
+	if (json.count(SourceTargetInfo::JSON_ID) != 0) {
+		info.sourcesBoomerang =
+			load_json_vector<SourceTargetInfo>(json.at(SourceTargetInfo::JSON_ID)
+				);
+	}
+	if (json.count(SourceVaccumInfo::JSON_ID) != 0) {
+		info.sourcesVaccum =
+			load_json_vector<SourceVaccumInfo>(json.at(SourceVaccumInfo::JSON_ID));
+	}
+	if (json.count(SourceDirectionInfo::JSON_ID) != 0) {
+		info.sourcesDirection =
+			load_json_vector<SourceDirectionInfo>(json.at(SourceDirectionInfo::JSON_ID));
+	}
+
+	if (json.count("startPos") != 0) {
+		info.startPos.x = json.at("startPos").get<std::vector<float>>()[0];
+		info.startPos.y = json.at("startPos").get<std::vector<float>>()[1];
+	}
+
+	if (json.count("viewSize") != 0) {
+		info.viewSize = Vector2f::loadJson(json.at("viewSize"));
+	}
+
+	if (auto slimes = json.find("slimes"); slimes != json.end() && !slimes->is_null()) {
+		for (auto slime : slimes->get<nlohmann::json::array_t>()) {
+			info.slimes.push_back(SlimeInfo::loadJson(slime));
+		}
+	}
+	if (auto distance = json.find("distanceGuys");
+		distance != json.end() && !distance->is_null()
+	) {
+		for (auto slime : distance->get<nlohmann::json::array_t>()) {
+			info.distanceGuys.push_back(DistanceGuyInfo::loadJson(slime));
+		}
+	}
+
+	if (
+		auto navigationPoints = json.find(NavigationPointInfo::JSON_ID);
+		navigationPoints != json.end()
+	) {
+		for (auto n : navigationPoints->get<nlohmann::json::array_t>()) {
+			info.navigationPoints.push_back(NavigationPointInfo::loadJson(n));
+		}
+	}
+	if (
+		auto navigationLinks = json.find(NavigationLinkInfo::JSON_ID);
+	navigationLinks != json.end()
+	) {
+		for (auto n : navigationLinks->get<nlohmann::json::array_t>()) {
+			info.navigationLinks.push_back(NavigationLinkInfo::loadJson(n));
+		}
+	}
+
+	return info;
+}
+
+nlohmann::json SectionInfo::saveJson(SectionInfo info) noexcept {
+	nlohmann::json json;
+	nlohmann::json slimeArray = nlohmann::json::array();
+	nlohmann::json distanceArray = nlohmann::json::array();
+	nlohmann::json sourceArray = nlohmann::json::array();
+	nlohmann::json sourceBoomerangArray = nlohmann::json::array();
+	nlohmann::json sourceVaccumArray = nlohmann::json::array();
+	nlohmann::json sourceDirectionArray = nlohmann::json::array();
+	nlohmann::json plateformeArray = nlohmann::json::array();
+	nlohmann::json navigationPointsArray = nlohmann::json::array();
+	nlohmann::json navigationLinksArray = nlohmann::json::array();
+
+	for (auto& slime : info.slimes) {
+		slimeArray.push_back(SlimeInfo::saveJson(slime));
+	}
+	for (auto& distance : info.distanceGuys) {
+		distanceArray.push_back(DistanceGuyInfo::saveJson(distance));
+	}
+	for (auto& source : info.sources) {
+		sourceArray.push_back(SourceInfo::saveJson(source));
+	}
+	for (auto& plateforme : info.plateformes) {
+		plateformeArray.push_back(PlateformeInfo::saveJson(plateforme));
+	}
+
+	for (auto& source : info.sourcesBoomerang) {
+		sourceBoomerangArray.push_back(SourceTargetInfo::saveJson(source));
+	}
+	for (auto& source : info.sourcesVaccum) {
+		sourceVaccumArray.push_back(SourceVaccumInfo::saveJson(source));
+	}
+	for (auto& source : info.sourcesDirection) {
+		sourceDirectionArray.push_back(SourceDirectionInfo::saveJson(source));
+	}
+	for (auto& source : info.navigationPoints) {
+		navigationPointsArray.push_back(NavigationPointInfo::saveJson(source));
+	}
+	for (auto& source : info.navigationLinks) {
+		navigationLinksArray.push_back(NavigationLinkInfo::saveJson(source));
+	}
+
+	json["maxRect"] = Rectangle2f::saveJson(info.maxRectangle);
+	json["startPos"] = Vector2f::saveJson(info.startPos);
+	json["viewSize"] = Vector2f::saveJson(info.viewSize);
+	json["plateformes"] = plateformeArray;
+	json[SourceTargetInfo::JSON_ID] = sourceBoomerangArray;
+	json[SourceVaccumInfo::JSON_ID] = sourceVaccumArray;
+	json[NavigationLinkInfo::JSON_ID] = navigationLinksArray;
+	json[SourceDirectionInfo::JSON_ID] = sourceDirectionArray;
+	json[NavigationPointInfo::JSON_ID] = navigationPointsArray;
+	json["sources"] = sourceArray;
+	json["distanceGuys"] = distanceArray;
+	json["slimes"] = slimeArray;
+
+	return json;
+}
+
 Section::Section(SectionInfo info) noexcept : _info(info) {
 	_cameraView.setCenter(_info.maxRectangle.fitUpRatio(RATIO).center());
 	_cameraView.setSize(_info.viewSize.fitUpRatio(RATIO));
@@ -161,6 +292,27 @@ void Section::render(sf::RenderTarget& target) const noexcept {
 	for (auto& zone : _zones) {
 		zone->render(target);
 	}
+	for (auto& nav : _info.navigationPoints) {
+		nav.pos.plot(target, nav.range, { 1.0, 1.0, 0.0, 0.5 }, {}, 0.f);
+	}
+	for (auto& link : _info.navigationLinks) {
+		auto a = std::find_if(
+			std::begin(_info.navigationPoints),
+			std::end(_info.navigationPoints),
+			[X = link.A](auto x) {return x.id == X; }
+		);
+		auto b = std::find_if(
+			std::begin(_info.navigationPoints),
+			std::end(_info.navigationPoints),
+			[X = link.B](auto x) {return x.id == X; }
+		);
+
+		assert(a != b);
+		assert(a != std::end(_info.navigationPoints));
+		assert(b != std::end(_info.navigationPoints));
+
+		Vector2f::renderLine(target, a->pos, b->pos, { 1.0, 0.0, 1.0, 0.5 });
+	}
 
 	renderCrossOnTarget(target);
 
@@ -267,110 +419,6 @@ void Section::playerOnExit(Object*) noexcept {
 
 }
 
-
-SectionInfo SectionInfo::loadJson(const nlohmann::json& json) noexcept {
-	SectionInfo info;
-
-	if (json.count("maxRect") != 0) {
-		info.maxRectangle.x = json.at("maxRect").get<std::vector<float>>()[0];
-		info.maxRectangle.y = json.at("maxRect").get<std::vector<float>>()[1];
-		info.maxRectangle.w = json.at("maxRect").get<std::vector<float>>()[2];
-		info.maxRectangle.h = json.at("maxRect").get<std::vector<float>>()[3];
-	}
-	
-	if (json.count("plateformes") != 0) {
-		info.plateformes = load_json_vector<PlateformeInfo>(json.at("plateformes"));
-	}
-
-	if (json.count("sources") != 0) {
-		info.sources = load_json_vector<SourceInfo>(json.at("sources"));
-	}
-	if (json.count(SourceTargetInfo::JSON_ID) != 0) {
-		info.sourcesBoomerang = 
-			load_json_vector<SourceTargetInfo>(json.at(SourceTargetInfo::JSON_ID)
-		);
-	}
-	if (json.count(SourceVaccumInfo::JSON_ID) != 0) {
-		info.sourcesVaccum =
-			load_json_vector<SourceVaccumInfo>(json.at(SourceVaccumInfo::JSON_ID));
-	}
-	if (json.count(SourceDirectionInfo::JSON_ID) != 0) {
-		info.sourcesDirection =
-			load_json_vector<SourceDirectionInfo>(json.at(SourceDirectionInfo::JSON_ID));
-	}
-
-	if (json.count("startPos") != 0) {
-		info.startPos.x = json.at("startPos").get<std::vector<float>>()[0];
-		info.startPos.y = json.at("startPos").get<std::vector<float>>()[1];
-	}
-
-	if (json.count("viewSize") != 0) {
-		info.viewSize = Vector2f::loadJson(json.at("viewSize"));
-	}
-
-	if (auto slimes = json.find("slimes"); slimes != json.end() && !slimes->is_null()) {
-		for (auto slime : slimes->get<nlohmann::json::array_t>()) {
-			info.slimes.push_back(SlimeInfo::loadJson(slime));
-		}
-	}
-	if (auto distance = json.find("distanceGuys");
-		distance != json.end() && !distance->is_null()
-	) {
-		for (auto slime : distance->get<nlohmann::json::array_t>()) {
-			info.distanceGuys.push_back(DistanceGuyInfo::loadJson(slime));
-		}
-	}
-
-	return info;
-}
-
-nlohmann::json SectionInfo::saveJson(SectionInfo info) noexcept {
-	nlohmann::json json;
-	nlohmann::json slimeArray = nlohmann::json::array();
-	nlohmann::json distanceArray = nlohmann::json::array();
-	nlohmann::json sourceArray = nlohmann::json::array();
-	nlohmann::json sourceBoomerangArray = nlohmann::json::array();
-	nlohmann::json sourceVaccumArray = nlohmann::json::array();
-	nlohmann::json sourceDirectionArray = nlohmann::json::array();
-	nlohmann::json plateformeArray = nlohmann::json::array();
-
-	for (auto& slime : info.slimes) {
-		slimeArray.push_back(SlimeInfo::saveJson(slime));
-	}
-	for (auto& distance : info.distanceGuys) {
-		distanceArray.push_back(DistanceGuyInfo::saveJson(distance));
-	}
-	for (auto& source : info.sources) {
-		sourceArray.push_back(SourceInfo::saveJson(source));
-	}
-	for (auto& plateforme : info.plateformes) {
-		plateformeArray.push_back(PlateformeInfo::saveJson(plateforme));
-	}
-
-	for (auto& source : info.sourcesBoomerang) {
-		sourceBoomerangArray.push_back(SourceTargetInfo::saveJson(source));
-	}
-	for (auto& source : info.sourcesVaccum) {
-		sourceVaccumArray.push_back(SourceVaccumInfo::saveJson(source));
-	}
-	for (auto& source : info.sourcesDirection) {
-		sourceDirectionArray.push_back(SourceDirectionInfo::saveJson(source));
-	}
-
-	json["maxRect"]						= Rectangle2f::saveJson(info.maxRectangle);
-	json["startPos"]					= Vector2f::saveJson(info.startPos);
-	json["viewSize"]					= Vector2f::saveJson(info.viewSize);
-	json["plateformes"]					= plateformeArray;
-	json[SourceTargetInfo::JSON_ID]		= sourceBoomerangArray;
-	json[SourceVaccumInfo::JSON_ID]		= sourceVaccumArray;
-	json[SourceDirectionInfo::JSON_ID]	= sourceDirectionArray;
-	json["sources"]						= sourceArray;
-	json["distanceGuys"]				= distanceArray;
-	json["slimes"]						= slimeArray;
-
-	return json;
-}
-
 Vector2f Section::getPlayerPos() const noexcept {
 	return _player->getPos();
 }
@@ -380,6 +428,7 @@ std::shared_ptr<Player> Section::getPlayer() const noexcept {
 }
 
 void Section::addSlime(const std::shared_ptr<Slime>& slime) noexcept {
+	slime->attachTo(getClosestNavigationPoint(slime->pos));
 	_slimes.push_back(slime);
 }
 
@@ -506,4 +555,21 @@ NavigationPointInfo Section::getNextNavigationPointFrom(
 	}
 
 	return closest;
+}
+
+NavigationPointInfo Section::getClosestNavigationPoint(Vector2f p) const noexcept {
+	assert(!_info.navigationPoints.empty());
+
+	auto closest = _info.navigationPoints[0];
+	for (auto n : _info.navigationPoints) {
+		if ((closest.pos - p).length2() > (n.pos - p).length2()) closest = n;
+	}
+	return closest;
+}
+
+void Section::setFileName(std::string fileName) noexcept {
+	fileName_ = fileName;
+}
+std::string Section::getFileName() const noexcept {
+	return fileName_;
 }

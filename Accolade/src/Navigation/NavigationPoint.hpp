@@ -13,6 +13,6 @@ struct NavigationPointInfo {
 	UUID id{ UUID::null };
 	std::vector<UUID> links;
 
-	NavigationPointInfo loadJson(nlohmann::json json) noexcept;
-	nlohmann::json saveJson(NavigationPointInfo info) noexcept;
+	static NavigationPointInfo loadJson(nlohmann::json json) noexcept;
+	static nlohmann::json saveJson(NavigationPointInfo info) noexcept;
 };

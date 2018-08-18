@@ -180,7 +180,7 @@
 		"SourceVaccum": "sources/vaccum.json",
 		"SourceDirectionInfo": "sources/direction.json"
 	},
-	"StartRoom": "rooms/roomA.json",
+	"StartRoom": "rooms/section_001.json",
 	"bosses": [
 		{
 			"name": "boss 0",

@@ -55,7 +55,7 @@ void ValuePicker::render(sf::RenderTarget& target) {
 	inputBox.render(target, _inputColor);
 }
 
-std::string ValuePicker::getText() const noexcept {
+std::string ValuePicker::getStdString() const noexcept {
 	return _inputString;
 }
 
@@ -89,3 +89,7 @@ bool ValuePicker::onKeyBegan() noexcept {
 	}
 	return true;
 };
+
+void ValuePicker::setStdString(std::string str) noexcept {
+	_inputString = str;
+}

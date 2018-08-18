@@ -84,6 +84,9 @@ public:
 	std::weak_ptr<Object> getObject(UUID id) const noexcept;
 
 	sf::View getCameraView() const noexcept;
+
+	void setFileName(std::string fileName) noexcept;
+	std::string getFileName() const noexcept;
 private:
 	// remove all object wich has the remove flag set
 	void removeDeadObject() noexcept;
@@ -98,7 +101,11 @@ private:
 
 	void pullPlayerObjects();
 
+	NavigationPointInfo getClosestNavigationPoint(Vector2f p) const noexcept;
+
 	nlohmann::json _levelJson;
+
+	std::string fileName_{ "" };
 
 	World _world;
 

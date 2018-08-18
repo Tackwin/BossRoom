@@ -45,6 +45,7 @@ LevelScreen::LevelScreen(u32 n) :
 
 	auto sectionInfo = SectionInfo::loadJson(AM::getJson("StartRoom"));
 	_section = std::make_unique<Section>(sectionInfo);
+	_section->setFileName(startRoom);
 }
 
 LevelScreen::~LevelScreen() {
@@ -52,7 +53,10 @@ LevelScreen::~LevelScreen() {
 
 void LevelScreen::onEnter(std::any input) {
 	if (game->getLastScreen() == Screen::edit_screen) {
-		_section = std::make_unique<Section>(std::any_cast<SectionInfo>(input));
+
+		auto returnValue = std::any_cast<EditSectionScreen::ReturnType>(input);
+		_section = std::make_unique<Section>(std::get<0>(returnValue));
+		_section->setFileName(std::get<1>(returnValue));
 	}
 	_section->enter();
 	//_level->start(this);
@@ -113,7 +117,7 @@ void LevelScreen::update(double dt) {
 		}
 	}*/
 	if (IM::isLastSequenceJustFinished({ sf::Keyboard::LControl, sf::Keyboard::E })) {
-		C::game->enterScreen(std::make_shared<EditSectionScreen>(_section->getInfo()));
+		C::game->enterScreen(std::make_shared<EditSectionScreen>(_section.get()));
 		return;
 	}
 }

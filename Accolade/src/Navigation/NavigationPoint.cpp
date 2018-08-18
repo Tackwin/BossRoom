@@ -9,7 +9,7 @@ NavigationPointInfo NavigationPointInfo::loadJson(nlohmann::json json) noexcept 
 	LOAD(id, );
 	LOAD(range, );
 	LOAD(pos, Vector2f::loadJson);
-	LOAD(links, [](auto x) {return x->get<std::vector<UUID>>(); });
+	LOAD(links, [](auto x) {return x.get<std::vector<UUID>>(); });
 
 	return info;
 }
@@ -17,7 +17,7 @@ NavigationPointInfo NavigationPointInfo::loadJson(nlohmann::json json) noexcept 
 nlohmann::json NavigationPointInfo::saveJson(NavigationPointInfo info) noexcept {
 	nlohmann::json json;
 
-	SAVE(pos, );
+	SAVE(pos, Vector2f::saveJson);
 	SAVE(range, );
 	SAVE(id, );
 	SAVE(links, );
@@ -25,5 +25,5 @@ nlohmann::json NavigationPointInfo::saveJson(NavigationPointInfo info) noexcept 
 	return json;
 }
 
-#undef LOAD;
-#undef SAVE;
+#undef LOAD
+#undef SAVE

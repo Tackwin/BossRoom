@@ -17,7 +17,8 @@ public:
 
 	virtual void render(sf::RenderTarget& target);
 
-	std::string getText() const noexcept;
+	std::string getStdString() const noexcept;
+	void setStdString(std::string str) noexcept;
 
 private:
 
