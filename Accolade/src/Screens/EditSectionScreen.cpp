@@ -35,6 +35,9 @@ EditSectionScreen::EditSectionScreen(Section* section) :
 }
 
 void EditSectionScreen::update(double dt) {
+	bool shiftPressed =
+		IM::isKeyPressed(sf::Keyboard::LShift) || IM::isKeyPressed(sf::Keyboard::RShift);
+
 	if (IM::isKeyPressed(sf::Keyboard::LControl) &&
 		IM::isKeyJustPressed(sf::Keyboard::E)
 	) {
@@ -66,12 +69,10 @@ void EditSectionScreen::update(double dt) {
 		deleteHovered();
 	}
 
-	if (IM::isLastSequenceJustFinished({ sf::Keyboard::LShift, sf::Keyboard::Add })) {
+	if (shiftPressed && IM::isKeyJustPressed(sf::Keyboard::Add)) {
 		_snapLevel *= 2.f;
 	}
-	else if (
-		IM::isLastSequenceJustFinished({ sf::Keyboard::LShift, sf::Keyboard::Subtract })
-	) {
+	else if (shiftPressed && IM::isKeyJustPressed(sf::Keyboard::Subtract)) {
 		_snapLevel /= 2.f;
 	}
 
@@ -637,7 +638,7 @@ void EditSectionScreen::saveSection(std::string path) const noexcept {
 		printf("Error on saving the file %s, %s\n", path.c_str(), buffer);
 	}
 
-#ifdef NDEBUG
+#if 0
 	file << json;
 #else
 	file << json.dump(4);

@@ -154,6 +154,9 @@
 		},
 		"SourceDirection": {
 			"sheet": "images/direction.png"
+		},
+		"MeleeGuy": {
+			"sheet": "images/melee_guy.png"
 		}
 	},
 	"sounds": {
@@ -177,6 +180,7 @@
 		"source": "sources/common.json",
 		"Slime": "characters/slime.json",
 		"Distance": "characters/distance.json",
+		"MeleeGuyInfo": "characters/melee.json",
 		"SourceVaccum": "sources/vaccum.json",
 		"SourceDirectionInfo": "sources/direction.json"
 	},

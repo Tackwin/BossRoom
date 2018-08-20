@@ -302,7 +302,7 @@
       <AdditionalIncludeDirectories>C:\Code\cpp\BossRoom\Accolade\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
-      <PreprocessorDefinitions>_HAS_EXCEPTIONS=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_HAS_EXCEPTIONS=1;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -328,7 +328,7 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
-      <PreprocessorDefinitions>_HAS_EXCEPTIONS=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_HAS_EXCEPTIONS=1;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -341,6 +341,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Gameplay\Characters\DistanceGuy.cpp" />
+    <ClCompile Include="src\Gameplay\Characters\MeleeGuy.cpp" />
     <ClCompile Include="src\Gameplay\Characters\Slime.cpp" />
     <ClCompile Include="src\Gameplay\Magic\Sources\Source.cpp" />
     <ClCompile Include="src\Gameplay\Magic\Sources\SourceDirection.cpp" />
@@ -407,6 +408,7 @@
     <ClInclude Include="src\Components\Hitable.hpp" />
     <ClInclude Include="src\Components\Removable.hpp" />
     <ClInclude Include="src\Gameplay\Characters\DistanceGuy.hpp" />
+    <ClInclude Include="src\Gameplay\Characters\MeleeGuy.hpp" />
     <ClInclude Include="src\Gameplay\Characters\Slime.hpp" />
     <ClInclude Include="src\Gameplay\Magic\Sources\SourceDirection.hpp" />
     <ClInclude Include="src\Gameplay\Magic\Sources\SourceTarget.hpp" />

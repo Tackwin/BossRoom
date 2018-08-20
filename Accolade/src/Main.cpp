@@ -82,7 +82,7 @@ void startGame() {
 	game->start();
 
 	sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT, 24), "Boss room");
-	//window.setKeyRepeatEnabled(false);
+	window.setKeyRepeatEnabled(false);
 	window.setFramerateLimit(0);
 
 	const auto& updateKey = TimerManager::addFunction(
