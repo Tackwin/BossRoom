@@ -140,6 +140,8 @@ public:
 	virtual void remove() noexcept override;
 	virtual bool toRemove() const noexcept override;
 
+	Rectangle2f getBoundingBox() const noexcept;
+
 public: //TODO: Make private
 
 	void jumpKeyPressed();
@@ -148,6 +150,8 @@ public: //TODO: Make private
 
 	std::optional<Vector2f> _knockBack{};
 	float _knockBackTime{ 0.f };
+
+	std::optional<Vector2f> jumpVelocity_{};
 
 	float _life;
 	Vector2f _dir;

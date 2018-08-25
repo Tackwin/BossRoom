@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "Player.hpp"
 
 #include "Game.hpp"
@@ -81,6 +83,13 @@ void Player::update(double dt) {
 			}
 		}
 		else {
+			if (jumpVelocity_) {
+				auto& vel = jumpVelocity_.value();
+				vel *= std::pow(0.2, dt);
+				flatVelocities.push_back(vel);
+
+				if (vel.length2() < .01f) jumpVelocity_.reset();
+			}
 			if (_jumping && 
 				!InputsManager::isKeyPressed(kb.getKey(KeyBindings::JUMP))
 			) {
@@ -103,12 +112,12 @@ void Player::update(double dt) {
 
 			flatVelocities.push_back(_dir);
 		}
-		flatForces.push_back({ 0, G });
 
 		if (isBoomerangSpellAvailable()) updateBoomerangSpell(dt);
 		if (isDirectionSpellAvailable()) updateDirectionSpell(dt);
 	}
 
+	flatForces.push_back({ 0, G });
 	velocity *= (float)std::pow(0.2, dt);
 
 	_events.clear();
@@ -218,6 +227,7 @@ void Player::collision(Object* obj) {
 void Player::floored() {
 	_nJumpsLeft = 2u;
 	_jumping = false;
+	jumpVelocity_.reset();
 	_floored = true;
 }
 
@@ -231,14 +241,28 @@ bool Player::isFloored() const {
 }
 
 void Player::jumpKeyPressed() {
+	if (_freeze || _knockBack) return;
+
 	if (_nJumpsLeft > 0u) {
 		if (_floored)
 			_floored = false;
 
+		velocity.y = 0.f;
+
 		_jumping = true;
 
+		auto jumpVelocity = Vector2f{ 0.f, -sqrtf(G * 2 * _info.jumpHeight) };
+
 		// derived from equation of motion, thanks Newton
-		velocity.y = -sqrtf(G * 2 * _info.jumpHeight); 
+		jumpVelocity_
+			? jumpVelocity_.value() +=	jumpVelocity
+			: jumpVelocity_			=	jumpVelocity;
+
+		// we cap the velocity 
+		if (jumpVelocity_.value().length2() > jumpVelocity.length2()) {
+			jumpVelocity_ = jumpVelocity;
+		}
+
 		_nJumpsLeft--;
 	}
 }
@@ -428,4 +452,8 @@ void Player::remove() noexcept {
 
 bool Player::toRemove() const noexcept {
 	return remove_;
+}
+
+Rectangle2f Player::getBoundingBox() const noexcept {
+	return Rectangle2f{ collider->getGlobalPos(), ((Box*)collider.get())->getSize() };
 }

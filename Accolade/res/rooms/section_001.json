@@ -114,30 +114,7 @@
     "SourceDirectionInfo": [],
     "SourceTargetInfo": [],
     "SourceVaccumInfo": [],
-    "distanceGuys": [
-        {
-            "contactDamage": 1.0,
-            "health": 10.0,
-            "lifeTimeBoost": 2.0,
-            "maxHealth": 10.0,
-            "origin": [
-                0.5,
-                0.8999999761581421
-            ],
-            "range": 100.0,
-            "reloadTime": 1.5,
-            "size": [
-                1.0,
-                1.0
-            ],
-            "spellDamage": 1.0,
-            "sprite": "distance",
-            "startPos": [
-                -56.31999969482422,
-                -29.439998626708984
-            ]
-        }
-    ],
+    "distanceGuys": [],
     "maxRect": [
         -99.3699951171875,
         -33.20000076293945,
@@ -360,18 +337,6 @@
             "startPos": [
                 -56.73999786376953,
                 -24.69999885559082
-            ],
-            "viewRange": 7.0
-        },
-        {
-            "contactDamage": 1.0,
-            "health": 10.0,
-            "maxHealth": 10.0,
-            "speed": 5.0,
-            "sprite": "slime",
-            "startPos": [
-                -87.25999450683594,
-                -24.8799991607666
             ],
             "viewRange": 7.0
         }

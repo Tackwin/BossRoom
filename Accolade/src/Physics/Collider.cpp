@@ -77,3 +77,6 @@ Vector2f Box::getSize() const noexcept {
 void Box::setSize(Vector2f size) noexcept {
 	this->size = size;
 }
+Rectangle2f Box::getGlobalBoundingBox() const noexcept {
+	return { getGlobalPos(), size };
+}

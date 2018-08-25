@@ -410,7 +410,12 @@ void Section::removeDeadObject() noexcept {
 }
 
 void Section::playerOnEnter(Object* object) noexcept {
-	if (object->idMask[Object::STRUCTURE]) {
+	if (
+		object->idMask[Object::STRUCTURE] &&
+		_player->getBoundingBox().isOnTopOf(
+			((Box*)object->collider.get())->getGlobalBoundingBox()
+		)
+	) {
 		_player->floored();
 		_player->clearKnockBack();
 	}

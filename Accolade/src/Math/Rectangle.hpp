@@ -31,11 +31,12 @@ struct Rectangle {
 			);
 	}
 
+	// works only for top down y
 	bool isOnTopOf(Rectangle<T> other) const {
-		T dBotTop = (y + h) - (other.y);
-		T dTopBot = (y) - (other.y + other.h);
+		T distEdgeToEdge = std::max(other.x + other.w - x, x + w - other.x);
+		T sumOfWidth = w + other.w;
 
-		return dBotTop > dTopBot;
+		return y < other.y + other.h && distEdgeToEdge < sumOfWidth;
 	}
 
 	Vector<2, T> center() const {

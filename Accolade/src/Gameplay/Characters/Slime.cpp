@@ -124,7 +124,10 @@ void Slime::onEnter(Object* object) noexcept {
 		}
 		proj->remove();
 	}
-	else if (auto player = (Player*)object; object->idMask[Object::PLAYER]) {
+	else if (
+		auto player = (Player*)object; 
+		object->idMask[Object::PLAYER] && !player->isInvicible()
+	) {
 		player->knockBack(
 			2 * ((player->getPos() - pos).normalize() * 5 + Vector2f{0.f, -10.f}),
 			0.5f

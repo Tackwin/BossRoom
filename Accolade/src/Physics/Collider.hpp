@@ -6,6 +6,7 @@
 #include "./../Common.hpp"
 
 #include "./../Math/Vector.hpp"
+#include "./../Math/Rectangle.hpp"
 
 struct Object;
 struct Collider {
@@ -65,6 +66,7 @@ struct Box : Collider {
 		type = Type::BOX;
 	}
 
+	Rectangle2f getGlobalBoundingBox() const noexcept;
 	virtual bool isIn(const Vector2f& p) const override {
 		return p.inRect(getGlobalPos(), size);
 	};
