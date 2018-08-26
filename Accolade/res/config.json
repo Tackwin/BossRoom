@@ -2,6 +2,13 @@
 	"sprites": {
 		"slime": {
 			"sheet": "images/slime.png",
+			"rect": [18, 10],
+			"walk": {
+				"row": 0,
+				"frames": 3,
+				"loop": true,
+				"time": 0.33
+			},
 			"origin": [
 				0.5,
 				0.15
@@ -155,7 +162,7 @@
 		"SourceDirection": {
 			"sheet": "images/direction.png"
 		},
-		"MeleeGuy": {
+		"MeleeGuyInfo": {
 			"sheet": "images/melee_guy.png"
 		}
 	},

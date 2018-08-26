@@ -20,6 +20,7 @@
 #include "Gameplay/Magic/Sources/SourceVaccum.hpp"
 #include "Gameplay/Characters/DistanceGuy.hpp"
 #include "Gameplay/Magic/Sources/Source.hpp"
+#include "Gameplay/Characters/MeleeGuy.hpp"
 #include "Gameplay/Magic/Spells/Spell.hpp"
 #include "Gameplay/Characters/Slime.hpp"
 #include "Gameplay/Player/Player.hpp"
@@ -29,6 +30,7 @@ struct SectionInfo {
 	std::vector<NavigationPointInfo> navigationPoints;
 	std::vector<NavigationLinkInfo> navigationLinks;
 	std::vector<DistanceGuyInfo> distanceGuys;
+	std::vector<MeleeGuyInfo> meleeGuys;
 	std::vector<SlimeInfo> slimes;
 	std::vector<PlateformeInfo> plateformes;
 	std::vector<SourceInfo> sources;
@@ -62,10 +64,12 @@ public:
 	void render(sf::RenderTarget& target) const noexcept;
 	void renderDebug(sf::RenderTarget& target) const noexcept;
 
+	void addZone(std::shared_ptr<Zone> ptr) noexcept;
 	void addStructure(const std::shared_ptr<Structure>& ptr) noexcept;
 	void addSource(const std::shared_ptr<Source>& ptr) noexcept;
 	void addSpell(const std::shared_ptr<Spell>& ptr) noexcept;
 	void addDistanceGuy(const std::shared_ptr<DistanceGuy>& ptr) noexcept;
+	void addMeleeGuy(const std::shared_ptr<MeleeGuy>& ptr) noexcept;
 	void addSlime(const std::shared_ptr<Slime>& ptr) noexcept;
 
 	// Get NavigationPoint from id
@@ -99,7 +103,8 @@ private:
 
 	void renderCrossOnTarget(sf::RenderTarget& target) const noexcept;
 
-	void pullPlayerObjects();
+	void pullZonesFromObjects() noexcept;
+	void pullProjectilsFromObjects() noexcept;
 
 	NavigationPointInfo getClosestNavigationPoint(Vector2f p) const noexcept;
 
@@ -118,6 +123,7 @@ private:
 	std::vector<std::shared_ptr<DistanceGuy>>		distanceGuys_;
 	std::vector<std::shared_ptr<Projectile>>		_projectiles;
 	std::vector<std::shared_ptr<Structure>>			_structures;
+	std::vector<std::shared_ptr<MeleeGuy>>			meleeGuys_;
 	std::vector<std::shared_ptr<Source>>			_sources;
 	std::vector<std::shared_ptr<Slime>>				_slimes;
 	std::vector<std::shared_ptr<Spell>>				spells_;

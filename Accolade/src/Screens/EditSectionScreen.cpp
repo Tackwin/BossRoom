@@ -211,6 +211,13 @@ void EditSectionScreen::updatePlaceSlime() noexcept {
 			info.startPos = getSnapedMouseCameraPos();
 			sectionInfo_.distanceGuys.push_back(info);
 		}
+		else if (
+			ennemySwitcher_->getCurrentPanel()->getName() == MeleeGuyInfo::JSON_ID
+		) {
+			auto info = MeleeGuyInfo::loadJson(AM::getJson(MeleeGuyInfo::JSON_ID));
+			info.startPos = getSnapedMouseCameraPos();
+			sectionInfo_.meleeGuys.push_back(info);
+		}
 	}
 }
 void EditSectionScreen::updatePlaceStartPos() noexcept {
@@ -374,6 +381,9 @@ void EditSectionScreen::render(sf::RenderTarget& target) {
 	}
 	for (auto distance : sectionInfo_.distanceGuys) {
 		renderDebug(target, distance);
+	}
+	for (auto melee : sectionInfo_.meleeGuys) {
+		renderDebug(target, melee);
 	}
 	for (auto source : sectionInfo_.sources) {
 		renderDebug(target, source);
@@ -567,6 +577,18 @@ void EditSectionScreen::renderDebug(
 	);
 }
 void EditSectionScreen::renderDebug(
+	sf::RenderTarget& target, MeleeGuyInfo info
+) noexcept {
+	Vector4d color{ 0.1, 0.7, 0.7, 1.0 };
+	auto dist2 = (info.startPos - IM::getMousePosInView(_cameraView)).length2();
+	if (dist2 < info.size.x * info.size.x / 4.f) {
+		color = { 0.0, 0.6, 0.9, 1.0 };
+	}
+	info.startPos.plot(
+		target, info.size.x / 2.f, color, { 0.0, 0.0, 0.0, 0.0 }, 0.f
+	);
+}
+void EditSectionScreen::renderDebug(
 	sf::RenderTarget& target, SourceInfo info
 ) noexcept {
 	Vector4d color{ 0.8, 0.0, 0.8, 1.0 };
@@ -638,11 +660,7 @@ void EditSectionScreen::saveSection(std::string path) const noexcept {
 		printf("Error on saving the file %s, %s\n", path.c_str(), buffer);
 	}
 
-#if 0
-	file << json;
-#else
 	file << json.dump(4);
-#endif
 
 	file.close();
 }
@@ -651,6 +669,7 @@ void EditSectionScreen::deleteHovered() noexcept {
 	auto& plateformes = sectionInfo_.plateformes;
 	auto& slimes = sectionInfo_.slimes;
 	auto& distance = sectionInfo_.distanceGuys;
+	auto& meleeGuy = sectionInfo_.meleeGuys;
 	auto& sources = sectionInfo_.sources;
 	auto& sourcesBoomerang = sectionInfo_.sourcesBoomerang;
 	auto& sourcesDirection = sectionInfo_.sourcesDirection;
@@ -679,6 +698,14 @@ void EditSectionScreen::deleteHovered() noexcept {
 			.length2();
 		if (dist2 < distance[i - 1].size.x * distance[i - 1].size.x / 4.f) {
 			distance.erase(std::begin(distance) + i - 1);
+			return;
+		}
+	}
+	for (size_t i = meleeGuy.size(); i > 0; --i) {
+		auto dist2 = (meleeGuy[i - 1].startPos - IM::getMousePosInView(_cameraView))
+			.length2();
+		if (dist2 < meleeGuy[i - 1].size.x * meleeGuy[i - 1].size.x / 4.f) {
+			meleeGuy.erase(std::begin(meleeGuy) + i - 1);
 			return;
 		}
 	}

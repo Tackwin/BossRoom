@@ -111,8 +111,10 @@ public:
 	void collision(Object* obj);
 
 	void floored();
+	void ceiled() noexcept;
 	bool isFloored() const;
 
+	void clearJump() noexcept;
 	void clearKnockBack() noexcept;
 
 	void setFocus(bool focus = true);

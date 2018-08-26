@@ -36,7 +36,14 @@ struct Rectangle {
 		T distEdgeToEdge = std::max(other.x + other.w - x, x + w - other.x);
 		T sumOfWidth = w + other.w;
 
-		return y < other.y + other.h && distEdgeToEdge < sumOfWidth;
+		return y < other.y && distEdgeToEdge < sumOfWidth;
+	}
+	// works only for top down y
+	bool isOnBotOf(Rectangle<T> other) const {
+		T distEdgeToEdge = std::max(other.x + other.w - x, x + w - other.x);
+		T sumOfWidth = w + other.w;
+
+		return y > other.y && distEdgeToEdge < sumOfWidth;
 	}
 
 	Vector<2, T> center() const {

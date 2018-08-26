@@ -156,8 +156,7 @@ void Wearable::InitWearable() {
 		);
 
 		zone->collisionMask.set((u08)Object::BIT_TAGS::BOSS);
-		zone->collisionMask.set((u08)Object::BIT_TAGS::SLIME);
-		zone->collisionMask.set((u08)Object::BIT_TAGS::DISTANCE);
+		zone->collisionMask.set((u08)Object::BIT_TAGS::ENNEMY);
 		zone->entered = [damage](Object* object) {
 			if (auto hited = dynamic_cast<Hitable*>(object); hited) {
 				hited->hit(damage);

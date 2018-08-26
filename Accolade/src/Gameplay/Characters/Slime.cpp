@@ -8,52 +8,51 @@
 #include "Gameplay/Projectile.hpp"
 #include "Gameplay/Player/Player.hpp"
 
+#define LOAD(x, y) if (auto i = json.find(#x); i != json.end()) info.x = y(*i);
+#define SAVE(x, y) json[#x] = y(info.x);
+
 SlimeInfo SlimeInfo::loadJson(nlohmann::json json) noexcept {
 	SlimeInfo info;
 
-	if (auto it = json.find("sprite"); it != json.end()) {
-		info.sprite = it->get<std::string>();
-	}
-	if (auto it = json.find("speed"); it != json.end()) {
-		info.speed = *it;
-	}
-	if (auto it = json.find("startPos"); it != json.end()) {
-		info.startPos = Vector2f::loadJson(*it);
-	}
-	if (auto it = json.find("health"); it != json.end()) {
-		info.health = *it;
-	}
-	if (auto it = json.find("maxHealth"); it != json.end()) {
-		info.maxHealth = *it;
-	}
-	if (auto it = json.find("viewRange"); it != json.end()) {
-		info.viewRange = *it;
-	}
-	if (auto it = json.find("contactDamage"); it != json.end()) {
-		info.contactDamage = *it;
-	}
+	LOAD(sprite, [](auto x) {return x.get<std::string>(); });
+
+	LOAD(startPos, Vector2f::loadJson);
+	LOAD(size, Vector2f::loadJson);
+
+	LOAD(speed, );
+	LOAD(health, );
+	LOAD(contactDamage, );
+	LOAD(viewRange, );
+	LOAD(maxHealth, );
+
 	return info;
 }
 
 nlohmann::json SlimeInfo::saveJson(SlimeInfo info) noexcept {
 	nlohmann::json json;
 
-	json["speed"] = info.speed;
-	json["health"] = info.health;
-	json["contactDamage"] = info.contactDamage;
-	json["sprite"] = info.sprite;
-	json["maxHealth"] = info.maxHealth;
-	json["viewRange"] = info.viewRange;
-	json["startPos"] = Vector2f::saveJson(info.startPos);
+	SAVE(sprite, );
+
+	SAVE(startPos, Vector2f::saveJson);
+	SAVE(size, Vector2f::saveJson);
+
+	SAVE(speed, );
+	SAVE(health, );
+	SAVE(contactDamage, );
+	SAVE(viewRange, );
+	SAVE(maxHealth, );
 
 	return json;
 }
 
-Slime::Slime(SlimeInfo info) noexcept : _info(info) {
-	_sprite.setTexture(AM::getTexture(_info.sprite));
-	_sprite.setOrigin(
-		_sprite.getTextureRect().width * 0.5f,
-		_sprite.getTextureRect().height * 0.9f
+Slime::Slime(SlimeInfo info) noexcept : _info(info), sprite(info.sprite) {
+	sprite.pushAnim("walk");
+
+	sprite.getSprite().setTexture(AM::getTexture(_info.sprite));
+	AM::getTexture(_info.sprite).setSmooth(false);
+	sprite.getSprite().setOrigin(
+		sprite.getSprite().getTextureRect().width * 0.5f,
+		sprite.getSprite().getTextureRect().height * 0.9f
 	);
 	pos = _info.startPos;
 	auto box = std::make_unique<Box>();
@@ -62,6 +61,7 @@ Slime::Slime(SlimeInfo info) noexcept : _info(info) {
 	box->dtPos.y -= _info.size.y * 0.9f;
 	collider = std::unique_ptr<Collider>((Collider*)box.release());
 	idMask.set(Object::SLIME);
+	idMask.set(Object::ENNEMY);
 	collisionMask.set(Object::PROJECTILE);
 	collisionMask.set(Object::STRUCTURE);
 	collisionMask.set(Object::PLAYER);
@@ -80,6 +80,7 @@ void Slime::update(double) noexcept {
 	flatForces.push_back({ 0, C::G });
 	
 	if (!Vector2f::equalf(playerPos, pos, _info.viewRange)) return;
+	faceX = playerPos.x > pos.x;
 
 	auto navPointPos = currentPoint_.pos;
 
@@ -95,16 +96,16 @@ void Slime::update(double) noexcept {
 }
 
 void Slime::render(sf::RenderTarget& target) noexcept {
-	_sprite.setPosition(pos);
-	_sprite.setScale(
-		_info.size.x / _sprite.getTextureRect().width,
-		_info.size.y / _sprite.getTextureRect().height
+	sprite.getSprite().setPosition(pos);
+	sprite.getSprite().setScale(
+		_info.size.x / sprite.getSprite().getTextureRect().width * (faceX ? 1.f : -1.f),
+		_info.size.y / sprite.getSprite().getTextureRect().height
 	);
 
 	sf::CircleShape mark(0.05f);
 	mark.setOrigin(mark.getRadius(), mark.getRadius());
 	mark.setPosition(pos);
-	target.draw(_sprite);
+	sprite.render(target);
 	target.draw(mark);
 }
 

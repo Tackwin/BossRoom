@@ -226,9 +226,19 @@ void Player::collision(Object* obj) {
 
 void Player::floored() {
 	_nJumpsLeft = 2u;
-	_jumping = false;
-	jumpVelocity_.reset();
 	_floored = true;
+
+	clearKnockBack();
+	clearJump();
+}
+void Player::ceiled() noexcept {
+	clearJump();
+	clearKnockBack();
+}
+
+void Player::clearJump() noexcept {
+	jumpVelocity_.reset();
+	_jumping = false;
 }
 
 void Player::clearKnockBack() noexcept {
@@ -347,7 +357,7 @@ void Player::unmount() {
 }
 
 void Player::knockBack(Vector2f recoil, float time) noexcept {
-	if (_knockBack.has_value()) return;
+	if (_invincible) return;
 
 	_knockBack = recoil;
 	_knockBackTime = time;
@@ -434,8 +444,7 @@ void Player::updateDirectionSpell(double) noexcept {
 		
 		auto dir = (IM::getMousePosInView(section_->getCameraView()) - pos).normalize();
 		std::bitset<Object::SIZE> targetMask;
-		targetMask.set(Object::SLIME);
-		targetMask.set(Object::DISTANCE);
+		targetMask.set(Object::ENNEMY);
 
 		spellDirection_->launch(dir, targetMask);
 		spellDirection_->setPos(pos);

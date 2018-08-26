@@ -56,6 +56,7 @@ private:
 	void renderDebug(sf::RenderTarget& target, NavigationLinkInfo info) noexcept;
 	void renderDebug(sf::RenderTarget& target, DistanceGuyInfo info) noexcept;
 	void renderDebug(sf::RenderTarget& target, PlateformeInfo info) noexcept;
+	void renderDebug(sf::RenderTarget& target, MeleeGuyInfo info) noexcept;
 	void renderDebug(sf::RenderTarget& target, SourceInfo info) noexcept;
 	void renderDebug(sf::RenderTarget& target, SlimeInfo info) noexcept;
 

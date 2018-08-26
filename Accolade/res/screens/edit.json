@@ -157,6 +157,11 @@
             "name": "Distance",
             "type": "Panel",
             "sprite": "distance"
+          },
+          {
+            "name": "MeleeGuyInfo",
+            "type": "Panel",
+            "sprite": "MeleeGuyInfo"
           }
         ]
       }

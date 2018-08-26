@@ -1,7 +1,14 @@
 {
+    "origin": [0.5, 0.9],
+    "size": [0.7, 1.2],
+    "attackOrigin": [0.0, -0.4],
+
     "damage": 1,
     "viewRange": 5,
-    "speed": 2,
-    "cd": 3,
-    "health": 2
+    "attackRange": 1.5,
+    "attackRadius": 0.5,
+    "attackPersistence": 0.7,
+    "speed": 5,
+    "cd": 2,
+    "health": 5
 }

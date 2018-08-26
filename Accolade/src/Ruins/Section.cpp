@@ -67,6 +67,13 @@ SectionInfo SectionInfo::loadJson(const nlohmann::json& json) noexcept {
 			info.distanceGuys.push_back(DistanceGuyInfo::loadJson(slime));
 		}
 	}
+	if (auto melees = json.find(MeleeGuyInfo::JSON_ID);
+		melees != json.end() && !melees->is_null()
+	) {
+		for (auto slime : melees->get<nlohmann::json::array_t>()) {
+			info.meleeGuys.push_back(MeleeGuyInfo::loadJson(slime));
+		}
+	}
 
 	if (
 		auto navigationPoints = json.find(NavigationPointInfo::JSON_ID);
@@ -92,6 +99,7 @@ nlohmann::json SectionInfo::saveJson(SectionInfo info) noexcept {
 	nlohmann::json json;
 	nlohmann::json slimeArray = nlohmann::json::array();
 	nlohmann::json distanceArray = nlohmann::json::array();
+	nlohmann::json meleeArray = nlohmann::json::array();
 	nlohmann::json sourceArray = nlohmann::json::array();
 	nlohmann::json sourceBoomerangArray = nlohmann::json::array();
 	nlohmann::json sourceVaccumArray = nlohmann::json::array();
@@ -105,6 +113,9 @@ nlohmann::json SectionInfo::saveJson(SectionInfo info) noexcept {
 	}
 	for (auto& distance : info.distanceGuys) {
 		distanceArray.push_back(DistanceGuyInfo::saveJson(distance));
+	}
+	for (auto& melee : info.meleeGuys) {
+		meleeArray.push_back(MeleeGuyInfo::saveJson(melee));
 	}
 	for (auto& source : info.sources) {
 		sourceArray.push_back(SourceInfo::saveJson(source));
@@ -140,6 +151,7 @@ nlohmann::json SectionInfo::saveJson(SectionInfo info) noexcept {
 	json[NavigationPointInfo::JSON_ID] = navigationPointsArray;
 	json["sources"] = sourceArray;
 	json["distanceGuys"] = distanceArray;
+	json[MeleeGuyInfo::JSON_ID] = meleeArray;
 	json["slimes"] = slimeArray;
 
 	return json;
@@ -180,6 +192,10 @@ Section::Section(SectionInfo info) noexcept : _info(info) {
 		auto ptr = std::make_shared<DistanceGuy>(slime);
 		addDistanceGuy(ptr);
 	}
+	for (auto& slime : _info.meleeGuys) {
+		auto ptr = std::make_shared<MeleeGuy>(slime);
+		addMeleeGuy(ptr);
+	}
 }
 
 void Section::enter() noexcept {
@@ -208,6 +224,10 @@ void Section::enter() noexcept {
 		distance->enterSection(this);
 		_world.addObject(distance);
 	}
+	for (auto& melee : meleeGuys_) {
+		melee->enterSection(this);
+		_world.addObject(melee);
+	}
 	_world.addObject(_player);
 
 	subscribeToEvents();
@@ -225,6 +245,7 @@ void Section::exit() noexcept {
 	_slimes.clear();
 	distanceGuys_.clear();
 	spells_.clear();
+	meleeGuys_.clear();
 	_world.purge();
 }
 
@@ -248,13 +269,17 @@ void Section::update(double dt) noexcept {
 	for (auto& distance : distanceGuys_) {
 		distance->update(dt);
 	}
+	for (auto& melee : meleeGuys_) {
+		melee->update(dt);
+	}
 	for (auto& spell : spells_) {
 		spell->update(dt);
 	}
 
 	removeDeadObject();
 
-	pullPlayerObjects();
+	pullZonesFromObjects();
+	pullProjectilsFromObjects();
 
 	_world.updateInc(dt, 1);
 
@@ -285,6 +310,9 @@ void Section::render(sf::RenderTarget& target) const noexcept {
 	}
 	for (auto& distance : distanceGuys_) {
 		distance->render(target);
+	}
+	for (auto& melee : meleeGuys_) {
+		melee->render(target);
 	}
 	for (auto& spell : spells_) {
 		spell->render(target);
@@ -346,6 +374,14 @@ void Section::addSource(const std::shared_ptr<Source>& ptr) noexcept {
 void Section::addDistanceGuy(const std::shared_ptr<DistanceGuy>& ptr) noexcept {
 	distanceGuys_.push_back(ptr);
 }
+void Section::addMeleeGuy(const std::shared_ptr<MeleeGuy>& ptr) noexcept {
+	ptr->attachTo(getClosestNavigationPoint(ptr->pos));
+	meleeGuys_.push_back(ptr);
+}
+void Section::addSlime(const std::shared_ptr<Slime>& slime) noexcept {
+	slime->attachTo(getClosestNavigationPoint(slime->pos));
+	_slimes.push_back(slime);
+}
 
 void Section::subscribeToEvents() noexcept {
 	_keyPressedEvent = EventManager::subscribe("keyPressed",
@@ -393,6 +429,12 @@ void Section::removeDeadObject() noexcept {
 			distanceGuys_.erase(distanceGuys_.begin() + i);
 		}
 	}
+	for (int i = (int)meleeGuys_.size() - 1; i >= 0; --i) {
+		if (meleeGuys_[i]->toRemove()) {
+			_world.delObject(meleeGuys_[i]->uuid);
+			meleeGuys_.erase(meleeGuys_.begin() + i);
+		}
+	}
 	for (int i = (int)_sources.size() - 1; i >= 0; --i) {
 		if (_sources[i]->toRemove()) {
 			_world.delObject(_sources[i]->uuid);
@@ -410,14 +452,11 @@ void Section::removeDeadObject() noexcept {
 }
 
 void Section::playerOnEnter(Object* object) noexcept {
-	if (
-		object->idMask[Object::STRUCTURE] &&
-		_player->getBoundingBox().isOnTopOf(
-			((Box*)object->collider.get())->getGlobalBoundingBox()
-		)
-	) {
-		_player->floored();
-		_player->clearKnockBack();
+	if (object->idMask[Object::STRUCTURE]) {
+		auto box = ((Box*)object->collider.get())->getGlobalBoundingBox();
+
+		if (_player->getBoundingBox().isOnTopOf(box)) _player->floored();
+		if (_player->getBoundingBox().isOnBotOf(box)) _player->ceiled();
 	}
 }
 void Section::playerOnExit(Object*) noexcept {
@@ -432,23 +471,28 @@ std::shared_ptr<Player> Section::getPlayer() const noexcept {
 	return _player;
 }
 
-void Section::addSlime(const std::shared_ptr<Slime>& slime) noexcept {
-	slime->attachTo(getClosestNavigationPoint(slime->pos));
-	_slimes.push_back(slime);
-}
-
-void Section::pullPlayerObjects() {
-	for (auto& p : _player->getProtectilesToShoot()) {
-		_world.addObject(p);
-		_projectiles.push_back(p);
-	}
-	_player->clearProtectilesToShoot();
-
+void Section::pullZonesFromObjects() noexcept {
 	for (auto& p : _player->getZonesToApply()) {
 		_world.addObject(p);
 		_zones.push_back(p);
 	}
 	_player->clearZonesToApply();
+
+	for (auto& m : meleeGuys_) {
+		for (auto& z : m->getZonesToApply()) {
+			_world.addObject(z);
+			_zones.push_back(z);
+		}
+		m->clearZones();
+	}
+}
+
+void Section::pullProjectilsFromObjects() noexcept {
+	for (auto& p : _player->getProtectilesToShoot()) {
+		_world.addObject(p);
+		_projectiles.push_back(p);
+	}
+	_player->clearProtectilesToShoot();
 }
 
 SectionInfo Section::getInfo() const noexcept {

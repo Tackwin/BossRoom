@@ -1,8 +1,8 @@
 {
 	"speed": 5.0,
 	"radius": 1.0,
-	"capacity": 10,
+	"capacity": 30,
 	"lifeTime": 10,
-	"damage": 1.0,
+	"damage": 10,
 	"particleGenerator": "genericParticuleGenerator"
 }

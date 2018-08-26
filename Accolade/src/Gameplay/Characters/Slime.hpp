@@ -16,14 +16,16 @@ class Section;
 struct SlimeInfo {
 	static constexpr auto JSON_ID = "Slime";
 
-	Vector2f startPos{ 0., 0. };
-	float speed{ 1.f };
-	float health{ 10.f };
+	std::string sprite;
+
+	Vector2f startPos;
+	Vector2f size;
+
+	float speed{ NAN };
+	float health{ NAN };
 	float contactDamage{ NAN };
-	float viewRange{ 7.f };
-	float maxHealth{ 10.f };
-	std::string sprite{ "slime" };
-	Vector2f size{ 1.f, 1.f };
+	float viewRange{ NAN };
+	float maxHealth{ NAN };
 
 	static SlimeInfo loadJson(nlohmann::json json) noexcept;
 	static nlohmann::json saveJson(SlimeInfo info) noexcept;
@@ -57,7 +59,8 @@ private:
 
 	NavigationPointInfo currentPoint_;
 
-	sf::Sprite _sprite;
+	AnimatedSprite sprite;
 
 	bool _remove{ false };
+	bool faceX{ true };
 };

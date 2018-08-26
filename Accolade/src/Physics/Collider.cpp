@@ -66,7 +66,7 @@ void Box::render(sf::RenderTarget& target) {
 	sf::RectangleShape shape(size);
 	shape.setPosition(getGlobalPos());
 	shape.setOutlineColor({ 255, 20, 20, 255 });
-	shape.setOutlineThickness(0.01f);
+	shape.setOutlineThickness(0.05f);
 	shape.setFillColor({ 0, 0, 0, 0 });
 	target.draw(shape);
 }

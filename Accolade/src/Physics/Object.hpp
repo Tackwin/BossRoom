@@ -21,9 +21,11 @@ struct Object {
 		STRUCTURE,
 		SLIME,
 		DISTANCE,
+		MELEE,
 		SPELL,
 		SOURCE,
 		MAGIC,
+		ENNEMY,
 		SIZE
 	};
 
