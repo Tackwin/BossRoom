@@ -1,0 +1,32 @@
+test1: 2;
+te54st2: 23;
+// comment
+tes  t3: 5.2;
+test4: 0.1;
+test5: "azeaze";
+test6: "";
+test7: "oui\"oui";
+  test8: [ 0, "1", ["recursion"]];
+test9: [];
+test10: [[[[]]]];
+test11: [
+    0,
+    1,
+    [5, 6],
+    "3"
+];
+test12: {
+    yo: "lo";
+};
+test13: {};
+test14: {
+    1: 2;
+    3: "4";
+    5: [
+        {maybe: "yes!";}, 
+        0
+    ];
+    6: {
+        7: "...";
+    };
+};

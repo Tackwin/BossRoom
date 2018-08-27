@@ -23,6 +23,8 @@
 #include "Managers/TimerManager.hpp"
 #include "Managers/EventManager.hpp"
 
+#include "brx/Parser.hpp"
+
 #include "Game.hpp"
 #include "Gameplay/Patterns.hpp"
 #include "System/Window.hpp"
@@ -62,6 +64,11 @@ bool render(sf::RenderWindow& window) {
 
 int main(int, char**) {
 
+	brx::Brx::read_from(ASSETS_PATH "test.brx");
+	brx::Brx::read_from(ASSETS_PATH "test2.brx");
+
+
+	return 0;
 	/*if (!glfwInit()) {
 		printf("couldn't init glfw");
 		assert(true);

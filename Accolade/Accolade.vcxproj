@@ -340,6 +340,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\brx\Parser.cpp" />
+    <ClCompile Include="src\brx\Serializer.cpp" />
     <ClCompile Include="src\Gameplay\Characters\DistanceGuy.cpp" />
     <ClCompile Include="src\Gameplay\Characters\MeleeGuy.cpp" />
     <ClCompile Include="src\Gameplay\Characters\Slime.cpp" />
@@ -405,6 +407,9 @@
     <ClCompile Include="src\Utils\UUID.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\brx\Brx.hpp" />
+    <ClInclude Include="src\brx\Parser.hpp" />
+    <ClInclude Include="src\brx\Serializer.hpp" />
     <ClInclude Include="src\Components\Hitable.hpp" />
     <ClInclude Include="src\Components\Removable.hpp" />
     <ClInclude Include="src\Gameplay\Characters\DistanceGuy.hpp" />

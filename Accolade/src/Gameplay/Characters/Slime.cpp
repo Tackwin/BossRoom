@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include "brx/Parser.hpp"
+
 #include "Slime.hpp"
 #include "Ruins/Section.hpp"
 

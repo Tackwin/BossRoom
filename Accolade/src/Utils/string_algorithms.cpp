@@ -6,6 +6,9 @@ namespace str {
 	bool is_whitespace(char c) noexcept {
 		return std::isspace(c, std::locale());
 	}
+	bool is_numeric(char c) noexcept {
+		return std::isdigit(c, std::locale());
+	}
 
 	std::string trim_whitespace(std::string_view str) noexcept {
 		std::string result{ str };
@@ -17,6 +20,13 @@ namespace str {
 			}
 			else break;
 		}
-		return result;
+		size_t new_start = 0;
+		for (size_t i = 0; i < str.size(); ++i) {
+			if (is_whitespace(result[i])) {
+				new_start++;
+			}
+			else break;
+		}
+		return result.substr(new_start);
 	}
 };
