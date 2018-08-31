@@ -23,7 +23,6 @@ void World::updateInc(double dt, u32 itLevel) {
 #pragma warning(disable:4239)
 void World::update(double dt) {
 	removeNeeded();
-	//buildUnionCache();
 
 	for (auto& it : _objectsMap) {
 		auto obj1Id = it.first;
@@ -202,9 +201,7 @@ void World::delObject(UUID uuid) {
 void World::removeNeeded() {
 	std::vector<UUID> toRemove;
 
-	for (auto& it : _objectsMap) {
-		auto& id = it.first;
-		auto& obj = it.second;
+	for (auto& [id, obj] : _objectsMap) {
 
 		if (!obj.expired()) {
 			continue;
@@ -224,6 +221,7 @@ void World::removeNeeded() {
 	for (auto& id : toRemove) {
 		_objectsMap.erase(id);
 	}
+	buildUnionCache();
 }
 #pragma warning(pop)
 

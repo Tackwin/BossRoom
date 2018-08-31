@@ -35,7 +35,8 @@ std::unique_ptr<Brx> Brx::read_from(std::filesystem::path path) noexcept {
 		input_file.unget();
 
 		if (start_with_comment(input_file)) {
-			std::getline(input_file, std::string{});
+			std::string discard;
+			std::getline(input_file, discard);
 			continue;
 		}
 
@@ -167,7 +168,7 @@ Number read_number(std::istream& stream) noexcept {
 
 	Number n{ 0.0 };
 
-	for (int i = 0; i < numbers.size(); ++i) {
+	for (size_t i = 0; i < numbers.size(); ++i) {
 		n += numbers[i] * std::powl(10, (long double)(point_pos - (i + 1)));
 	}
 

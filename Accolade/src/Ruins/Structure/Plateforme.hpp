@@ -4,6 +4,8 @@
 #include "../../Math/Rectangle.hpp"
 
 struct PlateformeInfo {
+	static constexpr auto JSON_ID = "PlateformeInfo";
+
 	Rectangle2f rectangle;
 
 	static PlateformeInfo loadJson(const nlohmann::json& json) noexcept;

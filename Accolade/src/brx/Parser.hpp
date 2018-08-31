@@ -18,8 +18,8 @@ namespace brx {
 	using Number = long double;
 	using String = std::string;
 	struct Array;
-	struct Brx;
 	struct Map;
+	class Brx;
 
 	struct Value {
 		std::unique_ptr<Number> number;

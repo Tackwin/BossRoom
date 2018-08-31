@@ -10,6 +10,7 @@
 
 
 #include <cstdio>
+#include <iostream>
 #include <typeinfo>
 
 #include <SFML/Graphics.hpp>
@@ -28,6 +29,10 @@
 #include "Game.hpp"
 #include "Gameplay/Patterns.hpp"
 #include "System/Window.hpp"
+
+#include "Metaprogramming/TypeList.hpp"
+
+#include "Utils/meta_algorithms.hpp"
 
 #include "Graphics/GUI/Switcher.hpp"
 
@@ -63,12 +68,6 @@ bool render(sf::RenderWindow& window) {
 }
 
 int main(int, char**) {
-
-	brx::Brx::read_from(ASSETS_PATH "test.brx");
-	brx::Brx::read_from(ASSETS_PATH "test2.brx");
-
-
-	return 0;
 	/*if (!glfwInit()) {
 		printf("couldn't init glfw");
 		assert(true);

@@ -373,6 +373,7 @@ void EditSectionScreen::render(sf::RenderTarget& target) {
 	auto old = target.getView();
 	
 	target.setView(_cameraView);
+
 	for (auto plateforme : sectionInfo_.plateformes) {
 		renderDebug(target, plateforme);
 	}

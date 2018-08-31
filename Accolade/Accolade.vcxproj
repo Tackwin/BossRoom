@@ -425,6 +425,7 @@
     <ClInclude Include="src\Graphics\GUI\ValuePicker.hpp" />
     <ClInclude Include="src\Math\algorithms.hpp" />
     <ClInclude Include="src\Math\Segment.hpp" />
+    <ClInclude Include="src\Metaprogramming\TypeList.hpp" />
     <ClInclude Include="src\Navigation\NavigationLink.hpp" />
     <ClInclude Include="src\Navigation\NavigationPoint.hpp" />
     <ClInclude Include="src\Ruins\Structure\Plateforme.hpp" />
@@ -478,6 +479,7 @@
     <ClInclude Include="src\Time\Clock.hpp" />
     <ClInclude Include="src\Time\Scheduler.hpp" />
     <ClInclude Include="src\Utils\json_algorithms.hpp" />
+    <ClInclude Include="src\Utils\meta_algorithms.hpp" />
     <ClInclude Include="src\Utils\string_algorithms.hpp" />
     <ClInclude Include="src\Utils\UUID.hpp" />
     <ClInclude Include="src\Utils\vector_algorithms.hpp" />

@@ -14,145 +14,73 @@
 
 #include "Gameplay/Magic/Sources/SourceTarget.hpp"
 
+#include "Utils/meta_algorithms.hpp"
+
 
 SectionInfo SectionInfo::loadJson(const nlohmann::json& json) noexcept {
 	SectionInfo info;
+	auto load_vectors =
+		[&](auto& x) -> std::enable_if_t<is_stl_container_v<decltype(x)>> {
+			using T = holded_t<decltype(x)>;
+
+			if (json.count(T::JSON_ID)) {
+				x = load_json_vector<T>(json.at(T::JSON_ID));
+			}
+		};
 
 	if (json.count("maxRect") != 0) {
-		info.maxRectangle.x = json.at("maxRect").get<std::vector<float>>()[0];
-		info.maxRectangle.y = json.at("maxRect").get<std::vector<float>>()[1];
-		info.maxRectangle.w = json.at("maxRect").get<std::vector<float>>()[2];
-		info.maxRectangle.h = json.at("maxRect").get<std::vector<float>>()[3];
-	}
-
-	if (json.count("plateformes") != 0) {
-		info.plateformes = load_json_vector<PlateformeInfo>(json.at("plateformes"));
-	}
-
-	if (json.count("sources") != 0) {
-		info.sources = load_json_vector<SourceInfo>(json.at("sources"));
-	}
-	if (json.count(SourceTargetInfo::JSON_ID) != 0) {
-		info.sourcesBoomerang =
-			load_json_vector<SourceTargetInfo>(json.at(SourceTargetInfo::JSON_ID)
-				);
-	}
-	if (json.count(SourceVaccumInfo::JSON_ID) != 0) {
-		info.sourcesVaccum =
-			load_json_vector<SourceVaccumInfo>(json.at(SourceVaccumInfo::JSON_ID));
-	}
-	if (json.count(SourceDirectionInfo::JSON_ID) != 0) {
-		info.sourcesDirection =
-			load_json_vector<SourceDirectionInfo>(json.at(SourceDirectionInfo::JSON_ID));
+		info.maxRectangle = Rectangle2f::loadJson(json.at("maxRect"));
 	}
 
 	if (json.count("startPos") != 0) {
-		info.startPos.x = json.at("startPos").get<std::vector<float>>()[0];
-		info.startPos.y = json.at("startPos").get<std::vector<float>>()[1];
+		info.startPos = Vector2f::loadJson(json.at("startPos"));
 	}
 
 	if (json.count("viewSize") != 0) {
 		info.viewSize = Vector2f::loadJson(json.at("viewSize"));
 	}
 
-	if (auto slimes = json.find("slimes"); slimes != json.end() && !slimes->is_null()) {
-		for (auto slime : slimes->get<nlohmann::json::array_t>()) {
-			info.slimes.push_back(SlimeInfo::loadJson(slime));
-		}
-	}
-	if (auto distance = json.find("distanceGuys");
-		distance != json.end() && !distance->is_null()
-	) {
-		for (auto slime : distance->get<nlohmann::json::array_t>()) {
-			info.distanceGuys.push_back(DistanceGuyInfo::loadJson(slime));
-		}
-	}
-	if (auto melees = json.find(MeleeGuyInfo::JSON_ID);
-		melees != json.end() && !melees->is_null()
-	) {
-		for (auto slime : melees->get<nlohmann::json::array_t>()) {
-			info.meleeGuys.push_back(MeleeGuyInfo::loadJson(slime));
-		}
-	}
-
-	if (
-		auto navigationPoints = json.find(NavigationPointInfo::JSON_ID);
-		navigationPoints != json.end()
-	) {
-		for (auto n : navigationPoints->get<nlohmann::json::array_t>()) {
-			info.navigationPoints.push_back(NavigationPointInfo::loadJson(n));
-		}
-	}
-	if (
-		auto navigationLinks = json.find(NavigationLinkInfo::JSON_ID);
-	navigationLinks != json.end()
-	) {
-		for (auto n : navigationLinks->get<nlohmann::json::array_t>()) {
-			info.navigationLinks.push_back(NavigationLinkInfo::loadJson(n));
-		}
-	}
-
+	load_vectors(info.navigationPoints);
+	load_vectors(info.sourcesBoomerang);
+	load_vectors(info.sourcesDirection);
+	load_vectors(info.navigationLinks);
+	load_vectors(info.sourcesVaccum);
+	load_vectors(info.distanceGuys);
+	load_vectors(info.plateformes);
+	load_vectors(info.meleeGuys);
+	load_vectors(info.sources);
+	load_vectors(info.slimes);
 	return info;
 }
 
 nlohmann::json SectionInfo::saveJson(SectionInfo info) noexcept {
 	nlohmann::json json;
-	nlohmann::json slimeArray = nlohmann::json::array();
-	nlohmann::json distanceArray = nlohmann::json::array();
-	nlohmann::json meleeArray = nlohmann::json::array();
-	nlohmann::json sourceArray = nlohmann::json::array();
-	nlohmann::json sourceBoomerangArray = nlohmann::json::array();
-	nlohmann::json sourceVaccumArray = nlohmann::json::array();
-	nlohmann::json sourceDirectionArray = nlohmann::json::array();
-	nlohmann::json plateformeArray = nlohmann::json::array();
-	nlohmann::json navigationPointsArray = nlohmann::json::array();
-	nlohmann::json navigationLinksArray = nlohmann::json::array();
+	auto save_vectors =
+		[&](auto& x) -> std::enable_if_t<is_stl_container_v<decltype(x)>> {
+			using T = holded_t<decltype(x)>;
 
-	for (auto& slime : info.slimes) {
-		slimeArray.push_back(SlimeInfo::saveJson(slime));
-	}
-	for (auto& distance : info.distanceGuys) {
-		distanceArray.push_back(DistanceGuyInfo::saveJson(distance));
-	}
-	for (auto& melee : info.meleeGuys) {
-		meleeArray.push_back(MeleeGuyInfo::saveJson(melee));
-	}
-	for (auto& source : info.sources) {
-		sourceArray.push_back(SourceInfo::saveJson(source));
-	}
-	for (auto& plateforme : info.plateformes) {
-		plateformeArray.push_back(PlateformeInfo::saveJson(plateforme));
-	}
+			auto json_array = nlohmann::json::array();
 
-	for (auto& source : info.sourcesBoomerang) {
-		sourceBoomerangArray.push_back(SourceTargetInfo::saveJson(source));
-	}
-	for (auto& source : info.sourcesVaccum) {
-		sourceVaccumArray.push_back(SourceVaccumInfo::saveJson(source));
-	}
-	for (auto& source : info.sourcesDirection) {
-		sourceDirectionArray.push_back(SourceDirectionInfo::saveJson(source));
-	}
-	for (auto& source : info.navigationPoints) {
-		navigationPointsArray.push_back(NavigationPointInfo::saveJson(source));
-	}
-	for (auto& source : info.navigationLinks) {
-		navigationLinksArray.push_back(NavigationLinkInfo::saveJson(source));
-	}
+			for (auto& e : x){
+				json_array.push_back(T::saveJson(e));
+			}
+			json[T::JSON_ID] = json_array;
+		};
 
 	json["maxRect"] = Rectangle2f::saveJson(info.maxRectangle);
 	json["startPos"] = Vector2f::saveJson(info.startPos);
 	json["viewSize"] = Vector2f::saveJson(info.viewSize);
-	json["plateformes"] = plateformeArray;
-	json[SourceTargetInfo::JSON_ID] = sourceBoomerangArray;
-	json[SourceVaccumInfo::JSON_ID] = sourceVaccumArray;
-	json[NavigationLinkInfo::JSON_ID] = navigationLinksArray;
-	json[SourceDirectionInfo::JSON_ID] = sourceDirectionArray;
-	json[NavigationPointInfo::JSON_ID] = navigationPointsArray;
-	json["sources"] = sourceArray;
-	json["distanceGuys"] = distanceArray;
-	json[MeleeGuyInfo::JSON_ID] = meleeArray;
-	json["slimes"] = slimeArray;
+
+	save_vectors(info.plateformes);
+	save_vectors(info.sourcesBoomerang);
+	save_vectors(info.sourcesVaccum);
+	save_vectors(info.sourcesDirection);
+	save_vectors(info.sources);
+	save_vectors(info.navigationPoints);
+	save_vectors(info.navigationLinks);
+	save_vectors(info.distanceGuys);
+	save_vectors(info.meleeGuys);
+	save_vectors(info.slimes);
 
 	return json;
 }
@@ -239,14 +167,6 @@ void Section::exit() noexcept {
 	for (auto& source : _sources) {
 		source->exit();
 	}
-
-	_zones.clear();
-	_projectiles.clear();
-	_slimes.clear();
-	distanceGuys_.clear();
-	spells_.clear();
-	meleeGuys_.clear();
-	_world.purge();
 }
 
 void Section::update(double dt) noexcept {
@@ -405,50 +325,24 @@ void Section::unsubscribeToEvents() noexcept {
 }
 
 void Section::removeDeadObject() noexcept {
-	for (int i = (int)_projectiles.size() - 1; i >= 0; --i) {
-		if (_projectiles[i]->toRemove()) {
-			_world.delObject(_projectiles[i]->uuid);
-			_projectiles.erase(_projectiles.begin() + i);
-		}
-	}
-	for (int i = (int)_slimes.size() - 1; i >= 0; --i) {
-		if (_slimes[i]->toRemove()) {
-			_world.delObject(_slimes[i]->uuid);
-			_slimes.erase(_slimes.begin() + i);
-		}
-	}
-	for (int i = (int)_zones.size() - 1; i >= 0; --i) {
-		if (_zones[i]->toRemove()) {
-			_world.delObject(_zones[i]->uuid);
-			_zones.erase(_zones.begin() + i);
-		}
-	}
-	for (int i = (int)distanceGuys_.size() - 1; i >= 0; --i) {
-		if (distanceGuys_[i]->toRemove()) {
-			_world.delObject(distanceGuys_[i]->uuid);
-			distanceGuys_.erase(distanceGuys_.begin() + i);
-		}
-	}
-	for (int i = (int)meleeGuys_.size() - 1; i >= 0; --i) {
-		if (meleeGuys_[i]->toRemove()) {
-			_world.delObject(meleeGuys_[i]->uuid);
-			meleeGuys_.erase(meleeGuys_.begin() + i);
-		}
-	}
-	for (int i = (int)_sources.size() - 1; i >= 0; --i) {
-		if (_sources[i]->toRemove()) {
-			_world.delObject(_sources[i]->uuid);
-			_sources.erase(_sources.begin() + i);
-		}
-	}
-	for (int i = (int)spells_.size() - 1; i >= 0; --i) {
-		if (spells_[i]->toRemove()) {
-			if (auto objPtr = std::dynamic_pointer_cast<Object>(spells_[i]); objPtr) {
-				_world.delObject(spells_[i]->getUuid());
-			}
-			spells_.erase(spells_.begin() + i);
-		}
-	}
+	auto removeDead = [&](auto& x) -> 
+		std::enable_if_t<
+			is_stl_container_v<decltype(x)> &&
+			is_shared_ptr_v<holded_t<decltype(x)>> &&
+			std::is_base_of_v<Removable, holded_t<holded_t<decltype(x)>>>
+		>
+	{
+		for (size_t i = x.size(); i > 0; --i) 
+			if (x[i - 1]->toRemove()) x.erase(std::begin(x) + i - 1);
+	};
+
+	removeDead(_projectiles);
+	removeDead(_slimes);
+	removeDead(_zones);
+	removeDead(distanceGuys_);
+	removeDead(meleeGuys_);
+	removeDead(_sources);
+	removeDead(spells_);
 }
 
 void Section::playerOnEnter(Object* object) noexcept {
