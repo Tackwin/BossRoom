@@ -94,6 +94,14 @@
         "charSize": 10,
         "pos": [0, 135]
       },
+      "changeSection": {
+        "name": "changeSection",
+        "type": "Label",
+        "font": "consola",
+        "pos": [0, 150],
+        "charSize": 10,
+        "text": "To change section Ctrl + O S"
+      },
       "sourceSwitcher": {
         "label": {
           "font": "consola",

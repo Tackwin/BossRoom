@@ -40,6 +40,9 @@ double C::DT{ 0.0 };
 std::default_random_engine C::RD(SEED);
 std::uniform_real_distribution<float> C::unitaryRng(0.f, 1.f - FLT_EPSILON);
 std::shared_ptr<Game> C::game;
+const std::filesystem::path C::ASSETS_PATH{ "res/" };
+const std::filesystem::path C::EXE_PATH = std::filesystem::current_path();
+
 
 void startGame();
 void loadRessources();
@@ -116,7 +119,7 @@ void startGame() {
 void loadRessources() {
 	printf("Loading jsons...\n");
 
-	AssetsManager::loadJson(JSON_KEY, JSON_PATH);
+	AssetsManager::loadJson(JSON_KEY, (ASSETS_PATH / "config.json").string());
 	loadSpriteFromJson(AssetsManager::getJson(JSON_KEY));
 	loadSoundsFromJson(AssetsManager::getJson(JSON_KEY));
 	loadFontsFromJson(AssetsManager::getJson(JSON_KEY));
@@ -136,8 +139,8 @@ void loadSpriteFromJson(const nlohmann::json& json) {
 		assert(!it.value()["sheet"].is_null());
 
 		const std::string& key = it.key();
-		const std::string& path = it.value()["sheet"];
-		AssetsManager::loadTexture(key, ASSETS_PATH + path);
+		const std::filesystem::path path = it.value()["sheet"].get<std::string>();
+		AssetsManager::loadTexture(key, (ASSETS_PATH / path).string());
 	}
 }
 void loadSoundsFromJson(const nlohmann::json& json) {
@@ -152,8 +155,9 @@ void loadSoundsFromJson(const nlohmann::json& json) {
 		printf("\t%u/%u ", i, n);
 
 		const std::string& key = it.key();
-		const std::string& path = it.value();
-		AssetsManager::loadSound(key, ASSETS_PATH + path);
+		const std::filesystem::path path = it.value().get<std::string>();
+
+		AssetsManager::loadSound(key, (ASSETS_PATH / path).string());
 	}
 }
 void loadFontsFromJson(const nlohmann::json& json) {
@@ -168,8 +172,8 @@ void loadFontsFromJson(const nlohmann::json& json) {
 		printf("\t%u/%u ", i, n);
 
 		const std::string& key = it.key();
-		const std::string& path = it.value();
-		AssetsManager::loadFont(key, ASSETS_PATH + path);
+		const std::filesystem::path path = it.value().get<std::string>();
+		AssetsManager::loadFont(key, (ASSETS_PATH / path).string());
 	}
 }
 
@@ -185,8 +189,8 @@ void loadJsonsFromJson(const nlohmann::json& json) {
 		printf("\t%u/%u ", i, n);
 
 		const std::string& key = it.key();
-		const std::string& path = it.value();
-		AssetsManager::loadJson(key, ASSETS_PATH + path);
+		const std::filesystem::path path = it.value().get<std::string>();
+		AssetsManager::loadJson(key, (ASSETS_PATH / path).string());
 	}
 }
 

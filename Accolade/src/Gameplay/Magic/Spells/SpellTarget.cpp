@@ -129,22 +129,8 @@ void SpellTarget::onEnter(Object* obj) noexcept {
 	if (target_.expired()) return remove();
 
 	if (obj->uuid == target_.lock()->uuid) {
-		if (obj->idMask[Object::SLIME]) {
-			auto ptr = (Slime*)obj;
-
-			ptr->hit(info_.damage);
-			remove();
-		}
-		else if (obj->idMask[Object::DISTANCE]) {
-			auto ptr = (DistanceGuy*)obj;
-
-			ptr->hit(info_.damage);
-			remove();
-		}
-		else if (obj->idMask[Object::PLAYER]) {
-			auto ptr = (Player*)obj;
-
-			ptr->hit(info_.damage);
+		if (auto hitable = dynamic_cast<Hitable*>(obj); hitable) {
+			hitable->hit(info_.damage);
 			remove();
 		}
 	}

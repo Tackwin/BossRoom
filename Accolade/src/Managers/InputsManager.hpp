@@ -32,6 +32,7 @@ private:
 
 	static Vector2u windowsSize;
 
+	static constexpr auto MAX_SEQUENCE = 4;
 	static std::vector<sf::Keyboard::Key> currentSequence;
 
 	static sf::Keyboard::Key lastKey;

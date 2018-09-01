@@ -40,12 +40,12 @@ LevelScreen::LevelScreen(u32 n) :
 	);
 	_bossHealthTileSprite.setPosition(35, 35);
 
-	auto startRoom = AM::getJson(JSON_KEY)["StartRoom"].get<std::string>();
-	AM::loadJson("StartRoom", ASSETS_PATH + startRoom);
+	std::filesystem::path startRoom = AM::getJson(JSON_KEY)["StartRoom"].get<std::string>();
+	AM::loadJson("StartRoom", (ASSETS_PATH / startRoom).string());
 
 	auto sectionInfo = SectionInfo::loadJson(AM::getJson("StartRoom"));
 	_section = std::make_unique<Section>(sectionInfo);
-	_section->setFileName(startRoom);
+	_section->setFileName(startRoom.filename().string());
 }
 
 LevelScreen::~LevelScreen() {

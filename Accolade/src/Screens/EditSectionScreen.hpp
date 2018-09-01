@@ -6,6 +6,8 @@
 #include <unordered_map>
 #include <optional>
 #include <memory>
+#include <mutex>
+#include <atomic>
 
 #include "3rd/json.hpp"
 #include "Graphics/GUI/Widget.hpp"
@@ -60,12 +62,13 @@ private:
 	void renderDebug(sf::RenderTarget& target, SourceInfo info) noexcept;
 	void renderDebug(sf::RenderTarget& target, SlimeInfo info) noexcept;
 
+	void loadSectionFile(std::string path) noexcept;
+
 	void changeColorLabel(std::string name, Vector4f color) noexcept;
 
 	Vector2f getSnapedMouseScreenPos() const noexcept;
 	Vector2f getSnapedMouseCameraPos() const noexcept;
 
-	Section* section_{ nullptr };
 	SectionInfo sectionInfo_;
 
 	float _snapLevel{ 0.01f };
@@ -89,6 +92,10 @@ private:
 	std::optional<UUID> firstPoint_;
 
 	std::string fileName_{ "" };
+
+	std::atomic<bool> toLoadFile{ false };
+	std::mutex fileToLoadMutex;
+	std::string fileToLoad;
 
 	enum EditorToolState {
 		nothing,

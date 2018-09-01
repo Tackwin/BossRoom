@@ -1,11 +1,13 @@
 ﻿#pragma once
 #include <random>
 #include <memory>
+#include <filesystem>
 #include <type_traits>
 
 #include "3rd/json.hpp"
 
-#define ASSETS_PATH "res/"
+// just for convenience
+#include "Utils/Defer.hpp"
 
 using i08 = std::int8_t;
 using u08 = std::uint8_t;
@@ -18,10 +20,11 @@ using u64 = std::uint64_t;
 
 class Game;
 namespace C {
+	extern const std::filesystem::path ASSETS_PATH;
+	extern const std::filesystem::path EXE_PATH;
 
 	constexpr char TITLE[] = "Boss room";
 	constexpr char JSON_KEY[] = "json";
-	constexpr char JSON_PATH[] = ASSETS_PATH"config.json";
 
 	constexpr u32 WIDTH = 1280;
 	constexpr u32 HEIGHT = 800;

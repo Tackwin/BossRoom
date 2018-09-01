@@ -73,6 +73,24 @@ struct is_shared_ptr<std::shared_ptr<T>> : std::true_type {};
 template<typename T>
 constexpr bool is_shared_ptr_v = is_shared_ptr<std::decay_t<T>>::value;
 
+template<typename T>
+struct is_unique_ptr : std::false_type {};
+template<typename T>
+struct is_unique_ptr<std::unique_ptr<T>> : std::true_type {};
+template<typename T>
+constexpr bool is_unique_ptr_v = is_unique_ptr<std::decay_t<T>>::value;
+
+template<typename T>
+struct is_weak_ptr : std::false_type {};
+template<typename T>
+struct is_weak_ptr<std::weak_ptr<T>> : std::true_type {};
+template<typename T>
+constexpr bool is_weak_ptr_v = is_weak_ptr<std::decay_t<T>>::value;
+
+template<typename T>
+constexpr bool is_smart_ptr_v =
+	is_weak_ptr_v<T> || is_shared_ptr_v<T> || is_unique_ptr_v<T>;
+
 
 //specialize a type for all of the STL containers.
 namespace is_stl_container_impl {

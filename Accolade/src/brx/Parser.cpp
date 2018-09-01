@@ -140,6 +140,9 @@ Value read_value(std::istream& stream) noexcept {
 			std::make_unique<Map>(read_map(stream))
 		};
 		break;
+	default:
+		assert("error");
+		return {};
 	}
 }
 

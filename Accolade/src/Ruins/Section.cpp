@@ -404,26 +404,26 @@ std::shared_ptr<Object> Section::getTargetEnnemyFromMouse() noexcept {
 
 		std::pair<Vector2f, std::shared_ptr<Object>> minPair;
 
-		for (auto& slime : _slimes) {
-			if (loopStart) {
-				minPair = { dist(slime), slime };
-				loopStart = false;
-				continue;
+		auto iterate = [&](auto vec) -> std::enable_if_t<
+			is_vector_v<decltype(vec)> &&
+			is_shared_ptr_v<holded_t<decltype(vec)>> &&
+			std::is_base_of_v<Object, holded_t<holded_t<decltype(vec)>>>
+		> {
+			for (auto& e : vec) {
+				if (loopStart) {
+					minPair = { dist(e), e };
+					loopStart = false;
+					continue;
+				}
+				if (minPair.first.length2() > dist(e).length2()) {
+					minPair = { dist(e), e };
+				}
 			}
-			if (minPair.first.length2() > dist(slime).length2()) {
-				minPair = { dist(slime), slime };
-			}
-		}
-		for (auto& distance : distanceGuys_) {
-			if (loopStart) {
-				minPair = { dist(distance), distance };
-				loopStart = false;
-				continue;
-			}
-			if (minPair.first.length2() > dist(distance).length2()) {
-				minPair = { dist(distance), distance };
-			}
-		}
+		};
+
+		iterate(_slimes);
+		iterate(distanceGuys_);
+		iterate(meleeGuys_);
 
 		return minPair.second;
 	}

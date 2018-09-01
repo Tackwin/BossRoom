@@ -90,13 +90,18 @@ void Player::update(double dt) {
 
 				if (vel.length2() < .01f) jumpVelocity_.reset();
 			}
-			if (_jumping && 
-				!InputsManager::isKeyPressed(kb.getKey(KeyBindings::JUMP))
-			) {
-				_jumping = false;
+
+			if (continueToJump_ && IM::isKeyPressed(kb.getKey(KeyBindings::MOVE_UP))) {
+				flatVelocities.push_back({0, -_info.jumpHeight * 0.3f});
 			}
 
-			if (InputsManager::isKeyPressed(kb.getKey(KeyBindings::JUMP)) && _jumping) {
+			if (continueToJump_ && 
+				!InputsManager::isKeyPressed(kb.getKey(KeyBindings::JUMP))
+			) {
+				continueToJump_ = false;
+			}
+
+			if (InputsManager::isKeyPressed(kb.getKey(KeyBindings::JUMP)) && continueToJump_) {
 				flatVelocities.push_back({ 0, -_info.jumpHeight });
 			}
 
@@ -238,7 +243,7 @@ void Player::ceiled() noexcept {
 
 void Player::clearJump() noexcept {
 	jumpVelocity_.reset();
-	_jumping = false;
+	continueToJump_ = false;
 }
 
 void Player::clearKnockBack() noexcept {
@@ -259,7 +264,7 @@ void Player::jumpKeyPressed() {
 
 		velocity.y = 0.f;
 
-		_jumping = true;
+		continueToJump_ = true;
 
 		auto jumpVelocity = Vector2f{ 0.f, -sqrtf(G * 2 * _info.jumpHeight) };
 

@@ -170,7 +170,7 @@ public: //TODO: Make private
 	bool _floored{ false };
 	bool _freeze{ false };
 	bool remove_{ false };
-	bool _jumping{ false };
+	bool continueToJump_{ false };
 	bool _boostingJump{ false };
 
 	bool _focus{ true };

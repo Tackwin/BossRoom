@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <algorithm>
+#include <filesystem>
 
 #include "Managers/InputsManager.hpp"
 #include "Managers/AssetsManager.hpp"
@@ -22,19 +23,26 @@
 #include "Gameplay/Magic/Sources/SourceVaccum.hpp"
 #include "Gameplay/Magic/Sources/SourceDirection.hpp"
 
+#include "OS/OpenFile.hpp"
+
 EditSectionScreen::EditSectionScreen(Section* section) :
 	Screen(),
 	sectionInfo_(section->getInfo()),
 	fileName_(section->getFileName()),
 	_uiView({ WIDTH / 2.f, HEIGHT / 2.f }, { (float)WIDTH, (float)HEIGHT })
 {
-	_cameraView.setCenter(sectionInfo_.maxRectangle.fitUpRatio(RATIO).center());
-	_cameraView.setSize(sectionInfo_.viewSize.fitUpRatio(RATIO));
+	_cameraView = section->getCameraView();
+
 	viewSize_.pos = _cameraView.getCenter();
-	viewSize_.size = sectionInfo_.viewSize;
+	viewSize_.size = sectionInfo_.viewSize.fitUpRatio(RATIO);
 }
 
 void EditSectionScreen::update(double dt) {
+	if (toLoadFile) {
+		std::lock_guard{ fileToLoadMutex };
+		loadSectionFile(fileToLoad);
+	}
+
 	bool shiftPressed =
 		IM::isKeyPressed(sf::Keyboard::LShift) || IM::isKeyPressed(sf::Keyboard::RShift);
 
@@ -299,8 +307,8 @@ void EditSectionScreen::updateCameraMovement(double dt) noexcept {
 
 void EditSectionScreen::inputSwitchState() noexcept {
 	if (IM::isLastSequenceJustFinished({
-		sf::Keyboard::LControl, sf::Keyboard::Q, sf::Keyboard::P
-	})) {
+			sf::Keyboard::LControl, sf::Keyboard::Q, sf::Keyboard::P
+	})){
 		if (_toolState != draw_plateforme) {
 			exitToolState();
 			enterToolState(draw_plateforme);
@@ -322,7 +330,7 @@ void EditSectionScreen::inputSwitchState() noexcept {
 	}
 	else if (IM::isLastSequenceJustFinished({
 		sf::Keyboard::LControl, sf::Keyboard::S, sf::Keyboard::S
-	})){
+	})) {
 		if (_toolState != place_start_pos) {
 			exitToolState();
 			enterToolState(place_start_pos);
@@ -363,6 +371,19 @@ void EditSectionScreen::inputSwitchState() noexcept {
 		else {
 			exitToolState();
 		}
+	}
+	else if (IM::isLastSequenceJustFinished({
+		sf::Keyboard::LControl, sf::Keyboard::O, sf::Keyboard::S
+	})) {
+		open_file_async([&](OpenFileResult file) {
+			// i don't know if it's usefull to prevent race condition.
+			if (this == nullptr) return;
+			if (!file.succeded) return;
+
+			std::lock_guard{ fileToLoadMutex };
+			fileToLoad = file.filepath;
+			toLoadFile = true;
+		});
 	}
 	else if (IM::isKeyJustPressed(sf::Keyboard::Escape) && _toolState != nothing) {
 		exitToolState();
@@ -652,7 +673,7 @@ void EditSectionScreen::changeColorLabel(std::string name, Vector4f color) noexc
 void EditSectionScreen::saveSection(std::string path) const noexcept {
 	auto json = SectionInfo::saveJson(sectionInfo_);
 	std::ofstream file;
-	file.open(ASSETS_PATH + path);
+	file.open(path);
 	
 	static char buffer[512];
 	strerror_s(buffer, errno);
@@ -842,4 +863,24 @@ Vector2f EditSectionScreen::getSnapedMouseCameraPos() const noexcept {
 		(long long)(pos.x / _snapLevel - 0.5f) * _snapLevel,
 		(long long)(pos.y / _snapLevel - 0.5f) * _snapLevel
 	};
+}
+
+// you need to save manually.
+void EditSectionScreen::loadSectionFile(std::string path) noexcept {
+	if (!AM::loadJson(path, path)) {
+		printf("Couldn't load %s.", path.c_str());
+		return;
+	}
+
+	sectionInfo_ = SectionInfo::loadJson(AM::getJson(path));
+
+	namespace fs = std::filesystem;
+
+
+	fs::path path_os{ path };
+	auto relative_path = fs::relative(path_os, EXE_PATH / ASSETS_PATH).string();
+	_savePicker->setStdString(relative_path);
+
+	toLoadFile = false;
+	fileToLoad = {};
 }

@@ -151,10 +151,11 @@ const KeyBindings& Game::getCurrentKeyBindings() const noexcept {
 
 PlayerInfo Game::loadPlayerInfo(std::string character) const noexcept {
 	auto characters = AM::getJson(JSON_KEY)["player"]["characters"];
-	auto characterPath = characters.at(character).get<std::string>();
+	std::filesystem::path characterPath = characters.at(character).get<std::string>();
 
 	if (!AM::haveJson(character)) {
-		auto b = AM::loadJson(character, ASSETS_PATH + characterPath); assert(b);
+		auto b = AM::loadJson(character, (ASSETS_PATH / characterPath).string());
+		assert(b);
 	}
 
 	auto json = AM::getJson(character);
