@@ -38,11 +38,19 @@ void open_file_async(
 		constexpr auto BUFFER_SIZE = 512;
 
 		char* filepath = new char[BUFFER_SIZE];
-		memcpy(filepath, opts.filepath.c_str(), opts.filepath.size() + 1);
+		memcpy(
+			filepath,
+			opts.filepath.string().c_str(),
+			opts.filepath.string().size() + 1
+		);
 		defer{ delete filepath; };
 
 		char* filename = new char[BUFFER_SIZE];
-		memcpy(filename, opts.filename.c_str(), opts.filename.size() + 1);
+		memcpy(
+			filename,
+			opts.filename.string().c_str(),
+			opts.filename.string().size() + 1
+		);
 		defer{ delete filename; };
 
 		const char* filters = create_cstr_extension_label_map(opts.ext_filters);
@@ -67,8 +75,10 @@ void open_file_async(
 
 		if (GetOpenFileName(&ofn)) {
 			result.succeded = true;
-			result.filename = std::string{ filename };
-			result.filepath = std::string{ filepath };
+
+			// To make sure they are generic.
+			result.filename = std::filesystem::path{ filename };
+			result.filepath = std::filesystem::path{ filepath };
 		}
 		else {
 			result.succeded = false;

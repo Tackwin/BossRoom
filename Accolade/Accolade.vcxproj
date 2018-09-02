@@ -127,6 +127,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>C:\Code\cpp\SFML\include;C:\Code\cpp\BossRoom\Accolade\src;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Code\cpp\SFML\lib\$(Configuration);$(LibraryPath)</LibraryPath>
+    <CustomBuildAfterTargets>CopyFilesToOutputDirectory</CustomBuildAfterTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugOld|Win32'">
     <IncludePath>C:\Code\cpp\SFML\include;C:\Code\cpp\BossRoom\Accolade\src;$(IncludePath)</IncludePath>
@@ -143,6 +144,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>C:\Code\cpp\SFML\include;C:\Code\cpp\BossRoom\Accolade\src;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Code\cpp\SFML\lib\$(Configuration);$(LibraryPath)</LibraryPath>
+    <CustomBuildAfterTargets>CopyFilesToOutputDirectory</CustomBuildAfterTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugOld|x64'">
     <IncludePath>C:\Code\cpp\SFML\include;C:\Code\cpp\BossRoom\Accolade\src;$(IncludePath)</IncludePath>
@@ -358,6 +360,7 @@
     <ClCompile Include="src\Navigation\NavigationLink.cpp" />
     <ClCompile Include="src\Navigation\NavigationPoint.cpp" />
     <ClCompile Include="src\OS\windows\OpenFile.cpp" />
+    <ClCompile Include="src\OS\windows\PathDefinition.cpp" />
     <ClCompile Include="src\Ruins\Structure\Plateforme.cpp" />
     <ClCompile Include="src\Events\Event.cpp" />
     <ClCompile Include="src\Game.cpp" />
@@ -430,6 +433,7 @@
     <ClInclude Include="src\Navigation\NavigationLink.hpp" />
     <ClInclude Include="src\Navigation\NavigationPoint.hpp" />
     <ClInclude Include="src\OS\OpenFile.hpp" />
+    <ClInclude Include="src\OS\PathDefinition.hpp" />
     <ClInclude Include="src\Ruins\Structure\Plateforme.hpp" />
     <ClInclude Include="src\3rd\json.hpp" />
     <ClInclude Include="src\Common.hpp" />

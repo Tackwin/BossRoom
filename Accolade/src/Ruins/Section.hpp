@@ -89,8 +89,11 @@ public:
 
 	sf::View getCameraView() const noexcept;
 
-	void setFileName(std::string fileName) noexcept;
-	std::string getFileName() const noexcept;
+	void setFileName(std::filesystem::path fileName) noexcept;
+	std::filesystem::path getFileName() const noexcept;
+
+	void setFilepath(std::filesystem::path filepath) noexcept;
+	std::filesystem::path getFilepath() const noexcept;
 private:
 	// remove all object wich has the remove flag set
 	void removeDeadObject() noexcept;
@@ -110,7 +113,8 @@ private:
 
 	nlohmann::json _levelJson;
 
-	std::string fileName_{ "" };
+	std::filesystem::path fileName_;
+	std::filesystem::path filepath_;
 
 	World _world;
 

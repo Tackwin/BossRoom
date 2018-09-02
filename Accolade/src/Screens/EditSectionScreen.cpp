@@ -28,7 +28,7 @@
 EditSectionScreen::EditSectionScreen(Section* section) :
 	Screen(),
 	sectionInfo_(section->getInfo()),
-	fileName_(section->getFileName()),
+	filepath_(section->getFilepath()),
 	_uiView({ WIDTH / 2.f, HEIGHT / 2.f }, { (float)WIDTH, (float)HEIGHT })
 {
 	_cameraView = section->getCameraView();
@@ -490,16 +490,16 @@ void EditSectionScreen::onEnter(std::any) {
 	ennemySwitcher_ = (SpriteSwitcher*)(_widgets.at("root")->findChild("ennemySwitcher"));
 	sourceSwitcher_ = (SpriteSwitcher*)(_widgets.at("root")->findChild("sourceSwitcher"));
 	_savePicker = (ValuePicker*)(_widgets.at("root")->findChild("savePicker"));
-	_savePicker->setStdString(fileName_);
+	_savePicker->setStdString(filepath_.generic_string());
 	_snapGrid = (Label*)(_widgets.at("root")->findChild("snapGrid"));
 }
 
 std::any EditSectionScreen::onExit() {
-	fileName_ = _savePicker->getStdString();
+	filepath_ = _savePicker->getStdString();
 	for (auto&[key, value] : _widgets) {
 		delete value;
 	}
-	return ReturnType{sectionInfo_, fileName_};
+	return ReturnType{sectionInfo_, filepath_};
 }
 
 void EditSectionScreen::enterToolState(
@@ -670,16 +670,22 @@ void EditSectionScreen::changeColorLabel(std::string name, Vector4f color) noexc
 	}
 }
 
-void EditSectionScreen::saveSection(std::string path) const noexcept {
+void EditSectionScreen::saveSection(std::filesystem::path path) const noexcept {
 	auto json = SectionInfo::saveJson(sectionInfo_);
+
+	std::filesystem::current_path(EXE_DIR);
 	std::ofstream file;
-	file.open(path);
+	file.open(ASSETS_PATH / path);
 	
 	static char buffer[512];
 	strerror_s(buffer, errno);
 
 	if (!file.is_open()) {
-		printf("Error on saving the file %s, %s\n", path.c_str(), buffer);
+		printf(
+			"Error on saving the file %s, %s\n",
+			(ASSETS_PATH / path).string().c_str(),
+			buffer
+		);
 	}
 
 	file << json.dump(4);
@@ -866,21 +872,21 @@ Vector2f EditSectionScreen::getSnapedMouseCameraPos() const noexcept {
 }
 
 // you need to save manually.
-void EditSectionScreen::loadSectionFile(std::string path) noexcept {
-	if (!AM::loadJson(path, path)) {
-		printf("Couldn't load %s.", path.c_str());
+void EditSectionScreen::loadSectionFile(std::filesystem::path path) noexcept {
+	if (!AM::loadJson(path.generic_string(), path.generic_string())) {
+		printf("Couldn't load %s.", path.generic_string().c_str());
 		return;
 	}
 
-	sectionInfo_ = SectionInfo::loadJson(AM::getJson(path));
+	sectionInfo_ = SectionInfo::loadJson(AM::getJson(path.generic_string()));
 
 	namespace fs = std::filesystem;
 
 
 	fs::path path_os{ path };
-	auto relative_path = fs::relative(path_os, EXE_PATH / ASSETS_PATH).string();
+	auto relative_path = fs::relative(path_os, EXE_DIR / ASSETS_PATH).generic_string();
 	_savePicker->setStdString(relative_path);
 
 	toLoadFile = false;
-	fileToLoad = {};
+	fileToLoad.clear();
 }

@@ -45,7 +45,8 @@ LevelScreen::LevelScreen(u32 n) :
 
 	auto sectionInfo = SectionInfo::loadJson(AM::getJson("StartRoom"));
 	_section = std::make_unique<Section>(sectionInfo);
-	_section->setFileName(startRoom.filename().string());
+	_section->setFileName(startRoom.filename());
+	_section->setFilepath(startRoom);
 }
 
 LevelScreen::~LevelScreen() {
@@ -56,7 +57,7 @@ void LevelScreen::onEnter(std::any input) {
 
 		auto returnValue = std::any_cast<EditSectionScreen::ReturnType>(input);
 		_section = std::make_unique<Section>(std::get<0>(returnValue));
-		_section->setFileName(std::get<1>(returnValue));
+		_section->setFilepath(std::get<1>(returnValue));
 	}
 	_section->enter();
 	//_level->start(this);

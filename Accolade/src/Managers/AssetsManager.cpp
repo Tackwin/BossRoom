@@ -1,5 +1,7 @@
 #include "AssetsManager.hpp"
+#include "Common.hpp"
 
+#include <filesystem>
 #include <cassert>
 #include <fstream>
 
@@ -215,6 +217,7 @@ bool AssetsManager::loadJson(const std::string &key, const std::string &path) {
 	std::printf("%s ", path.c_str());
 
 	std::ifstream stream;
+	std::filesystem::current_path(EXE_DIR);
 	stream.open(path);
 	const bool loaded = stream.is_open() && stream.good();
 

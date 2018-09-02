@@ -21,7 +21,7 @@ using u64 = std::uint64_t;
 class Game;
 namespace C {
 	extern const std::filesystem::path ASSETS_PATH;
-	extern const std::filesystem::path EXE_PATH;
+	extern const std::filesystem::path EXE_DIR;
 
 	constexpr char TITLE[] = "Boss room";
 	constexpr char JSON_KEY[] = "json";

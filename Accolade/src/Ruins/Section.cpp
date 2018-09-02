@@ -510,9 +510,16 @@ NavigationPointInfo Section::getClosestNavigationPoint(Vector2f p) const noexcep
 	return closest;
 }
 
-void Section::setFileName(std::string fileName) noexcept {
+void Section::setFileName(std::filesystem::path fileName) noexcept {
 	fileName_ = fileName;
 }
-std::string Section::getFileName() const noexcept {
+std::filesystem::path Section::getFileName() const noexcept {
 	return fileName_;
+}
+
+void Section::setFilepath(std::filesystem::path filepath) noexcept {
+	filepath_ = filepath;
+}
+std::filesystem::path Section::getFilepath() const noexcept {
+	return filepath_;
 }

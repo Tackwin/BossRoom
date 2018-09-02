@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 
 #include <unordered_map>
+#include <filesystem>
 #include <optional>
 #include <memory>
 #include <mutex>
@@ -26,7 +27,7 @@ class ValuePicker;
 class SpriteSwitcher;
 class EditSectionScreen : public Screen {
 public:
-	using ReturnType = std::tuple<SectionInfo, std::string>;
+	using ReturnType = std::tuple<SectionInfo, std::filesystem::path>;
 
 	EditSectionScreen(Section* section);
 
@@ -41,7 +42,7 @@ private:
 
 	void deleteHovered() noexcept;
 
-	void saveSection(std::string path) const noexcept;
+	void saveSection(std::filesystem::path path) const noexcept;
 
 	void inputSwitchState() noexcept;
 	void updateCameraMovement(double dt) noexcept;
@@ -62,7 +63,7 @@ private:
 	void renderDebug(sf::RenderTarget& target, SourceInfo info) noexcept;
 	void renderDebug(sf::RenderTarget& target, SlimeInfo info) noexcept;
 
-	void loadSectionFile(std::string path) noexcept;
+	void loadSectionFile(std::filesystem::path path) noexcept;
 
 	void changeColorLabel(std::string name, Vector4f color) noexcept;
 
@@ -91,11 +92,11 @@ private:
 
 	std::optional<UUID> firstPoint_;
 
-	std::string fileName_{ "" };
+	std::filesystem::path filepath_;
 
 	std::atomic<bool> toLoadFile{ false };
 	std::mutex fileToLoadMutex;
-	std::string fileToLoad;
+	std::filesystem::path fileToLoad;
 
 	enum EditorToolState {
 		nothing,

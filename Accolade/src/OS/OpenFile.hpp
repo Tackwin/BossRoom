@@ -2,14 +2,15 @@
 
 #include <thread>
 #include <functional>
+#include <filesystem>
 #include <unordered_map>
 
 struct OpenFileOpts {
 	void* owner{ nullptr };
 
 	std::unordered_map<std::string, std::vector<std::string>> ext_filters;
-	std::string filepath{ NULL };
-	std::string filename{ NULL };
+	std::filesystem::path filepath;
+	std::filesystem::path filename;
 	std::string dialog_title{ NULL };
 	std::string default_ext{ NULL };
 
@@ -22,8 +23,8 @@ struct OpenFileResult {
 
 	unsigned long error_code;
 
-	std::string filepath;
-	std::string filename;
+	std::filesystem::path filepath;
+	std::filesystem::path filename;
 };
 
 extern void open_file_async(
