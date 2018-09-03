@@ -22,7 +22,7 @@ void World::updateInc(double dt, u32 itLevel) {
 #pragma warning(push)
 #pragma warning(disable:4239)
 void World::update(double dt) {
-	removeNeeded();
+	// removeNeeded();
 
 	for (auto& it : _objectsMap) {
 		auto obj1Id = it.first;
@@ -237,7 +237,8 @@ void World::purge() {
 std::vector<UUID>
 	World::getUnionOfMask(const std::bitset<Object::SIZE>& mask)
 {
-	std::unordered_set<UUID> result;
+	static std::unordered_set<UUID> result;
+	result.clear();
 	result.reserve(_objectsMap.size() * Object::SIZE);
 
 	for (size_t i = 0u; i < Object::SIZE; ++i) {

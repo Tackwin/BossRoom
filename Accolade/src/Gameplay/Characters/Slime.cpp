@@ -62,7 +62,6 @@ Slime::Slime(SlimeInfo info) noexcept : _info(info), sprite(info.sprite) {
 	box->dtPos.x -= _info.size.x * 0.5f;
 	box->dtPos.y -= _info.size.y * 0.9f;
 	collider = std::unique_ptr<Collider>((Collider*)box.release());
-	idMask.set(Object::SLIME);
 	idMask.set(Object::ENNEMY);
 	collisionMask.set(Object::PROJECTILE);
 	collisionMask.set(Object::STRUCTURE);

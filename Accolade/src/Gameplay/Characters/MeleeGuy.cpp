@@ -66,7 +66,6 @@ MeleeGuy::MeleeGuy(MeleeGuyInfo info) noexcept : info(info) {
 	box->dtPos.y = -info.size.y * info.origin.y;
 	collider = std::unique_ptr<Collider>(box.release());
 
-	idMask.set(Object::MELEE);
 	idMask.set(Object::ENNEMY);
 	collisionMask.set(Object::STRUCTURE);
 

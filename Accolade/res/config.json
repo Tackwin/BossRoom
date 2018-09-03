@@ -14,6 +14,17 @@
 				0.15
 			]
 		},
+		"fly": {
+			"sheet": "images/fly.png",
+			"rect": [23, 22],
+			"idle": {
+				"row": 0,
+				"frames": 3,
+				"loop": true,
+				"time": 0.33
+			},
+			"origin": [0.5, 0.5]
+		},
 		"phoenix": {
 			"sheet": "images/phoenix_fire.png",
 			"rect": [
@@ -164,6 +175,9 @@
 		},
 		"MeleeGuyInfo": {
 			"sheet": "images/melee_guy.png"
+		},
+		"FlyInfo": {
+			"sheet": "images/fly.png"
 		}
 	},
 	"sounds": {
@@ -189,7 +203,8 @@
 		"Distance": "characters/distance.json",
 		"MeleeGuyInfo": "characters/melee.json",
 		"SourceVaccum": "sources/vaccum.json",
-		"SourceDirectionInfo": "sources/direction.json"
+		"SourceDirectionInfo": "sources/direction.json",
+		"FlyInfo": "characters/fly.json"
 	},
 	"StartRoom": "rooms/section_002.json",
 	"bosses": [

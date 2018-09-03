@@ -154,8 +154,12 @@ PlayerInfo Game::loadPlayerInfo(std::string character) const noexcept {
 	std::filesystem::path characterPath = characters.at(character).get<std::string>();
 
 	if (!AM::haveJson(character)) {
+#ifdef NDEBUG
+		AM::loadJson(character, (ASSETS_PATH / characterPath).string());
+#else
 		auto b = AM::loadJson(character, (ASSETS_PATH / characterPath).string());
 		assert(b);
+#endif
 	}
 
 	auto json = AM::getJson(character);

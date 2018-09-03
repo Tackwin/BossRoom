@@ -80,6 +80,7 @@ void SpellDirection::render(sf::RenderTarget& target) noexcept {
 	particleGenerator_.render(target);
 }
 
+
 void SpellDirection::launch(Vector2f dir, std::bitset<Object::SIZE> target) noexcept {
 	auto disk = std::make_unique<Disk>();
 	disk->onEnter = std::bind(&SpellDirection::onEnter, this, std::placeholders::_1);

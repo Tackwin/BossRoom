@@ -18,25 +18,35 @@
 #include "Gameplay/Magic/Sources/SourceDirection.hpp"
 #include "Gameplay/Magic/Sources/SourceTarget.hpp"
 #include "Gameplay/Magic/Sources/SourceVaccum.hpp"
-#include "Gameplay/Characters/DistanceGuy.hpp"
 #include "Gameplay/Magic/Sources/Source.hpp"
-#include "Gameplay/Characters/MeleeGuy.hpp"
+
 #include "Gameplay/Magic/Spells/Spell.hpp"
+
+#include "Gameplay/Characters/DistanceGuy.hpp"
+#include "Gameplay/Characters/MeleeGuy.hpp"
 #include "Gameplay/Characters/Slime.hpp"
+#include "Gameplay/Characters/Fly.hpp"
+
 #include "Gameplay/Player/Player.hpp"
+
 #include "Gameplay/Boss.hpp"
 
 struct SectionInfo {
 	std::vector<NavigationPointInfo> navigationPoints;
 	std::vector<NavigationLinkInfo> navigationLinks;
+
 	std::vector<DistanceGuyInfo> distanceGuys;
 	std::vector<MeleeGuyInfo> meleeGuys;
 	std::vector<SlimeInfo> slimes;
+	std::vector<FlyInfo> flies;
+
 	std::vector<PlateformeInfo> plateformes;
+
 	std::vector<SourceInfo> sources;
 	std::vector<SourceTargetInfo> sourcesBoomerang;
 	std::vector<SourceVaccumInfo> sourcesVaccum;
 	std::vector<SourceDirectionInfo> sourcesDirection;
+
 	Rectangle2f maxRectangle;
 	Vector2f startPos;
 	Vector2f viewSize;
@@ -64,13 +74,19 @@ public:
 	void render(sf::RenderTarget& target) const noexcept;
 	void renderDebug(sf::RenderTarget& target) const noexcept;
 
+
 	void addZone(std::shared_ptr<Zone> ptr) noexcept;
+
 	void addStructure(const std::shared_ptr<Structure>& ptr) noexcept;
+
 	void addSource(const std::shared_ptr<Source>& ptr) noexcept;
+
 	void addSpell(const std::shared_ptr<Spell>& ptr) noexcept;
+
 	void addDistanceGuy(const std::shared_ptr<DistanceGuy>& ptr) noexcept;
 	void addMeleeGuy(const std::shared_ptr<MeleeGuy>& ptr) noexcept;
 	void addSlime(const std::shared_ptr<Slime>& ptr) noexcept;
+	void addFly(const std::shared_ptr<Fly>& ptr) noexcept;
 
 	// Get NavigationPoint from id
 	NavigationPointInfo getNavigationPoint(UUID id) const noexcept;
@@ -124,14 +140,22 @@ private:
 
 	std::shared_ptr<Object> targetEnnemy_;
 
-	std::vector<std::shared_ptr<DistanceGuy>>		distanceGuys_;
-	std::vector<std::shared_ptr<Projectile>>		_projectiles;
-	std::vector<std::shared_ptr<Structure>>			_structures;
-	std::vector<std::shared_ptr<MeleeGuy>>			meleeGuys_;
+
 	std::vector<std::shared_ptr<Source>>			_sources;
-	std::vector<std::shared_ptr<Slime>>				_slimes;
+
+	std::vector<std::shared_ptr<Projectile>>		_projectiles;
+
+	std::vector<std::shared_ptr<Structure>>			_structures;
+
 	std::vector<std::shared_ptr<Spell>>				spells_;
+
 	std::vector<std::shared_ptr<Zone>>				_zones;
+
+	std::vector<std::shared_ptr<DistanceGuy>>		distanceGuys_;
+	std::vector<std::shared_ptr<MeleeGuy>>			meleeGuys_;
+	std::vector<std::shared_ptr<Slime>>				_slimes;
+	std::vector<std::shared_ptr<Fly>>				flies;
+
 
 	UUID _keyPressedEvent{ UUID::null };
 	UUID _keyReleasedEvent{ UUID::null };

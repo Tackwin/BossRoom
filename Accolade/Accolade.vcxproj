@@ -345,6 +345,7 @@
     <ClCompile Include="src\brx\Parser.cpp" />
     <ClCompile Include="src\brx\Serializer.cpp" />
     <ClCompile Include="src\Gameplay\Characters\DistanceGuy.cpp" />
+    <ClCompile Include="src\Gameplay\Characters\Fly.cpp" />
     <ClCompile Include="src\Gameplay\Characters\MeleeGuy.cpp" />
     <ClCompile Include="src\Gameplay\Characters\Slime.cpp" />
     <ClCompile Include="src\Gameplay\Magic\Sources\Source.cpp" />
@@ -418,6 +419,7 @@
     <ClInclude Include="src\Components\Hitable.hpp" />
     <ClInclude Include="src\Components\Removable.hpp" />
     <ClInclude Include="src\Gameplay\Characters\DistanceGuy.hpp" />
+    <ClInclude Include="src\Gameplay\Characters\Fly.hpp" />
     <ClInclude Include="src\Gameplay\Characters\MeleeGuy.hpp" />
     <ClInclude Include="src\Gameplay\Characters\Slime.hpp" />
     <ClInclude Include="src\Gameplay\Magic\Sources\SourceDirection.hpp" />
@@ -429,6 +431,7 @@
     <ClInclude Include="src\Graphics\GUI\Switcher.hpp" />
     <ClInclude Include="src\Graphics\GUI\ValuePicker.hpp" />
     <ClInclude Include="src\Math\algorithms.hpp" />
+    <ClInclude Include="src\Math\RandomData.hpp" />
     <ClInclude Include="src\Math\Segment.hpp" />
     <ClInclude Include="src\Metaprogramming\TypeList.hpp" />
     <ClInclude Include="src\Navigation\NavigationLink.hpp" />

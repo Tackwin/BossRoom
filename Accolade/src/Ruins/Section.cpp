@@ -41,15 +41,19 @@ SectionInfo SectionInfo::loadJson(const nlohmann::json& json) noexcept {
 	}
 
 	load_vectors(info.navigationPoints);
+	load_vectors(info.navigationLinks);
+
 	load_vectors(info.sourcesBoomerang);
 	load_vectors(info.sourcesDirection);
-	load_vectors(info.navigationLinks);
 	load_vectors(info.sourcesVaccum);
-	load_vectors(info.distanceGuys);
-	load_vectors(info.plateformes);
-	load_vectors(info.meleeGuys);
 	load_vectors(info.sources);
+
+	load_vectors(info.plateformes);
+
+	load_vectors(info.distanceGuys);
+	load_vectors(info.meleeGuys);
 	load_vectors(info.slimes);
+	load_vectors(info.flies);
 	return info;
 }
 
@@ -72,15 +76,19 @@ nlohmann::json SectionInfo::saveJson(SectionInfo info) noexcept {
 	json["viewSize"] = Vector2f::saveJson(info.viewSize);
 
 	save_vectors(info.plateformes);
+
 	save_vectors(info.sourcesBoomerang);
-	save_vectors(info.sourcesVaccum);
 	save_vectors(info.sourcesDirection);
+	save_vectors(info.sourcesVaccum);
 	save_vectors(info.sources);
+
 	save_vectors(info.navigationPoints);
 	save_vectors(info.navigationLinks);
+
 	save_vectors(info.distanceGuys);
 	save_vectors(info.meleeGuys);
 	save_vectors(info.slimes);
+	save_vectors(info.flies);
 
 	return json;
 }
@@ -124,6 +132,10 @@ Section::Section(SectionInfo info) noexcept : _info(info) {
 		auto ptr = std::make_shared<MeleeGuy>(slime);
 		addMeleeGuy(ptr);
 	}
+	for (auto& e : _info.flies) {
+		auto ptr = std::make_shared<Fly>(e);
+		addFly(ptr);
+	}
 }
 
 void Section::enter() noexcept {
@@ -156,6 +168,10 @@ void Section::enter() noexcept {
 		melee->enterSection(this);
 		_world.addObject(melee);
 	}
+	for (auto& fly : flies) {
+		fly->enterSection(this);
+		_world.addObject(fly);
+	}
 	_world.addObject(_player);
 
 	subscribeToEvents();
@@ -166,6 +182,12 @@ void Section::exit() noexcept {
 
 	for (auto& source : _sources) {
 		source->exit();
+	}
+	for (auto& melee : meleeGuys_) {
+		melee->leaveSection();
+	}
+	for (auto& fly : flies) {
+		fly->leaveSection();
 	}
 }
 
@@ -194,6 +216,9 @@ void Section::update(double dt) noexcept {
 	}
 	for (auto& spell : spells_) {
 		spell->update(dt);
+	}
+	for (auto& fly : flies) {
+		fly->update(dt);
 	}
 
 	removeDeadObject();
@@ -233,6 +258,9 @@ void Section::render(sf::RenderTarget& target) const noexcept {
 	}
 	for (auto& melee : meleeGuys_) {
 		melee->render(target);
+	}
+	for (auto& fly : flies) {
+		fly->render(target);
 	}
 	for (auto& spell : spells_) {
 		spell->render(target);
@@ -302,6 +330,9 @@ void Section::addSlime(const std::shared_ptr<Slime>& slime) noexcept {
 	slime->attachTo(getClosestNavigationPoint(slime->pos));
 	_slimes.push_back(slime);
 }
+void Section::addFly(const std::shared_ptr<Fly>& ptr) noexcept {
+	flies.push_back(ptr);
+}
 
 void Section::subscribeToEvents() noexcept {
 	_keyPressedEvent = EventManager::subscribe("keyPressed",
@@ -343,6 +374,7 @@ void Section::removeDeadObject() noexcept {
 	removeDead(meleeGuys_);
 	removeDead(_sources);
 	removeDead(spells_);
+	removeDead(flies);
 }
 
 void Section::playerOnEnter(Object* object) noexcept {
@@ -424,6 +456,7 @@ std::shared_ptr<Object> Section::getTargetEnnemyFromMouse() noexcept {
 		iterate(_slimes);
 		iterate(distanceGuys_);
 		iterate(meleeGuys_);
+		iterate(flies);
 
 		return minPair.second;
 	}

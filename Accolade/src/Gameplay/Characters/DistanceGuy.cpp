@@ -64,7 +64,6 @@ DistanceGuy::DistanceGuy(DistanceGuyInfo info) noexcept :
 	box->dtPos.x = -info_.size.x * info_.origin.x;
 	box->dtPos.y = -info_.size.y * info_.origin.y;
 	collider = std::unique_ptr<Collider>((Collider*)box.release());
-	idMask.set(Object::DISTANCE);
 	idMask.set(Object::ENNEMY);
 	collisionMask.set(Object::PROJECTILE);
 	collisionMask.set(Object::STRUCTURE);

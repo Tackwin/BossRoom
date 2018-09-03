@@ -62,6 +62,7 @@ private:
 	void renderDebug(sf::RenderTarget& target, MeleeGuyInfo info) noexcept;
 	void renderDebug(sf::RenderTarget& target, SourceInfo info) noexcept;
 	void renderDebug(sf::RenderTarget& target, SlimeInfo info) noexcept;
+	void renderDebug(sf::RenderTarget& target, FlyInfo info) noexcept;
 
 	void loadSectionFile(std::filesystem::path path) noexcept;
 
