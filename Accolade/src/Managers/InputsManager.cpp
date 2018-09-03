@@ -29,9 +29,126 @@ std::vector<sf::Keyboard::Key> InputsManager::currentSequence;
 
 sf::Keyboard::Key InputsManager::lastKey;
 
+void print_sequence(const std::vector<sf::Keyboard::Key>& x) {
+	for (auto& k : x) {
+		printf("%s ", IM::nameOfKey(k).c_str());
+	}
+	printf("\n");
+}
+
 InputsManager::InputsManager() {
 }
 InputsManager::~InputsManager() {
+}
+
+std::string InputsManager::nameOfKey(sf::Keyboard::Key k) noexcept {
+#define X(a) case sf::Keyboard::a: return #a;
+	switch (k)
+	{
+	X(Unknown)
+	X(A)
+	X(B)
+	X(C)
+	X(D)
+	X(E)
+	X(F)
+	X(G)
+	X(H)
+	X(I)
+	X(J)
+	X(K)
+	X(L)
+	X(M)
+	X(N)
+	X(O)
+	X(P)
+	X(Q)
+	X(R)
+	X(S)
+	X(T)
+	X(U)
+	X(V)
+	X(W)
+	X(X)
+	X(Y)
+	X(Z)
+	X(Num0)
+	X(Num1)
+	X(Num2)
+	X(Num3)
+	X(Num4)
+	X(Num5)
+	X(Num6)
+	X(Num7)
+	X(Num8)
+	X(Num9)
+	X(Escape)
+	X(LControl)
+	X(LShift)
+	X(LAlt)
+	X(LSystem)
+	X(RControl)
+	X(RShift)
+	X(RAlt)
+	X(RSystem)
+	X(Menu)
+	X(LBracket)
+	X(RBracket)
+	X(SemiColon)
+	X(Comma)
+	X(Period)
+	X(Quote)
+	X(Slash)
+	X(BackSlash)
+	X(Tilde)
+	X(Equal)
+	X(Dash)
+	X(Space)
+	X(Return)
+	X(BackSpace)
+	X(Tab)
+	X(PageUp)
+	X(PageDown)
+	X(End)
+	X(Home)
+	X(Insert)
+	X(Delete)
+	X(Add)
+	X(Subtract)
+	X(Multiply)
+	X(Divide)
+	X(Left)
+	X(Right)
+	X(Up)
+	X(Down)
+	X(Numpad0)
+	X(Numpad1)
+	X(Numpad2)
+	X(Numpad3)
+	X(Numpad4)
+	X(Numpad5)
+	X(Numpad6)
+	X(Numpad7)
+	X(Numpad8)
+	X(Numpad9)
+	X(F1)
+	X(F2)
+	X(F3)
+	X(F4)
+	X(F5)
+	X(F6)
+	X(F7)
+	X(F8)
+	X(F9)
+	X(F10)
+	X(F11)
+	X(F12)
+	X(F13)
+	X(F14)
+	X(F15)
+	X(Pause)
+	X(KeyCount)
+	}
 }
 
 sf::Keyboard::Key InputsManager::getLastKeyPressed() noexcept {
@@ -48,21 +165,20 @@ sf::Uint32 InputsManager::getTextEntered() noexcept {
 bool InputsManager::isLastSequence(std::initializer_list<sf::Keyboard::Key> keys) noexcept {
 	if (keys.size() > currentSequence.size()) return false;
 
-	auto end_pair = std::pair{ std::end(keys) - 1, std::end(currentSequence) - 1 };
+	auto end_pair = std::pair{ std::end(keys), std::end(currentSequence) };
 	for (
 		auto& [i, j] = end_pair;
-		i + 1 != std::begin(keys);
+		i != std::begin(keys);
 		--i, --j
 	) {
-		if (*i != *j) return false;
+		if (*(i - 1) != *(j - 1)) return false;
 	}
-	
 	return true;
 }
 bool InputsManager::isLastSequenceJustFinished(
 	std::initializer_list<sf::Keyboard::Key> keys
 ) noexcept {
-	return isLastSequence(keys) && wasKeyJustPressed;
+	return (wasKeyJustPressed && isLastSequence(keys));
 }
 
 bool InputsManager::isKeyJustPressed() noexcept {

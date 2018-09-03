@@ -1,5 +1,8 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+
+#include <optional>
+
 #include "3rd/json.hpp"
 
 #include "Physics/Object.hpp"
@@ -7,6 +10,7 @@
 #include "Graphics/AnimatedSprite.hpp"
 
 #include "Components/Removable.hpp"
+#include "Components/Bumpable.hpp"
 #include "Components/Hitable.hpp"
 
 #include "Navigation/NavigationPoint.hpp"
@@ -31,7 +35,9 @@ struct SlimeInfo {
 	static nlohmann::json saveJson(SlimeInfo info) noexcept;
 };
 
-class Slime : public Object, public Removable, public Hitable {
+class Slime :
+	public Object, public Removable, public Hitable, public Bumpable
+{
 public:
 	Slime(SlimeInfo info) noexcept;
 
@@ -50,6 +56,8 @@ public:
 
 	void attachTo(NavigationPointInfo point) noexcept;
 
+	virtual void bump(Vector2f force) noexcept override;
+
 private:
 	void walkToward() noexcept;
 
@@ -60,6 +68,8 @@ private:
 	NavigationPointInfo currentPoint_;
 
 	AnimatedSprite sprite;
+
+	std::optional<Vector2f> bumpForce;
 
 	bool _remove{ false };
 	bool faceX{ true };

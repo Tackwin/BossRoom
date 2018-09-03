@@ -191,7 +191,7 @@
 		"SourceVaccum": "sources/vaccum.json",
 		"SourceDirectionInfo": "sources/direction.json"
 	},
-	"StartRoom": "rooms/section_001.json",
+	"StartRoom": "rooms/section_002.json",
 	"bosses": [
 		{
 			"name": "boss 0",
@@ -432,13 +432,14 @@
 			}
 		},
 		"Sword": {
-			"countdownTime": 0.7,
+			"countdownTime": 0.2,
 			"sprite": "sword",
 			"spriteZone": "slash",
 			"radius": 0.5,
 			"offset": -0.3,
 			"damage": 5,
-			"remainTime": 0.1
+			"remainTime": 0.1,
+			"recoilForce": 10.0
 		}
 	},
 	"particlesGenerator": {

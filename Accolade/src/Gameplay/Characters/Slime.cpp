@@ -76,11 +76,18 @@ void Slime::enterSection(Section* section) noexcept {
 	_section = section;
 }
 
-void Slime::update(double) noexcept {
+void Slime::update(double dt) noexcept {
 	auto playerPos = _section->getPlayerPos();
 
 	flatForces.push_back({ 0, C::G });
 	
+	if (bumpForce.has_value()) {
+		flatVelocities.push_back(*bumpForce);
+		*bumpForce *= std::pow(0.2, dt);
+
+		if (bumpForce->length2() < 0.1 * 0.1) bumpForce.reset();
+	}
+
 	if (!Vector2f::equalf(playerPos, pos, _info.viewRange)) return;
 	faceX = playerPos.x > pos.x;
 
@@ -170,4 +177,9 @@ void Slime::walkToward() noexcept {
 
 void Slime::attachTo(NavigationPointInfo point) noexcept {
 	currentPoint_ = point;
+}
+
+void Slime::bump(Vector2f force) noexcept {
+	if (bumpForce.has_value()) *bumpForce += force;
+	else bumpForce = force;
 }

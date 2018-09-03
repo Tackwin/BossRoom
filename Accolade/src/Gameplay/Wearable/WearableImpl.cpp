@@ -21,6 +21,7 @@
 #include "Gameplay/Boss.hpp"
 
 #include "Components/Hitable.hpp"
+#include "Components/Bumpable.hpp"
 
 std::unordered_map<std::string, WearableInfo> Wearable::_wearables;
 
@@ -102,6 +103,7 @@ void Wearable::InitWearable() {
 		me.setProp("remainTime", json["remainTime"].get<double>());
 		me.setProp("spriteZone", json["spriteZone"].get<std::string>());
 		me.setProp("countdownTime", json["countdownTime"].get<double>());
+		me.setProp("recoilForce", json["recoilForce"].get<double>());
 	};
 	sword.onUnmount = [](Wearable& me) {
 		for (auto& k : me._keys) {
@@ -137,6 +139,7 @@ void Wearable::InitWearable() {
 		float& damage = me.getPropsRef<float>("damage");
 		float& radius = me.getPropsRef<float>("radius");
 		float& offset = me.getPropsRef<float>("offset");
+		double& recoilForce = me.getPropsRef<double>("recoilForce");
 		double& remainTime = me.getPropsRef<double>("remainTime");
 		double& countdownTime = me.getPropsRef<double>("countdownTime");
 		std::string& spriteZone = me.getPropsRef<std::string>("spriteZone");
@@ -157,11 +160,15 @@ void Wearable::InitWearable() {
 
 		zone->collisionMask.set((u08)Object::BIT_TAGS::BOSS);
 		zone->collisionMask.set((u08)Object::BIT_TAGS::ENNEMY);
-		zone->entered = [damage](Object* object) {
+		zone->entered = [damage, recoilForce, pos = player->getPos()](Object* object) {
 			if (auto hited = dynamic_cast<Hitable*>(object); hited) {
 				hited->hit(damage);
 			}
+			if (auto bumpee = dynamic_cast<Bumpable*>(object); bumpee) {
+				bool dir_x = pos.x > object->pos.x;
 
+				bumpee->bump({ (float)((dir_x ? -1 : 1) * recoilForce), 0 });
+			}
 		};
 
 		player->addZone(zone);

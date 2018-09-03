@@ -38,6 +38,8 @@ private:
 	static sf::Keyboard::Key lastKey;
 
 public:
+	static std::string nameOfKey(sf::Keyboard::Key) noexcept;
+
 	static void update(sf::RenderWindow &window);
 
 	static sf::Keyboard::Key getLastKeyPressed() noexcept;

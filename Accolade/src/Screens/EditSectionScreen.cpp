@@ -688,7 +688,7 @@ void EditSectionScreen::saveSection(std::filesystem::path path) const noexcept {
 		);
 	}
 
-	file << json.dump(4);
+	file << json;
 
 	file.close();
 }

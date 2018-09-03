@@ -414,6 +414,7 @@
     <ClInclude Include="src\brx\Brx.hpp" />
     <ClInclude Include="src\brx\Parser.hpp" />
     <ClInclude Include="src\brx\Serializer.hpp" />
+    <ClInclude Include="src\Components\Bumpable.hpp" />
     <ClInclude Include="src\Components\Hitable.hpp" />
     <ClInclude Include="src\Components\Removable.hpp" />
     <ClInclude Include="src\Gameplay\Characters\DistanceGuy.hpp" />
