@@ -68,12 +68,15 @@ private:
 	float angleToPlayer{ 0.f };
 	float timeToDive{ 0.f };
 	float timeToDecide{ 0.f };
+	float timerToFlipX{ 0.1f };
 
 	std::optional<Vector2f> posToDiveTo;
 
 	bool diving{ false };
 
 	bool removed{ false };
+
+	bool flipX{ false };
 
 	AnimatedSprite aSprite;
 

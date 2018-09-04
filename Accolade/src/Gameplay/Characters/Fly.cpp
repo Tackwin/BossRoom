@@ -84,7 +84,7 @@ void Fly::render(sf::RenderTarget& target) noexcept {
 
 	aSprite.getSprite().setPosition(pos);
 	aSprite.getSprite().setScale(
-		info.radius / aSprite.getSprite().getTextureRect().width,
+		info.radius / aSprite.getSprite().getTextureRect().width * (flipX ? -1 : 1),
 		info.radius / aSprite.getSprite().getTextureRect().height
 	);
 
@@ -118,7 +118,6 @@ void Fly::render(sf::RenderTarget& target) noexcept {
 
 void Fly::update(double dt) noexcept {
 	auto player = section->getPlayer();
-
 
 	auto perimeter = info.minDistance * 2 * C::PIf;
 	auto arcCircle = info.speed;
@@ -161,8 +160,16 @@ void Fly::update(double dt) noexcept {
 	if (rotatingVel) sum += *rotatingVel;
 
 	// we add just the little bit of inertia.
-	velocity += 0.05 * sum;
+	velocity += sum * dt;
 	velocity *= drag;
+
+	static float timeToFlipX = 0.f;
+	if (timeToFlipX <= 0.f) {
+		flipX = pos.x < player->getPos().x;
+		timeToFlipX = timerToFlipX;
+	}
+	else timeToFlipX -= (float)dt;
+
 }
 
 void Fly::updateDiving(double) noexcept {

@@ -13,7 +13,7 @@ bool DiskRect(Vector2f circle, float r, Rectangle2f rect) {
 
 void Disk::render(sf::RenderTarget& target) {
 	sf::CircleShape shape(r);
-	shape.setFillColor(sf::Color(200, 200, 200, 200));
+	shape.setFillColor(sf::Color(200, 200, 200, 100));
 	shape.setOrigin(r, r);
 	shape.setPosition(getGlobalPos());
 	target.draw(shape);
