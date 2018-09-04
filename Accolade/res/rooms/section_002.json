@@ -26,11 +26,11 @@
     "FlyInfo": [
         {
             "damage": 1,
-            "divingSpeed": 10,
+            "divingSpeed": 25,
             "maxHealth": 2,
             "minDistance": 3,
             "radius": 0.5,
-            "speed": 4,
+            "speed": 7,
             "startPos": [
                 -70.02999877929688,
                 -17.369998931884766

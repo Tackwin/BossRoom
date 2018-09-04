@@ -69,7 +69,7 @@ private:
 	float timeToDive{ 0.f };
 	float timeToDecide{ 0.f };
 
-	float angleToDiveTo{ NAN };
+	std::optional<Vector2f> posToDiveTo;
 
 	bool diving{ false };
 
@@ -78,6 +78,9 @@ private:
 	AnimatedSprite aSprite;
 
 	Section* section{ nullptr };
+
+	std::optional<Vector2f> divingVel;
+	std::optional<Vector2f> rotatingVel;
 };
 
 

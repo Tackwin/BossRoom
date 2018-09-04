@@ -46,12 +46,17 @@ FlyInfo FlyInfo::loadJson(nlohmann::json json) noexcept {
 #undef LOAD
 
 Fly::Fly(FlyInfo info) noexcept : info(info) {
-	pos			=	info.startPos;
-	health		=	info.maxHealth;
-	timeToDive	=	info.timeToDive();
+	pos				=	info.startPos;
+	health			=	info.maxHealth;
+	timeToDive		=	info.timeToDive();
+	angleToPlayer	=	unitaryRng(RD) * 2 * PIf;
 
 	aSprite = AnimatedSprite{ "fly" };
 	aSprite.pushAnim("idle");
+	aSprite.getSprite().setOrigin(
+		aSprite.getSprite().getTextureRect().width / 2.f,
+		aSprite.getSprite().getTextureRect().height / 2.f
+	);
 
 	auto disk = std::make_unique<Disk>();
 	disk->r = info.radius;
@@ -92,19 +97,28 @@ void Fly::render(sf::RenderTarget& target) noexcept {
 	mark.setFillColor(sf::Color::Red);
 	target.draw(mark);
 
-	if (!isnan(angleToDiveTo)) {
-		newPos = Vector2f::createUnitVector(angleToDiveTo) * info.minDistance
-			+ section->getPlayerPos();
-		mark.setPosition(newPos);
+	if (posToDiveTo) {
+		mark.setPosition(*posToDiveTo);
 		mark.setFillColor(sf::Color::Green);
 		target.draw(mark);
 	}
+#if 0
+	auto sum = Vector2f{ 0, 0 };
+	if (divingVel) sum += *divingVel;
+	if (rotatingVel) sum += *rotatingVel;
+
+	if (divingVel)
+		Vector2f::renderLine(target, pos, pos + *divingVel, { 1.0, 0, 0, 1.0 });
+
+	if (rotatingVel)
+		Vector2f::renderLine(target, pos, pos + *rotatingVel, { 0.0, 1.0, 1.0, 1.0 });
+	Vector2f::renderLine(target, pos, pos + sum, { 1.0, 0.5, 1.0, 1.0 });
+#endif
 }
 
 void Fly::update(double dt) noexcept {
 	auto player = section->getPlayer();
 
-	auto dist = player->getPos() - pos;
 
 	auto perimeter = info.minDistance * 2 * C::PIf;
 	auto arcCircle = info.speed;
@@ -113,12 +127,11 @@ void Fly::update(double dt) noexcept {
 	angleToPlayer += (float)dt * angleToRotate;
 	angleToPlayer = std::fmodf(angleToPlayer, 2 * PIf);
 
+	divingVel.reset();
+	rotatingVel.reset();
+
 	if (diving) {
 		updateDiving(dt);
-	}
-	else if (dist.length2() > info.minDistance * info.minDistance) {
-		auto l = dist.length();
-		velocity += dist.normalize() * std::min(l, info.speed);
 	}
 	else if (timeToDive > 0.f) {
 		updatePreparingToDive(dt);
@@ -130,49 +143,72 @@ void Fly::update(double dt) noexcept {
 		diving = true;
 	}
 
-	velocity *= std::pow(0.2, dt);
+	auto drag = std::pow(0.2, dt);
+
+	auto vec = [&](auto x) {
+		if (x) {
+			*x *= drag;
+			flatVelocities.push_back(*x);
+
+			if (x->length2() < 0.01 * 0.01) x.reset();
+		}
+	};
+	vec(divingVel);
+	vec(rotatingVel);
+
+	auto sum = Vector2f{ 0, 0 };
+	if (divingVel) sum += *divingVel;
+	if (rotatingVel) sum += *rotatingVel;
+
+	// we add just the little bit of inertia.
+	velocity += 0.05 * sum;
+	velocity *= drag;
 }
 
 void Fly::updateDiving(double) noexcept {
 	auto player = section->getPlayer();
 
-	auto target = Vector2f::createUnitVector(angleToDiveTo) *
-		info.minDistance + player->getPos();
-	auto wanted = target - pos;
-	wanted *= wanted.length();
+	auto wanted = *posToDiveTo - pos;
+	wanted = wanted.normalize() * info.divingSpeed;
 
-	if (wanted.length2() > info.speed * info.speed) {
-		wanted = wanted.normalize() * info.divingSpeed;
-	}
+	divingVel = wanted;
 
-	velocity += wanted;
-
-	if (Vector2f::equal(target, pos, info.radius)) {
+	if (Vector2f::equal(*posToDiveTo, pos, info.radius)) {
 		diving = false;
 		timeToDive = info.timeToDive();
 		timeToDecide = 0.f;
-		angleToDiveTo = NAN;
+		posToDiveTo.reset();
 	}
 }
 
 void Fly::updateDeciding(double dt) noexcept {
 	timeToDecide -= (float)dt;
-
-	velocity += Vector2f::createUnitVector(PIf + angleToDiveTo) * info.speed / 20.f;
 }
 
 void Fly::updatePreparingToDive(double dt) noexcept {
+	static bool chasingLock = true;
+
 	auto player = section->getPlayer();
 
 	auto target =
 		Vector2f::createUnitVector(angleToPlayer) * info.minDistance + player->getPos();
 
-	velocity += (target - pos) * std::min((target - pos).length(), info.speed);
+	if (Vector2f::equal(target, pos, info.radius / 2.f))
+		chasingLock = false;
+
+	if (!Vector2f::equal(target, pos, info.radius * 2.f))
+		chasingLock = true;
+
+	if (chasingLock)
+		rotatingVel = (target - pos).normalize() * info.speed * 2;
+	else
+		rotatingVel = Vector2f::createUnitVector(unitaryRng(RD) * 2 * PIf) * info.speed / 4;
 
 	timeToDive -= (float)dt;
 	if (timeToDive < 0.f) {
 		timeToDecide = info.timeToDecide;
-		angleToDiveTo = std::fmodf(angleToPlayer + PIf, PIf * 2);
+		posToDiveTo = player->getPos() +
+			Vector2f::createUnitVector(angleToPlayer + PIf) * info.minDistance;
 	}
 }
 
