@@ -183,11 +183,13 @@
   "propertiesEditor": {
     "type": "Panel",
     "size": [ 200, 500],
+    "pos": [500, 0],
     "sprite": "panel_cross",
     "title": "properties",
     "draggable": true,
     "resizable": true,
     "collapsable": true,
+    "collapsed": true,
     "childs": {
 
     }

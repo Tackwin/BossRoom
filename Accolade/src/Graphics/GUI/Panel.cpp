@@ -6,21 +6,22 @@
 #include "OS/SystemConfiguration.hpp"
 
 Panel::Panel(nlohmann::json json) noexcept : Widget(json) {
-	auto ogSize = getSize();
 
+	auto ogSize = getSize();
 	if (auto it = json.find("sprite"); it != json.end())
 		setTexture(*it);
-	if (auto it = json.find("draggable"); it != json.end())
-		setDraggable(json.at("draggable"));
-	if (auto it = json.find("collapsable"); it != json.end())
-		setCollapsable(json.at("collapsable"));
-	if (auto it = json.find("resizable"); it != json.end())
-		setResizable(json.at("resizable"));
-
 	setSize(ogSize);
-
 	fullHeight = getSize().y;
 	textureFullHeight = _backSprite.getTextureRect().height;
+
+	if (auto it = json.find("draggable"); it != json.end())
+		setDraggable(*it);
+	if (auto it = json.find("collapsable"); it != json.end())
+		setCollapsable(*it);
+	if (auto it = json.find("resizable"); it != json.end())
+		setResizable(*it);
+	if (auto it = json.find("collapsed"); it != json.end() && it->get<bool>())
+		toggleCollapse();
 
 	Callback onClick;
 	onClick.began = [&]{
