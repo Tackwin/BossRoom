@@ -179,5 +179,17 @@
         ]
       }
     }
+  },
+  "propertiesEditor": {
+    "type": "Panel",
+    "size": [ 200, 500],
+    "sprite": "panel_cross",
+    "title": "properties",
+    "draggable": true,
+    "resizable": true,
+    "collapsable": true,
+    "childs": {
+
+    }
   }
 }

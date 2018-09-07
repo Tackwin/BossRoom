@@ -50,7 +50,7 @@ bool AssetsManager::loadTexture(const std::string& key, const std::string &path)
 	);
 	auto &ref = _textures[key];
 	ref.setSmooth(true);
-	std::printf("%s ", path.c_str());
+	std::printf("%s: %s ", key.c_str(), path.c_str());
 
 	const bool loaded = ref.loadFromFile(path);
 	if(!loaded) {
@@ -96,7 +96,7 @@ bool AssetsManager::loadImage(const std::string &key, const std::string &path) {
 		GetStdHandle(STD_OUTPUT_HANDLE), 
 		FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE
 	);
-	std::printf("%s ", path.c_str());
+	std::printf("%s: %s ", key.c_str(), path.c_str());
 	auto& ref = _images[key];
 
 	const bool loaded = ref.loadFromFile(path);
@@ -142,7 +142,7 @@ bool AssetsManager::loadFont(const std::string &key, const std::string &path) {
 		GetStdHandle(STD_OUTPUT_HANDLE), 
 		FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE
 	);
-	std::printf("%s", path.c_str());
+	std::printf("%s: %s ", key.c_str(), path.c_str());
 	auto& ref = _fonts[key];
 
 	const bool loaded = ref.loadFromFile(path);
@@ -182,7 +182,7 @@ bool AssetsManager::loadSound(const std::string &key, const std::string &path) {
 	stubSetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_BLUE);
 	std::printf("Loading: ");
 	stubSetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
-	std::printf("%s ", path.c_str());
+	std::printf("%s: %s ", key.c_str(), path.c_str());
 	auto& ref = _sounds[key];
 
 	const bool loaded = ref.loadFromFile(path);
@@ -214,7 +214,7 @@ bool AssetsManager::loadJson(const std::string &key, const std::string &path) {
 	stubSetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_BLUE);
 	std::printf("Loading: ");
 	stubSetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
-	std::printf("%s ", path.c_str());
+	std::printf("%s: %s ", key.c_str(), path.c_str());
 
 	std::ifstream stream;
 	std::filesystem::current_path(EXE_DIR);
@@ -278,7 +278,7 @@ bool AssetsManager::openMusic(const std::string &key, const std::string &path) {
 		GetStdHandle(STD_OUTPUT_HANDLE), 
 		FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE
 	);
-	std::printf("%s ", path.c_str());
+	std::printf("%s: %s ", key.c_str(), path.c_str());
 	auto& ref = _musics[key];
 
 	const bool loaded = ref.openFromFile(path);

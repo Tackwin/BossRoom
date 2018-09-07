@@ -178,6 +178,10 @@
 		},
 		"FlyInfo": {
 			"sheet": "images/fly.png"
+		},
+		"panel_cross": {
+			"sheet": "images/panel_cross.png",
+			"smooth": false
 		}
 	},
 	"sounds": {

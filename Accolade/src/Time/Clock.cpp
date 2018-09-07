@@ -30,7 +30,8 @@ double Clock::pause() {
 double Clock::resume() {
 	if (!_flag) return elapsed();
 
-	_sumPause += std::chrono::duration<double, std::ratio<1, 1>>(now() - _lastPause).count();
+	_sumPause +=
+		std::chrono::duration<double, std::ratio<1, 1>>(now() - _lastPause).count();
 	_flag = false;
 
 	return elapsed();
@@ -47,9 +48,12 @@ double Clock::restart() {
 double Clock::elapsed() const {
 	if (_flag) {
 		// (_n - _s) - (_n - _l) - _sum == _n - _s -_n + _l -_sum == _l - (_s + _sum)
-		return (std::chrono::duration<double, std::ratio<1, 1>>(_lastPause - _start).count() - _sumPause);
+		return
+			std::chrono::duration<double, std::ratio<1, 1>>(_lastPause - _start).count() -
+			_sumPause;
 	}
-	return (std::chrono::duration<double, std::ratio<1, 1>>(now() - _start).count() - _sumPause);
+	return
+		std::chrono::duration<double, std::ratio<1, 1>>(now() - _start).count() - _sumPause;
 }
 bool Clock::isOver() const {
 	return elapsed() >= timer;
@@ -57,3 +61,8 @@ bool Clock::isOver() const {
 bool Clock::isPaused() const {
 	return _flag;
 }
+
+void Clock::terminate() noexcept {
+	_start = std::chrono::system_clock::time_point::min();
+}
+

@@ -65,8 +65,8 @@ public:
 	Player() noexcept;
 	Player(PlayerInfo info) noexcept;
 
-	void enterLevel(Level* level);
-	void exitLevel();
+	void enterLevel(Level* level) noexcept;
+	void exitLevel() noexcept;
 
 	void enter(Section* section)	noexcept;
 	void leave()					noexcept;

@@ -142,7 +142,9 @@ void loadSpriteFromJson(const nlohmann::json& json) {
 
 		const std::string& key = it.key();
 		const std::filesystem::path path = it.value()["sheet"].get<std::string>();
+		bool smooth = (it.value().count("smooth") ? it.value().at("smooth") : true);
 		AssetsManager::loadTexture(key, (ASSETS_PATH / path).string());
+		AM::getTexture(key).setSmooth(smooth);
 	}
 }
 void loadSoundsFromJson(const nlohmann::json& json) {

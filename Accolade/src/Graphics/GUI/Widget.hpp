@@ -48,6 +48,7 @@ public:
 
 	void setSize(const Vector2f& size);
 	void setPosition(const Vector2f& pos);
+	void setGlobalPosition(const Vector2f& pos) noexcept;
 	void setOrigin(const Vector2f& origin);
 	void setOriginAbs(const Vector2f& origin);
 	void setVisible(bool visible);

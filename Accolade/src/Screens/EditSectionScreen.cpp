@@ -90,7 +90,10 @@ void EditSectionScreen::update(double dt) {
 	_snapGrid->setStdString("Snap grid " + std::to_string(_snapLevel) + "m");
 
 	inputSwitchState();
-	_widgets.at("root")->propagateInput();
+	for (auto&[_, w] : _widgets) {
+		_;
+		w->propagateInput();
+	}
 
 	switch (_toolState)
 	{
@@ -476,7 +479,10 @@ void EditSectionScreen::render(sf::RenderTarget& target) {
 	);
 
 	target.setView(_uiView);
-	_widgets.at("root")->propagateRender(target);
+	for (auto&[_, w] : _widgets) {
+		_;
+		w->propagateRender(target);
+	}
 
 	target.setView(old);
 }
@@ -493,6 +499,9 @@ void EditSectionScreen::onEnter(std::any) {
 			}
 			if (type == ValuePicker::NAME) {
 				_widgets[key] = new ValuePicker(json);
+			}
+			if (type == Panel::NAME) {
+				_widgets[key] = new Panel(json);
 			}
 		}
 		else {

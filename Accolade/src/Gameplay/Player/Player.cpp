@@ -42,12 +42,12 @@ Player::Player(PlayerInfo info) noexcept :
 	idMask.set((size_t)Object::BIT_TAGS::PLAYER);
 	collisionMask.set((size_t)Object::BIT_TAGS::STRUCTURE);
 }
-void Player::enterLevel(Level* level) {
+void Player::enterLevel(Level* level) noexcept {
  	_level = level;
 
 	_hitBox->onEnter = [&](Object* obj) { collision(obj); };
 }
-void Player::exitLevel() {
+void Player::exitLevel() noexcept {
 	_level = nullptr;
 }
 

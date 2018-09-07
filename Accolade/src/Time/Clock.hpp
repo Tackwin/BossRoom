@@ -27,6 +27,9 @@ public:
 	double resume();
 	double restart();
 	double elapsed() const;
+
+	void terminate() noexcept;
+
 	bool isOver() const;
 	bool isPaused() const;
 };

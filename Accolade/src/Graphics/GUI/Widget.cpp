@@ -12,9 +12,7 @@
 const Widget::Callback::type Widget::Callback::FALSE = []() { return false; };
 const Widget::Callback::type Widget::Callback::TRUE =  []() { return true; };
 
-Widget::Widget() : Widget(nlohmann::json{}) { 
-	1+1;
-}
+Widget::Widget() : Widget(nlohmann::json{}) {}
 
 Widget::Widget(nlohmann::json json) noexcept {
 	if (auto it = json.find("pos"); it != json.end()) {
@@ -177,6 +175,9 @@ void Widget::setSize(const Vector2f& size) {
 void Widget::setPosition(const Vector2f& pos) {
 	_pos = pos;
 }
+void Widget::setGlobalPosition(const Vector2f& pos) noexcept {
+	_pos = pos - (_parent ? _parent->getGlobalPosition() : Vector2f{0, 0});
+}
 void Widget::setOrigin(const Vector2f& origin) {
 	_origin = origin;
 }
@@ -280,9 +281,12 @@ std::bitset<9u> Widget::input(const std::bitset<9u>& mask) {
 	std::bitset<9u> result;
 	result.reset();
 
-	if (getGlobalBoundingBox().in(InputsManager::getMouseScreenPos())) {
+	auto mouseIsIn = getGlobalBoundingBox().in(InputsManager::getMouseScreenPos());
+
+	if (mouseIsIn || _focused) {
 		if (InputsManager::isMouseJustPressed(sf::Mouse::Left) && !mask[0]) {
-			result[0] = _onClick.began();
+			if (!mouseIsIn)	_focused = false;
+			else			result[0] = _onClick.began();
 		}
 		if (InputsManager::isMousePressed(sf::Mouse::Left) && !mask[1]) {
 			result[1] = _onClick.going();
@@ -302,7 +306,7 @@ std::bitset<9u> Widget::input(const std::bitset<9u>& mask) {
 			}
 		}
 	}
-	else {
+	else if (!mouseIsIn) {
 		if (_hovered) {
 			_hovered = false;
 			if (!mask[5]) {
