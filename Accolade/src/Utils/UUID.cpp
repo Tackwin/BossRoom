@@ -1,12 +1,6 @@
 #include "UUID.hpp"
 
-const UUID UUID::null = UUID::zero();
-
-UUID UUID::zero() noexcept {
-	static UUID i;
-	i.uuid = 0;
-	return i;
-}
+unsigned long long UUID::count = 0ULL;
 
 void to_json(nlohmann::json& json, const UUID& id) {
 	json = id.uuid;

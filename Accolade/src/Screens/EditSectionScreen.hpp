@@ -49,8 +49,10 @@ private:
 
 	void updatePlaceNavigationPoint() noexcept;
 	void updatePlaceNavigationLink() noexcept;
-	void updateDrawPlateforme() noexcept;
+	void updatePlaceStructure() noexcept;
+	void updateDrawPlateform() noexcept;
 	void updatePlaceStartPos() noexcept;
+	void updateDrawPortal() noexcept;
 	void updatePlaceSlime() noexcept;
 	void updateNothing() noexcept;
 	void updateSource() noexcept;
@@ -79,6 +81,7 @@ private:
 
 	SpriteSwitcher* ennemySwitcher_{ nullptr };
 	SpriteSwitcher* sourceSwitcher_{ nullptr };
+	SpriteSwitcher* structureSwitcher{ nullptr };
 	ValuePicker* _savePicker{ nullptr };
 	Label* _snapGrid{ nullptr };
 
@@ -95,25 +98,27 @@ private:
 
 	std::filesystem::path filepath_;
 
+	bool draggingScreen{ false };
+
 	std::atomic<bool> toLoadFile{ false };
 	std::mutex fileToLoadMutex;
 	std::filesystem::path fileToLoad;
 
 	enum EditorToolState {
 		nothing,
-		draw_plateforme,
+		place_structure,
 		place_ennemy,
 		place_start_pos,
 		place_source,
 		place_navigation_point,
 		place_navigation_link,
 		size
-	} _toolState;
+	} _toolState{ nothing };
 
 	void enterToolState(EditorToolState toolState) noexcept;
 	void exitToolState() noexcept;
 
-	static constexpr auto DRAW_PLATEFORME = "drawPlateforme";
+	static constexpr auto PLACE_STRUCTURE = "placeStructure";
 	static constexpr auto PLACE_SOURCE= "placeSource";
 	static constexpr auto PLACE_SLIME = "placeSlime";
 	static constexpr auto PLACE_START_POS = "placeStartPos";

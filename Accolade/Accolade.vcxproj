@@ -399,6 +399,7 @@
     <ClCompile Include="src\Physics\Object.cpp" />
     <ClCompile Include="src\Physics\World.cpp" />
     <ClCompile Include="src\Ruins\Section.cpp" />
+    <ClCompile Include="src\Ruins\Structure\Portal.cpp" />
     <ClCompile Include="src\Screens\EditSectionScreen.cpp" />
     <ClCompile Include="src\Screens\HeritageScreen.cpp" />
     <ClCompile Include="src\Screens\LevelScreen.cpp" />
@@ -453,6 +454,7 @@
     <ClInclude Include="src\Gameplay\Player\Player.hpp" />
     <ClInclude Include="src\Gameplay\Probe.hpp" />
     <ClInclude Include="src\Gameplay\Projectile.hpp" />
+    <ClInclude Include="src\Ruins\Structure\Portal.hpp" />
     <ClInclude Include="src\Ruins\Structure\Structure.hpp" />
     <ClInclude Include="src\Gameplay\Wearable\Wearable.hpp" />
     <ClInclude Include="src\Gameplay\Wearable\WearableInfo.hpp" />

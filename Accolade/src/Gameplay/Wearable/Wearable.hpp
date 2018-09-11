@@ -68,7 +68,7 @@ private:
 	std::weak_ptr<Player> _player{};
 	WearableInfo _info{};
 
-	UUID _uuid{ UUID::null };
+	UUID _uuid{ UUID::zero() };
 	std::unordered_set<UUID> _keys{};
 	std::unordered_map<std::string, std::any> _properties;
 };

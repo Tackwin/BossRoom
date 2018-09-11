@@ -26,9 +26,8 @@ private:
 	static bool mouseJustPressed[sf::Mouse::ButtonCount];
 	static bool mouseJustReleased[sf::Mouse::ButtonCount];
 
-	static Vector2f mouseWorldPos;
 	static Vector2f mouseScreenPos;
-	static Vector2f relativeMouseScreenPos;
+	static Vector2f mouseScreenDelta;
 
 	static Vector2u windowsSize;
 
@@ -91,6 +90,14 @@ public:
 
 	static Vector2f getMousePosInView(const sf::View& view);
 	static Vector2f getMouseScreenPos();
+	static Vector2f getMouseScreenDelta() noexcept;
+	static Vector2f getMouseDeltaInView(const sf::View& view) noexcept;
+
+private:
+	// For now i'll put that here, but it needs to be in his own stuff
+	// Maybe when i'll make a custom renderer i'll look into matrix, view and whatnot.
+
+	static Vector2f applyInverseView(const sf::View& view, Vector2f p) noexcept;
 };
 
 using IM = InputsManager;

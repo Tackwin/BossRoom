@@ -1,9 +1,9 @@
 {
   "name": "Boloss",
   "max_life": 3,
-  "speed": 25,
+  "speed": 20,
   "special_speed": 10,
-  "invincibility_time": 0.2,
+  "invincibility_time": 1,
   "jump_height": 5.5,
   "jump_boost_multiplier": 1.3,
   "jump_boost_time": 0.2,

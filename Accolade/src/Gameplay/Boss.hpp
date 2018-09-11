@@ -82,7 +82,7 @@ private:
 
 	std::vector<std::shared_ptr<Projectile>> _projectilesToShoot;
 
-	UUID _blinkDownKey{ UUID::null };
+	UUID _blinkDownKey{ UUID::zero() };
 
 	std::vector<UUID> _keyPatterns;
 

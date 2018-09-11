@@ -8,16 +8,9 @@
 class UUID {
 public:
 
-	static const UUID null;
-	static constexpr auto SIZE = 16;
-
-	UUID() {
-		static unsigned long long count = 0;
-
-		uuid = count++;
-
+	constexpr UUID() noexcept : uuid(count++) {
 		// check for overflow
-		assert(count != 0);
+		assert(count != 0ULL);
 	}
 
 	constexpr void nullify() noexcept {
@@ -25,9 +18,9 @@ public:
 	}
 
 	constexpr operator bool() const noexcept {
-		return *this != null;
+		return *this != UUID{ 0 };
 	}
-	
+
 	constexpr bool operator==(const UUID& other) const noexcept {
 		return uuid == other.uuid;
 	}
@@ -37,20 +30,28 @@ public:
 	constexpr bool operator<(const UUID& other) const noexcept {
 		return uuid < other.uuid;
 	}
+
 private:
-	static UUID zero() noexcept;
+	constexpr UUID(unsigned long long n) noexcept : uuid(n) {}
+
+	static unsigned long long count;
 
 	friend void to_json(nlohmann::json& json, const UUID& id);
 	friend void from_json(const nlohmann::json& json, UUID& id);
 
 	unsigned long long uuid;
 	friend std::hash<UUID>;
+public:
+	static constexpr UUID zero() noexcept {
+		return { 0 };
+	}
+
 };
 
 namespace std {
 	template<>
 	struct hash<UUID> {
-		size_t operator()(const UUID& id) const {
+		constexpr size_t operator()(const UUID& id) const {
 			return (size_t)id.uuid;
 		}
 	};

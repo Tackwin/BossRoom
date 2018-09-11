@@ -92,8 +92,8 @@ private:
 
 	Shop _shop;
 
-	UUID _keyPressedEvent{ UUID::null };
-	UUID _keyReleasedEvent{ UUID::null };
+	UUID _keyPressedEvent{ UUID::zero() };
+	UUID _keyReleasedEvent{ UUID::zero() };
 
 	ParticleGenerator _generator; 
 };

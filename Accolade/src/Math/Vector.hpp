@@ -1,6 +1,8 @@
 #pragma once
 
 #include <type_traits>
+#include <functional>
+
 #include "./../Common.hpp"
 #include "./../3rd/json.hpp"
 
@@ -433,6 +435,20 @@ struct Vector : public __vec_member<D, T> {
 		return !(this->operator==(other));
 	}
 
+	// this got to be the most convulated method signature that i've written.
+	template<typename F>
+	std::enable_if_t<
+		std::is_invocable_r_v<T, F, T>,
+		Vector<D, T>
+	> apply(F&& f) noexcept(std::is_nothrow_invocable_v<F, T>) {
+		Vector<D, T> result;
+		for (auto i = 0; i < D; ++i) {
+			result[i] = f(components[i]);
+		}
+		return result;
+	}
+
+
 	template<typename U>
 	explicit operator const Vector<D, U>() const {
 		Vector<D, U> results;
@@ -575,6 +591,14 @@ struct Vector : public __vec_member<D, T> {
 template<size_t D, typename T, typename U>
 Vector<D, T> operator*(U scalar, const Vector<D, T>& vec) {
 	return vec * scalar;
+}
+template<size_t D, typename T, typename U>
+Vector<D, T> operator/(U scalar, const Vector<D, T>& vec) noexcept {
+	Vector<D, T> result;
+	for (auto i = 0; i < D; ++i) {
+		result[i] = scalar / vec[i];
+	}
+	return result;
 }
 
 namespace std {

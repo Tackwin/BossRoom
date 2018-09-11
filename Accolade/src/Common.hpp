@@ -94,3 +94,11 @@ namespace C {
 
 };
 using namespace C;
+
+
+namespace xstd {
+	template<typename T>
+	int sign(T x) noexcept {
+		return (T(0) < x) - (x < T(0));
+	}
+}

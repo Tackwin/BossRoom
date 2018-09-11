@@ -52,5 +52,5 @@ private:
 	sf::Sprite _lootSprite;
 	std::string _weapon;
 
-	UUID _lootImpossibleKey{ UUID::null };
+	UUID _lootImpossibleKey{ UUID::zero() };
 };

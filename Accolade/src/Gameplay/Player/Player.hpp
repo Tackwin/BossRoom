@@ -37,6 +37,7 @@ struct PlayerInfo {
 	float dashRange{ 0.f };
 	float specialSpeed{ 0.f };
 	float invincibilityTime{ 0.f };
+	float jumpBoostMultiplier{ NAN };
 	float jumpHeight{ 0.f };
 
 	Vector2f hitBox{0.f, 0.f};

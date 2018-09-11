@@ -9,6 +9,7 @@
 
 #include "Physics/World.hpp"
 
+#include "Structure/Portal.hpp"
 #include "Structure/Structure.hpp"
 #include "Structure/Plateforme.hpp"
 
@@ -41,6 +42,7 @@ struct SectionInfo {
 	std::vector<FlyInfo> flies;
 
 	std::vector<PlateformeInfo> plateformes;
+	std::vector<PortalInfo> portals;
 
 	std::vector<SourceInfo> sources;
 	std::vector<SourceTargetInfo> sourcesBoomerang;
@@ -157,8 +159,8 @@ private:
 	std::vector<std::shared_ptr<Fly>>				flies;
 
 
-	UUID _keyPressedEvent{ UUID::null };
-	UUID _keyReleasedEvent{ UUID::null };
+	UUID _keyPressedEvent{ UUID::zero() };
+	UUID _keyReleasedEvent{ UUID::zero() };
 
 	SectionInfo _info;
 };

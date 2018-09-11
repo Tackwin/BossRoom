@@ -35,7 +35,7 @@ public:
 	const Vector2f getSize();
 private:
 	struct Animation {
-		UUID keyCallback{ UUID::null };
+		UUID keyCallback{ UUID::zero() };
 		u32 col = 0;
 		u32 row = 0;
 		u32 w = 0;

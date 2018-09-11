@@ -10,7 +10,7 @@ struct NavigationPointInfo {
 
 	Vector2f pos;
 	float range{ NAN };
-	UUID id{ UUID::null };
+	UUID id{ UUID::zero() };
 	std::vector<UUID> links;
 
 	static NavigationPointInfo loadJson(nlohmann::json json) noexcept;

@@ -49,6 +49,7 @@ SectionInfo SectionInfo::loadJson(const nlohmann::json& json) noexcept {
 	load_vectors(info.sources);
 
 	load_vectors(info.plateformes);
+	load_vectors(info.portals);
 
 	load_vectors(info.distanceGuys);
 	load_vectors(info.meleeGuys);
@@ -76,6 +77,7 @@ nlohmann::json SectionInfo::saveJson(SectionInfo info) noexcept {
 	json["viewSize"] = Vector2f::saveJson(info.viewSize);
 
 	save_vectors(info.plateformes);
+	save_vectors(info.portals);
 
 	save_vectors(info.sourcesBoomerang);
 	save_vectors(info.sourcesDirection);
@@ -220,6 +222,11 @@ void Section::update(double dt) noexcept {
 	for (auto& fly : flies) {
 		fly->update(dt);
 	}
+	for (const auto& p : _info.portals) {
+		if (is_in_portal(p, _player->getBoundingBox())) {
+			printf("Bouh!\n");
+		}
+	}
 
 	removeDeadObject();
 
@@ -289,6 +296,10 @@ void Section::render(sf::RenderTarget& target) const noexcept {
 
 		Vector2f::renderLine(target, a->pos, b->pos, { 1.0, 0.0, 1.0, 0.5 });
 	}
+	// I'm testing the more routine style of Blow, Casey, Delix etc...
+	// In truth i guess it's a c style
+	// i'm guessing it will be a great help if i ever want to switch to AOS - SOA
+	for (const auto& p : _info.portals) ::render(p, target);
 
 	renderCrossOnTarget(target);
 

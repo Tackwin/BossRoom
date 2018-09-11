@@ -92,7 +92,9 @@ void Player::update(double dt) {
 			}
 
 			if (continueToJump_ && IM::isKeyPressed(kb.getKey(KeyBindings::MOVE_UP))) {
-				flatVelocities.push_back({0, -_info.jumpHeight * 0.3f});
+				flatVelocities.push_back(
+					{ 0, -_info.jumpHeight * _info.jumpBoostMultiplier }
+				);
 			}
 
 			if (continueToJump_ && 
@@ -155,26 +157,13 @@ void Player::shoot() noexcept {
 void Player::hit(float d) noexcept {
 	if (_invincible) return;
 	_invincible = true;
+	_invincibleTime = _info.invincibilityTime;
 
 	if (_hitSound.getStatus() == sf::Sound::Stopped)
 		_hitSound.play();
 
 	_life -= d;
 	_sprite.getSprite().setColor(sf::Color(230, 230, 230));
-	TimerManager::addFunction(0.33f, 
-		[&, n = 0](double) mutable -> bool {
-			_sprite.getSprite().setColor(
-				(n++ % 2 == 0) 
-					? sf::Color::White 
-					: sf::Color(230, 230, 230)
-			);
-			if (n >= 3) {
-				_invincible = false;
-				return true;
-			}
-			return false;
-		}
-	);
 }
 
 std::optional<std::string> Player::getWeapon() const noexcept {
@@ -395,7 +384,8 @@ PlayerInfo::PlayerInfo(nlohmann::json json) :
 	invincibilityTime(json.at("invincibility_time")),
 	jumpHeight(json.at("jump_height")),
 	name(json.at("name").get<std::string>()),
-	sprite(json.at("sprite").get<std::string>())
+	sprite(json.at("sprite").get<std::string>()),
+	jumpBoostMultiplier(json.at("jump_boost_multiplier"))
 {
 	auto vec = json.at("hit_box").get<std::vector<double>>();
 	hitBox = { (float)vec[0], (float)vec[1] };

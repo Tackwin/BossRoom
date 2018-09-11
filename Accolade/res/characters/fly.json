@@ -2,13 +2,13 @@
     "damage": 1,
     "divingSpeed": 25,
     "maxHealth": 2,
-    "minDistance": 3,
+    "minDistance": 4,
     "radius": 0.5,
     "speed": 7,
-    "timeToDecide": 1,
+    "timeToDecide": 0.5,
     "timeToDive": {
         "kind": 0,
-        "mean": 10,
+        "mean": 8,
         "min": 0,
         "range": 2
     }

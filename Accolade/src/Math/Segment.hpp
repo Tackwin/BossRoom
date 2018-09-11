@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Vector.hpp"
+#include "Rectangle.hpp"
 
 template<typename T>
 struct Segment2 {
@@ -10,7 +11,7 @@ struct Segment2 {
 
 	Segment2(Vector2<T> A = Vector2<T>(), Vector2<T> B = Vector2<T>()) : A(A), B(B) {}
 
-	bool intersect(Segment2<T> other) {
+	bool intersect(Segment2<T> other) const noexcept {
 		T s1_x;
 		T s1_y;
 		T s2_x;
@@ -28,4 +29,34 @@ struct Segment2 {
 		return s >= 0 && s <= 1 && t >= 0 && t <= 1;
 	}
 
+	bool intersect(Rectangle2<T> rec) const noexcept {
+		return
+			intersect(Segment2<T>{ rec.topLeft() , rec.topRight() }) ||
+			intersect(Segment2<T>{ rec.topRight(), rec.botRight() }) ||
+			intersect(Segment2<T>{ rec.botRight(), rec.botLeft()  }) ||
+			intersect(Segment2<T>{ rec.botLeft() , rec.topLeft()  })
+		;
+	}
+
+#ifdef SFML_GRAPHICS_HPP
+	void render(sf::RenderTarget& target, Vector4d color) const noexcept {
+		Vector2<T>::renderLine(target, A, B, color, color);
+	}
+#endif
 };
+
+template<typename T>
+void to_json(nlohmann::json& json, const Segment2<T>& seg) noexcept {
+	json["A"] = Vector2<T>::saveJson(seg.A);
+	json["B"] = Vector2<T>::saveJson(seg.B);
+}
+
+template<typename T>
+void from_json(const nlohmann::json& json, Segment2<T>& seg) noexcept {
+	seg.A = Vector2<T>::loadJson(json.at("A").get<T>());
+	seg.B = Vector2<T>::loadJson(json.at("B").get<T>());
+}
+
+using Segment2f = Segment2<float>;
+using Segment2d = Segment2<double>;
+using Segment2i = Segment2<int>;

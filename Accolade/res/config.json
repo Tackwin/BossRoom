@@ -210,7 +210,7 @@
 		"SourceDirectionInfo": "sources/direction.json",
 		"FlyInfo": "characters/fly.json"
 	},
-	"StartRoom": "rooms/section_002.json",
+	"StartRoom": "rooms/1x1.json",
 	"bosses": [
 		{
 			"name": "boss 0",

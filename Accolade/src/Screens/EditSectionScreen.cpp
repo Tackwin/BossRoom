@@ -58,11 +58,13 @@ void EditSectionScreen::update(double dt) {
 	if (IM::isKeyJustPressed(sf::Keyboard::Left)) {
 		if (_toolState == place_source) sourceSwitcher_->left();
 		if (_toolState == place_ennemy) ennemySwitcher_->left();
+		if (_toolState == place_structure) structureSwitcher->left();
 	}
 
 	if (IM::isKeyJustPressed(sf::Keyboard::Right)) {
 		if (_toolState == place_source) sourceSwitcher_->right();
 		if (_toolState == place_ennemy) ennemySwitcher_->right();
+		if (_toolState == place_structure) structureSwitcher->right();
 	}
 
 	if (IM::isLastSequenceJustFinished({
@@ -97,8 +99,8 @@ void EditSectionScreen::update(double dt) {
 
 	switch (_toolState)
 	{
-	case draw_plateforme:
-		updateDrawPlateforme();
+	case place_structure:
+		updatePlaceStructure();
 		break;
 	case place_ennemy:
 		updatePlaceSlime();
@@ -245,54 +247,67 @@ void EditSectionScreen::updatePlaceStartPos() noexcept {
 		exitToolState();
 	}
 }
-void EditSectionScreen::updateDrawPlateforme() noexcept {
-	if (IM::isMouseJustPressed(sf::Mouse::Left)) {
-		switch (_toolState) {
-		case draw_plateforme:
-			auto p = PlateformeInfo();
-			p.rectangle.pos = getSnapedMouseCameraPos();
 
-			_newPlateforme = p;
-			break;
-		}
+void EditSectionScreen::updatePlaceStructure() noexcept {
+	if (structureSwitcher->getCurrentPanel()->getName() == PortalInfo::JSON_ID) {
+		updateDrawPortal();
 	}
-	else if (IM::isMouseJustReleased(sf::Mouse::Left)) {
-		switch (_toolState)
-		{
-		case draw_plateforme: {
-			if (_newPlateforme->rectangle.w < 0.f) {
-				_newPlateforme->rectangle.x += _newPlateforme->rectangle.w;
-				_newPlateforme->rectangle.w *= -1;
-			} if (_newPlateforme->rectangle.h < 0.f) {
-				_newPlateforme->rectangle.y += _newPlateforme->rectangle.h;
-				_newPlateforme->rectangle.h *= -1;
-			}
-
-			sectionInfo_.plateformes.push_back(_newPlateforme.value());
-			std::vector<Rectangle2f> rectangles;
-			std::transform(
-				std::begin(sectionInfo_.plateformes),
-				std::end(sectionInfo_.plateformes),
-				std::back_inserter(rectangles),
-				[](PlateformeInfo info) {
-					return info.rectangle;
-				}
-			);
-			sectionInfo_.maxRectangle = Rectangle2f::hull(rectangles);
-			_newPlateforme.reset();
-		} break;
-		default:
-			break;
-		}
+	else if (structureSwitcher->getCurrentPanel()->getName() == PlateformeInfo::JSON_ID) {
+		updateDrawPlateform();
 	}
+}
 
+void EditSectionScreen::updateDrawPortal() noexcept {
+	//TODO
+}
+
+void EditSectionScreen::updateDrawPlateform() noexcept {
 	if (_newPlateforme.has_value()) {
 		_newPlateforme->rectangle.size =
 			getSnapedMouseCameraPos() - _newPlateforme->rectangle.pos;
 	}
+
+	if (IM::isMouseJustPressed(sf::Mouse::Left)) {
+		auto p = PlateformeInfo();
+		p.rectangle.pos = getSnapedMouseCameraPos();
+
+		_newPlateforme = p;
+	}
+	else if (IM::isMouseJustReleased(sf::Mouse::Left)) {
+		if (_newPlateforme->rectangle.area() == 0.0) {
+			_newPlateforme.reset();
+			return;
+		}
+		if (_newPlateforme->rectangle.w < 0.f) {
+			_newPlateforme->rectangle.x += _newPlateforme->rectangle.w;
+			_newPlateforme->rectangle.w *= -1;
+		} if (_newPlateforme->rectangle.h < 0.f) {
+			_newPlateforme->rectangle.y += _newPlateforme->rectangle.h;
+			_newPlateforme->rectangle.h *= -1;
+		}
+
+		sectionInfo_.plateformes.push_back(_newPlateforme.value());
+		std::vector<Rectangle2f> rectangles;
+		std::transform(
+			std::begin(sectionInfo_.plateformes),
+			std::end(sectionInfo_.plateformes),
+			std::back_inserter(rectangles),
+			[](PlateformeInfo info) {
+				return info.rectangle;
+			}
+		);
+		sectionInfo_.maxRectangle = Rectangle2f::hull(rectangles);
+		_newPlateforme.reset();
+	}
 }
 void EditSectionScreen::updateNothing() noexcept {
-	
+	if (IM::isMouseJustPressed(sf::Mouse::Left) && !draggingScreen) {
+		draggingScreen = true;
+	}
+	else if (draggingScreen && IM::isMousePressed(sf::Mouse::Left)) {
+		_cameraView.move(-1 * IM::getMouseDeltaInView(_cameraView));
+	}
+	else draggingScreen = false;
 }
 void EditSectionScreen::updateCameraMovement(double dt) noexcept {
 	if (IM::isKeyPressed(sf::Keyboard::LControl)) return;
@@ -320,9 +335,9 @@ void EditSectionScreen::inputSwitchState() noexcept {
 	if (IM::isLastSequenceJustFinished({
 			sf::Keyboard::LControl, sf::Keyboard::Q, sf::Keyboard::P
 	})){
-		if (_toolState != draw_plateforme) {
+		if (_toolState != place_structure) {
 			exitToolState();
-			enterToolState(draw_plateforme);
+			enterToolState(place_structure);
 		}
 		else {
 			exitToolState();
@@ -509,8 +524,12 @@ void EditSectionScreen::onEnter(std::any) {
 		}
 	}
 
-	ennemySwitcher_ = (SpriteSwitcher*)(_widgets.at("root")->findChild("ennemySwitcher"));
-	sourceSwitcher_ = (SpriteSwitcher*)(_widgets.at("root")->findChild("sourceSwitcher"));
+	auto root = _widgets.at("root");
+	assert(root);
+
+	structureSwitcher = (SpriteSwitcher*)(root->findChild("structureSwitcher"));
+	ennemySwitcher_ = (SpriteSwitcher*)(root->findChild("ennemySwitcher"));
+	sourceSwitcher_ = (SpriteSwitcher*)(root->findChild("sourceSwitcher"));
 	_savePicker = (ValuePicker*)(_widgets.at("root")->findChild("savePicker"));
 	_savePicker->setStdString(filepath_.generic_string());
 	_snapGrid = (Label*)(_widgets.at("root")->findChild("snapGrid"));
@@ -530,8 +549,8 @@ void EditSectionScreen::enterToolState(
 	_toolState = toolState;
 	switch (toolState)
 	{
-	case draw_plateforme:
-		changeColorLabel(DRAW_PLATEFORME, { 0.0, 1.0, 0.0, 1.0 });
+	case place_structure:
+		changeColorLabel(PLACE_STRUCTURE, { 0.0, 1.0, 0.0, 1.0 });
 		break;
 	case place_ennemy:
 		ennemySwitcher_->setVisible(true);
@@ -559,9 +578,9 @@ void EditSectionScreen::enterToolState(
 void EditSectionScreen::exitToolState() noexcept {
 	switch (_toolState)
 	{
-	case draw_plateforme:
+	case place_structure:
 		_newPlateforme.reset();
-		changeColorLabel(DRAW_PLATEFORME, { 1.0, 1.0, 1.0, 1.0 });
+		changeColorLabel(PLACE_STRUCTURE, { 1.0, 1.0, 1.0, 1.0 });
 		break;
 	case place_ennemy:
 		ennemySwitcher_->setVisible(false);

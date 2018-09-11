@@ -20,10 +20,10 @@ bool InputsManager::mousePressed[sf::Mouse::ButtonCount];
 bool InputsManager::mouseJustPressed[sf::Mouse::ButtonCount];
 bool InputsManager::mouseJustReleased[sf::Mouse::ButtonCount];
 
-Vector2u InputsManager::windowsSize;
-Vector2f InputsManager::mouseWorldPos;
 Vector2f InputsManager::mouseScreenPos;
-Vector2f InputsManager::relativeMouseScreenPos;
+Vector2f InputsManager::mouseScreenDelta;
+
+Vector2u InputsManager::windowsSize;
 
 std::vector<sf::Keyboard::Key> InputsManager::currentSequence;
 
@@ -216,25 +216,19 @@ bool InputsManager::isMouseJustReleased(const sf::Mouse::Button &button) {
 }
 
 Vector2f InputsManager::getMousePosInView(const sf::View& view) {
-	auto screenPos = getMouseScreenPos();
+	return applyInverseView(view, getMouseScreenPos());
+}
+Vector2f InputsManager::getMouseDeltaInView(const sf::View& view) noexcept {
+	auto A = getMouseScreenPos();
+	auto B = A - getMouseScreenDelta();
 
-	const auto& viewScope = view.getViewport();
-	auto viewPort = sf::IntRect(
-		(int)std::ceil(windowsSize.x * viewScope.left),
-		(int)std::ceil(windowsSize.y * viewScope.top),
-		(int)std::ceil(windowsSize.x * viewScope.width),
-		(int)std::ceil(windowsSize.y * viewScope.height)
-	);
-
-	Vector2f normalized;
-
-	normalized.x = -1.f + 2.f * (screenPos.x - viewPort.left) / viewPort.width;
-	normalized.y = +1.f - 2.f * (screenPos.y - viewPort.top) / viewPort.height;
-
-	return view.getInverseTransform().transformPoint(normalized);
+	return applyInverseView(view, A) - applyInverseView(view, B);
 }
 Vector2f InputsManager::getMouseScreenPos() {
 	return mouseScreenPos;
+}
+Vector2f InputsManager::getMouseScreenDelta() noexcept {
+	return mouseScreenDelta;
 }
 float InputsManager::getLastScroll() noexcept {
 	return lastScroll;
@@ -329,12 +323,26 @@ void InputsManager::update(sf::RenderWindow &window) {
 			EventManager::fire("mousePress", { i });
 	}
 
+	mouseScreenDelta = (Vector2f)sf::Mouse::getPosition(window) - mouseScreenPos;
 	mouseScreenPos = sf::Mouse::getPosition(window);
-	
-	mouseWorldPos = window.mapPixelToCoords({
-		(i32)mouseScreenPos.x,
-		(i32)mouseScreenPos.y
-	});
 
 	windowsSize = window.getSize();
+}
+
+
+Vector2f InputsManager::applyInverseView(const sf::View& view, Vector2f p) noexcept {
+	const auto& viewScope = view.getViewport();
+	auto viewPort = sf::IntRect(
+		(int)std::ceil(windowsSize.x * viewScope.left),
+		(int)std::ceil(windowsSize.y * viewScope.top),
+		(int)std::ceil(windowsSize.x * viewScope.width),
+		(int)std::ceil(windowsSize.y * viewScope.height)
+	);
+
+	Vector2f normalized;
+
+	normalized.x = -1.f + 2.f * (p.x - viewPort.left) / viewPort.width;
+	normalized.y = +1.f - 2.f * (p.y - viewPort.top) / viewPort.height;
+
+	return view.getInverseTransform().transformPoint(normalized);
 }

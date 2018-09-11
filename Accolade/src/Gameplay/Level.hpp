@@ -98,8 +98,8 @@ private:
 	bool _aiming = false;
 	bool _running = false;
 
-	UUID _keyPressedEvent{ UUID::null };
-	UUID _keyReleasedEvent{ UUID::null };
+	UUID _keyPressedEvent{ UUID::zero() };
+	UUID _keyReleasedEvent{ UUID::zero() };
 
 	sf::View _view;
 };

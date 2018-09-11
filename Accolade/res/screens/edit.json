@@ -9,8 +9,8 @@
         "charSize": 10,
         "text": "Welcome in the editor :D !"
       },
-      "drawPlateforme": {
-        "name": "drawPlateforme",
+      "placeStructure": {
+        "name": "placeStructure",
         "type": "Label",
         "font": "consola",
         "pos": [0, 15],
@@ -175,6 +175,34 @@
             "name": "FlyInfo",
             "type": "Panel",
             "sprite": "FlyInfo"
+          }
+        ]
+      },
+      "structureSwitcher": {
+        "label": {
+          "font":"consola",
+          "name": "label",
+          "charSize": 10,
+          "pos": [50, -100],
+          "origin": [0.5, 2]
+        },
+        "name": "structureSwitcher",
+        "type": "SpriteSwitcher",
+        "pos": [0, 800],
+        "origin": [0, 1],
+        "size": [100, 100],
+        "visible": false,
+        "backColor": [0.4, 0.3, 0.2, 1.0],
+        "panels": [
+          {
+            "name": "PlateformeInfo",
+            "type": "Panel",
+            "sprite": "panel_cross"
+          },
+          {
+            "name": "PortalInfo",
+            "type": "Panel",
+            "sprite": "panel_cross"
           }
         ]
       }
