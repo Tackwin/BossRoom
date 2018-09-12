@@ -70,8 +70,12 @@ Widget::Widget(Widget* const parent) :
 }
 
 Widget::~Widget() {
-	for (auto c : _allocatedChilds)
-		delete c;
+	// TODO investigate if this is the right thing to do.
+	// i can't imagine a case where a child whose parent just got destroyed
+	// still need to live. (also things like getGlobalPosition would segfault)
+	for (auto c : _childs) {
+		//delete c.second;
+	}
 }
 
 void Widget::emancipate(){
@@ -114,6 +118,11 @@ void Widget::addChild(Widget* const child, i32 z) {
 	}
 	if (child->getParent() != this) {
 		child->setParent(this);
+	}
+}
+void Widget::killEveryChilds() noexcept {
+	for (auto& c : _childs) {
+		delete c.second;
 	}
 }
 bool Widget::haveChild(const Widget* const child) {

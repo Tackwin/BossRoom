@@ -48,10 +48,6 @@ Shop::Shop() :
 	_focusPanel.getSprite().setColor(sf::Color(255, 255, 255, 100));
 }
 
-Shop::~Shop() {
-	Widget::~Widget();
-}
-
 void Shop::setPlayer(std::weak_ptr<Player> player) {
 	_player = player;
 }

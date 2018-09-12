@@ -60,8 +60,8 @@ void to_json(nlohmann::json& json, const Segment2<T>& seg) noexcept {
 
 template<typename T>
 void from_json(const nlohmann::json& json, Segment2<T>& seg) noexcept {
-	seg.A = Vector2<T>::loadJson(json.at("A").get<T>());
-	seg.B = Vector2<T>::loadJson(json.at("B").get<T>());
+	seg.A = Vector2<T>::loadJson(json.at("A"));
+	seg.B = Vector2<T>::loadJson(json.at("B"));
 }
 
 using Segment2f = Segment2<float>;

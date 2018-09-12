@@ -355,6 +355,7 @@
     <ClCompile Include="src\Gameplay\Magic\Spells\SpellDirection.cpp" />
     <ClCompile Include="src\Gameplay\Magic\Spells\SpellTarget.cpp" />
     <ClCompile Include="src\Gameplay\Magic\Spells\Spell.cpp" />
+    <ClCompile Include="src\Graphics\GUI\algorithm.cpp" />
     <ClCompile Include="src\Graphics\GUI\Switcher.cpp" />
     <ClCompile Include="src\Graphics\GUI\ValuePicker.cpp" />
     <ClCompile Include="src\Math\algorithms.cpp" />
@@ -430,6 +431,7 @@
     <ClInclude Include="src\Gameplay\Magic\Spells\SpellDirection.hpp" />
     <ClInclude Include="src\Gameplay\Magic\Spells\SpellTarget.hpp" />
     <ClInclude Include="src\Gameplay\Magic\Spells\Spell.hpp" />
+    <ClInclude Include="src\Graphics\GUI\algorithm.hpp" />
     <ClInclude Include="src\Graphics\GUI\Switcher.hpp" />
     <ClInclude Include="src\Graphics\GUI\ValuePicker.hpp" />
     <ClInclude Include="src\Math\algorithms.hpp" />

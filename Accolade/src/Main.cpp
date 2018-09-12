@@ -38,6 +38,25 @@
 
 #include "OS/PathDefinition.hpp"
 
+
+/*
+
+I don't know man, you were doing stuff with populate_widget_with_editable_json_form
+and it's 4am you were tired. A couple of things the destructor of widget is commented out,
+so that's bad. It's because i decided to delete all of the childs in it, but some code
+where giving the addresses of heap allocated objectsince it was it's responsability to clean
+up.
+You need to figure out a solution if the json is an array for the populate function.
+EditSectionScreen is buggy with the panel, i need to have a system to tell me if the ui
+have eaten the input, i think i have already one but again it's 4 am.
+Also you have started a work with EditSectionScreen::selectFocus, you tried some type
+erasure in there. Your end game is to use the focused element in
+EditSectionScreen::deleteHovered, it's cleaner :)
+
+So anyway past you is going to bed good luck !
+
+*/
+
 double C::DT{ 0.0 };
 std::default_random_engine C::RD(SEED);
 std::uniform_real_distribution<float> C::unitaryRng(0.f, 1.f - FLT_EPSILON);

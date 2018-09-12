@@ -63,6 +63,8 @@ public:
 	Widget* findChild(UUID id) const noexcept;
 	Widget* findChild(std::string name) const noexcept;
 
+	void killEveryChilds() noexcept;
+
 	virtual void render(sf::RenderTarget& target);
 	void propagateRender(sf::RenderTarget& target);
 

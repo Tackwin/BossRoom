@@ -13,7 +13,6 @@
 class Shop : public Widget {
 public:
 	Shop();
-	~Shop();
 
 	void setPlayer(std::weak_ptr<Player> player);
 

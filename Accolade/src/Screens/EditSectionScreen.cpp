@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <filesystem>
 
+#include "Utils/meta_algorithms.hpp"
+
 #include "Managers/InputsManager.hpp"
 #include "Managers/AssetsManager.hpp"
 
@@ -15,7 +17,9 @@
 
 #include "Graphics/GUI/Switcher.hpp"
 #include "Graphics/GUI/Label.hpp"
+#include "Graphics/GUI/Panel.hpp"
 #include "Graphics/GUI/ValuePicker.hpp"
+#include "Graphics/GUI/algorithm.hpp"
 
 #include "Utils/string_algorithms.hpp"
 
@@ -75,8 +79,11 @@ void EditSectionScreen::update(double dt) {
 		sectionInfo_.viewSize = viewSize_.size;
 	}
 
-	if (IM::isLastSequenceJustFinished({ sf::Keyboard::LControl, sf::Keyboard::D }) ||
-		IM::isMousePressed(sf::Mouse::Right)) {
+	if (
+		IM::isKeyPressed(sf::Keyboard::LControl) &&
+		(IM::isLastSequenceJustFinished({sf::Keyboard::D }) ||
+		IM::isMousePressed(sf::Mouse::Right))
+	) {
 		deleteHovered();
 	}
 
@@ -323,6 +330,9 @@ void EditSectionScreen::updateDrawPlateform() noexcept {
 	}
 }
 void EditSectionScreen::updateNothing() noexcept {
+	if (IM::isMouseJustPressed(sf::Mouse::Right)) {
+		selectFocus();
+	}
 	if (IM::isMouseJustPressed(sf::Mouse::Left) && !draggingScreen) {
 		draggingScreen = true;
 	}
@@ -530,6 +540,7 @@ void EditSectionScreen::onEnter(std::any) {
 	structureSwitcher = (SpriteSwitcher*)(root->findChild("structureSwitcher"));
 	ennemySwitcher_ = (SpriteSwitcher*)(root->findChild("ennemySwitcher"));
 	sourceSwitcher_ = (SpriteSwitcher*)(root->findChild("sourceSwitcher"));
+	jsonEditPanel = (Panel*)_widgets.at("propertiesEditor");
 	_savePicker = (ValuePicker*)(_widgets.at("root")->findChild("savePicker"));
 	_savePicker->setStdString(filepath_.generic_string());
 	_snapGrid = (Label*)(_widgets.at("root")->findChild("snapGrid"));
@@ -685,7 +696,7 @@ void EditSectionScreen::renderDebug(
 	if (is_in_ellipse(
 		info.frontier.A,
 		info.frontier.B,
-		info.frontier.length() * 0.01,
+		info.frontier.length() * 0.01f,
 		IM::getMousePosInView(_cameraView)
 	)) color = { 0.8, 0.2, 0.8, 0.8 };
 	
@@ -722,7 +733,7 @@ void EditSectionScreen::renderDebug(
 	assert(b != std::end(sectionInfo_.navigationPoints));
 
 	if (is_in_ellipse(
-		a->pos, b->pos, (a->pos - b->pos).length() * 1.1, IM::getMouseScreenPos()
+		a->pos, b->pos, (a->pos - b->pos).length() * 0.001f, IM::getMouseScreenPos()
 	)) {
 		color = { 0.7, 0.0, 1.0, 1.0 };
 	}
@@ -762,6 +773,196 @@ void EditSectionScreen::saveSection(std::filesystem::path path) const noexcept {
 	file << json;
 
 	file.close();
+}
+
+void EditSectionScreen::selectFocus() noexcept {
+	auto& plateformes = sectionInfo_.plateformes;
+	auto& portals = sectionInfo_.portals;
+	auto& slimes = sectionInfo_.slimes;
+	auto& distance = sectionInfo_.distanceGuys;
+	auto& meleeGuy = sectionInfo_.meleeGuys;
+	auto& flies = sectionInfo_.flies;
+	auto& sources = sectionInfo_.sources;
+	auto& sourcesBoomerang = sectionInfo_.sourcesBoomerang;
+	auto& sourcesDirection = sectionInfo_.sourcesDirection;
+	auto& sourcesVaccum = sectionInfo_.sourcesVaccum;
+	auto& navigationPoints = sectionInfo_.navigationPoints;
+	auto& navigationLinks = sectionInfo_.navigationLinks;
+
+	currentlyFocused = std::nullopt;
+
+	for (size_t i = plateformes.size(); i > 0; --i) {
+		if (plateformes[i - 1].rectangle.in(IM::getMousePosInView(_cameraView))) {
+			currentlyFocused = {
+				holded_t<decltype(plateformes)>::JSON_ID,
+				(void*)&plateformes[i - 1]
+			};
+		}
+	}
+
+	for (size_t i = slimes.size(); i > 0; --i) {
+
+		auto dist2 = (slimes[i - 1].startPos - IM::getMousePosInView(_cameraView)).length2();
+		if (dist2 < slimes[i - 1].size.x * slimes[i - 1].size.x / 4.f) {
+			currentlyFocused = {
+				holded_t<decltype(slimes)>::JSON_ID,
+				(void*)&slimes[i - 1]
+			};
+		}
+	}
+	for (size_t i = distance.size(); i > 0; --i) {
+
+		auto dist2 = (distance[i - 1].startPos - IM::getMousePosInView(_cameraView))
+			.length2();
+		if (dist2 < distance[i - 1].size.x * distance[i - 1].size.x / 4.f) {
+			currentlyFocused = {
+				holded_t<decltype(distance)>::JSON_ID,
+				(void*)&distance[i - 1]
+			};
+		}
+	}
+	for (size_t i = meleeGuy.size(); i > 0; --i) {
+		auto dist2 = (meleeGuy[i - 1].startPos - IM::getMousePosInView(_cameraView))
+			.length2();
+		if (dist2 < meleeGuy[i - 1].size.x * meleeGuy[i - 1].size.x / 4.f) {
+			currentlyFocused = {
+				holded_t<decltype(meleeGuy)>::JSON_ID,
+				(void*)&meleeGuy[i - 1]
+			};
+		}
+	}
+	for (size_t i = flies.size(); i > 0; --i) {
+		auto dist2 = (flies[i - 1].startPos - IM::getMousePosInView(_cameraView))
+			.length2();
+		if (dist2 < flies[i - 1].radius * flies[i - 1].radius / 4.f) {
+			currentlyFocused = {
+				holded_t<decltype(flies)>::JSON_ID,
+				(void*)&flies[i - 1]
+			};
+		}
+	}
+
+	for (size_t i = sources.size(); i > 0; --i) {
+
+		auto dist2 = (sources[i - 1].pos - IM::getMousePosInView(_cameraView)).length2();
+		if (dist2 < sources[i - 1].size.x * sources[i - 1].size.x / 4.f) {
+			currentlyFocused = {
+				holded_t<decltype(sources)>::JSON_ID,
+				(void*)&sources[i - 1]
+			};
+		}
+	}
+
+	for (size_t i = sourcesBoomerang.size(); i > 0; --i) {
+
+		auto dist2 =
+			(sourcesBoomerang[i - 1].source.pos - IM::getMousePosInView(_cameraView))
+			.length2();
+
+		if (
+			dist2 < sourcesBoomerang[i - 1].source.size.x *
+			sourcesBoomerang[i - 1].source.size.x / 4.f
+		) {
+			currentlyFocused = {
+				holded_t<decltype(sourcesBoomerang)>::JSON_ID,
+				(void*)&sourcesBoomerang[i - 1]
+			};
+		}
+	}
+	for (size_t i = sourcesVaccum.size(); i > 0; --i) {
+
+		auto dist2 =
+			(sourcesVaccum[i - 1].source.pos - IM::getMousePosInView(_cameraView))
+			.length2();
+
+		if (
+			dist2 < sourcesVaccum[i - 1].source.size.x *
+			sourcesVaccum[i - 1].source.size.x / 4.f
+		) {
+			currentlyFocused = {
+				holded_t<decltype(sourcesVaccum)>::JSON_ID,
+				(void*)&sourcesVaccum[i - 1]
+			};
+		}
+	}
+	for (size_t i = sourcesDirection.size(); i > 0; --i) {
+
+		auto dist2 =
+			(sourcesDirection[i - 1].source.pos - IM::getMousePosInView(_cameraView))
+			.length2();
+
+		if (
+			dist2 < sourcesDirection[i - 1].source.size.x *
+			sourcesDirection[i - 1].source.size.x / 4.f
+		) {
+			currentlyFocused = {
+				holded_t<decltype(sourcesDirection)>::JSON_ID,
+				(void*)&sourcesDirection[i - 1]
+			};
+		}
+	}
+	for (size_t i = navigationPoints.size(); i > 0; --i) {
+		auto dist2 =
+			(navigationPoints[i - 1].pos - IM::getMousePosInView(_cameraView))
+			.length2();
+
+		if (dist2 < navigationPoints[i - 1].range * navigationPoints[i - 1].range) {
+			currentlyFocused = {
+				holded_t<decltype(navigationPoints)>::JSON_ID,
+				(void*)&navigationPoints[i - 1]
+			};
+		}
+	}
+	for (size_t i = navigationLinks.size(); i > 0; --i) {
+		auto link = navigationLinks[i - 1];
+
+		auto a = std::find_if(
+			std::begin(sectionInfo_.navigationPoints),
+			std::end(sectionInfo_.navigationPoints),
+			[a = link.A](auto x) {return x.id == a; }
+		);
+		auto b = std::find_if(
+			std::begin(sectionInfo_.navigationPoints),
+			std::end(sectionInfo_.navigationPoints),
+			[b = link.B](auto x) {return x.id == b; }
+		);
+
+		assert(a != b);
+		assert(a != std::end(sectionInfo_.navigationPoints));
+		assert(b != std::end(sectionInfo_.navigationPoints));
+
+		bool test = is_in_ellipse(
+			a->pos, b->pos, (a->pos - b->pos).length() * 0.001f, IM::getMouseScreenPos()
+		);
+
+		if (test) {
+			currentlyFocused = {
+				holded_t<decltype(navigationLinks)>::JSON_ID,
+				(void*)&navigationLinks[i - 1]
+			};
+		}
+	}
+	for (size_t i = portals.size(); i > 0; --i) {
+		auto p = portals[i - 1];
+		auto m = IM::getMousePosInView(_cameraView);
+
+		if (is_in_ellipse(p.frontier.A, p.frontier.B, p.frontier.length() * 0.01f, m)) {
+			currentlyFocused = {
+				holded_t<decltype(portals)>::JSON_ID,
+				(void*)&portals[i - 1]
+			};
+		}
+	}
+
+	applyToFocused([&](auto focused) {
+		using type = decltype(focused);
+
+		jsonEditPanel->killEveryChilds();
+		populate_widget_with_editable_json_form(jsonEditPanel, type::saveJson(focused));
+	});
+	if (!currentlyFocused) {
+		jsonEditPanel->killEveryChilds();
+	}
 }
 
 void EditSectionScreen::deleteHovered() noexcept {
@@ -910,7 +1111,7 @@ void EditSectionScreen::deleteHovered() noexcept {
 		assert(b != std::end(sectionInfo_.navigationPoints));
 
 		bool test = is_in_ellipse(
-			a->pos, b->pos, (a->pos - b->pos).length() * 1.1, IM::getMouseScreenPos()
+			a->pos, b->pos, (a->pos - b->pos).length() * 0.01f, IM::getMouseScreenPos()
 		);
 
 		if (test) {
@@ -940,7 +1141,7 @@ void EditSectionScreen::deleteHovered() noexcept {
 		auto p = portals[i - 1];
 		auto m = IM::getMousePosInView(_cameraView);
 
-		if (is_in_ellipse(p.frontier.A, p.frontier.B, p.frontier.length() * 1.0001, m)) {
+		if (is_in_ellipse(p.frontier.A, p.frontier.B, p.frontier.length() * 0.01f, m)) {
 			portals.erase(portals.begin() + i - 1);
 			return;
 		}

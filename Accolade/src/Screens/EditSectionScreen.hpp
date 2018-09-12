@@ -23,6 +23,7 @@
 #include "Navigation/NavigationLink.hpp"
 
 class Label;
+class Panel;
 class ValuePicker;
 class SpriteSwitcher;
 class EditSectionScreen : public Screen {
@@ -39,6 +40,29 @@ public:
 	virtual void onEnter(std::any) override;
 	virtual std::any onExit() override;
 private:
+
+	void selectFocus() noexcept;
+
+	template<typename F>
+	void applyToFocused(F&& f) noexcept {
+		if (!currentlyFocused) return;
+
+		auto id = currentlyFocused->first;
+		auto ptr = currentlyFocused->second;
+#define X(x) if (id == x::JSON_ID) f(*(x*)ptr)
+
+		X(NavigationPointInfo);
+		X(NavigationLinkInfo);
+		X(DistanceGuyInfo);
+		X(PlateformeInfo);
+		X(MeleeGuyInfo);
+		X(SourceInfo);
+		X(PortalInfo);
+		X(SlimeInfo);
+		X(FlyInfo);
+
+#undef X
+	}
 
 	void deleteHovered() noexcept;
 
@@ -83,6 +107,7 @@ private:
 	SpriteSwitcher* ennemySwitcher_{ nullptr };
 	SpriteSwitcher* sourceSwitcher_{ nullptr };
 	SpriteSwitcher* structureSwitcher{ nullptr };
+	Panel* jsonEditPanel{ nullptr };
 	ValuePicker* _savePicker{ nullptr };
 	Label* _snapGrid{ nullptr };
 
@@ -91,6 +116,12 @@ private:
 
 	Rectangle2f viewSize_;
 	nlohmann::json _json;
+
+
+	// Ok so what's the deal with this one ?
+	// first element is the JSON_ID of the things pointed by second
+	// it's meant to be used to cast it.
+	std::optional<std::pair<std::string, void*>> currentlyFocused{ std::nullopt };
 
 	std::optional<PlateformeInfo> _newPlateforme;
 	std::optional<SourceInfo> _newSource;
