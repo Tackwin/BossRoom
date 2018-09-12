@@ -63,6 +63,7 @@ private:
 	void renderDebug(sf::RenderTarget& target, PlateformeInfo info) noexcept;
 	void renderDebug(sf::RenderTarget& target, MeleeGuyInfo info) noexcept;
 	void renderDebug(sf::RenderTarget& target, SourceInfo info) noexcept;
+	void renderDebug(sf::RenderTarget& target, PortalInfo info) noexcept;
 	void renderDebug(sf::RenderTarget& target, SlimeInfo info) noexcept;
 	void renderDebug(sf::RenderTarget& target, FlyInfo info) noexcept;
 
@@ -95,6 +96,8 @@ private:
 	std::optional<SourceInfo> _newSource;
 
 	std::optional<UUID> firstPoint_;
+
+	std::optional<Vector2f> portalFirstPoint{ std::nullopt };
 
 	std::filesystem::path filepath_;
 

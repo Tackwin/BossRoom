@@ -38,6 +38,13 @@ struct Segment2 {
 		;
 	}
 
+	T length() const noexcept {
+		return (A - B).length();
+	}
+	T length2() const noexcept {
+		return (A - B).length2();
+	}
+
 #ifdef SFML_GRAPHICS_HPP
 	void render(sf::RenderTarget& target, Vector4d color) const noexcept {
 		Vector2<T>::renderLine(target, A, B, color, color);

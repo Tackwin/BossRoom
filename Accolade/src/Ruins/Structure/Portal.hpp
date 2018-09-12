@@ -14,6 +14,10 @@ struct PortalInfo {
 	static constexpr auto JSON_ID = "PortalInfo";
 
 	Segment2f frontier;
+
+	bool start{ false };
+	bool end{ false };
+
 	UUID tp_to{ UUID::zero() };
 	UUID id;
 

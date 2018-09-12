@@ -258,7 +258,29 @@ void EditSectionScreen::updatePlaceStructure() noexcept {
 }
 
 void EditSectionScreen::updateDrawPortal() noexcept {
-	//TODO
+	if (portalFirstPoint) {
+		if (!IM::isMousePressed(sf::Mouse::Left)) {
+			auto A = *portalFirstPoint;
+			auto B = getSnapedMouseCameraPos();
+
+			if (A != B) {
+				PortalInfo info;
+				info.frontier = { A, B };
+
+				sectionInfo_.portals.push_back(info);
+			}
+
+			portalFirstPoint.reset();
+		}
+		if (IM::isMouseJustPressed(sf::Mouse::Right)) {
+			portalFirstPoint.reset();
+		}
+		return;
+	}
+
+	if (IM::isMouseJustPressed(sf::Mouse::Left)) {
+		portalFirstPoint = getSnapedMouseCameraPos();
+	}
 }
 
 void EditSectionScreen::updateDrawPlateform() noexcept {
@@ -402,7 +424,7 @@ void EditSectionScreen::inputSwitchState() noexcept {
 		sf::Keyboard::LControl, sf::Keyboard::O, sf::Keyboard::S
 	})) {
 		open_file_async([&](OpenFileResult file) {
-			// i don't know if it's usefull to prevent race condition.
+			// i don't know if this is usefull to prevent race condition.
 			if (this == nullptr) return;
 			if (!file.succeded) return;
 
@@ -423,49 +445,30 @@ void EditSectionScreen::render(sf::RenderTarget& target) {
 
 	viewSize_.pos = (Vector2f)_cameraView.getCenter() - viewSize_.size / 2.f;
 
-	for (auto plateforme : sectionInfo_.plateformes) {
-		renderDebug(target, plateforme);
-	}
-	for (auto slime : sectionInfo_.slimes) {
-		renderDebug(target, slime);
-	}
-	for (auto distance : sectionInfo_.distanceGuys) {
-		renderDebug(target, distance);
-	}
-	for (auto melee : sectionInfo_.meleeGuys) {
-		renderDebug(target, melee);
-	}
-	for (auto fly : sectionInfo_.flies) {
-		renderDebug(target, fly);
-	}
-	for (auto source : sectionInfo_.sources) {
-		renderDebug(target, source);
-	}
-	for (auto source : sectionInfo_.sourcesBoomerang) {
-		renderDebug(target, source.source);
-	}
-	for (auto source : sectionInfo_.sourcesVaccum) {
-		renderDebug(target, source.source);
-	}
-	for (auto source : sectionInfo_.sourcesDirection) {
-		renderDebug(target, source.source);
-	}
-	for (auto p : sectionInfo_.navigationPoints) {
-		renderDebug(target, p);
-	}
-	for (auto p : sectionInfo_.navigationLinks) {
-		renderDebug(target, p);
-	}
+	for (auto source : sectionInfo_.sourcesBoomerang) renderDebug(target, source.source);
+	for (auto source : sectionInfo_.sourcesDirection) renderDebug(target, source.source);
+	for (auto source : sectionInfo_.sourcesVaccum) renderDebug(target, source.source);
+	for (auto plateforme : sectionInfo_.plateformes) renderDebug(target, plateforme);
+	for (auto distance : sectionInfo_.distanceGuys) renderDebug(target, distance);
+	for (auto source : sectionInfo_.sources) renderDebug(target, source);
+	for (auto melee : sectionInfo_.meleeGuys) renderDebug(target, melee);
+	for (auto p : sectionInfo_.navigationPoints) renderDebug(target, p);
+	for (auto p : sectionInfo_.navigationLinks) renderDebug(target, p);
+	for (auto slime : sectionInfo_.slimes) renderDebug(target, slime);
+	for (auto fly : sectionInfo_.flies) renderDebug(target, fly);
+	for (auto p : sectionInfo_.portals) renderDebug(target, p);
 
-	if (_newPlateforme.has_value()) {
-		renderDebug(target, *_newPlateforme);
-	}
-	if (_toolState == place_ennemy) {
+	if (_newPlateforme) renderDebug(target, *_newPlateforme);
+	if (_newSource) renderDebug(target, *_newSource);
+	if (portalFirstPoint)
+		Segment2f{ *portalFirstPoint, getSnapedMouseCameraPos() }
+			.render(target, { 1, 1, 1, 1 });
+
+	if (_toolState == place_ennemy)
 		getSnapedMouseCameraPos().plot(target, 0.1f, { 1.0, 0.0, 0.0, 1.0 }, {}, 0.f);
-	}
-	if (_toolState == place_navigation_point) {
+	if (_toolState == place_navigation_point)
 		getSnapedMouseCameraPos().plot(target, 0.15f, { 1.0, 0.0, 0.0, 1.0 }, {}, 0.f);
-	}
+
 	if (_toolState == place_navigation_link && firstPoint_) {
 		auto point = std::find_if(
 			std::begin(sectionInfo_.navigationPoints),
@@ -478,9 +481,6 @@ void EditSectionScreen::render(sf::RenderTarget& target) {
 		point->pos.plot(
 			target, point->range * 1.2f, { 1.0, 1.0, 0.0, 1.0 }, {1.0, 1.0, 1.0, 1.0}, 0.1f
 		);
-	}
-	if (_newSource.has_value()) {
-		renderDebug(target, *_newSource);
 	}
 
 	Vector2f startPos = sectionInfo_.startPos;
@@ -550,6 +550,7 @@ void EditSectionScreen::enterToolState(
 	switch (toolState)
 	{
 	case place_structure:
+		structureSwitcher->setVisible(true);
 		changeColorLabel(PLACE_STRUCTURE, { 0.0, 1.0, 0.0, 1.0 });
 		break;
 	case place_ennemy:
@@ -579,7 +580,9 @@ void EditSectionScreen::exitToolState() noexcept {
 	switch (_toolState)
 	{
 	case place_structure:
+		structureSwitcher->setVisible(false);
 		_newPlateforme.reset();
+		portalFirstPoint.reset();
 		changeColorLabel(PLACE_STRUCTURE, { 1.0, 1.0, 1.0, 1.0 });
 		break;
 	case place_ennemy:
@@ -676,6 +679,19 @@ void EditSectionScreen::renderDebug(
 	);
 }
 void EditSectionScreen::renderDebug(
+	sf::RenderTarget& target, PortalInfo info
+) noexcept {
+	auto color = Vector4d{ 1, 1, 1, 1 };
+	if (is_in_ellipse(
+		info.frontier.A,
+		info.frontier.B,
+		info.frontier.length() * 0.01,
+		IM::getMousePosInView(_cameraView)
+	)) color = { 0.8, 0.2, 0.8, 0.8 };
+	
+	info.frontier.render(target, color);
+}
+void EditSectionScreen::renderDebug(
 	sf::RenderTarget& target, NavigationPointInfo info
 ) noexcept {
 	Vector4d color{ 0.8, 0.0, 0.8, 1.0 };
@@ -705,7 +721,9 @@ void EditSectionScreen::renderDebug(
 	assert(a != std::end(sectionInfo_.navigationPoints));
 	assert(b != std::end(sectionInfo_.navigationPoints));
 
-	if (is_in_ellipse(a->pos, b->pos, 10, IM::getMouseScreenPos())) {
+	if (is_in_ellipse(
+		a->pos, b->pos, (a->pos - b->pos).length() * 1.1, IM::getMouseScreenPos()
+	)) {
 		color = { 0.7, 0.0, 1.0, 1.0 };
 	}
 
@@ -748,6 +766,7 @@ void EditSectionScreen::saveSection(std::filesystem::path path) const noexcept {
 
 void EditSectionScreen::deleteHovered() noexcept {
 	auto& plateformes = sectionInfo_.plateformes;
+	auto& portals = sectionInfo_.portals;
 	auto& slimes = sectionInfo_.slimes;
 	auto& distance = sectionInfo_.distanceGuys;
 	auto& meleeGuy = sectionInfo_.meleeGuys;
@@ -890,7 +909,11 @@ void EditSectionScreen::deleteHovered() noexcept {
 		assert(a != std::end(sectionInfo_.navigationPoints));
 		assert(b != std::end(sectionInfo_.navigationPoints));
 
-		if (is_in_ellipse(a->pos, b->pos, 10, IM::getMouseScreenPos())) {
+		bool test = is_in_ellipse(
+			a->pos, b->pos, (a->pos - b->pos).length() * 1.1, IM::getMouseScreenPos()
+		);
+
+		if (test) {
 			a->links.erase(
 				std::remove_if(
 					std::begin(a->links),
@@ -910,6 +933,15 @@ void EditSectionScreen::deleteHovered() noexcept {
 			);
 
 			navigationLinks.erase(std::begin(navigationLinks) + i - 1);
+			return;
+		}
+	}
+	for (size_t i = portals.size(); i > 0; --i) {
+		auto p = portals[i - 1];
+		auto m = IM::getMousePosInView(_cameraView);
+
+		if (is_in_ellipse(p.frontier.A, p.frontier.B, p.frontier.length() * 1.0001, m)) {
+			portals.erase(portals.begin() + i - 1);
 			return;
 		}
 	}
