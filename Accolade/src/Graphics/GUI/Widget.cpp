@@ -124,6 +124,7 @@ void Widget::killEveryChilds() noexcept {
 	for (auto& c : _childs) {
 		delete c.second;
 	}
+	_childs.clear();
 }
 bool Widget::haveChild(const Widget* const child) {
 	if (!child) return false;

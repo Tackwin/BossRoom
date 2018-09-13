@@ -36,8 +36,8 @@ private:
 		bool onClickEnded();
 		bool onClickGoing();
 
-		Panel sprite;
-		Label label;
+		Panel* sprite;
+		Label* label;
 
 		std::string weapon;
 
@@ -56,9 +56,9 @@ private:
 		bool onClickEnded();
 		bool onClickGoing();
 
-		std::map<std::string, Panel> panels;
-		std::map<std::string, Label> labels;
-		std::map<std::string, Button> buttons;
+		std::map<std::string, Panel*> panels;
+		std::map<std::string, Label*> labels;
+		std::map<std::string, Button*> buttons;
 	private:
 		
 		Shop* _shop;
@@ -70,11 +70,12 @@ private:
 	bool onClickEnded();
 	bool onClickGoing();
 
-	Panel _merchantPanel;
-	Panel _focusPanel;
-	_InfoPanel _infoPanel;
-	Panel _quitPanel;
-	std::map<u32, std::unique_ptr<_ItemPanel>> _itemPanels;
+	Panel* _merchantPanel{ nullptr };
+	Panel* _focusPanel{ nullptr };
+	Panel* _quitPanel{ nullptr };
+
+	_InfoPanel* _infoPanel;
+	std::map<u32, _ItemPanel*> _itemPanels;
 
 	bool _in = false;
 

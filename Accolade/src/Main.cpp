@@ -41,7 +41,7 @@
 
 /*
 
-I don't know man, you were doing stuff with populate_widget_with_editable_json_form
+I don't know man, you were doing stuff with populate_widget_with_editable_json_object_form
 and it's 4am you were tired. A couple of things the destructor of widget is commented out,
 so that's bad. It's because i decided to delete all of the childs in it, but some code
 where giving the addresses of heap allocated objectsince it was it's responsability to clean

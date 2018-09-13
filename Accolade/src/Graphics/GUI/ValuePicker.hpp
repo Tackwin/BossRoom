@@ -39,5 +39,5 @@ private:
 	Vector4f _focusedColor{ 0.5f, 0.5f, 0.5f, 0.5f };
 	Vector4f _inputColor = _unfocusedColor;
 
-	Label _label;
+	Label* _label;
 };

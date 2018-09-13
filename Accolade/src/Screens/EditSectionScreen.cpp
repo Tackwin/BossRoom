@@ -788,7 +788,7 @@ void EditSectionScreen::selectFocus() noexcept {
 	auto& sourcesVaccum = sectionInfo_.sourcesVaccum;
 	auto& navigationPoints = sectionInfo_.navigationPoints;
 	auto& navigationLinks = sectionInfo_.navigationLinks;
-
+	
 	currentlyFocused = std::nullopt;
 
 	for (size_t i = plateformes.size(); i > 0; --i) {
@@ -958,7 +958,7 @@ void EditSectionScreen::selectFocus() noexcept {
 		using type = decltype(focused);
 
 		jsonEditPanel->killEveryChilds();
-		populate_widget_with_editable_json_form(jsonEditPanel, type::saveJson(focused));
+		populate_widget_with_editable_json_object_form(jsonEditPanel, type::saveJson(focused));
 	});
 	if (!currentlyFocused) {
 		jsonEditPanel->killEveryChilds();

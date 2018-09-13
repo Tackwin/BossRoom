@@ -39,16 +39,17 @@ ValuePicker::ValuePicker(nlohmann::json json) noexcept : Widget(json) {
 	setOnHover(onHover);
 	setOnKey(onKey);
 
-	_label.setOrigin({ 0.f, 0.f });
-	_label.setPosition({ 0.f, -2.f });
-	_label.setCharSize(_charSize);
-	_label.setFont(_font);
-	addChild(&_label);
+	_label = new Label;
+	_label->setOrigin({ 0.f, 0.f });
+	_label->setPosition({ 0.f, -2.f });
+	_label->setCharSize(_charSize);
+	_label->setFont(_font);
+	addChild(_label);
 }
 
 void ValuePicker::render(sf::RenderTarget& target) {
 	Rectangle2f inputBox{ getGlobalPosition(), getSize() };
-	_label.setSfString(_inputString);
+	_label->setSfString(_inputString);
 
 	if (_focused) _inputColor = _focusedColor;
 

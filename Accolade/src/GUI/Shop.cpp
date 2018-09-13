@@ -14,38 +14,41 @@
 
 Shop::Shop() : 
 	Widget(),
-	_infoPanel(this)
+	_infoPanel(new _InfoPanel{ this }),
+	_merchantPanel(new Panel{}),
+	_focusPanel(new Panel{}),
+	_quitPanel(new Panel{})
 {
-	_merchantPanel.setTexture("panel_a");
-	_merchantPanel.setOrigin({ 0, 0 });
-	_merchantPanel.setPosition({ 50, 50 });
-	_merchantPanel.setSize({ WIDTH * 0.8f, HEIGHT * 0.7f });
-	_merchantPanel.setVisible(false);
-	_merchantPanel.setOnClick({
+	_merchantPanel->setTexture("panel_a");
+	_merchantPanel->setOrigin({ 0, 0 });
+	_merchantPanel->setPosition({ 50, 50 });
+	_merchantPanel->setSize({ WIDTH * 0.8f, HEIGHT * 0.7f });
+	_merchantPanel->setVisible(false);
+	_merchantPanel->setOnClick({
 		std::bind(&Shop::onClickBegan, this),
 		std::bind(&Shop::onClickEnded, this),
 		std::bind(&Shop::onClickGoing, this)
 	});
-	_merchantPanel.getSprite().setColor(sf::Color(100, 100, 100));
-	_merchantPanel.setParent(this, 0);
+	_merchantPanel->getSprite().setColor(sf::Color(100, 100, 100));
+	_merchantPanel->setParent(this, 0);
 	
-	_quitPanel.setTexture("quit");
-	_quitPanel.setSize({ 20, 20 });
-	_quitPanel.setOrigin({ 1, 0 });
-	_quitPanel.setPosition({
-		_merchantPanel.getSize().x,
+	_quitPanel->setTexture("quit");
+	_quitPanel->setSize({ 20, 20 });
+	_quitPanel->setOrigin({ 1, 0 });
+	_quitPanel->setPosition({
+		_merchantPanel->getSize().x,
 		0
 	});
-	_quitPanel.setParent(&_merchantPanel, 2);
+	_quitPanel->setParent(_merchantPanel, 2);
 
-	_infoPanel.setParent(&_merchantPanel, 2);
+	_infoPanel->setParent(_merchantPanel, 2);
 	
 
-	_focusPanel.setTexture("panel_a");
-	_focusPanel.setSize({ _ItemPanel::PANEL_SIZE + 2, _ItemPanel::PANEL_SIZE + 2 });
-	_focusPanel.setOriginAbs({ 3, 3});
-	_focusPanel.setVisible(true);
-	_focusPanel.getSprite().setColor(sf::Color(255, 255, 255, 100));
+	_focusPanel->setTexture("panel_a");
+	_focusPanel->setSize({ _ItemPanel::PANEL_SIZE + 2, _ItemPanel::PANEL_SIZE + 2 });
+	_focusPanel->setOriginAbs({ 3, 3});
+	_focusPanel->setVisible(true);
+	_focusPanel->getSprite().setColor(sf::Color(255, 255, 255, 100));
 }
 
 void Shop::setPlayer(std::weak_ptr<Player> player) {
@@ -70,26 +73,27 @@ void Shop::addWeapon(const std::string& weapon) {
 		}
 	} while (flag);
 
-	_itemPanels[nId] = std::make_unique<_ItemPanel>(this, weapon, nId);
+	assert(_itemPanels.count(nId) == 0);
+	_itemPanels[nId] = new _ItemPanel{ this, weapon, nId };
 	_itemPanels[nId]->setPosition({
 		(size % itemPerRow) * (_ItemPanel::PANEL_SIZE + 5.f) + 10,
 		(size / itemPerRow) * (_ItemPanel::PANEL_SIZE + 5.f) + 30
 	});
-	_itemPanels[nId]->setParent(&_merchantPanel, 1);
+	_itemPanels[nId]->setParent(_merchantPanel, 1);
 }
 
 void Shop::enter() {
 	_in = true;
-	_merchantPanel.setVisible(true);
+	_merchantPanel->setVisible(true);
 }
 void Shop::leave() {
 	_in = false;
-	_merchantPanel.setVisible(false);
+	_merchantPanel->setVisible(false);
 }
 
 bool Shop::onClickBegan() {
 	auto rect = Rectangle2f(
-		{ _quitPanel.getGlobalPosition().x - 20, _quitPanel.getGlobalPosition().y },
+		{ _quitPanel->getGlobalPosition().x - 20, _quitPanel->getGlobalPosition().y },
 		{ 20, 20 }
 	);
 	if (InputsManager::getMouseScreenPos().inRect(rect.pos, rect.size)) {
@@ -99,12 +103,12 @@ bool Shop::onClickBegan() {
 
 	rect = Rectangle2f(
 		{ 
-			_merchantPanel.getGlobalPosition().x, 
-			_merchantPanel.getGlobalPosition().y 
+			_merchantPanel->getGlobalPosition().x, 
+			_merchantPanel->getGlobalPosition().y 
 		},
 		{ 
-			_merchantPanel.getSize().x,			
-			_merchantPanel.getSize().y * 0.05f 
+			_merchantPanel->getSize().x,			
+			_merchantPanel->getSize().y * 0.05f 
 		}
 	);
 	if (InputsManager::getMouseScreenPos().inRect(rect.pos, rect.size)) {
@@ -135,16 +139,16 @@ bool Shop::onClickGoing() {
 
 void Shop::focusItem(u32 i) {
 	_focused = i;
-	_focusPanel.setParent(&_itemPanels[i]->sprite, 1);
+	_focusPanel->setParent(_itemPanels[i]->sprite, 1);
 	
-	_infoPanel.populateBy(_itemPanels[i]->weapon);
-	_infoPanel.setVisible(true);
+	_infoPanel->populateBy(_itemPanels[i]->weapon);
+	_infoPanel->setVisible(true);
 }
 void Shop::unFocus() {
 	_focused = 0u;
-	_focusPanel.emancipate();
+	_focusPanel->emancipate();
 
-	_infoPanel.setVisible(false);
+	_infoPanel->setVisible(false);
 }
 
 bool Shop::isIn() const {
@@ -155,24 +159,26 @@ bool Shop::isIn() const {
 Shop::_ItemPanel::_ItemPanel(Shop* shop, const std::string& weapon, u32 id) :
 	_shop(shop),
 	weapon(weapon),
-	_id(id)
+	_id(id),
+	sprite(new Panel{}),
+	label(new Label{})
 {
 
 	setTexture("panel_a");
 	getSprite().setColor({ 80, 80, 80 });
 	setSize({ PANEL_SIZE, PANEL_SIZE });
 
-	sprite.setTexture(Wearable::GetWearableinfo(weapon).uiTexture);
-	sprite.setSize({ PANEL_SIZE - 4, PANEL_SIZE - 4 });
-	sprite.setPosition({ 2, 2 });
-	sprite.setOnClick({
+	sprite->setTexture(Wearable::GetWearableinfo(weapon).uiTexture);
+	sprite->setSize({ PANEL_SIZE - 4, PANEL_SIZE - 4 });
+	sprite->setPosition({ 2, 2 });
+	sprite->setOnClick({
 		std::bind(&Shop::_ItemPanel::onClickBegan, this),
 		std::bind(&Shop::_ItemPanel::onClickEnded, this),
 		std::bind(&Shop::_ItemPanel::onClickGoing, this)
 	});
 
-	addChild(&sprite, 1);
-	addChild(&label, 2);
+	addChild(sprite, 1);
+	addChild(label, 2);
 }
 
 bool Shop::_ItemPanel::onClickBegan() {
@@ -196,59 +202,67 @@ Shop::_InfoPanel::_InfoPanel(Shop* shop) :
 	getSprite().setColor(sf::Color(120, 110, 110));
 	setVisible(false);
 
+	labels["name"] = new Label{};
 	auto& name = labels["name"];
-	name.setStdString("Name: ");
-	name.setFont("consola");
-	name.setCharSize(25);
-	name.setPosition({ 50, 25 });
-	name.setParent(this, 1);
+	name->setStdString("Name: ");
+	name->setFont("consola");
+	name->setCharSize(25);
+	name->setPosition({ 50, 25 });
+	name->setParent(this, 1);
 
+	labels["effect"] = new Label{};
 	auto& effect = labels["effect"];
-	effect.setStdString("Effect: nique ta mère");
-	effect.setFont("consola");
-	effect.setCharSize(22);
-	effect.setPosition({ 70, 50 });
-	effect.setParent(this, 1);
+	effect->setStdString("Effect: nique ta mère");
+	effect->setFont("consola");
+	effect->setCharSize(22);
+	effect->setPosition({ 70, 50 });
+	effect->setParent(this, 1);
 
+	labels["cost"] = new Label{};
 	auto& cost = labels["cost"];
-	cost.setStdString("cost: ");
-	cost.setFont("consola");
-	cost.setCharSize(22);
-	cost.setPosition({ 70, 75 });
-	cost.setParent(this, 1);
+	cost->setStdString("cost: ");
+	cost->setFont("consola");
+	cost->setCharSize(22);
+	cost->setPosition({ 70, 75 });
+	cost->setParent(this, 1);
 
+	panels["icon"] = new Panel{};
 	auto& icon = panels["icon"];
-	icon.setParent(this, 1);
+	icon->setParent(this, 1);
 
+	buttons["buy"] = new Button{};
 	auto& buy = buttons["buy"];
-	buy.getLabel().setFont("consola");
-	buy.setTexture("panel_a");
-	buy.getSprite().setColor(sf::Color(150, 160, 150));
-	buy.setSize({ 200, 65 });
-	buy.setStdString("Buy");
-	buy.setOrigin({ .5f, .5f });
-	buy.setPosition({ getSize().x / 2, getSize().y * 0.75f });
-	buy.setParent(this, 1);
-	buy.setOnClick({
+	buy->getLabel().setFont("consola");
+	buy->setTexture("panel_a");
+	buy->getSprite().setColor(sf::Color(150, 160, 150));
+	buy->setSize({ 200, 65 });
+	buy->setStdString("Buy");
+	buy->setOrigin({ .5f, .5f });
+	buy->setPosition({ getSize().x / 2, getSize().y * 0.75f });
+	buy->setParent(this, 1);
+	buy->setOnClick({
 		std::bind(&Shop::_InfoPanel::onClickBegan, this),
 		std::bind(&Shop::_InfoPanel::onClickEnded, this),
 		std::bind(&Shop::_InfoPanel::onClickGoing, this)
 	});
 }
 void Shop::_InfoPanel::populateBy(const std::string& weapon) {
-
 	const auto& w = Wearable::GetWearableinfo(weapon);
 
+	assert(panels.count("icon") > 0);
+	assert(labels.count("name") > 0);
+	assert(labels.count("cost") > 0);
+
 	auto& icon = panels["icon"];
-	icon.setTexture(w.uiTexture);
-	icon.setSize({ 150, 150 });
-	icon.setPosition({ 50, 120 });
+	icon->setTexture(w.uiTexture);
+	icon->setSize({ 150, 150 });
+	icon->setPosition({ 50, 120 });
 
 	auto& name = labels["name"];
-	name.setStdString("Name: " + w.name);
+	name->setStdString("Name: " + w.name);
 
 	auto& cost = labels["cost"];
-	cost.setStdString("Cost: " + std::to_string(w.cost));
+	cost->setStdString("Cost: " + std::to_string(w.cost));
 
 	_weapon = weapon;
 }
