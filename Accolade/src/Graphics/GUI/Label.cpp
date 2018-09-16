@@ -51,10 +51,6 @@ void Label::render(sf::RenderTarget & target) {
 	Widget::render(target);
 	if (!_visible) return;
 
-	sf::CircleShape mark{ 2.f };
-	mark.setOrigin(mark.getRadius(), mark.getRadius());
-	mark.setPosition(getGlobalPosition());
-
 	_text.setOrigin({
 		_origin.x * _size.x,
 		_origin.y * _size.y
@@ -63,7 +59,6 @@ void Label::render(sf::RenderTarget & target) {
 	// _size is kinda ignored right now
 
 	target.draw(_text);
-	target.draw(mark);
 }
 
 std::string Label::getString() const {

@@ -6,7 +6,6 @@
 #include "OS/SystemConfiguration.hpp"
 
 Panel::Panel(nlohmann::json json) noexcept : Widget(json) {
-
 	auto ogSize = getSize();
 	if (auto it = json.find("sprite"); it != json.end())
 		setTexture(*it);
@@ -22,6 +21,8 @@ Panel::Panel(nlohmann::json json) noexcept : Widget(json) {
 		setResizable(*it);
 	if (auto it = json.find("collapsed"); it != json.end() && it->get<bool>())
 		toggleCollapse();
+	if (auto it = json.find("collapsed"); it != json.end())
+		setClipper(*it);
 
 	Callback onClick;
 	onClick.began = [&]{
@@ -53,6 +54,12 @@ Panel::Panel(nlohmann::json json) noexcept : Widget(json) {
 		return true;
 	};
 
+	Callback onHover;
+	onHover.began = Callback::TRUE;
+	onHover.going = std::bind(&Panel::onHoverGoing, this);
+	onHover.ended = Callback::TRUE;
+
+	setOnHover(onHover);
 	setOnClick(onClick);
 }
 
@@ -82,9 +89,10 @@ void Panel::render(sf::RenderTarget& target) {
 	Widget::render(target);
 	if (!_visible) return;
 
-	sf::CircleShape marker{ 2.0f };
-	marker.setOrigin(marker.getRadius(), marker.getRadius());
-	marker.setPosition(getGlobalPosition());
+	auto boundingBox = getGlobalBoundingBox();
+
+	if (isClipper()) {
+	}
 
 	_backSprite.setScale(
 		_size.x / _backSprite.getTextureRect().width,
@@ -97,7 +105,6 @@ void Panel::render(sf::RenderTarget& target) {
 
 	_backSprite.setPosition(getGlobalPosition());
 	target.draw(_backSprite);
-	target.draw(marker);
 }
 
 bool Panel::isDraggable() const noexcept {
@@ -112,6 +119,9 @@ bool Panel::isResizable() const noexcept {
 bool Panel::isCollapsed() const noexcept {
 	return collapsed;
 }
+bool Panel::isClipper() const noexcept {
+	return clipper;
+}
 
 void Panel::setDraggable(bool v) noexcept {
 	draggable = v;
@@ -121,6 +131,14 @@ void Panel::setCollapsable(bool v) noexcept {
 }
 void Panel::setResizable(bool v) noexcept {
 	resizable = v;
+}
+void Panel::setClipper(bool v) noexcept {
+	clipper = v;
+
+	if (!clipper) {
+	}
+	else {
+	}
 }
 
 std::string Panel::getTitle() const noexcept {
@@ -174,7 +192,17 @@ void Panel::toggleCollapse() noexcept {
 
 }
 
+bool Panel::onHoverGoing() noexcept {
 
+	if (IM::getLastScroll() != 0) {
+		auto shift = IM::isKeyPressed(sf::Keyboard::LShift);
+
+		auto& toScroll = shift ? scroll.y : scroll.x;
+		toScroll += IM::getLastScroll() * (shift ? getSize().y : getSize().x) / 10.f;
+	}
+
+	return true;
+}
 
 
 

@@ -18,7 +18,10 @@
 #include "./../Gameplay/Zone.hpp"
 
 StartScreen::StartScreen() :
-	_guiView({ WIDTH / 2.f, HEIGHT / 2.f }, { (float)WIDTH, (float)HEIGHT })
+	_guiView({ WIDTH / 2.f, HEIGHT / 2.f }, { (float)WIDTH, (float)HEIGHT }),
+	_weaponIcon{new Panel},
+	_weaponLabel{new Label},
+	_shop{new Shop}
 {
 	initializeGui();
 }
@@ -26,23 +29,23 @@ StartScreen::StartScreen() :
 void StartScreen::initializeGui() {
 	_guiRoot.setPosition({ 0.f, 0.f });
 
-	_weaponIcon.setOrigin({ 1.f, 1.f });
-	_weaponIcon.setPosition({ (float)WIDTH, (float)HEIGHT});
+	_weaponIcon->setOrigin({ 1.f, 1.f });
+	_weaponIcon->setPosition({ (float)WIDTH, (float)HEIGHT});
 	
-	_weaponLabel.setFont("consola");
-	_weaponLabel.setCharSize(15u);
-	_weaponLabel.setStdString("Weapon");
-	_weaponLabel.setOrigin({ 0.f, 1.f });
-	_weaponLabel.setPosition(_weaponIcon.getSize() * (-1.f));
+	_weaponLabel->setFont("consola");
+	_weaponLabel->setCharSize(15u);
+	_weaponLabel->setStdString("Weapon");
+	_weaponLabel->setOrigin({ 0.f, 1.f });
+	_weaponLabel->setPosition(_weaponIcon->getSize() * (-1.f));
 
-	_weaponIcon.addChild(&_weaponLabel);
+	_weaponIcon->addChild(_weaponLabel);
 
-	_guiRoot.addChild(&_weaponIcon);
-	_guiRoot.addChild(&_shop);
+	_guiRoot.addChild(_weaponIcon);
+	_guiRoot.addChild(_shop);
 
 	for (u32 i = 0u; i < 10; ++i) {
 		for (auto& k : Wearable::EVERY_WEARABLE) {
-			_shop.addWeapon(k);
+			_shop->addWeapon(k);
 		}
 	}
 }
@@ -63,7 +66,7 @@ void StartScreen::onEnter(std::any) {
 	_player = std::make_shared<Player>();
 	_player->setPos({ (float)startingPos[0], (float)startingPos[1] });
 
-	_shop.setPlayer(_player);
+	_shop->setPlayer(_player);
 
 	initializeSprite();
 	initializeWorld();
@@ -125,7 +128,7 @@ void StartScreen::update(double dt) {
 	_generator.update(dt);
 	removeNeeded();
 	_guiRoot.propagateInput();
-	if (_enteredShop && !_shop.isIn()) {
+	if (_enteredShop && !_shop->isIn()) {
 		unActivateShop();
 	}
 
@@ -224,11 +227,11 @@ void StartScreen::renderGui(sf::RenderTarget& target) {
 	target.setView(_guiView);
 	
 
-	_weaponIcon.setVisible(_player->isEquiped());
+	_weaponIcon->setVisible(_player->isEquiped());
 	if (_player->isEquiped()) {
 		auto texture = Wearable::GetWearableinfo(_player->getWeapon().value()).uiTexture;
-		_weaponIcon.setTexture(texture);
-		_weaponLabel.setPosition(_weaponIcon.getSize() * (-1.f));
+		_weaponIcon->setTexture(texture);
+		_weaponLabel->setPosition(_weaponIcon->getSize() * (-1.f));
 	}
 
 	_guiRoot.propagateRender(target);
@@ -278,13 +281,13 @@ void StartScreen::removeNeeded() {
 void StartScreen::activateShop() {
 	_enteredShop = true;
 	_player->setFocus(false);
-	_shop.enter();
+	_shop->enter();
 }
 
 void StartScreen::unActivateShop() {
 	_enteredShop = false;
 	_player->setFocus(true);
-	_shop.leave();
+	_shop->leave();
 }
 
 void StartScreen::playerOnEnter(Object* object) {

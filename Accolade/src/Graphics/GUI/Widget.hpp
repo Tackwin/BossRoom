@@ -35,7 +35,7 @@ public:
 	Widget(Widget* const parent);
 	virtual ~Widget();
 
-	Vector2f getSize() const;
+	virtual Vector2f getSize() const;
 	const Vector2f& getOrigin() const;
 	Vector2f getGlobalPosition() const;
 	const Vector2f& getPosition() const;
@@ -46,7 +46,7 @@ public:
 	void setOnClick(const Callback& onClick);
 	void setOnKey(const Callback& onKey);
 
-	void setSize(const Vector2f& size);
+	virtual void setSize(const Vector2f& size);
 	void setPosition(const Vector2f& pos);
 	void setGlobalPosition(const Vector2f& pos) noexcept;
 	void setOrigin(const Vector2f& origin);
@@ -66,7 +66,7 @@ public:
 	void killEveryChilds() noexcept;
 
 	virtual void render(sf::RenderTarget& target);
-	void propagateRender(sf::RenderTarget& target);
+	virtual void propagateRender(sf::RenderTarget& target);
 
 	std::bitset<9u> input(const std::bitset<9u>& mask);
 	void propagateInput();

@@ -1,8 +1,12 @@
 #include "ValuePicker.hpp"
 
+#include <queue>
+
 #include "Managers/InputsManager.hpp"
 
-ValuePicker::ValuePicker(nlohmann::json json) noexcept : Widget(json) {
+ValuePicker::ValuePicker(nlohmann::json json) noexcept :
+	Widget(json)
+{
 	if (auto it = json.find("unfocusedColor"); it != json.end()) {
 		_unfocusedColor = Vector4f::loadJson(*it);
 	}
@@ -28,7 +32,7 @@ ValuePicker::ValuePicker(nlohmann::json json) noexcept : Widget(json) {
 	onClick.ended = std::bind(&ValuePicker::onClickEnded, this);
 
 	onHover.began = std::bind(&ValuePicker::onHoverBegan, this);
-	onHover.going = Callback::TRUE;
+	onHover.going = std::bind(&ValuePicker::onHoverGoing, this);
 	onHover.ended = std::bind(&ValuePicker::onHoverEnded, this);
 
 	onKey.began = std::bind(&ValuePicker::onKeyBegan, this);
@@ -48,7 +52,8 @@ ValuePicker::ValuePicker(nlohmann::json json) noexcept : Widget(json) {
 }
 
 void ValuePicker::render(sf::RenderTarget& target) {
-	Rectangle2f inputBox{ getGlobalPosition(), getSize() };
+	auto inputBox = getGlobalBoundingBox();
+
 	_label->setSfString(_inputString);
 
 	if (_focused) _inputColor = _focusedColor;
@@ -68,6 +73,12 @@ bool ValuePicker::onClickEnded() noexcept {
 bool ValuePicker::onHoverBegan() noexcept {
 	if (_focused) return true;
 	_inputColor = _focusedColor;
+	return true;
+}
+bool ValuePicker::onHoverGoing() noexcept {
+	if (IM::getLastScroll() != 0) {
+		scroll.x += IM::getLastScroll() * getSize().x / 2.f;
+	}
 	return true;
 }
 bool ValuePicker::onHoverEnded() noexcept {

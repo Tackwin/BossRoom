@@ -223,9 +223,6 @@ void Section::update(double dt) noexcept {
 		fly->update(dt);
 	}
 	for (const auto& p : _info.portals) {
-		if (is_in_portal(p, _player->getBoundingBox())) {
-			printf("Bouh!\n");
-		}
 	}
 
 	removeDeadObject();

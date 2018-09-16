@@ -34,7 +34,6 @@ Widget::Widget(nlohmann::json json) noexcept {
 			if (auto typeIt = child.find("type"); typeIt != child.end()) {
 				std::string type = typeIt->get<std::string>();
 				if (type == Label::NAME) {
-
 					auto p = new Label(child);
 					_allocatedChilds.push_back(p);
 					addChild(p);
@@ -74,7 +73,7 @@ Widget::~Widget() {
 	// i can't imagine a case where a child whose parent just got destroyed
 	// still need to live. (also things like getGlobalPosition would segfault)
 	for (auto c : _childs) {
-		//delete c.second;
+		delete c.second;
 	}
 }
 
@@ -266,24 +265,21 @@ Widget* Widget::findChild(std::string name) const noexcept {
 	return nullptr;
 }
 
-void Widget::render(sf::RenderTarget&) {}
+void Widget::render(sf::RenderTarget& target) {
+	if (!_visible) return;
+
+	sf::CircleShape mark{ 2.f };
+	mark.setOrigin(mark.getRadius(), mark.getRadius());
+	mark.setPosition(getGlobalPosition());
+	mark.setFillColor(Vector4d{ 1, 1, 1, 0.2 });
+	target.draw(mark);
+}
 void Widget::propagateRender(sf::RenderTarget& target) {
-	std::queue<Widget*> open;
-	open.push(this);
+	if (!isVisible()) return;
+	render(target);
 
-	while (!open.empty()) {
-		auto w = open.front();
-		open.pop();
-
-		if (!w->isVisible()) 
-			continue;
-		
-		w->render(target);
-		auto child = w->getChilds();
-
-		for (auto& [_, c] : child) { _;
-			open.push(c);
-		}
+	for (const auto& c : _childs) {
+		c.second->propagateRender(target);
 	}
 }
 

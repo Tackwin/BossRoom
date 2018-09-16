@@ -25,6 +25,7 @@ private:
 	bool onClickEnded() noexcept;
 
 	bool onHoverBegan() noexcept;
+	bool onHoverGoing() noexcept;
 	bool onHoverEnded() noexcept;
 
 	bool onKeyBegan() noexcept;
@@ -40,4 +41,6 @@ private:
 	Vector4f _inputColor = _unfocusedColor;
 
 	Label* _label;
+
+	Vector2f scroll{ 0.f, 0.f };
 };

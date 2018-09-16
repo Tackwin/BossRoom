@@ -35,7 +35,7 @@ private:
 
 	Vector4f _backColor;
 
-	std::vector<std::unique_ptr<Panel>> _panels;
-	std::unique_ptr<Panel> _backPanel;
-	std::unique_ptr<Label> _label;
+	std::vector<Panel*> _panels;
+	Panel* _backPanel{ nullptr };
+	Label* _label{ nullptr };
 };

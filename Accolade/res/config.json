@@ -185,6 +185,11 @@
 		},
 		"transparent": {
 			"sheet": "images/transparent.png"
+		},
+		"10damier": {
+			"sheet": "images/10damier.png",
+			"smooth": false,
+			"repeat": true
 		}
 	},
 	"sounds": {

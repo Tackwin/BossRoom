@@ -9,7 +9,6 @@
 class Button : public Widget {
 public:
 	Button();
-	~Button();
 
 	sf::Sprite& getSprite();
 	sf::Sprite& getHoldSprite();
@@ -33,8 +32,8 @@ private:
 	bool onClickEnded();
 	bool onClickGoing();
 
-	Panel _normal;
-	Panel _hold;
+	Panel* _normal;
+	Panel* _hold;
 
-	Label _label;
+	Label* _label;
 };

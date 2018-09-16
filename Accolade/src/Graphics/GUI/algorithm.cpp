@@ -18,7 +18,7 @@ void populate_widget_with_editable_json_object_form(
 	}};
 	p->setVisible(true);
 
-	Vector2f pos = { (float)indent_size, 0 };
+	Vector2f pos = { (float)indent_size, indent_size / 2.f};
 	for (auto it = j.begin(); it != j.end(); ++it) {
 		if (it.value().is_primitive()) {
 			auto str = std::string{};
@@ -30,24 +30,24 @@ void populate_widget_with_editable_json_object_form(
 			Label* label = new Label{nlohmann::json{
 				{"pos", Vector2f::saveJson(pos) },
 				{"name", it.key() + "_label"},
-				{"origin", {0, 0.5}},
+				//{"origin", {0, 0.5}},
 				{"font", "consola"},
 				{"charSize", 14},
 				{"text", it.key()},
 				{"textColor", {1, 1, 1, 1}}
 			}};
 			auto offsetLabel = Vector2f{
-				pos.x + label->getGlobalBoundingBox().w + 2, pos.y
+				pos.x + label->getGlobalBoundingBox().w + 5, pos.y
 			};
 			ValuePicker* picker = new ValuePicker({ nlohmann::json{
 				{"pos", Vector2f::saveJson(offsetLabel)},
 				{"name", it.key() + "_value"},
-				{"origin", {0, 0.5}},
+				//{"origin", {0, 0.5}},
 				{"unfocusedColor", {0.2, 0.2, 0.2, 0.2}},
 				{"focusedColor", {0.5, 0.5, 0.5, 0.5}},
 				{"font", "consola"},
 				{"size", {100, 15}},
-				{"charSize", 10},
+				{"charSize", 14},
 				{"text", str}
 			}});
 
@@ -60,14 +60,16 @@ void populate_widget_with_editable_json_object_form(
 				{"pos", Vector2f::saveJson(pos) },
 				{"name", it.key() + "_label"},
 				{"font", "consola"},
+				//{"origin", {0, 0.5}},
 				{"charSize", 14},
 				{"text", it.key()},
 				{"textColor", {1, 1, 1, 1}}
 			} };
 			auto offsetLabel = Vector2f{
-				pos.x + label->getGlobalBoundingBox().w + 2, pos.y
+				pos.x + label->getGlobalBoundingBox().w + 5, pos.y
 			};
 			Widget* deep_w = new Widget{ nlohmann::json{
+				//{"origin", {0, 0.5}},
 				{"name", it.key()},
 				{"pos", Vector2f::saveJson(offsetLabel)}
 			}};
@@ -83,14 +85,16 @@ void populate_widget_with_editable_json_object_form(
 				{"pos", Vector2f::saveJson(pos) },
 				{"name", it.key() + "_label"},
 				{"font", "consola"},
+				//{"origin", {0, 0.5}},
 				{"charSize", 14},
 				{"text", it.key()},
 				{"textColor", {1, 1, 1, 1}}
 			} };
-			pos.y += 11;
+			pos.y += 20;
 			for (auto x : it.value().get<nlohmann::json::array_t>()) {
 				Widget* deep_w = new Widget{ nlohmann::json{
 					{"pos", Vector2f::saveJson(pos)},
+					//{"origin", {0, 0.5}},
 					{"name", it.key() + std::to_string(i++)}
 				}};
 
@@ -98,11 +102,11 @@ void populate_widget_with_editable_json_object_form(
 
 				p->addChild(deep_w);
 
-				pos.y += 11;
+				pos.y += 15;
 			}
 			p->addChild(label);
 		}
-		pos.y += 14;
+		pos.y += 20;
 	}
 
 	w->addChild(p);
@@ -134,12 +138,12 @@ void populate_widget_with_editable_json_array_form(
 			ValuePicker* picker = new ValuePicker({ nlohmann::json{
 				{"pos", Vector2f::saveJson(pos)},
 				{"name", std::to_string(it - j.begin()) +"_value"},
-				{"origin", {0, 0.5}},
+				//{"origin", {0, 0.5}},
 				{"unfocusedColor", {0.2, 0.2, 0.2, 0.2}},
 				{"focusedColor", {0.5, 0.5, 0.5, 0.5}},
 				{"font", "consola"},
 				{"size", {100, 15}},
-				{"charSize", 10},
+				{"charSize", 14},
 				{"text", str}
 			} });
 
@@ -168,10 +172,10 @@ void populate_widget_with_editable_json_array_form(
 
 				p->addChild(deep_w);
 
-				pos.y += 11;
+				pos.y += 15;
 			}
 		}
-		pos.y += 14;
+		pos.y += 20;
 	}
 
 	w->addChild(p);

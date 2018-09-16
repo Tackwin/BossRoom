@@ -8,12 +8,12 @@ SpriteSwitcher::SpriteSwitcher(nlohmann::json json) noexcept : Widget(json) {
 		const auto& panels = it->get<std::vector<nlohmann::json::object_t>>();
 
 		for (const auto& p : panels) {
-			auto ptr = std::make_unique<Panel>(p);
+			auto ptr = new Panel{ p };
 			ptr->setOrigin(getOrigin());
 			ptr->setVisible(false);
 			ptr->setSize(getSize().fitDownRatio(ptr->getSizeRatio()));
 			ptr->setPosition({ (getSize().x - ptr->getSize().x) / 2.f, 0.f });
-			addChild(ptr.get(), 1);
+			addChild(ptr, 1);
 			_panels.push_back(std::move(ptr));
 		}
 
@@ -25,29 +25,29 @@ SpriteSwitcher::SpriteSwitcher(nlohmann::json json) noexcept : Widget(json) {
 	}
 
 	if (auto it = json.find("label"); it != json.end()) {
-		_label = std::make_unique<Label>(*it);
-		addChild(_label.get(), 2);
+		_label = new Label{ *it };
+		addChild(_label, 2);
 		setCurrentLabel();
 	}
 	
-	_backPanel = std::make_unique<Panel>();
+	_backPanel = new Panel;
 	_backPanel->setOrigin(getOrigin());
 	_backPanel->setTexture("panel_a");
 	_backPanel->setSize(getSize());
 	_backPanel->getSprite().setColor(_backColor);
 
-	addChild(_backPanel.get(), 0);
+	addChild(_backPanel, 0);
 }
 
 void SpriteSwitcher::add(std::string texture, std::string name) noexcept {
 	if (name == "") name = texture;
 
-	auto ptr = std::make_unique<Panel>();
+	auto ptr = new Panel{};
 	ptr->setTexture(texture);
 	ptr->setOrigin(getOrigin());
 	ptr->setName(name);
 	ptr->setSize(getSize().fitDownRatio(ptr->getSizeRatio()));
-	addChild(ptr.get());
+	addChild(ptr);
 	_panels.push_back(std::move(ptr));
 }
 
@@ -55,7 +55,7 @@ void SpriteSwitcher::del(std::string name) noexcept {
 	auto it = std::find_if(
 		std::begin(_panels),
 		std::end(_panels),
-		[name](const std::unique_ptr<Panel>& ptr) -> bool {
+		[name](const auto& ptr) -> bool {
 			return ptr->getName() == name;
 		}
 	);
@@ -66,7 +66,7 @@ void SpriteSwitcher::del(std::string name) noexcept {
 }
 
 const Panel* SpriteSwitcher::getCurrentPanel() const noexcept {
-	return _panels.front().get();
+	return _panels.front();
 }
 
 void SpriteSwitcher::left(size_t n) noexcept {

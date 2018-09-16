@@ -87,10 +87,10 @@ private:
 	std::shared_ptr<Object> _floor;
 
 	Widget _guiRoot;
-	Panel _weaponIcon;
-	Label _weaponLabel;
+	Panel* _weaponIcon{ nullptr };
+	Label* _weaponLabel{ nullptr };
 
-	Shop _shop;
+	Shop* _shop{ nullptr };
 
 	UUID _keyPressedEvent{ UUID::zero() };
 	UUID _keyReleasedEvent{ UUID::zero() };

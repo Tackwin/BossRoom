@@ -218,8 +218,6 @@
     "resizable": true,
     "collapsable": true,
     "collapsed": true,
-    "childs": {
-
-    }
+    "clipper": true
   }
 }
