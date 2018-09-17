@@ -1,15 +1,18 @@
 #include "algorithm.hpp"
 
+#include "Common.hpp"
+
 #include "ValuePicker.hpp"
 #include "Panel.hpp"
 
 constexpr auto indent_size = 10;
+constexpr auto json_form_suffix = "json_form";
 
 void populate_widget_with_editable_json_object_form(
 	Widget* w, const nlohmann::json& j
 ) noexcept {
 	Panel* p = new Panel{ nlohmann::json{
-		{"name", "main_panel"},
+		{"name", "main_panel" },
 		{"sprite", "transparent"},
 		{"draggable", false},
 		{"collapsable", true},
@@ -179,4 +182,18 @@ void populate_widget_with_editable_json_array_form(
 	}
 
 	w->addChild(p);
+}
+
+nlohmann::json get_json_object_from_widget_tree(const Widget* w) noexcept {
+	// Well we have a little problem.
+	// We just destroyed type information with this serialization.
+	// There is multiple potential solution.
+	// I can make a IntPicker, FloatPicker, Vector2d picker...
+	// Or i can encode the type in the name somehow
+	// But the real solution would be a real reflection system
+	// and that's a completly differnet problem...
+
+}
+nlohmann::json get_json_array_from_widget_tree(const Widget* w) noexcept {
+
 }

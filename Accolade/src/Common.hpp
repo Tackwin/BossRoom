@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <random>
 #include <memory>
+#include <string>
 #include <filesystem>
 #include <type_traits>
 
@@ -100,5 +101,13 @@ namespace xstd {
 	template<typename T>
 	int sign(T x) noexcept {
 		return (T(0) < x) - (x < T(0));
+	}
+
+	template<typename T, typename U>
+	std::enable_if_t<
+		std::is_convertible_v<T, std::string> && std::is_constructible_v<U, std::string>,
+		std::string
+	> append(T a, U b) {
+		return std::string{ a } +b;
 	}
 }

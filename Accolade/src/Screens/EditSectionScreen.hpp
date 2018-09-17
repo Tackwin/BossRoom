@@ -95,9 +95,14 @@ private:
 
 	void changeColorLabel(std::string name, Vector4f color) noexcept;
 
+	void constructUI() noexcept;
+
 	Vector2f getSnapedMouseScreenPos() const noexcept;
 	Vector2f getSnapedMouseCameraPos() const noexcept;
 
+	bool onClickEndedConfirmJsonEditPanel() noexcept;
+
+private:
 	SectionInfo sectionInfo_;
 
 	float _snapLevel{ 0.01f };

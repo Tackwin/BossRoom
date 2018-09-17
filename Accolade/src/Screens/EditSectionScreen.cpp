@@ -18,6 +18,7 @@
 #include "Graphics/GUI/Switcher.hpp"
 #include "Graphics/GUI/Label.hpp"
 #include "Graphics/GUI/Panel.hpp"
+#include "Graphics/GUI/Button.hpp"
 #include "Graphics/GUI/ValuePicker.hpp"
 #include "Graphics/GUI/algorithm.hpp"
 
@@ -515,35 +516,7 @@ void EditSectionScreen::render(sf::RenderTarget& target) {
 void EditSectionScreen::onEnter(std::any) {
 	_json = AM::getJson("editScreen");
 
-	for (auto&[key, value] : _json.get<nlohmann::json::object_t>()) {
-		auto json = value;
-		if (auto it = json.find("type"); it != json.end()) {
-			auto type = it->get<std::string>();
-			if (type == Label::NAME) {
-				_widgets[key] = new Label(json);
-			}
-			if (type == ValuePicker::NAME) {
-				_widgets[key] = new ValuePicker(json);
-			}
-			if (type == Panel::NAME) {
-				_widgets[key] = new Panel(json);
-			}
-		}
-		else {
-			_widgets[key] = new Widget(json);
-		}
-	}
-
-	auto root = _widgets.at("root");
-	assert(root);
-
-	structureSwitcher = (SpriteSwitcher*)(root->findChild("structureSwitcher"));
-	ennemySwitcher_ = (SpriteSwitcher*)(root->findChild("ennemySwitcher"));
-	sourceSwitcher_ = (SpriteSwitcher*)(root->findChild("sourceSwitcher"));
-	jsonEditPanel = (Panel*)_widgets.at("propertiesEditor");
-	_savePicker = (ValuePicker*)(_widgets.at("root")->findChild("savePicker"));
-	_savePicker->setStdString(filepath_.generic_string());
-	_snapGrid = (Label*)(_widgets.at("root")->findChild("snapGrid"));
+	constructUI();
 }
 
 std::any EditSectionScreen::onExit() {
@@ -954,17 +927,20 @@ void EditSectionScreen::selectFocus() noexcept {
 		}
 	}
 
+	static constexpr auto root_properties_name = "properties";
 	applyToFocused([&](auto focused) {
 		using type = decltype(focused);
 
-		jsonEditPanel->killEveryChilds();
-		populate_widget_with_editable_json_object_form(jsonEditPanel, type::saveJson(focused));
+		jsonEditPanel->killDirectChild(root_properties_name);
+		auto w = new Widget;
+		w->setName(root_properties_name);
+		populate_widget_with_editable_json_object_form(w, type::saveJson(focused));
+		jsonEditPanel->addChild(w);
 	});
 	if (!currentlyFocused) {
-		jsonEditPanel->killEveryChilds();
+		jsonEditPanel->killDirectChild(root_properties_name);
 	}
 }
-
 void EditSectionScreen::deleteHovered() noexcept {
 	auto& plateformes = sectionInfo_.plateformes;
 	auto& portals = sectionInfo_.portals;
@@ -1184,4 +1160,48 @@ void EditSectionScreen::loadSectionFile(std::filesystem::path path) noexcept {
 
 	toLoadFile = false;
 	fileToLoad.clear();
+}
+
+void EditSectionScreen::constructUI() noexcept {
+	for (auto&[key, value] : _json.get<nlohmann::json::object_t>()) {
+		auto json = value;
+		if (auto it = json.find("type"); it != json.end()) {
+			auto type = it->get<std::string>();
+
+			// You can't pass type to a local lambda as argument :(
+#define X(x) if (type == x::NAME) _widgets[key] = new x{ json };
+			X(Label);
+			X(ValuePicker);
+			X(SpriteSwitcher);
+			X(Panel);
+			X(Button);
+#undef X
+		}
+		else {
+			_widgets[key] = new Widget(json);
+		}
+	}
+
+	auto root = _widgets.at("root");
+	assert(root);
+
+	structureSwitcher = (SpriteSwitcher*)(root->findChild("structureSwitcher"));
+	ennemySwitcher_ = (SpriteSwitcher*)(root->findChild("ennemySwitcher"));
+	sourceSwitcher_ = (SpriteSwitcher*)(root->findChild("sourceSwitcher"));
+	jsonEditPanel = (Panel*)_widgets.at("propertiesEditor");
+	_savePicker = (ValuePicker*)(_widgets.at("root")->findChild("savePicker"));
+	_savePicker->setStdString(filepath_.generic_string());
+	_snapGrid = (Label*)(_widgets.at("root")->findChild("snapGrid"));
+
+	auto confirmButton = (Button*)jsonEditPanel->findChild("confirm");
+
+	Widget::Callback onClick;
+	onClick.ended = std::bind(&EditSectionScreen::onClickEndedConfirmJsonEditPanel, this);
+	confirmButton->setOnClick(onClick);
+}
+
+bool EditSectionScreen::onClickEndedConfirmJsonEditPanel() noexcept {
+	
+
+	return true;
 }

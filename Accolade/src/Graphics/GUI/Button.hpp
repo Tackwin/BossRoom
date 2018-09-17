@@ -1,4 +1,6 @@
 #pragma once
+#include "3rd/json.hpp"
+
 #include "Widget.hpp"
 
 #include "Panel.hpp"
@@ -8,7 +10,9 @@
 
 class Button : public Widget {
 public:
-	Button();
+	static constexpr auto NAME = "Button";
+
+	Button(const nlohmann::json& json = {});
 
 	sf::Sprite& getSprite();
 	sf::Sprite& getHoldSprite();

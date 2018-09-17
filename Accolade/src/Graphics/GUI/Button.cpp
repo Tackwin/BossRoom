@@ -1,19 +1,37 @@
 #include "Button.hpp"
 
-Button::Button() :
-	Widget(),
-	_normal{ new Panel },
-	_hold{ new Panel },
-	_label{ new Label }
+Button::Button(const nlohmann::json& json) :
+	Widget(json),
+	_normal{ new Panel{json.count("normal") ? json.at("normal") : nlohmann::json{}} },
+	_hold{ new Panel{json.count("hold") ? json.at("hold") : nlohmann::json{}} },
+	_label{ new Label{json.count("label") ? json.at("label") : nlohmann::json{}} }
 {
 	//_onClick.began = std::bind(&Button::onClickBegan, this);
 	//_onClick.ended = std::bind(&Button::onClickEnded, this);
+
+	if (const auto& it = json.find("texture"); it != std::end(json)) {
+		setTexture(*it);
+	}
+	if (const auto& it = json.find("holdTexture"); it != std::end(json)) {
+		setHoldSprite(*it);
+	}
+	if (const auto& it = json.find("color"); it != std::end(json)) {
+		getSprite().setColor(Vector4d::loadJson(*it));
+	}
+
+	// the panels here are static so we overwrite their callbacks.
+	_normal->setOnClick({});
+	_hold->setOnClick({});
 
 	_hold->setVisible(false);
 
 	_normal->setParent(this, 0);
 	_hold->setParent(this, 1);
 	_label->setParent(this, 2);
+
+	_normal->setOrigin(getOrigin());
+	_hold->setOrigin(getOrigin());
+	_label->setOrigin(getOrigin());
 }
 
 

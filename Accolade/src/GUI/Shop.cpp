@@ -19,6 +19,8 @@ Shop::Shop() :
 	_focusPanel(new Panel{}),
 	_quitPanel(new Panel{})
 {
+	setName("shop");
+
 	_merchantPanel->setTexture("panel_a");
 	_merchantPanel->setOrigin({ 0, 0 });
 	_merchantPanel->setPosition({ 50, 50 });
@@ -201,6 +203,7 @@ Shop::_InfoPanel::_InfoPanel(Shop* shop) :
 	setSize({ WIDTH * 0.4f - 25, HEIGHT * 0.7f - 25 });
 	getSprite().setColor(sf::Color(120, 110, 110));
 	setVisible(false);
+	setName("infoPanel");
 
 	labels["name"] = new Label{};
 	auto& name = labels["name"];
@@ -209,6 +212,7 @@ Shop::_InfoPanel::_InfoPanel(Shop* shop) :
 	name->setCharSize(25);
 	name->setPosition({ 50, 25 });
 	name->setParent(this, 1);
+	name->setName("name");
 
 	labels["effect"] = new Label{};
 	auto& effect = labels["effect"];
@@ -217,6 +221,7 @@ Shop::_InfoPanel::_InfoPanel(Shop* shop) :
 	effect->setCharSize(22);
 	effect->setPosition({ 70, 50 });
 	effect->setParent(this, 1);
+	effect->setName("effect");
 
 	labels["cost"] = new Label{};
 	auto& cost = labels["cost"];
@@ -225,13 +230,16 @@ Shop::_InfoPanel::_InfoPanel(Shop* shop) :
 	cost->setCharSize(22);
 	cost->setPosition({ 70, 75 });
 	cost->setParent(this, 1);
+	cost->setName("cost");
 
 	panels["icon"] = new Panel{};
 	auto& icon = panels["icon"];
 	icon->setParent(this, 1);
+	icon->setName("icon");
 
 	buttons["buy"] = new Button{};
 	auto& buy = buttons["buy"];
+	buy->setName("ShopBuy");
 	buy->getLabel().setFont("consola");
 	buy->setTexture("panel_a");
 	buy->getSprite().setColor(sf::Color(150, 160, 150));

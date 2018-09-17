@@ -64,6 +64,7 @@ public:
 	Widget* findChild(std::string name) const noexcept;
 
 	void killEveryChilds() noexcept;
+	void killDirectChild(std::string_view name) noexcept;
 
 	virtual void render(sf::RenderTarget& target);
 	virtual void propagateRender(sf::RenderTarget& target);
@@ -96,7 +97,6 @@ protected: //god this is growing into a god class... :(
 	Widget* _parent = nullptr;	//like, why do i even bother raw pointer mean, 
 								//I DON'T HAVE THE OWNERSHIP, it settles it
 	std::vector<std::pair<i32, Widget*>> _childs;
-	std::vector<Widget*> _allocatedChilds;
 
 	Callback _onHover;
 	Callback _onClick;

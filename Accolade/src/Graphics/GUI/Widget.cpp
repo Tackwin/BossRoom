@@ -8,6 +8,7 @@
 #include "Label.hpp"
 #include "ValuePicker.hpp"
 #include "Switcher.hpp"
+#include "Button.hpp"
 
 const Widget::Callback::type Widget::Callback::FALSE = []() { return false; };
 const Widget::Callback::type Widget::Callback::TRUE =  []() { return true; };
@@ -33,30 +34,18 @@ Widget::Widget(nlohmann::json json) noexcept {
 		for (auto child : *it) {
 			if (auto typeIt = child.find("type"); typeIt != child.end()) {
 				std::string type = typeIt->get<std::string>();
-				if (type == Label::NAME) {
-					auto p = new Label(child);
-					_allocatedChilds.push_back(p);
-					addChild(p);
-				}
-				if (type == ValuePicker::NAME) {
-					auto p = new ValuePicker(child);
-					_allocatedChilds.push_back(p);
-					addChild(p);
-				}
-				if (type == SpriteSwitcher::NAME) {
-					auto p = new SpriteSwitcher(child);
-					_allocatedChilds.push_back(p);
-					addChild(p);
-				}
-				if (type == Panel::NAME) {
-					auto p = new Panel(child);
-					_allocatedChilds.push_back(p);
-					addChild(p);
-				}
+
+				// You can't pass type to a local lambda :(
+#define X(x) if (type == x::NAME) addChild(new x{ child});
+				X(Label);
+				X(ValuePicker);
+				X(SpriteSwitcher);
+				X(Panel);
+				X(Button);
+#undef X
 			}
 			else {
 				auto p = new Widget(child);
-				_allocatedChilds.push_back(p);
 				addChild(p);
 			}
 		}
@@ -125,6 +114,17 @@ void Widget::killEveryChilds() noexcept {
 	}
 	_childs.clear();
 }
+void Widget::killDirectChild(std::string_view name) noexcept {
+	auto it = std::find_if(std::begin(_childs), std::end(_childs), [name](auto x) {
+		return x.second->getName() == name;
+	});
+
+	if (it != std::end(_childs)) {
+		delete it->second;
+		_childs.erase(it);
+	}
+}
+
 bool Widget::haveChild(const Widget* const child) {
 	if (!child) return false;
 
@@ -298,6 +298,7 @@ std::bitset<9u> Widget::input(const std::bitset<9u>& mask) {
 			result[1] = _onClick.going();
 		}
 		if (InputsManager::isMouseJustReleased(sf::Mouse::Left) && !mask[2]) {
+			printf("Name: %s\n", getName().c_str());
 			result[2] = _onClick.ended();
 		}
 		if (!_hovered) {
