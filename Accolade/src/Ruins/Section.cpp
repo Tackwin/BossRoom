@@ -222,8 +222,6 @@ void Section::update(double dt) noexcept {
 	for (auto& fly : flies) {
 		fly->update(dt);
 	}
-	for (const auto& p : _info.portals) {
-	}
 
 	removeDeadObject();
 

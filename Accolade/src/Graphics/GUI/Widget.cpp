@@ -135,6 +135,11 @@ bool Widget::haveChild(const Widget* const child) {
 
 	return it != _childs.end();
 }
+bool Widget::haveChild(const std::string& str) noexcept {
+	return std::find_if(std::begin(_childs), std::end(_childs), [str](auto x) {
+		return x.second->getName() == str;
+	}) != std::end(_childs);
+}
 void Widget::setParent(Widget* const parent, i32 z) {
 	if (!parent) return;
 
@@ -287,6 +292,7 @@ std::bitset<9u> Widget::input(const std::bitset<9u>& mask) {
 	std::bitset<9u> result;
 	result.reset();
 
+
 	auto mouseIsIn = getGlobalBoundingBox().in(InputsManager::getMouseScreenPos());
 
 	if (mouseIsIn || _focused) {
@@ -298,7 +304,6 @@ std::bitset<9u> Widget::input(const std::bitset<9u>& mask) {
 			result[1] = _onClick.going();
 		}
 		if (InputsManager::isMouseJustReleased(sf::Mouse::Left) && !mask[2]) {
-			printf("Name: %s\n", getName().c_str());
 			result[2] = _onClick.ended();
 		}
 		if (!_hovered) {

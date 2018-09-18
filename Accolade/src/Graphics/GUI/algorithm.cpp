@@ -184,7 +184,7 @@ void populate_widget_with_editable_json_array_form(
 	w->addChild(p);
 }
 
-nlohmann::json get_json_object_from_widget_tree(const Widget* w) noexcept {
+nlohmann::json get_json_object_from_widget_tree(const Widget*) noexcept {
 	// Well we have a little problem.
 	// We just destroyed type information with this serialization.
 	// There is multiple potential solution.
@@ -192,8 +192,9 @@ nlohmann::json get_json_object_from_widget_tree(const Widget* w) noexcept {
 	// Or i can encode the type in the name somehow
 	// But the real solution would be a real reflection system
 	// and that's a completly differnet problem...
+	return {};
 
 }
-nlohmann::json get_json_array_from_widget_tree(const Widget* w) noexcept {
-
+nlohmann::json get_json_array_from_widget_tree(const Widget*) noexcept {
+	return {};
 }

@@ -54,9 +54,23 @@ public:
 	void setVisible(bool visible);
 
 	void emancipate();
+	// Just to provide safety over the alternative
+	// (allocating ourself the widget and not forgetting to make it child)
+	// You do _not_ own this, the sole reason it's not a weak_ptr is to not let you think
+	// it's somehow shared by multiple person.
+	template<typename T>
+	std::enable_if_t<
+		std::is_base_of_v<Widget, T>,
+		T*
+	> makeChild/*<3*/(const nlohmann::json& json, i32 z = 0) noexcept {
+		auto c = new T{ json };
+		addChild(c, z);
+		return c;
+	}
 	void denyChild(Widget* const child);
 	void addChild(Widget* const child, i32 z = 0);
 	bool haveChild(const Widget* const child);
+	bool haveChild(const std::string& name) noexcept;
 	void setParent(Widget* const parent, i32 z = 0);
 	Widget* const getParent();
 	const std::vector<std::pair<i32, Widget*>>& getChilds() const noexcept;

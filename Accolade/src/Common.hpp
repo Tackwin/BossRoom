@@ -4,6 +4,7 @@
 #include <string>
 #include <filesystem>
 #include <type_traits>
+#include <unordered_set>
 
 #include "3rd/json.hpp"
 

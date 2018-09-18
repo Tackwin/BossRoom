@@ -1,6 +1,10 @@
 #pragma once
-
 #include "Widget.hpp"
+
+#include <unordered_map>
+
+#include "Utils/UUID.hpp"
+
 #include "Label.hpp"
 
 struct ValuePickerInfo {
@@ -9,8 +13,9 @@ struct ValuePickerInfo {
 };
 
 class ValuePicker : public Widget {
-
 public:
+	using ChangeCallback = std::function<void(const std::string&)>;
+
 	static constexpr auto NAME = "ValuePicker";
 
 	ValuePicker(nlohmann::json json = {}) noexcept;
@@ -19,6 +24,9 @@ public:
 
 	std::string getStdString() const noexcept;
 	void setStdString(std::string str) noexcept;
+
+	UUID listenChange(ChangeCallback&& f) noexcept;
+	void stopListeningChange(UUID id) noexcept;
 
 private:
 
@@ -43,4 +51,6 @@ private:
 	Label* _label;
 
 	Vector2f scroll{ 0.f, 0.f };
+
+	std::unordered_map<UUID, ChangeCallback> changeListeners;
 };

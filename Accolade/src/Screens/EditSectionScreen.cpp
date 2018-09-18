@@ -21,6 +21,7 @@
 #include "Graphics/GUI/Button.hpp"
 #include "Graphics/GUI/ValuePicker.hpp"
 #include "Graphics/GUI/algorithm.hpp"
+#include "Graphics/GUI/JsonTree.hpp"
 
 #include "Utils/string_algorithms.hpp"
 
@@ -31,6 +32,8 @@
 #include "Gameplay/Characters/Fly.hpp"
 
 #include "OS/OpenFile.hpp"
+
+static constexpr auto root_properties_name = "properties";
 
 EditSectionScreen::EditSectionScreen(Section* section) :
 	Screen(),
@@ -927,15 +930,14 @@ void EditSectionScreen::selectFocus() noexcept {
 		}
 	}
 
-	static constexpr auto root_properties_name = "properties";
 	applyToFocused([&](auto focused) {
-		using type = decltype(focused);
+		using type = std::decay_t<decltype(*focused)>;
 
 		jsonEditPanel->killDirectChild(root_properties_name);
-		auto w = new Widget;
-		w->setName(root_properties_name);
-		populate_widget_with_editable_json_object_form(w, type::saveJson(focused));
-		jsonEditPanel->addChild(w);
+		jsonEditPanel->makeChild<JsonTree>({
+			{"name", root_properties_name},
+			{"structure", type::saveJson(*focused)}
+		});
 	});
 	if (!currentlyFocused) {
 		jsonEditPanel->killDirectChild(root_properties_name);
@@ -1201,7 +1203,14 @@ void EditSectionScreen::constructUI() noexcept {
 }
 
 bool EditSectionScreen::onClickEndedConfirmJsonEditPanel() noexcept {
-	
+	if (!jsonEditPanel->haveChild(root_properties_name)) return true;
+
+	auto root = ((JsonTree*)jsonEditPanel->findChild(root_properties_name));
+	auto json = root->getJson();
+
+	applyToFocused([json](auto focused) {
+		*focused = std::decay_t<decltype(*focused)>::loadJson(json);
+	});
 
 	return true;
 }

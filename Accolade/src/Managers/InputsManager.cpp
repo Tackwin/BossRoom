@@ -149,6 +149,8 @@ std::string InputsManager::nameOfKey(sf::Keyboard::Key k) noexcept {
 	X(Pause)
 	X(KeyCount)
 	}
+	return assert("should not happen !"), "";
+#undef X
 }
 
 sf::Keyboard::Key InputsManager::getLastKeyPressed() noexcept {

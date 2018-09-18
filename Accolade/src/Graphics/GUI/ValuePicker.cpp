@@ -89,7 +89,8 @@ bool ValuePicker::onHoverEnded() noexcept {
 
 bool ValuePicker::onKeyBegan() noexcept {
 	if (IM::isKeyJustPressed(sf::Keyboard::BackSpace)) {
-		if (_inputString.length() != 0) _inputString.erase(_inputString.length() - 1);
+		if (_inputString.length() != 0) 
+			setStdString(getStdString().erase(getStdString().length() - 1));
 	}
 	else if (IM::isKeyJustPressed(sf::Keyboard::Return)) {
 		_focused = false;
@@ -97,11 +98,24 @@ bool ValuePicker::onKeyBegan() noexcept {
 	}
 	// Only ascii
 	else if (IM::isTextJustEntered() && IM::getTextEntered() < 125) {
-		_inputString += (char)IM::getTextEntered();
+		setStdString(getStdString() + (char)IM::getTextEntered());
 	}
 	return true;
 };
 
 void ValuePicker::setStdString(std::string str) noexcept {
 	_inputString = str;
+	for (auto& [_, f] : changeListeners)
+		f(_inputString);
+}
+
+UUID ValuePicker::listenChange(ValuePicker::ChangeCallback&& f) noexcept {
+	auto id = UUID{};
+	changeListeners.emplace(id, f);
+	return id;
+}
+
+void ValuePicker::stopListeningChange(UUID id) noexcept {
+	assert(changeListeners.count(id) != 0);
+	changeListeners.erase(id);
 }

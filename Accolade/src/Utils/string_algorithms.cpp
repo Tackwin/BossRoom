@@ -29,4 +29,19 @@ namespace str {
 		}
 		return result.substr(new_start);
 	}
+
+	bool represent_number(std::string_view str) noexcept {
+		// actually check if it's a resolvable expression.
+
+		if (str.empty()) return false;
+		auto minus = (str[0] == '-');
+
+		for (const auto& c : str.substr(minus ? 1 : 0)) {
+			//std::unordered_set<char> allowed{ '+', '-', '*', '/', '(', ')', ' ', '.' };
+
+			if (!std::isdigit(c, std::locale{})) return false;
+		}
+		return !str.empty();
+	}
+
 };

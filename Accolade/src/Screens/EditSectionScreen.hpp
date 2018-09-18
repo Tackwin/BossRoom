@@ -49,7 +49,7 @@ private:
 
 		auto id = currentlyFocused->first;
 		auto ptr = currentlyFocused->second;
-#define X(x) if (id == x::JSON_ID) f(*(x*)ptr)
+#define X(x) if (id == x::JSON_ID) f((x*)ptr)
 
 		X(NavigationPointInfo);
 		X(NavigationLinkInfo);
