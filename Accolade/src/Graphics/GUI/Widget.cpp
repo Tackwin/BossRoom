@@ -297,7 +297,7 @@ std::bitset<9u> Widget::input(const std::bitset<9u>& mask) {
 
 	if (mouseIsIn || _focused) {
 		if (InputsManager::isMouseJustPressed(sf::Mouse::Left) && !mask[0]) {
-			if (!mouseIsIn)	_focused = false;
+			if (!mouseIsIn)	setFocus(false);
 			else			result[0] = _onClick.began();
 		}
 		if (InputsManager::isMousePressed(sf::Mouse::Left) && !mask[1]) {
@@ -372,6 +372,9 @@ std::bitset<9u> Widget::postOrderInput(const std::bitset<9>& mask) {
 						  * *   *    
 */
 
+void Widget::setOnFocus(const Callback& onFocus) noexcept {
+	this->onFocus = onFocus;
+}
 void Widget::setOnHover(const Callback& onHover) {
 	_onHover = onHover;
 }
@@ -391,4 +394,11 @@ std::string Widget::getName() const noexcept {
 }
 void Widget::setName(std::string name) noexcept {
 	_name = name;
+}
+
+void Widget::setFocus(bool v) noexcept {
+	_focused = v;
+}
+bool Widget::isFocus() const noexcept {
+	return _focused;
 }

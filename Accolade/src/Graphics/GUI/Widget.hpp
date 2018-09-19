@@ -42,6 +42,7 @@ public:
 	Rectangle2f getGlobalBoundingBox() const;
 	bool isVisible() const;
 
+	void setOnFocus(const Callback& onFocus) noexcept;
 	void setOnHover(const Callback& onHover);
 	void setOnClick(const Callback& onClick);
 	void setOnKey(const Callback& onKey);
@@ -92,6 +93,9 @@ public:
 	std::string getName() const noexcept;
 	void setName(std::string name) noexcept;
 
+	virtual void setFocus(bool v) noexcept;
+	bool isFocus() const noexcept;
+
 protected: //god this is growing into a god class... :(
 
 	Vector2f _pos;
@@ -115,4 +119,5 @@ protected: //god this is growing into a god class... :(
 	Callback _onHover;
 	Callback _onClick;
 	Callback _onKey;
+	Callback onFocus;
 };

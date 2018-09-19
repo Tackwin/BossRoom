@@ -190,6 +190,9 @@
 			"sheet": "images/10damier.png",
 			"smooth": false,
 			"repeat": true
+		},
+		"cursor": {
+			"sheet": "images/panel_a.png"
 		}
 	},
 	"sounds": {

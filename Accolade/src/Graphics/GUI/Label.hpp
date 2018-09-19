@@ -29,6 +29,5 @@ public:
 	virtual void render(sf::RenderTarget& target);
 
 private:
-	std::weak_ptr<const sf::Font> _font;
 	sf::Text _text;
 };

@@ -25,6 +25,8 @@ nlohmann::json& JsonTree::getJson() noexcept {
 }
 
 void JsonTree::contructTree() noexcept {
+	auto size = Vector2f{ 0, 0 };
+
 	auto p = makeChild<Panel>({
 		{"name", "main_panel" },
 		{"sprite", "transparent"},
@@ -41,6 +43,8 @@ void JsonTree::contructTree() noexcept {
 		auto key =		(structure.is_object() ? it.key()	: std::to_string(it_index)	);
 		auto& value =	(structure.is_object() ? it.value()	: *it						);
 
+		auto offsetSize = Vector2f{ 0, 0 };
+
 		auto offsetLabel = Vector2f{ 0, 0 };
 		if (structure.is_object()) {
 			auto label = makeChild<Label>({
@@ -56,7 +60,13 @@ void JsonTree::contructTree() noexcept {
 			offsetLabel = {
 				pos.x + label->getGlobalBoundingBox().w + 5, pos.y
 			};
+			
+			size.x = std::max(label->getSize().x + label->getPosition().x, size.x);
+			size.y = std::max(label->getSize().y + label->getPosition().y, size.y);
+
+			offsetSize = label->getSize();
 		}
+
 
 		if (value.is_primitive()) {
 			auto str = std::string{};
@@ -78,6 +88,13 @@ void JsonTree::contructTree() noexcept {
 				{"charSize", 14},
 				{"text", str}
 			});
+			size.x = std::max(
+				valuePicker->getSize().x + valuePicker->getPosition().x, size.x
+			);
+			size.y = std::max(
+				valuePicker->getSize().y + valuePicker->getPosition().y, size.y
+			);
+			offsetSize.y = std::max(offsetSize.y, valuePicker->getSize().y);
 			valuePicker->listenChange(
 				[&, copy_value = value, &ref_value = value, valuePicker]
 				(const std::string& new_str) mutable {
@@ -105,14 +122,16 @@ void JsonTree::contructTree() noexcept {
 					}
 				}
 			);
+			pos.y += offsetSize.y;
 		}
 		else if (value.is_object()) {
-			makeChild<JsonTree>({
+			auto jsonChild = makeChild<JsonTree>({
 				//{"origin", {0, 0.5}},
 				{"name", key},
 				{"pos", Vector2f::saveJson(offsetLabel) },
 				{"structure", value}
-			})->listenChange([&, key](auto j) mutable {
+			});
+			jsonChild->listenChange([&, key](auto j) mutable {
 				value = j;
 
 				//Here we propagate the changes
@@ -120,17 +139,28 @@ void JsonTree::contructTree() noexcept {
 					f(structure);
 				}
 			});
+			size.x = std::max(
+				jsonChild->getSize().x + jsonChild->getPosition().x, size.x
+			);
+			size.y = std::max(
+				jsonChild->getSize().y + jsonChild->getPosition().y, size.y
+			);
+
+			offsetSize.y = std::max(offsetSize.y, jsonChild->getSize().y);
+
+			pos.y += offsetSize.y;
 		}
 		else if (value.is_array()) {
 			int i = 0;
 			pos.y += 20;
 			for (auto x : value.get<nlohmann::json::array_t>()) {
-				makeChild<JsonTree>({
+				auto jsonChild = makeChild<JsonTree>({
 					//{"origin", {0, 0.5}},
 					{"name", key + std::to_string(i++)},
 					{"pos", Vector2f::saveJson(pos) },
 					{"structure", x}
-				})->listenChange([&, copy_i = (i - 1)](auto j) mutable {
+				});
+				jsonChild->listenChange([&, copy_i = (i - 1)](auto j) mutable {
 					value[copy_i] = j;
 
 					//Here we propagate the changes
@@ -138,13 +168,19 @@ void JsonTree::contructTree() noexcept {
 						f(structure);
 					}
 				});
+				size.x = std::max(
+					jsonChild->getSize().x + jsonChild->getPosition().x, size.x
+				);
+				size.y = std::max(
+					jsonChild->getSize().y + jsonChild->getPosition().y, size.y
+				);
+				offsetSize.y = std::max(offsetSize.y, jsonChild->getSize().y);
 
-				pos.y += 15;
+				pos.y += offsetSize.y;
 			}
-			pos.y -= 15;
 		}
-		pos.y += 20;
 	}
+	setSize(size);
 }
 
 

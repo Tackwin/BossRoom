@@ -20,6 +20,11 @@ Label::Label(nlohmann::json json) noexcept : Widget(json) {
 		setTextColor(Vector4f::loadJson(*it));
 	}
 	computeSize();
+	_text.setOrigin({
+		_origin.x * _size.x,
+		_origin.y * _size.y
+		});
+	_text.setPosition(getGlobalPosition());
 }
 
 void Label::setFont(const std::string& fontKey) {

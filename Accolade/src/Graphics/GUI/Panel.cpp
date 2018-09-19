@@ -38,7 +38,7 @@ Panel::Panel(nlohmann::json json) noexcept : Widget(json) {
 				doubleClickClock.reset();
 			}
 			else {
-				doubleClickClock = Clock{ get_double_click_time() / 1000.0 };
+				doubleClickClock = Clock{ get_double_click_time().value_or(1000) / 1000.0 };
 			}
 		}
 

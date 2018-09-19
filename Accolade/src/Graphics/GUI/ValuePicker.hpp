@@ -5,7 +5,8 @@
 
 #include "Utils/UUID.hpp"
 
-#include "Label.hpp"
+class Label;
+class Panel;
 
 struct ValuePickerInfo {
 	Vector4f unfocusedColor{ 0.1f, 0.1f, 0.1f, 0.1f };
@@ -28,6 +29,11 @@ public:
 	UUID listenChange(ChangeCallback&& f) noexcept;
 	void stopListeningChange(UUID id) noexcept;
 
+	void setCursorTexture(std::string_view str) noexcept;
+
+	virtual void setSize(const Vector2f& s) noexcept override;
+	virtual void setFocus(bool v) noexcept override;
+
 private:
 
 	bool onClickEnded() noexcept;
@@ -38,9 +44,16 @@ private:
 
 	bool onKeyBegan() noexcept;
 
+	void setCursorSpritePos() noexcept;
+
+	static constexpr auto CURSOR_SIZE = 2;
+
 	std::string _font;
 	std::string _defaultText{ "" };
 	std::string _inputString;
+
+	Panel* cursorSprite{ nullptr };
+	size_t cursorPos{ 0 };
 
 	int _charSize{ 14 };
 

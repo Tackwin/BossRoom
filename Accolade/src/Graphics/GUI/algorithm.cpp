@@ -4,6 +4,7 @@
 
 #include "ValuePicker.hpp"
 #include "Panel.hpp"
+#include "Label.hpp"
 
 constexpr auto indent_size = 10;
 constexpr auto json_form_suffix = "json_form";
