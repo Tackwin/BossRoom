@@ -53,10 +53,12 @@ private:
 
 		X(NavigationPointInfo);
 		X(NavigationLinkInfo);
+		X(SourceDirectionInfo);
+		X(SourceTargetInfo);
+		X(SourceVaccumInfo);
 		X(DistanceGuyInfo);
 		X(PlateformeInfo);
 		X(MeleeGuyInfo);
-		X(SourceInfo);
 		X(PortalInfo);
 		X(SlimeInfo);
 		X(FlyInfo);
