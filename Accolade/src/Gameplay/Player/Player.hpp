@@ -145,9 +145,10 @@ public:
 
 	Rectangle2f getBoundingBox() const noexcept;
 
-public: //TODO: Make private
+private: //TODO: Make private
 
 	void jumpKeyPressed();
+	bool filterCollision(Object& obj) noexcept;
 
 	u32 _nJumpsLeft{ 2 };
 
@@ -180,6 +181,8 @@ public: //TODO: Make private
 
 	bool _invincible{ false };
 	double _invincibleTime{ 0.f };
+
+	bool passingSemiPlateforme{ false };
 
 	//Todo clean up level.
 	Level* _level{ nullptr };

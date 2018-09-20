@@ -16,9 +16,12 @@ struct Collider {
 	} type;
 
 	using Callback = std::function<void(Object*)>;
+	using Filter = std::function<bool(Object&)>;
 
 	Callback onEnter = [](Object*) {};
 	Callback onExit = [](Object*) {};
+
+	Filter filterCollide = [](Object&) { return true; };
 
 	Vector2f dtPos = { 0, 0 };
 

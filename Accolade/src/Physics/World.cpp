@@ -68,7 +68,10 @@ void World::update(double dt) {
 				obj1->pos.x = nPos.x;
 				obj1->collider->setPos({ nPos.x, pos.y });
 
-				if (obj1->collider->collideWith(obj2->collider.get())) {
+				if (
+					obj1->collider->collideWith(obj2->collider.get()) &&
+					obj1->collider->filterCollide(*obj2.get())
+				) {
 					if (!obj1->collider->sensor) {
 						nVel.x = 0;
 						obj1->pos.x = pos.x;
@@ -84,7 +87,10 @@ void World::update(double dt) {
 				obj1->pos.y = nPos.y;
 				obj1->collider->setPos({ pos.x, nPos.y });
 
-				if (obj1->collider->collideWith(obj2->collider.get())) {
+				if (
+					obj1->collider->collideWith(obj2->collider.get()) &&
+					obj1->collider->filterCollide(*obj2.get())
+				) {
 					if (!obj1->collider->sensor){
 						nVel.y = 0;
 						obj1->pos.y = pos.y;

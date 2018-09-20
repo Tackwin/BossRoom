@@ -65,6 +65,7 @@ ValuePicker::ValuePicker(nlohmann::json json) noexcept :
 	setOnHover(onHover);
 	setOnKey(onKey);
 
+	cursorPos = getStdString().size();
 	setCursorSpritePos();
 	cursorSprite->setSize({ (float)CURSOR_SIZE, getSize().y });
 }

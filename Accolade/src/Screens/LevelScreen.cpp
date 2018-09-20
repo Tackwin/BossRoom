@@ -186,8 +186,10 @@ void LevelScreen::renderGui(sf::RenderTarget& target) {
 	
 	auto player = _section->getPlayer();
 
-	if (player->isEquiped()) {
-		sf::Sprite weaponGuiSprite(AM::getTexture(player->_weapon.getInfo().uiTexture));
+	auto weapon = player->getWeapon();
+	if (weapon) {
+		auto texture = Wearable::GetWearableinfo(weapon.value()).uiTexture;
+		sf::Sprite weaponGuiSprite(AM::getTexture(texture));
 		weaponGuiSprite.setPosition({ WIDTH - 50.f, HEIGHT - 50.f });
 		target.draw(weaponGuiSprite);
 	}

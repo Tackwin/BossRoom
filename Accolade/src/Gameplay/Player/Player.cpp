@@ -41,6 +41,9 @@ Player::Player(PlayerInfo info) noexcept :
 	pos = { 100, 100 };
 	idMask.set((size_t)Object::BIT_TAGS::PLAYER);
 	collisionMask.set((size_t)Object::BIT_TAGS::STRUCTURE);
+
+	collider->filterCollide =
+		std::bind(&Player::filterCollision, this, std::placeholders::_1);
 }
 void Player::enterLevel(Level* level) noexcept {
  	_level = level;
@@ -290,6 +293,10 @@ void Player::keyPressed(sf::Keyboard::Key key) {
 	else if (key == kb.getKey(KeyBindings::MOVE_RIGHT)) {
 		_dir.x = 1;
 	}
+
+	if (key == kb.getKey(KeyBindings::MOVE_DOWN)) {
+		passingSemiPlateforme = true;
+	}
 }
 
 void Player::keyReleased(sf::Keyboard::Key key) {
@@ -306,6 +313,9 @@ void Player::keyReleased(sf::Keyboard::Key key) {
 	}
 	else if (key == kb.getKey(KeyBindings::MOVE_RIGHT)) {
 		_dir.x = std::min(_dir.x, 0.f);
+	}
+	if (key == kb.getKey(KeyBindings::MOVE_DOWN)) {
+		passingSemiPlateforme = false;
 	}
 }
 
@@ -460,4 +470,12 @@ bool Player::toRemove() const noexcept {
 
 Rectangle2f Player::getBoundingBox() const noexcept {
 	return Rectangle2f{ collider->getGlobalPos(), ((Box*)collider.get())->getSize() };
+}
+
+bool Player::filterCollision(Object& obj) noexcept {
+	if (auto ptr = dynamic_cast<Plateforme*>(&obj); ptr && ptr->isPassable()) {
+		if (continueToJump_ && velocity.y < 0) return false;
+		if (passingSemiPlateforme) return false;
+	}
+	return true;
 }

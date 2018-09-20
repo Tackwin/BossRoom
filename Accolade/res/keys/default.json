@@ -6,5 +6,6 @@
   "move_up": 25,
   "action": 0,
   "dash": -1,
-  "jump": 57
+  "jump": 57,
+  "passthrough": 18
 }

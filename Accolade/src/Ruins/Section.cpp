@@ -48,6 +48,7 @@ SectionInfo SectionInfo::loadJson(const nlohmann::json& json) noexcept {
 	load_vectors(info.sourcesVaccum);
 	load_vectors(info.sources);
 
+	load_vectors(info.semiPlateformes);
 	load_vectors(info.plateformes);
 	load_vectors(info.portals);
 
@@ -76,6 +77,7 @@ nlohmann::json SectionInfo::saveJson(SectionInfo info) noexcept {
 	json["startPos"] = Vector2f::saveJson(info.startPos);
 	json["viewSize"] = Vector2f::saveJson(info.viewSize);
 
+	save_vectors(info.semiPlateformes);
 	save_vectors(info.plateformes);
 	save_vectors(info.portals);
 

@@ -33,11 +33,20 @@ Rectangle2f Plateforme::getBoundingBox() const noexcept {
 PlateformeInfo PlateformeInfo::loadJson(const nlohmann::json& json) noexcept {
 	PlateformeInfo info;
 	info.rectangle = Rectangle2f::loadJson(json.at("rectangle"));
+	info.passable = json.count("passable") > 0 ? json.at("passable") : false;
 	return info;
 }
 
 nlohmann::json PlateformeInfo::saveJson(const PlateformeInfo& info) noexcept {
 	nlohmann::json json;
 	json["rectangle"] = Rectangle2f::saveJson(info.rectangle);
+	json["passable"] = info.passable;
 	return json;
+}
+
+bool Plateforme::isPassable() const noexcept {
+	return _info.passable;
+}
+void Plateforme::setPassable(bool v) noexcept {
+	_info.passable = v;
 }

@@ -599,9 +599,9 @@ void EditSectionScreen::exitToolState() noexcept {
 void EditSectionScreen::renderDebug(
 	sf::RenderTarget& target, PlateformeInfo info
 ) noexcept {
-	Vector4f color{ 0.8f, 0.8f, 0.0f, 1.0f };
+	Vector4f color{ 0.8f, 0.8f, 0.0f, info.passable ? 0.5f : 1.0f };
 	if (info.rectangle.in(IM::getMousePosInView(_cameraView))) {
-		color = { 1.0f, 0.7f, 0.0f, 1.0f };
+		color = { 1.0f, 0.7f, 0.0f, info.passable ? 0.5f : 1.0f };
 	}
 	info.rectangle.render(target, color);
 }

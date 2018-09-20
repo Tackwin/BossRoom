@@ -366,6 +366,7 @@
     <ClCompile Include="src\OS\windows\OpenFile.cpp" />
     <ClCompile Include="src\OS\windows\PathDefinition.cpp" />
     <ClCompile Include="src\OS\windows\SystemConfiguration.cpp" />
+    <ClCompile Include="src\Ruins\Instance.cpp" />
     <ClCompile Include="src\Ruins\Structure\Plateforme.cpp" />
     <ClCompile Include="src\Events\Event.cpp" />
     <ClCompile Include="src\Game.cpp" />
@@ -448,6 +449,7 @@
     <ClInclude Include="src\OS\OpenFile.hpp" />
     <ClInclude Include="src\OS\PathDefinition.hpp" />
     <ClInclude Include="src\OS\SystemConfiguration.hpp" />
+    <ClInclude Include="src\Ruins\Instance.hpp" />
     <ClInclude Include="src\Ruins\Structure\Plateforme.hpp" />
     <ClInclude Include="src\3rd\json.hpp" />
     <ClInclude Include="src\Common.hpp" />

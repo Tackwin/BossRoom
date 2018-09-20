@@ -12,6 +12,7 @@
 #include "Structure/Portal.hpp"
 #include "Structure/Structure.hpp"
 #include "Structure/Plateforme.hpp"
+#include "Structure/SemiPlateforme.hpp"
 
 #include "Navigation/NavigationPoint.hpp"
 #include "Navigation/NavigationLink.hpp"
@@ -41,6 +42,7 @@ struct SectionInfo {
 	std::vector<SlimeInfo> slimes;
 	std::vector<FlyInfo> flies;
 
+	std::vector<SemiPlateformeInfo> semiPlateformes;
 	std::vector<PlateformeInfo> plateformes;
 	std::vector<PortalInfo> portals;
 

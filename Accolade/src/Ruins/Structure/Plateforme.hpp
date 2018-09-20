@@ -7,6 +7,7 @@ struct PlateformeInfo {
 	static constexpr auto JSON_ID = "PlateformeInfo";
 
 	Rectangle2f rectangle;
+	bool passable{ false };
 
 	static PlateformeInfo loadJson(const nlohmann::json& json) noexcept;
 	static nlohmann::json saveJson(const PlateformeInfo& info) noexcept;
@@ -24,6 +25,9 @@ public:
 	Kind getType() const noexcept override { return Kind::Plateforme; }
 
 	Rectangle2f getBoundingBox() const noexcept;
+
+	bool isPassable() const noexcept;
+	void setPassable(bool v) noexcept;
 
 private:
 	PlateformeInfo _info;
