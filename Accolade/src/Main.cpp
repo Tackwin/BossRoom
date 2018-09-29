@@ -83,16 +83,17 @@ int main(int, char**) {
 
 	//let's try to fit our game into 16MiB
 	//MemoryManager::I().initialize_buffer(1024 * 1024 * 16);
-	// loadRessources();
-	// startGame();
-
+	/*
+	loadRessources();
+	startGame();
+	*/
 	sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT, 24), "Boss room");
 	window.setFramerateLimit(0);
 
 	Instance* instance{ nullptr };
 	do {
 		InstanceInfo i;
-		i.nSamples = 1000;
+		i.nSamples = 50;
 
 		if (instance) delete instance;
 		instance = new Instance{ i };
@@ -100,7 +101,6 @@ int main(int, char**) {
 
 	} while (instance->rerun);
 	delete instance;
-
 	//glfwTerminate();
 	return 0;
 }

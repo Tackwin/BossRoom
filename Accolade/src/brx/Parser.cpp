@@ -160,14 +160,14 @@ Number read_number(std::istream& stream) noexcept {
 		}
 
 		if (c == '.') {
-			point_pos = numbers.size();
+			point_pos = (int)numbers.size();
 		}
 		else {
 			numbers.push_back(c - '0');
 		}
 	}
 
-	if (point_pos == -1) point_pos = numbers.size();
+	if (point_pos == -1) point_pos = (int)numbers.size();
 
 	Number n{ 0.0 };
 

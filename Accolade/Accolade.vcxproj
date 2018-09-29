@@ -344,6 +344,7 @@
   <ItemGroup>
     <ClCompile Include="src\brx\Parser.cpp" />
     <ClCompile Include="src\brx\Serializer.cpp" />
+    <ClCompile Include="src\Entity\EntityStore.cpp" />
     <ClCompile Include="src\Gameplay\Characters\DistanceGuy.cpp" />
     <ClCompile Include="src\Gameplay\Characters\Fly.cpp" />
     <ClCompile Include="src\Gameplay\Characters\MeleeGuy.cpp" />
@@ -366,6 +367,7 @@
     <ClCompile Include="src\OS\windows\OpenFile.cpp" />
     <ClCompile Include="src\OS\windows\PathDefinition.cpp" />
     <ClCompile Include="src\OS\windows\SystemConfiguration.cpp" />
+    <ClCompile Include="src\RTTI\dyn_struct.cpp" />
     <ClCompile Include="src\Ruins\Instance.cpp" />
     <ClCompile Include="src\Ruins\Structure\Plateforme.cpp" />
     <ClCompile Include="src\Events\Event.cpp" />
@@ -425,6 +427,8 @@
     <ClInclude Include="src\Components\Bumpable.hpp" />
     <ClInclude Include="src\Components\Hitable.hpp" />
     <ClInclude Include="src\Components\Removable.hpp" />
+    <ClInclude Include="src\Entity\Eid.hpp" />
+    <ClInclude Include="src\Entity\EntityStore.hpp" />
     <ClInclude Include="src\Gameplay\Characters\DistanceGuy.hpp" />
     <ClInclude Include="src\Gameplay\Characters\Fly.hpp" />
     <ClInclude Include="src\Gameplay\Characters\MeleeGuy.hpp" />
@@ -449,6 +453,7 @@
     <ClInclude Include="src\OS\OpenFile.hpp" />
     <ClInclude Include="src\OS\PathDefinition.hpp" />
     <ClInclude Include="src\OS\SystemConfiguration.hpp" />
+    <ClInclude Include="src\RTTI\dyn_struct.hpp" />
     <ClInclude Include="src\Ruins\Instance.hpp" />
     <ClInclude Include="src\Ruins\Structure\Plateforme.hpp" />
     <ClInclude Include="src\3rd\json.hpp" />
@@ -519,6 +524,7 @@
     <None Include="res\rooms\start.json" />
     <None Include="res\sources\boomerang.json" />
     <None Include="res\spells\boomerang.json" />
+    <None Include="src\Entity\Eid.cpp" />
     <None Include="src\Gameplay\Magic\Sources\Source.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
