@@ -143,6 +143,8 @@ Section::Section(SectionInfo info) noexcept : _info(info) {
 }
 
 void Section::enter() noexcept {
+	time_since_entered = 0.f;
+
 	_player = std::make_shared<Player>(C::game->getPlayerInfo());
 	_player->setPos(_info.startPos);
 	_player->enter(this);
@@ -193,9 +195,13 @@ void Section::exit() noexcept {
 	for (auto& fly : flies) {
 		fly->leaveSection();
 	}
+
+	_world.purge();
 }
 
 void Section::update(double dt) noexcept {
+	time_since_entered += dt;
+
 	auto mouse = IM::getMousePosInView(_cameraView);
 
 	_player->setFacingDir((float)(mouse - _player->getPos()).angleX());
@@ -563,4 +569,12 @@ void Section::setFilepath(std::filesystem::path filepath) noexcept {
 }
 std::filesystem::path Section::getFilepath() const noexcept {
 	return filepath_;
+}
+
+const std::vector<PortalInfo>& Section::getAllPortals() const noexcept {
+	return _info.portals;
+}
+
+double Section::getTimeSinceEntered() const noexcept {
+	return time_since_entered;
 }

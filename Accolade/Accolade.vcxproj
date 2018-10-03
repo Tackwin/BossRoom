@@ -507,6 +507,7 @@
     <ClInclude Include="src\System\Window.hpp" />
     <ClInclude Include="src\Time\Clock.hpp" />
     <ClInclude Include="src\Time\Scheduler.hpp" />
+    <ClInclude Include="src\Utils\container_algorithm.hpp" />
     <ClInclude Include="src\Utils\Defer.hpp" />
     <ClInclude Include="src\Utils\json_algorithms.hpp" />
     <ClInclude Include="src\Utils\meta_algorithms.hpp" />

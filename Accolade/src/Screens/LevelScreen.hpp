@@ -11,6 +11,8 @@
 #include "./../Gameplay/Player/Player.hpp"
 #include "../Ruins/Section.hpp"
 
+#include "Ruins/Instance.hpp"
+
 class Level;
 class LevelScreen : public Screen {
 public:
@@ -40,6 +42,8 @@ private:
 
 	MM::unique_ptr<Level> _level;
 	
+	std::unique_ptr<Instance> instance;
+
 	sf::Sprite _bossHealthTileSprite;
 	std::unique_ptr<Section> _section;
 	std::vector<sf::RectangleShape> _playerLife;

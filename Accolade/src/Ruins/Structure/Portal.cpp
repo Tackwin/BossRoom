@@ -8,6 +8,7 @@ nlohmann::json PortalInfo::saveJson(PortalInfo info) noexcept {
 	SAVE(frontier, );
 
 	SAVE(id, );
+	SAVE(spot, );
 	SAVE(tp_to, );
 
 	return json;
@@ -22,6 +23,7 @@ PortalInfo PortalInfo::loadJson(nlohmann::json json) noexcept {
 	LOAD(frontier, );
 
 	LOAD(id, );
+	LOAD(spot, );
 	LOAD(tp_to, );
 
 	return info;

@@ -83,11 +83,11 @@ int main(int, char**) {
 
 	//let's try to fit our game into 16MiB
 	//MemoryManager::I().initialize_buffer(1024 * 1024 * 16);
-	/*
+	
 	loadRessources();
 	startGame();
-	*/
-	sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT, 24), "Boss room");
+	
+	/*sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT, 24), "Boss room");
 	window.setFramerateLimit(0);
 
 	Instance* instance{ nullptr };
@@ -100,7 +100,7 @@ int main(int, char**) {
 		instance->runAlgo(window);
 
 	} while (instance->rerun);
-	delete instance;
+	delete instance;*/
 	//glfwTerminate();
 	return 0;
 }
@@ -114,16 +114,15 @@ void startGame() {
 	window.setKeyRepeatEnabled(false);
 	window.setFramerateLimit(0);
 
-
-
 	const auto& updateKey = TimerManager::addFunction(
 		MIN_MS,
 		std::bind(&update, std::ref(window), std::placeholders::_1)
 	);
 	Clock fpsClock;
+
 	const auto& renderKey = TimerManager::addFunction(
 		0,
-		std::bind(&render, std::ref(window))
+		[&window](auto) { return render(window); }
 	);
 	
 	while (window.isOpen()) {

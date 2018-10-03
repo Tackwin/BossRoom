@@ -56,6 +56,20 @@ struct holded<std::shared_ptr<T>> {
 };
 
 template<typename T>
+struct key_map_type;
+
+template<typename U, typename V>
+struct key_map_type<std::unordered_map<U, V>> {
+	using key = U;
+	using Value = V;
+};
+template<typename U, typename V>
+struct key_map_type<std::map<U, V>> {
+	using key = U;
+	using Value = V;
+};
+
+template<typename T>
 using holded_t = typename holded<std::decay_t<T>>::type;
 
 template<typename T>

@@ -65,10 +65,10 @@ public:
 	Section(SectionInfo info) noexcept;
 
 	Section(Section&) = delete;
-	Section(Section&&) = delete;
+	Section(Section&&) = default;
 
 	Section& operator=(Section&) = delete;
-	Section& operator=(Section&&) = delete;
+	Section& operator=(Section&&) = default;
 
 	void enter() noexcept;
 	void exit() noexcept;
@@ -77,7 +77,6 @@ public:
 
 	void render(sf::RenderTarget& target) const noexcept;
 	void renderDebug(sf::RenderTarget& target) const noexcept;
-
 
 	void addZone(std::shared_ptr<Zone> ptr) noexcept;
 
@@ -98,6 +97,8 @@ public:
 	NavigationPointInfo getNavigationPoint(UUID link, UUID current) const noexcept;
 	NavigationPointInfo getNextNavigationPointFrom(UUID id, Vector2f to) const noexcept;
 
+	const std::vector<PortalInfo>& getAllPortals() const noexcept;
+
 	Vector2f getPlayerPos() const noexcept;
 
 	std::shared_ptr<Player> getPlayer() const noexcept;
@@ -114,6 +115,8 @@ public:
 
 	void setFilepath(std::filesystem::path filepath) noexcept;
 	std::filesystem::path getFilepath() const noexcept;
+
+	double getTimeSinceEntered() const noexcept;
 private:
 	// remove all object wich has the remove flag set
 	void removeDeadObject() noexcept;
@@ -130,6 +133,8 @@ private:
 	void pullProjectilsFromObjects() noexcept;
 
 	NavigationPointInfo getClosestNavigationPoint(Vector2f p) const noexcept;
+
+	double time_since_entered{ 0.f };
 
 	nlohmann::json _levelJson;
 

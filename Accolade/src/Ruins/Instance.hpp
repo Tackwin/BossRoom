@@ -2,12 +2,19 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 
+#include "Entity/EntityStore.hpp"
+#include "Entity/Eid.hpp"
+
 #include "3rd/json.hpp"
 
 #include "Math/Vector.hpp"
 #include "Math/Rectangle.hpp"
 
+#include "Section.hpp"
+
 struct InstanceInfo {
+
+	std::vector<SectionInfo> sections;
 
 	size_t nSamples{ 0 };
 	std::vector<Vector2f> roofSamples;
@@ -22,6 +29,33 @@ class Instance {
 public:
 	Instance(const InstanceInfo& info) noexcept;
 
+	void generateGrid(size_t n) noexcept;
+
+	void startAt(size_t p) noexcept;
+
+	void update(double dt) noexcept;
+	void render(sf::RenderTarget& target) noexcept;
+	void renderDebug(sf::RenderTarget& target) noexcept;
+
+	void hardSetCurrentSection(const SectionInfo& sec) noexcept;
+
+	const Section& getCurrentSection() const noexcept;
+	Section& getCurrentSection() noexcept;
+
+	std::optional<Eid<Section>> getNextSectionIfInstantiated(size_t dir) const noexcept;
+
+private:
+	InstanceInfo info;
+	std::vector<Eid<Section>> sections;
+
+	Eid<Section> current_section;
+
+	EntityStore entity_store;
+
+	size_t complementary_dir(size_t dir) const noexcept;
+
+// bad stuff do not use
+public:
 	void runAlgo(sf::RenderWindow& window) noexcept;
 
 	bool rerun{ false };
@@ -34,6 +68,5 @@ private:
 	void spaceTowers(sf::RenderWindow& window) noexcept;
 	void generateTowersBridge(sf::RenderWindow& window) noexcept;
 
-	InstanceInfo info;
 	sf::View v;
 };

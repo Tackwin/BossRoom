@@ -2,6 +2,11 @@
 #include "Common.hpp"
 
 #include "Math/Segment.hpp"
+#include "Math/algorithms.hpp"
+
+#include "Managers/AssetsManager.hpp"
+
+#include "Utils/container_algorithm.hpp"
 
 #define SAVE(x, y) json[#x] = y(info.x);
 nlohmann::json InstanceInfo::saveJson(const InstanceInfo& info) noexcept {
@@ -26,6 +31,140 @@ InstanceInfo InstanceInfo::loadJson(const nlohmann::json& json) noexcept {
 #undef LOAD
 
 Instance::Instance(const InstanceInfo& info) noexcept : info(info) {}
+
+void Instance::generateGrid(size_t n) noexcept {
+	SectionInfo model = SectionInfo::loadJson(AM::getJson("1x1"));
+
+	for (size_t y = 0; y < n; ++y) {
+		for (size_t x = 0; x < n; ++x) {
+			SectionInfo sec = model;
+			for (auto& p : sec.portals) p.id = {};
+
+			if (x > 0) {
+				SectionInfo& left = info.sections[x - 1 + y * n];
+
+				PortalInfo& portal_A = *std::find_if(
+					std::begin(sec.portals),
+					std::end(sec.portals),
+					[](auto x) {
+						return x.spot == 0;
+					}
+				);
+				PortalInfo& portal_B = *std::find_if(
+					std::begin(left.portals),
+					std::end(left.portals),
+					[](auto x) {
+						return x.spot == 2;
+					}
+				);
+
+				portal_A.tp_to = portal_B.id;
+				portal_B.tp_to = portal_A.id;
+			}
+			if (y > 0) {
+				SectionInfo& down = info.sections[x + (y - 1) * n];
+
+				PortalInfo& portal_A = *std::find_if(
+					std::begin(sec.portals),
+					std::end(sec.portals),
+					[](auto x) {
+						return x.spot == 3;
+					}
+				);
+				PortalInfo& portal_B = *std::find_if(
+					std::begin(down.portals),
+					std::end(down.portals),
+					[](auto x) {
+						return x.spot == 1;
+					}
+				);
+
+				portal_A.tp_to = portal_B.id;
+				portal_B.tp_to = portal_A.id;
+			}
+
+			info.sections.push_back(sec);
+		}
+	}
+}
+
+void Instance::startAt(size_t p) noexcept {
+	current_section = entity_store.make<Section>(info.sections[p]);
+	sections.push_back(current_section);
+}
+
+void Instance::hardSetCurrentSection(const SectionInfo& sec) noexcept {
+	auto it = std::find(std::begin(sections), std::end(sections), current_section);
+	entity_store.destroy(current_section);
+	current_section = entity_store.make<Section>(sec);
+	*it = current_section;
+}
+
+void Instance::update(double dt) noexcept {
+	auto section = entity_store.get(current_section);
+	assert(section);
+	auto playerPos = section->getPlayerPos();
+
+	section->update(dt);
+
+	std::optional<PortalInfo> opt;
+
+	if (section->getTimeSinceEntered() > 5.0) {
+		for (auto& p : section->getAllPortals()) {
+			if (min_dist2(p.frontier, playerPos) < 1) {
+				opt = p;
+				break;
+			}
+		}
+
+		if (auto p = *opt; opt) {
+			section->exit();
+			auto next = getNextSectionIfInstantiated(p.spot);
+			
+			if (next) current_section = *next;
+			else {
+				auto nextToInstantiate =
+					find<SectionInfo>(info.sections, [id = p.tp_to](const SectionInfo& i) {
+						return std::count_if(
+							std::begin(i.portals),
+							std::end(i.portals),
+							[id](PortalInfo i) {
+								return i.id == id;
+							}
+						) != 0;
+					});
+
+				assert(nextToInstantiate);
+				sections.push_back(entity_store.make<Section>(*nextToInstantiate));
+				current_section = sections.back();
+			}
+			
+			entity_store.get(current_section)->enter();
+		}
+	}
+
+
+}
+
+void Instance::render(sf::RenderTarget& target) noexcept {
+	auto section = entity_store.get(current_section);
+	assert(section);
+
+	section->render(target);
+}
+void Instance::renderDebug(sf::RenderTarget& target) noexcept {
+	auto section = entity_store.get(current_section);
+	assert(section);
+
+	section->renderDebug(target);
+}
+
+Section& Instance::getCurrentSection() noexcept {
+	return *entity_store.get(current_section);
+}
+const Section& Instance::getCurrentSection() const noexcept {
+	return *entity_store.get(current_section.to_const());
+}
 
 void Instance::runAlgo(sf::RenderWindow& window) noexcept {
 	v = sf::View{ {WIDTH / 2.f, HEIGHT / 2.f}, {(float)WIDTH, (float)HEIGHT} };
@@ -256,9 +395,9 @@ void Instance::generateRoughTowers(sf::RenderWindow& window) noexcept {
 			rectangles.push_back(core);
 
 			for (int j = 0; j < n_features; ++j) {
-				float margin_x = unitaryRng(RD) * (info.roofSamples[i].x / 10) + 5;
+				float margin_x = unitaryRng(RD) * (info.roofSamples[i].x / 10.f) + 5;
 				float height = unitaryRng(RD) * (50 - 20) + 20;
-				float pos_y = unitaryRng(RD) * (info.roofSamples[i].y * 0.8) + 50;
+				float pos_y = unitaryRng(RD) * (info.roofSamples[i].y * 0.8f) + 50;
 
 				if (pos_y >= info.roofSamples[i].y) continue;
 
@@ -274,7 +413,7 @@ void Instance::generateRoughTowers(sf::RenderWindow& window) noexcept {
 
 		for (auto& t : info.roughTowers) {
 			for (auto& r : t) {
-				r.render(window, { 0, 0, 0, 0 }, { 1, 1, 1, 1 }, 0.05);
+				r.render(window, { 0, 0, 0, 0 }, { 1, 1, 1, 1 }, 0.05f);
 			}
 		}
 
@@ -286,7 +425,6 @@ void Instance::generateRoughTowers(sf::RenderWindow& window) noexcept {
 void Instance::spaceTowers(sf::RenderWindow& window) noexcept {
 	size_t n_frames = 0;
 	size_t i = 0;
-	float sum_x = 0;
 
 	size_t median_height = 0;
 	std::vector<size_t> indexes(info.roughTowers.size());
@@ -342,7 +480,7 @@ void Instance::spaceTowers(sf::RenderWindow& window) noexcept {
 
 		for (auto& t : info.roughTowers) {
 			for (auto& r : t) {
-				r.render(window, { 0, 0, 0, 0 }, { 1, 1, 1, 1 }, 0.05);
+				r.render(window, { 0, 0, 0, 0 }, { 1, 1, 1, 1 }, 0.05f);
 			}
 		}
 
@@ -400,7 +538,7 @@ void Instance::generateTowersBridge(sf::RenderWindow& window) noexcept {
 			for (int j = 0; j < n_features; ++j) {
 				float margin_x = unitaryRng(RD) * (info.roofSamples[i].x / 10) + 5;
 				float height = unitaryRng(RD) * (50 - 20) + 20;
-				float pos_y = unitaryRng(RD) * (info.roofSamples[i].y * 0.8) + 50;
+				float pos_y = unitaryRng(RD) * (info.roofSamples[i].y * 0.8f) + 50;
 
 				if (pos_y >= info.roofSamples[i].y) continue;
 
@@ -416,7 +554,7 @@ void Instance::generateTowersBridge(sf::RenderWindow& window) noexcept {
 
 		for (auto& t : info.roughTowers) {
 			for (auto& r : t) {
-				r.render(window, { 0, 0, 0, 0 }, { 1, 1, 1, 1 }, 0.05);
+				r.render(window, { 0, 0, 0, 0 }, { 1, 1, 1, 1 }, 0.05f);
 			}
 		}
 
@@ -425,3 +563,41 @@ void Instance::generateTowersBridge(sf::RenderWindow& window) noexcept {
 	}
 }
 
+std::optional<Eid<Section>>
+Instance::getNextSectionIfInstantiated(size_t dir) const noexcept {
+	auto& s = getCurrentSection();
+	auto tp_to_it = std::find_if(
+		std::begin(s.getAllPortals()),
+		std::end(s.getAllPortals()),
+		[dir](PortalInfo i) {
+			return i.spot == dir;
+		}
+	);
+	assert(tp_to_it != std::end(s.getAllPortals()));
+	auto tp_to = tp_to_it->tp_to;
+
+	auto it = std::find_if(
+		std::begin(sections),
+		std::end(sections),
+		[&](Eid<Section> ptr) {
+			auto& portals = entity_store.get(ptr.to_const())->getAllPortals();
+			return std::count_if(
+				std::begin(portals),
+				std::end(portals),
+				[tp_to](PortalInfo i) {
+					return i.id == tp_to;
+				}
+			) > 0;
+		}
+	);
+
+	if (it != std::end(sections))	return *it;
+	else							return {};
+}
+
+size_t Instance::complementary_dir(size_t dir) const noexcept {
+	return	dir == 0 ? 2 :
+			dir == 1 ? 3 :
+			dir == 2 ? 0 :
+			dir == 3 ? 1 : assert("???"), 0;
+}

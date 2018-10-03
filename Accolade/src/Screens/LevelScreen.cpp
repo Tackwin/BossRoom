@@ -40,6 +40,11 @@ LevelScreen::LevelScreen(u32 n) :
 	);
 	_bossHealthTileSprite.setPosition(35, 35);
 
+	InstanceInfo info;
+	instance = std::make_unique<Instance>(info);
+	instance->generateGrid(10);
+	instance->startAt(0);
+
 	std::filesystem::path startRoom = AM::getJson(JSON_KEY)["StartRoom"].get<std::string>();
 	AM::loadJson("StartRoom", (ASSETS_PATH / startRoom).string());
 
@@ -54,15 +59,20 @@ LevelScreen::~LevelScreen() {
 
 void LevelScreen::onEnter(std::any input) {
 	if (game->getLastScreen() == Screen::edit_screen) {
-
 		auto returnValue = std::any_cast<EditSectionScreen::ReturnType>(input);
-		_section = std::make_unique<Section>(std::get<0>(returnValue));
-		_section->setFilepath(std::get<1>(returnValue));
+
+		instance->hardSetCurrentSection(std::get<0>(returnValue));
+
+
+		//_section = std::make_unique<Section>(std::get<0>(returnValue));
+		//_section->setFilepath(std::get<1>(returnValue));
 	}
-	_section->enter();
+
+	instance->getCurrentSection().enter();
+	//_section->enter();
 	//_level->start(this);
 
-	auto player = _section->getPlayer();
+	auto player = instance->getCurrentSection().getPlayer();
 
 	for (int i = 0; i < player->getPlayerInfo().maxLife; i++) {
 		_playerLife.push_back(sf::RectangleShape());
@@ -85,7 +95,7 @@ std::any LevelScreen::onExit() {
 	//if (_level) 
 	//	_level->stop();
 
-	_section->exit();
+	instance->getCurrentSection().exit();
 	_playerLife.clear();
 	return {};
 }
@@ -96,7 +106,7 @@ void LevelScreen::update(double dt) {
 	if (_gameViewSize != _gameView.getSize())
 		_gameView.setSize(_gameViewSize);
 
-	auto player = _section->getPlayer();
+	auto player = instance->getCurrentSection().getPlayer();
 
 	for (int i = 0; i < player->getPlayerInfo().maxLife; i++) {
 		_playerLife[i].setFillColor(
@@ -110,7 +120,7 @@ void LevelScreen::update(double dt) {
 		);
 	}
 	
-	_section->update(dt);
+	instance->update(dt);
 	/*if (_level) {
 		_level->update(dt);
 		if (_level->lost()) {
@@ -118,7 +128,9 @@ void LevelScreen::update(double dt) {
 		}
 	}*/
 	if (IM::isLastSequenceJustFinished({ sf::Keyboard::LControl, sf::Keyboard::E })) {
-		C::game->enterScreen(std::make_shared<EditSectionScreen>(_section.get()));
+		C::game->enterScreen(
+			std::make_shared<EditSectionScreen>(&instance->getCurrentSection())
+		);
 		return;
 	}
 }
@@ -129,8 +141,8 @@ void LevelScreen::render(sf::RenderTarget& target) {
 	_gameView.setCenter(_gameViewPos + _gameViewOffset);
 	target.setView(_gameView);
 	//if (_level) _level->render(target);
-	_section->render(target);
-	_section->renderDebug(target);
+	instance->render(target);
+	instance->renderDebug(target);
 
 
 	target.setView(_guiView);
@@ -184,7 +196,7 @@ void LevelScreen::renderGui(sf::RenderTarget& target) {
 	}
 	_bossHealthTileSprite.setPosition(pos);
 	
-	auto player = _section->getPlayer();
+	auto player = instance->getCurrentSection().getPlayer();
 
 	auto weapon = player->getWeapon();
 	if (weapon) {

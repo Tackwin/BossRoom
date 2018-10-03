@@ -18,6 +18,8 @@ struct PortalInfo {
 	UUID tp_to{ UUID::zero() };
 	UUID id;
 
+	size_t spot;
+
 	static nlohmann::json saveJson(PortalInfo info) noexcept;
 	static PortalInfo loadJson(nlohmann::json json) noexcept;
 };

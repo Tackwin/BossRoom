@@ -245,6 +245,14 @@ struct Vector : public __vec_member<D, T> {
 		return true;
 	}
 
+	T dot(const Vector<D, T>& other) const noexcept {
+		T sum = 0;
+		for (size_t i = 0; i < D; ++i) {
+			sum += this->components[i] * other.components[i];
+		}
+		return sum;
+	}
+
 	T length() const {
 		T result = 0;
 		for (size_t i = 0u; i < D; ++i) {

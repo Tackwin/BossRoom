@@ -219,7 +219,8 @@
 		"MeleeGuyInfo": "characters/melee.json",
 		"SourceVaccum": "sources/vaccum.json",
 		"SourceDirectionInfo": "sources/direction.json",
-		"FlyInfo": "characters/fly.json"
+		"FlyInfo": "characters/fly.json",
+		"1x1": "rooms/1x1.json"
 	},
 	"StartRoom": "rooms/1x1.json",
 	"bosses": [
