@@ -20,6 +20,8 @@ struct PortalInfo {
 
 	size_t spot;
 
+	Vector2f drop_pos;
+
 	static nlohmann::json saveJson(PortalInfo info) noexcept;
 	static PortalInfo loadJson(nlohmann::json json) noexcept;
 };

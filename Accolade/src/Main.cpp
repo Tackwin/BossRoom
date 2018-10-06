@@ -49,6 +49,8 @@ const std::filesystem::path C::ASSETS_PATH{ "res/" };
 // @Release change this to get_executable_dir
 const std::filesystem::path C::EXE_DIR = std::filesystem::current_path();
 
+sf::RenderWindow* C::render_window{ nullptr };
+
 void startGame();
 void loadRessources();
 
@@ -113,6 +115,7 @@ void startGame() {
 	sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT, 24), "Boss room");
 	window.setKeyRepeatEnabled(false);
 	window.setFramerateLimit(0);
+	render_window = &window;
 
 	const auto& updateKey = TimerManager::addFunction(
 		MIN_MS,

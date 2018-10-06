@@ -98,8 +98,11 @@ public:
 	NavigationPointInfo getNextNavigationPointFrom(UUID id, Vector2f to) const noexcept;
 
 	const std::vector<PortalInfo>& getAllPortals() const noexcept;
+	const PortalInfo& getPortalInSpot(size_t spot) const noexcept;
+	const PortalInfo& getPortal(UUID id) const noexcept;
 
 	Vector2f getPlayerPos() const noexcept;
+	void setPlayerPos(Vector2f) const noexcept;
 
 	std::shared_ptr<Player> getPlayer() const noexcept;
 

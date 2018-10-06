@@ -617,4 +617,24 @@ namespace std {
 		}
 	};
 }
+
+#ifdef NLOHMANN_JSON_HPP
+
+template<size_t D, typename T>
+void to_json(nlohmann::json& json, const Vector<D, T>& vec) noexcept {
+	for (size_t i = 0; i < D; ++i)
+		json.push_back(vec[i]);
+}
+
+template<size_t D, typename T>
+void from_json(const nlohmann::json& json, Vector<D, T>& vec) noexcept {
+	assert(json.is_array());
+
+	size_t i = 0;
+	for (auto& j : json.get<nlohmann::json::array_t>()) {
+		vec[i++] = j.get<T>();
+	}
+}
+
+#endif
 #pragma warning(pop)

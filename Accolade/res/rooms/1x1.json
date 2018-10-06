@@ -509,7 +509,8 @@
             "id": 221,
             "spot": 0,
             "start": false,
-            "tp_to": 0
+            "tp_to": 0,
+            "drop_pos": [0, 0]
         },
         {
             "end": false,
@@ -542,6 +543,7 @@
             },
             "id": 222,
             "spot": 2,
+            "drop_pos": [0, 0],
             "start": false,
             "tp_to": 0
         },
@@ -558,6 +560,7 @@
                 ]
             },
             "id": 752,
+            "drop_pos": [0, 0],
             "spot": 3,
             "start": false,
             "tp_to": 0

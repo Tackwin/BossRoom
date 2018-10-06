@@ -3,6 +3,7 @@
 #include "Common.hpp"
 
 #include "ValuePicker.hpp"
+#include "PosPicker.hpp"
 #include "Panel.hpp"
 #include "Label.hpp"
 
@@ -84,8 +85,7 @@ void populate_widget_with_editable_json_object_form(
 			p->addChild(deep_w);
 		}
 		else if (it.value().is_array()) {
-			int i = 0;
-			Label* label = new Label{ nlohmann::json{
+			Label* label = p->makeChild<Label>({
 				{"pos", Vector2f::saveJson(pos) },
 				{"name", it.key() + "_label"},
 				{"font", "consola"},
@@ -93,22 +93,42 @@ void populate_widget_with_editable_json_object_form(
 				{"charSize", 14},
 				{"text", it.key()},
 				{"textColor", {1, 1, 1, 1}}
-			} };
-			pos.y += 20;
-			for (auto x : it.value().get<nlohmann::json::array_t>()) {
-				Widget* deep_w = new Widget{ nlohmann::json{
-					{"pos", Vector2f::saveJson(pos)},
-					//{"origin", {0, 0.5}},
-					{"name", it.key() + std::to_string(i++)}
-				}};
-
-				populate_widget_with_editable_json_array_form(deep_w, x);
-
-				p->addChild(deep_w);
-
-				pos.y += 15;
+			});
+			// Hack
+			// We assume that every 2 sized float array represents a vector. Eventually when
+			// i'll have compile\run time reflection one way or another i will be able to
+			// improve this.
+			if (
+				it.value().size() == 2 &&
+				it.value().at(0).is_number_float() &&
+				it.value().at(1).is_number_float()
+			) {
+				Vector2f x{it.value().at(0).get<float>(), it.value().at(1).get<float>()};
+				p->makeChild<PosPicker>({
+					{"pos", Vector2f{pos.x + label->getGlobalBoundingBox().w, pos.y}},
+					{"name", it.key() + "_value"},
+					{"x", x}
+				});
 			}
-			p->addChild(label);
+			else {
+				int i = 0;
+
+				pos.y += 20;
+				for (auto x : it.value().get<nlohmann::json::array_t>()) {
+					Widget* deep_w = new Widget{ nlohmann::json{
+						{"pos", pos},
+						//{"origin", {0, 0.5}},
+						{"name", it.key() + std::to_string(i++)}
+					}};
+
+					populate_widget_with_editable_json_array_form(deep_w, x);
+
+					p->addChild(deep_w);
+
+					pos.y += 15;
+				}
+			}
+
 		}
 		pos.y += 20;
 	}

@@ -121,29 +121,43 @@ void Instance::update(double dt) noexcept {
 			section->exit();
 			auto next = getNextSectionIfInstantiated(p.spot);
 			
-			if (next) current_section = *next;
+			PortalInfo portal_to_enter_from;
+			if (next) {
+				current_section = *next;
+
+				section = entity_store.get(current_section);
+				portal_to_enter_from = section->getPortal(p.tp_to);
+			}
 			else {
 				auto nextToInstantiate =
-					find<SectionInfo>(info.sections, [id = p.tp_to](const SectionInfo& i) {
-						return std::count_if(
-							std::begin(i.portals),
-							std::end(i.portals),
-							[id](PortalInfo i) {
-								return i.id == id;
+					find<SectionInfo>(
+						info.sections,
+						[&portal_to_enter_from, id = p.tp_to](const SectionInfo& i) {
+							auto it = std::find_if(
+								std::begin(i.portals),
+								std::end(i.portals),
+								[id](PortalInfo i) {
+									return i.id == id;
+								}
+							);
+							if (it != std::end(i.portals)) {
+								portal_to_enter_from = *it;
+								return true;
 							}
-						) != 0;
-					});
+							return false;
+						}
+					);
 
 				assert(nextToInstantiate);
 				sections.push_back(entity_store.make<Section>(*nextToInstantiate));
 				current_section = sections.back();
 			}
 			
-			entity_store.get(current_section)->enter();
+			section = entity_store.get(current_section);
+			section->enter();
+			section->setPlayerPos(portal_to_enter_from.drop_pos);
 		}
 	}
-
-
 }
 
 void Instance::render(sf::RenderTarget& target) noexcept {

@@ -8,6 +8,7 @@
 #include "Label.hpp"
 #include "ValuePicker.hpp"
 #include "Switcher.hpp"
+#include "PosPicker.hpp"
 #include "Button.hpp"
 
 const Widget::Callback::type Widget::Callback::FALSE = []() { return false; };
@@ -42,6 +43,7 @@ Widget::Widget(nlohmann::json json) noexcept {
 				X(SpriteSwitcher);
 				X(Panel);
 				X(Button);
+				X(PosPicker);
 #undef X
 			}
 			else {
@@ -328,6 +330,8 @@ std::bitset<9u> Widget::input(const std::bitset<9u>& mask) {
 	}
 
 	if (_focused) {
+		onFocus.going();
+
 		if (IM::isKeyJustPressed() && !mask[6]) {
 			result[6] = _onKey.began();
 		} if (IM::isKeyPressed() && !mask[7]) {
@@ -397,6 +401,8 @@ void Widget::setName(std::string name) noexcept {
 }
 
 void Widget::setFocus(bool v) noexcept {
+	if (v != _focused) { if (v) onFocus.began(); else onFocus.ended(); }
+
 	_focused = v;
 }
 bool Widget::isFocus() const noexcept {

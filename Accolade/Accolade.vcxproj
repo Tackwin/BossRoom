@@ -359,6 +359,7 @@
     <ClCompile Include="src\Graphics\GUI\algorithm.cpp" />
     <ClCompile Include="src\Graphics\GUI\InputText.cpp" />
     <ClCompile Include="src\Graphics\GUI\JsonTree.cpp" />
+    <ClCompile Include="src\Graphics\GUI\PosPicker.cpp" />
     <ClCompile Include="src\Graphics\GUI\Switcher.cpp" />
     <ClCompile Include="src\Graphics\GUI\ValuePicker.cpp" />
     <ClCompile Include="src\Math\algorithms.cpp" />
@@ -429,6 +430,7 @@
     <ClInclude Include="src\Components\Removable.hpp" />
     <ClInclude Include="src\Entity\Eid.hpp" />
     <ClInclude Include="src\Entity\EntityStore.hpp" />
+    <ClInclude Include="src\Entity\OwnId.hpp" />
     <ClInclude Include="src\Gameplay\Characters\DistanceGuy.hpp" />
     <ClInclude Include="src\Gameplay\Characters\Fly.hpp" />
     <ClInclude Include="src\Gameplay\Characters\MeleeGuy.hpp" />
@@ -442,6 +444,7 @@
     <ClInclude Include="src\Graphics\GUI\algorithm.hpp" />
     <ClInclude Include="src\Graphics\GUI\InputText.hpp" />
     <ClInclude Include="src\Graphics\GUI\JsonTree.hpp" />
+    <ClInclude Include="src\Graphics\GUI\PosPicker.hpp" />
     <ClInclude Include="src\Graphics\GUI\Switcher.hpp" />
     <ClInclude Include="src\Graphics\GUI\ValuePicker.hpp" />
     <ClInclude Include="src\Math\algorithms.hpp" />

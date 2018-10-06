@@ -6,6 +6,8 @@
 #include <type_traits>
 #include <unordered_set>
 
+#include <SFML/Graphics.hpp>
+
 #include "3rd/json.hpp"
 
 // just for convenience
@@ -55,6 +57,7 @@ namespace C {
 	constexpr u32 SEED = 0;
 
 	extern std::shared_ptr<Game> game;
+	extern sf::RenderWindow* render_window;
 
 	template<typename T> 
 	T rngRange(T min, T max) {

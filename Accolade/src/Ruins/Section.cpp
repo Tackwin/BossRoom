@@ -406,6 +406,9 @@ void Section::playerOnExit(Object*) noexcept {
 Vector2f Section::getPlayerPos() const noexcept {
 	return _player->getPos();
 }
+void Section::setPlayerPos(Vector2f p) const noexcept {
+	return _player->setPos(p);
+}
 
 std::shared_ptr<Player> Section::getPlayer() const noexcept {
 	return _player;
@@ -573,6 +576,24 @@ std::filesystem::path Section::getFilepath() const noexcept {
 
 const std::vector<PortalInfo>& Section::getAllPortals() const noexcept {
 	return _info.portals;
+}
+const PortalInfo& Section::getPortalInSpot(size_t spot) const noexcept {
+	auto it = std::find_if(
+		std::begin(_info.portals),
+		std::end(_info.portals),
+		[spot](auto x) { return x.spot == spot; }
+	);
+	assert(it != std::end(_info.portals));
+	return *it;
+}
+const PortalInfo& Section::getPortal(UUID id) const noexcept {
+	auto it = std::find_if(
+		std::begin(_info.portals),
+		std::end(_info.portals),
+		[id](const PortalInfo& x) { return x.id == id; }
+	);
+	assert(it != std::end(_info.portals));
+	return *it;
 }
 
 double Section::getTimeSinceEntered() const noexcept {

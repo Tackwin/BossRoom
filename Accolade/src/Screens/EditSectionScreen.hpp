@@ -22,6 +22,10 @@
 #include "Navigation/NavigationPoint.hpp"
 #include "Navigation/NavigationLink.hpp"
 
+#include "Entity/EntityStore.hpp"
+#include "Entity/Eid.hpp"
+#include "Entity/OwnId.hpp"
+
 class Label;
 class Panel;
 class ValuePicker;
@@ -119,7 +123,7 @@ private:
 	Label* _snapGrid{ nullptr };
 
 	sf::View _uiView;
-	sf::View _cameraView;
+	OwnId<sf::View> cameraView;
 
 	Rectangle2f viewSize_;
 	nlohmann::json _json;
