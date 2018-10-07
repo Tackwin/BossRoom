@@ -22,7 +22,9 @@ using u32 = std::uint32_t;
 using i64 = std::int64_t;
 using u64 = std::uint64_t;
 
+
 class Game;
+class EntityStore;
 namespace C {
 	extern const std::filesystem::path ASSETS_PATH;
 	extern const std::filesystem::path EXE_DIR;
@@ -58,6 +60,7 @@ namespace C {
 
 	extern std::shared_ptr<Game> game;
 	extern sf::RenderWindow* render_window;
+	extern EntityStore* es_instance;
 
 	template<typename T> 
 	T rngRange(T min, T max) {

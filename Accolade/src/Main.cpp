@@ -39,6 +39,7 @@
 #include "OS/PathDefinition.hpp"
 
 #include "Ruins/Instance.hpp"
+#include "Entity/EntityStore.hpp"
 
 
 double C::DT{ 0.0 };
@@ -50,7 +51,9 @@ const std::filesystem::path C::ASSETS_PATH{ "res/" };
 const std::filesystem::path C::EXE_DIR = std::filesystem::current_path();
 
 sf::RenderWindow* C::render_window{ nullptr };
+EntityStore* C::es_instance{ nullptr };
 
+void cleanup();
 void startGame();
 void loadRessources();
 
@@ -104,10 +107,13 @@ int main(int, char**) {
 	} while (instance->rerun);
 	delete instance;*/
 	//glfwTerminate();
+
+	//cleanup();
 	return 0;
 }
 
 void startGame() {
+	C::es_instance = new EntityStore();
 	Patterns::_json = AssetsManager::getJson(JSON_KEY).at("patterns");
 	C::game = std::make_shared<Game>();
 	game->start();
@@ -222,4 +228,9 @@ void loadJsonsFromJson(const nlohmann::json& json) {
 	}
 }
 
-#include <typeinfo>
+void cleanup() {
+	if (es_instance) {
+		delete es_instance;
+		es_instance = nullptr;
+	}
+}

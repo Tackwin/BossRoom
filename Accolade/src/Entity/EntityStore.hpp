@@ -11,11 +11,7 @@ template<typename T> class Eid;
 template<typename T> class OwnId;
 class Section;
 
-class EntityStore;
 class EntityStore {
-public:
-	static EntityStore& I() noexcept;
-
 public:
 	using integer_t = size_t;
 
@@ -106,4 +102,5 @@ public:
 
 #undef ITERATE
 };
-extern EntityStore& ES;
+
+using ES = EntityStore;

@@ -20,7 +20,7 @@
 SectionInfo SectionInfo::loadJson(const nlohmann::json& json) noexcept {
 	SectionInfo info;
 	auto load_vectors =
-		[&](auto& x) -> std::enable_if_t<is_stl_container_v<decltype(x)>> {
+		[&](auto& x) mutable -> std::enable_if_t<is_stl_container_v<decltype(x)>> {
 			using T = holded_t<decltype(x)>;
 
 			if (json.count(T::JSON_ID)) {

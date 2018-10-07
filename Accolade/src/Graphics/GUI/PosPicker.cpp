@@ -30,7 +30,7 @@ bool PosPicker::onFocusGoing() noexcept {
 	// Robustesse Quid des cas ou les views s'appliquent à une autre render_target ?
 	auto mouse_pos = IM::getMouseScreenPos();
 	for (auto& ptr_v : views) {
-		auto v = EntityStore::I().get(ptr_v);
+		auto v = es_instance->get(ptr_v);
 		assert(v);
 
 		Rectangle2f viewport{

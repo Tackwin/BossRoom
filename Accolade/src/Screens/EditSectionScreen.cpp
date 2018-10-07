@@ -42,7 +42,7 @@ EditSectionScreen::EditSectionScreen(Section* section) :
 	filepath_(section->getFilepath()),
 	_uiView({ WIDTH / 2.f, HEIGHT / 2.f }, { (float)WIDTH, (float)HEIGHT })
 {
-	cameraView = (OwnId<sf::View>)EntityStore::I().copy(section->getCameraView());
+	cameraView = (OwnId<sf::View>)es_instance->copy(section->getCameraView());
 
 	viewSize_.size = sectionInfo_.viewSize.fitUpRatio(RATIO);
 }
@@ -80,8 +80,9 @@ void EditSectionScreen::update(double dt) {
 		sf::Keyboard::LControl, sf::Keyboard::T, sf::Keyboard::V
 	})) {
 		viewSize_.pos =
-			ES.get(cameraView)->getCenter() - ES.get(cameraView)->getSize() / 2.f;
-		viewSize_.size = ES.get(cameraView)->getSize();
+			es_instance->get(cameraView)->getCenter() -
+			es_instance->get(cameraView)->getSize() / 2.f;
+		viewSize_.size = es_instance->get(cameraView)->getSize();
 		sectionInfo_.viewSize = viewSize_.size;
 	}
 
@@ -343,7 +344,9 @@ void EditSectionScreen::updateNothing() noexcept {
 		draggingScreen = true;
 	}
 	else if (draggingScreen && IM::isMousePressed(sf::Mouse::Left)) {
-		ES.get(cameraView)->move(-1 * IM::getMouseDeltaInView(*ES.get(cameraView)));
+		es_instance->get(cameraView)->move(
+			-1 * IM::getMouseDeltaInView(*es_instance->get(cameraView))
+		);
 	}
 	else draggingScreen = false;
 }
@@ -353,27 +356,27 @@ void EditSectionScreen::updateCameraMovement(double dt) noexcept {
 	float speedFactor = IM::isKeyPressed(sf::Keyboard::LShift) ? 3.f : 1.f;
 
 	if (IM::isKeyPressed(sf::Keyboard::Z)) {
-		ES.get(cameraView)->move(
+		es_instance->get(cameraView)->move(
 			{ 0.f, -(float)(dt * sectionInfo_.maxRectangle.h / 3.f * speedFactor) }
 		);
 	}
 	if (IM::isKeyPressed(sf::Keyboard::Q)) {
-		ES.get(cameraView)->move(
+		es_instance->get(cameraView)->move(
 			{ -(float)(dt * sectionInfo_.maxRectangle.w / 3.f) * speedFactor , 0.f }
 		);
 	}
 	if (IM::isKeyPressed(sf::Keyboard::S)) {
-		ES.get(cameraView)->move(
+		es_instance->get(cameraView)->move(
 			{ 0.f, +(float)(dt * sectionInfo_.maxRectangle.h / 3.f) * speedFactor }
 		);
 	}
 	if (IM::isKeyPressed(sf::Keyboard::D)) {
-		ES.get(cameraView)->move(
+		es_instance->get(cameraView)->move(
 			{ +(float)(dt * sectionInfo_.maxRectangle.w / 3.f) * speedFactor , 0.f}
 		);
 	}
 	if (float delta = IM::getLastScroll(); delta != 0.f) {
-		ES.get(cameraView)->zoom(std::powf(1.2f, -delta));
+		es_instance->get(cameraView)->zoom(std::powf(1.2f, -delta));
 	}
 }
 
@@ -465,9 +468,10 @@ void EditSectionScreen::inputSwitchState() noexcept {
 void EditSectionScreen::render(sf::RenderTarget& target) {
 	auto old = target.getView();
 	
-	target.setView(*ES.get(cameraView));
+	target.setView(*es_instance->get(cameraView));
 
-	viewSize_.pos = (Vector2f)ES.get(cameraView)->getCenter() - viewSize_.size / 2.f;
+	viewSize_.pos =
+		(Vector2f)es_instance->get(cameraView)->getCenter() - viewSize_.size / 2.f;
 
 	for (auto source : sectionInfo_.sourcesBoomerang) renderDebug(target, source.source);
 	for (auto source : sectionInfo_.sourcesDirection) renderDebug(target, source.source);
@@ -610,7 +614,7 @@ void EditSectionScreen::renderDebug(
 	sf::RenderTarget& target, PlateformeInfo info
 ) noexcept {
 	Vector4f color{ 0.8f, 0.8f, 0.0f, info.passable ? 0.5f : 1.0f };
-	if (info.rectangle.in(IM::getMousePosInView(*ES.get(cameraView)))) {
+	if (info.rectangle.in(IM::getMousePosInView(*es_instance->get(cameraView)))) {
 		color = { 1.0f, 0.7f, 0.0f, info.passable ? 0.5f : 1.0f };
 	}
 	info.rectangle.render(target, color);
@@ -619,7 +623,8 @@ void EditSectionScreen::renderDebug(
 	sf::RenderTarget& target, SlimeInfo info
 ) noexcept {
 	Vector4d color{ 0.0, 0.8, 0.8, 1.0 };
-	auto dist2 = (info.startPos - IM::getMousePosInView(*ES.get(cameraView))).length2();
+	auto dist2 = (info.startPos - IM::getMousePosInView(*es_instance->get(cameraView)))
+		.length2();
 	if (dist2 < info.size.x * info.size.x / 4.f) {
 		color = { 0.0, 0.7, 1.0, 1.0 };
 	}
@@ -631,7 +636,8 @@ void EditSectionScreen::renderDebug(
 	sf::RenderTarget& target, DistanceGuyInfo info
 ) noexcept {
 	Vector4d color{ 0.1, 0.7, 0.7, 1.0 };
-	auto dist2 = (info.startPos - IM::getMousePosInView(*ES.get(cameraView))).length2();
+	auto dist2 = (info.startPos - IM::getMousePosInView(*es_instance->get(cameraView)))
+		.length2();
 	if (dist2 < info.size.x * info.size.x / 4.f) {
 		color = { 0.0, 0.6, 0.9, 1.0 };
 	}
@@ -643,7 +649,8 @@ void EditSectionScreen::renderDebug(
 	sf::RenderTarget& target, MeleeGuyInfo info
 ) noexcept {
 	Vector4d color{ 0.1, 0.7, 0.7, 1.0 };
-	auto dist2 = (info.startPos - IM::getMousePosInView(*ES.get(cameraView))).length2();
+	auto dist2 = (info.startPos - IM::getMousePosInView(*es_instance->get(cameraView)))
+		.length2();
 	if (dist2 < info.size.x * info.size.x / 4.f) {
 		color = { 0.0, 0.6, 0.9, 1.0 };
 	}
@@ -655,7 +662,8 @@ void EditSectionScreen::renderDebug(
 	sf::RenderTarget& target, FlyInfo info
 ) noexcept {
 	Vector4d color{ 0.1, 0.7, 0.7, 1.0 };
-	auto dist2 = (info.startPos - IM::getMousePosInView(*ES.get(cameraView))).length2();
+	auto dist2 = (info.startPos - IM::getMousePosInView(*es_instance->get(cameraView)))
+		.length2();
 	if (dist2 < info.radius * info.radius / 4.f) {
 		color = { 0.0, 0.6, 0.9, 1.0 };
 	}
@@ -667,7 +675,8 @@ void EditSectionScreen::renderDebug(
 	sf::RenderTarget& target, SourceInfo info
 ) noexcept {
 	Vector4d color{ 0.8, 0.0, 0.8, 1.0 };
-	auto dist2 = (info.pos - IM::getMousePosInView(*ES.get(cameraView))).length2();
+	auto dist2 = (info.pos - IM::getMousePosInView(*es_instance->get(cameraView)))
+		.length2();
 	if (dist2 < info.size.x * info.size.x / 4.f) {
 		color = { 0.7, 0.0, 1.0, 1.0 };
 	}
@@ -683,7 +692,7 @@ void EditSectionScreen::renderDebug(
 		info.frontier.A,
 		info.frontier.B,
 		info.frontier.length() * 0.01f,
-		IM::getMousePosInView(*ES.get(cameraView))
+		IM::getMousePosInView(*es_instance->get(cameraView))
 	)) color = { 0.8, 0.2, 0.8, 0.8 };
 	
 	info.frontier.render(target, color);
@@ -692,7 +701,8 @@ void EditSectionScreen::renderDebug(
 	sf::RenderTarget& target, NavigationPointInfo info
 ) noexcept {
 	Vector4d color{ 0.8, 0.0, 0.8, 1.0 };
-	auto dist2 = (info.pos - IM::getMousePosInView(*ES.get(cameraView))).length2();
+	auto dist2 = (info.pos - IM::getMousePosInView(*es_instance->get(cameraView)))
+		.length2();
 	if (dist2 < info.range * info.range) {
 		color = { 0.7, 0.0, 1.0, 1.0 };
 	}
@@ -776,9 +786,10 @@ void EditSectionScreen::selectFocus() noexcept {
 	auto& navigationLinks = sectionInfo_.navigationLinks;
 	
 	currentlyFocused = std::nullopt;
+	auto mouse_pos_in_camera_view = IM::getMousePosInView(*es_instance->get(cameraView));
 
 	for (size_t i = plateformes.size(); i > 0; --i) {
-		if (plateformes[i - 1].rectangle.in(IM::getMousePosInView(*ES.get(cameraView)))) {
+		if (plateformes[i - 1].rectangle.in(mouse_pos_in_camera_view)) {
 			currentlyFocused = {
 				holded_t<decltype(plateformes)>::JSON_ID,
 				(void*)&plateformes[i - 1]
@@ -789,7 +800,7 @@ void EditSectionScreen::selectFocus() noexcept {
 	for (size_t i = slimes.size(); i > 0; --i) {
 
 		auto dist2 =
-			(slimes[i - 1].startPos - IM::getMousePosInView(*ES.get(cameraView))).length2();
+			(slimes[i - 1].startPos - mouse_pos_in_camera_view).length2();
 		if (dist2 < slimes[i - 1].size.x * slimes[i - 1].size.x / 4.f) {
 			currentlyFocused = {
 				holded_t<decltype(slimes)>::JSON_ID,
@@ -799,8 +810,7 @@ void EditSectionScreen::selectFocus() noexcept {
 	}
 	for (size_t i = distance.size(); i > 0; --i) {
 
-		auto dist2 = (distance[i - 1].startPos - IM::getMousePosInView(*ES.get(cameraView)))
-			.length2();
+		auto dist2 = (distance[i - 1].startPos - mouse_pos_in_camera_view).length2();
 		if (dist2 < distance[i - 1].size.x * distance[i - 1].size.x / 4.f) {
 			currentlyFocused = {
 				holded_t<decltype(distance)>::JSON_ID,
@@ -809,8 +819,7 @@ void EditSectionScreen::selectFocus() noexcept {
 		}
 	}
 	for (size_t i = meleeGuy.size(); i > 0; --i) {
-		auto dist2 = (meleeGuy[i - 1].startPos - IM::getMousePosInView(*ES.get(cameraView)))
-			.length2();
+		auto dist2 = (meleeGuy[i - 1].startPos - mouse_pos_in_camera_view).length2();
 		if (dist2 < meleeGuy[i - 1].size.x * meleeGuy[i - 1].size.x / 4.f) {
 			currentlyFocused = {
 				holded_t<decltype(meleeGuy)>::JSON_ID,
@@ -819,8 +828,7 @@ void EditSectionScreen::selectFocus() noexcept {
 		}
 	}
 	for (size_t i = flies.size(); i > 0; --i) {
-		auto dist2 = (flies[i - 1].startPos - IM::getMousePosInView(*ES.get(cameraView)))
-			.length2();
+		auto dist2 = (flies[i - 1].startPos - mouse_pos_in_camera_view).length2();
 		if (dist2 < flies[i - 1].radius * flies[i - 1].radius / 4.f) {
 			currentlyFocused = {
 				holded_t<decltype(flies)>::JSON_ID,
@@ -831,8 +839,7 @@ void EditSectionScreen::selectFocus() noexcept {
 
 	for (size_t i = sources.size(); i > 0; --i) {
 
-		auto dist2 = (sources[i - 1].pos - IM::getMousePosInView(*ES.get(cameraView)))
-			.length2();
+		auto dist2 = (sources[i - 1].pos - mouse_pos_in_camera_view).length2();
 		if (dist2 < sources[i - 1].size.x * sources[i - 1].size.x / 4.f) {
 			currentlyFocused = {
 				holded_t<decltype(sources)>::JSON_ID,
@@ -843,10 +850,8 @@ void EditSectionScreen::selectFocus() noexcept {
 
 	for (size_t i = sourcesBoomerang.size(); i > 0; --i) {
 
-		auto dist2 = (
-			sourcesBoomerang[i - 1].source.pos -
-			IM::getMousePosInView(*ES.get(cameraView))
-		).length2();
+		auto dist2 =
+			(sourcesBoomerang[i - 1].source.pos - mouse_pos_in_camera_view).length2();
 
 		if (
 			dist2 < sourcesBoomerang[i - 1].source.size.x *
@@ -860,9 +865,7 @@ void EditSectionScreen::selectFocus() noexcept {
 	}
 	for (size_t i = sourcesVaccum.size(); i > 0; --i) {
 
-		auto dist2 =
-			(sourcesVaccum[i - 1].source.pos - IM::getMousePosInView(*ES.get(cameraView)))
-			.length2();
+		auto dist2 = (sourcesVaccum[i - 1].source.pos - mouse_pos_in_camera_view).length2();
 
 		if (
 			dist2 < sourcesVaccum[i - 1].source.size.x *
@@ -876,9 +879,8 @@ void EditSectionScreen::selectFocus() noexcept {
 	}
 	for (size_t i = sourcesDirection.size(); i > 0; --i) {
 
-		auto dist2 = (
-			sourcesDirection[i - 1].source.pos - IM::getMousePosInView(*ES.get(cameraView))
-		).length2();
+		auto dist2 =
+			(sourcesDirection[i - 1].source.pos - mouse_pos_in_camera_view).length2();
 
 		if (
 			dist2 < sourcesDirection[i - 1].source.size.x *
@@ -891,9 +893,7 @@ void EditSectionScreen::selectFocus() noexcept {
 		}
 	}
 	for (size_t i = navigationPoints.size(); i > 0; --i) {
-		auto dist2 =
-			(navigationPoints[i - 1].pos - IM::getMousePosInView(*ES.get(cameraView)))
-			.length2();
+		auto dist2 = (navigationPoints[i - 1].pos - mouse_pos_in_camera_view).length2();
 
 		if (dist2 < navigationPoints[i - 1].range * navigationPoints[i - 1].range) {
 			currentlyFocused = {
@@ -933,7 +933,7 @@ void EditSectionScreen::selectFocus() noexcept {
 	}
 	for (size_t i = portals.size(); i > 0; --i) {
 		auto p = portals[i - 1];
-		auto m = IM::getMousePosInView(*ES.get(cameraView));
+		auto m = IM::getMousePosInView(*es_instance->get(cameraView));
 
 		if (is_in_ellipse(p.frontier.A, p.frontier.B, p.frontier.length() * 0.01f, m)) {
 			currentlyFocused = {
@@ -984,8 +984,10 @@ void EditSectionScreen::deleteHovered() noexcept {
 	auto& navigationPoints = sectionInfo_.navigationPoints;
 	auto& navigationLinks = sectionInfo_.navigationLinks;
 
+	auto mouse_pos_in_camera_view = IM::getMousePosInView(*es_instance->get(cameraView));
+
 	for (size_t i = plateformes.size(); i > 0; --i) {
-		if (plateformes[i - 1].rectangle.in(IM::getMousePosInView(*ES.get(cameraView)))) {
+		if (plateformes[i - 1].rectangle.in(mouse_pos_in_camera_view)) {
 			plateformes.erase(std::begin(plateformes) + i - 1);
 			return;
 		}
@@ -993,9 +995,7 @@ void EditSectionScreen::deleteHovered() noexcept {
 
 	for (size_t i = slimes.size(); i > 0; --i) {
 
-		auto dist2 = (
-			slimes[i - 1].startPos - IM::getMousePosInView(*ES.get(cameraView))
-		).length2();
+		auto dist2 = (slimes[i - 1].startPos - mouse_pos_in_camera_view).length2();
 		if (dist2 < slimes[i - 1].size.x * slimes[i - 1].size.x / 4.f) {
 			slimes.erase(std::begin(slimes) + i - 1);
 			return;
@@ -1003,24 +1003,21 @@ void EditSectionScreen::deleteHovered() noexcept {
 	}
 	for (size_t i = distance.size(); i > 0; --i) {
 
-		auto dist2 = (distance[i - 1].startPos - IM::getMousePosInView(*ES.get(cameraView)))
-			.length2();
+		auto dist2 = (distance[i - 1].startPos - mouse_pos_in_camera_view).length2();
 		if (dist2 < distance[i - 1].size.x * distance[i - 1].size.x / 4.f) {
 			distance.erase(std::begin(distance) + i - 1);
 			return;
 		}
 	}
 	for (size_t i = meleeGuy.size(); i > 0; --i) {
-		auto dist2 = (meleeGuy[i - 1].startPos - IM::getMousePosInView(*ES.get(cameraView)))
-			.length2();
+		auto dist2 = (meleeGuy[i - 1].startPos - mouse_pos_in_camera_view).length2();
 		if (dist2 < meleeGuy[i - 1].size.x * meleeGuy[i - 1].size.x / 4.f) {
 			meleeGuy.erase(std::begin(meleeGuy) + i - 1);
 			return;
 		}
 	}
 	for (size_t i = flies.size(); i > 0; --i) {
-		auto dist2 = (flies[i - 1].startPos - IM::getMousePosInView(*ES.get(cameraView)))
-			.length2();
+		auto dist2 = (flies[i - 1].startPos - mouse_pos_in_camera_view).length2();
 		if (dist2 < flies[i - 1].radius * flies[i - 1].radius / 4.f) {
 			flies.erase(std::begin(flies) + i - 1);
 			return;
@@ -1029,9 +1026,7 @@ void EditSectionScreen::deleteHovered() noexcept {
 
 	for (size_t i = sources.size(); i > 0; --i) {
 
-		auto dist2 = (
-			sources[i - 1].pos - IM::getMousePosInView(*ES.get(cameraView))
-		).length2();
+		auto dist2 = (sources[i - 1].pos - mouse_pos_in_camera_view).length2();
 		if (dist2 < sources[i - 1].size.x * sources[i - 1].size.x / 4.f) {
 			sources.erase(std::begin(sources) + i - 1);
 			return;
@@ -1040,9 +1035,8 @@ void EditSectionScreen::deleteHovered() noexcept {
 
 	for (size_t i = sourcesBoomerang.size(); i > 0; --i) {
 
-		auto dist2 = (
-			sourcesBoomerang[i - 1].source.pos - IM::getMousePosInView(*ES.get(cameraView))
-		).length2();
+		auto dist2 =
+			(sourcesBoomerang[i - 1].source.pos - mouse_pos_in_camera_view).length2();
 
 		if (
 			dist2 < sourcesBoomerang[i - 1].source.size.x *
@@ -1054,9 +1048,7 @@ void EditSectionScreen::deleteHovered() noexcept {
 	}
 	for (size_t i = sourcesVaccum.size(); i > 0; --i) {
 
-		auto dist2 =
-			(sourcesVaccum[i - 1].source.pos - IM::getMousePosInView(*ES.get(cameraView)))
-			.length2();
+		auto dist2 = (sourcesVaccum[i - 1].source.pos - mouse_pos_in_camera_view).length2();
 
 		if (
 			dist2 < sourcesVaccum[i - 1].source.size.x *
@@ -1068,9 +1060,8 @@ void EditSectionScreen::deleteHovered() noexcept {
 	}
 	for (size_t i = sourcesDirection.size(); i > 0; --i) {
 
-		auto dist2 = (
-			sourcesDirection[i - 1].source.pos - IM::getMousePosInView(*ES.get(cameraView))
-		).length2();
+		auto dist2 =
+			(sourcesDirection[i - 1].source.pos - mouse_pos_in_camera_view).length2();
 
 		if (
 			dist2 < sourcesDirection[i - 1].source.size.x *
@@ -1081,9 +1072,7 @@ void EditSectionScreen::deleteHovered() noexcept {
 		}
 	}
 	for (size_t i = navigationPoints.size(); i > 0; --i) {
-		auto dist2 =
-			(navigationPoints[i - 1].pos - IM::getMousePosInView(*ES.get(cameraView)))
-			.length2();
+		auto dist2 =(navigationPoints[i - 1].pos - mouse_pos_in_camera_view).length2();
 
 		if (dist2 < navigationPoints[i - 1].range * navigationPoints[i - 1].range) {
 
@@ -1148,7 +1137,7 @@ void EditSectionScreen::deleteHovered() noexcept {
 	}
 	for (size_t i = portals.size(); i > 0; --i) {
 		auto p = portals[i - 1];
-		auto m = IM::getMousePosInView(*ES.get(cameraView));
+		auto m = IM::getMousePosInView(*es_instance->get(cameraView));
 
 		if (is_in_ellipse(p.frontier.A, p.frontier.B, p.frontier.length() * 0.01f, m)) {
 			portals.erase(portals.begin() + i - 1);
@@ -1167,7 +1156,7 @@ Vector2f EditSectionScreen::getSnapedMouseScreenPos() const noexcept {
 }
 
 Vector2f EditSectionScreen::getSnapedMouseCameraPos() const noexcept {
-	auto pos = IM::getMousePosInView(*ES.get(cameraView));
+	auto pos = IM::getMousePosInView(*es_instance->get(cameraView));
 
 	return {
 		(long long)(pos.x / _snapLevel - 0.5f) * _snapLevel,

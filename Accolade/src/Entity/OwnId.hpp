@@ -5,6 +5,7 @@
 #include "3rd/json.hpp"
 #include "EntityStore.hpp"
 #include "Entity/Eid.hpp"
+#include "Common.hpp"
 
 
 template<typename T>
@@ -45,14 +46,14 @@ public:
 	OwnId() = default;
 	constexpr OwnId(Eid<T>&& id) noexcept : ptr(id.ptr) {};
 	~OwnId() noexcept {
-		ES.destroy(*this);
+		es_instance->destroy(*this);
 	}
 
 	// TOSEE i don't know if i must make a deep copy or forbid copy...
 	constexpr OwnId(
 		std::enable_if_t<std::is_copy_constructible_v<T>, OwnId<T>>& other
 	) noexcept {
-		ptr = ES.copy<T>(ES.get<T>(other.ptr));
+		ptr = es_instance->copy<T>(es_instance->get<T>(other.ptr));
 	}
 	constexpr OwnId(OwnId<T>&& other) noexcept : ptr(other.ptr) {
 		other.ptr = NULL_PTR;
@@ -61,7 +62,7 @@ public:
 	constexpr OwnId& operator=(
 		std::enable_if_t<std::is_copy_constructible_v<T>, OwnId<T>>& other
 	) noexcept {
-		ptr = ES.copy<T>(ES.get<T>(other.ptr));
+		ptr = es_instance->copy<T>(es_instance->get<T>(other.ptr));
 		return *this;
 	}
 	constexpr OwnId& operator=(OwnId<T>&& other) noexcept {
