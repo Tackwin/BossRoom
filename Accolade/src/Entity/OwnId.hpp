@@ -76,7 +76,7 @@ private:
 	inline static EntityStore::integer_t N =
 		std::numeric_limits<EntityStore::integer_t>::min();
 	constexpr static EntityStore::integer_t NULL_PTR =
-		std::numeric_limits<EntityStore::integer_t>::min();
+		std::numeric_limits<EntityStore::integer_t>::max();
 
 	constexpr OwnId(const EntityStore::integer_t& ptr) noexcept : ptr(ptr) {}
 

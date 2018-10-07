@@ -186,6 +186,10 @@
 		"transparent": {
 			"sheet": "images/transparent.png"
 		},
+		"point": {
+			"sheet": "images/point.png",
+			"smooth": false
+		},
 		"10damier": {
 			"sheet": "images/10damier.png",
 			"smooth": false,

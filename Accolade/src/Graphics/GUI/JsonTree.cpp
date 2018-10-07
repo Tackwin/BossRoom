@@ -2,6 +2,7 @@
 
 #include "Panel.hpp"
 #include "Label.hpp"
+#include "PosPicker.hpp"
 #include "ValuePicker.hpp"
 
 #include "Math/algorithms.hpp"
@@ -66,8 +67,6 @@ void JsonTree::contructTree() noexcept {
 
 			offsetSize = label->getSize();
 		}
-
-
 		if (value.is_primitive()) {
 			auto str = std::string{};
 			if (value.is_number_float()) str = std::to_string(value.get<float>());
@@ -96,7 +95,7 @@ void JsonTree::contructTree() noexcept {
 			);
 			offsetSize.y = std::max(offsetSize.y, valuePicker->getSize().y);
 			valuePicker->listenChange(
-				[&, copy_value = value, &ref_value = value, valuePicker]
+				[&, copy_value = value, &ref_value = value]
 				(const std::string& new_str) mutable {
 					if (copy_value.is_number()) {
 						if (str::represent_number(new_str)) {
@@ -151,32 +150,62 @@ void JsonTree::contructTree() noexcept {
 			pos.y += offsetSize.y;
 		}
 		else if (value.is_array()) {
-			int i = 0;
 			pos.y += 20;
-			for (auto x : value.get<nlohmann::json::array_t>()) {
-				auto jsonChild = makeChild<JsonTree>({
-					//{"origin", {0, 0.5}},
-					{"name", key + std::to_string(i++)},
-					{"pos", Vector2f::saveJson(pos) },
-					{"structure", x}
+			// Hack
+			// We assume that every 2 sized float array represents a vector. Eventually when
+			// i'll have compile\run time reflection one way or another i will be able to
+			// improve this.
+			if (
+				it.value().size() == 2 &&
+				it.value().at(0).is_number_float() &&
+				it.value().at(1).is_number_float()
+				) {
+				Vector2f x{ it.value().at(0).get<float>(), it.value().at(1).get<float>() };
+				auto pos_picker = p->makeChild<PosPicker>({
+					{"pos", offsetLabel},
+					{"name", it.key() + "_value"},
+					{"x", x},
+					{"label", {
+						{"font", "consola"},
+						{"charSize", 13}
+					}}
 				});
-				jsonChild->listenChange([&, copy_i = (i - 1)](auto j) mutable {
-					value[copy_i] = j;
-
-					//Here we propagate the changes
-					for (auto&[_, f] : changeListeners) {
-						f(structure);
+				pos_picker->listenChange(
+					[&, copy_value = value, &ref_value = value](const Vector2f& pos) {
+						ref_value = pos;
+						for (auto&[_, f] : changeListeners) {
+							f(structure);
+						}
 					}
-				});
-				size.x = std::max(
-					jsonChild->getSize().x + jsonChild->getPosition().x, size.x
 				);
-				size.y = std::max(
-					jsonChild->getSize().y + jsonChild->getPosition().y, size.y
-				);
-				offsetSize.y = std::max(offsetSize.y, jsonChild->getSize().y);
+			}
+			else {
+				int i = 0;
+				for (auto x : value.get<nlohmann::json::array_t>()) {
+					auto jsonChild = makeChild<JsonTree>({
+						//{"origin", {0, 0.5}},
+						{"name", key + std::to_string(i++)},
+						{"pos", Vector2f::saveJson(pos) },
+						{"structure", x}
+					});
+					jsonChild->listenChange([&, copy_i = (i - 1)](auto j) mutable {
+						value[copy_i] = j;
 
-				pos.y += offsetSize.y;
+						//Here we propagate the changes
+						for (auto&[_, f] : changeListeners) {
+							f(structure);
+						}
+					});
+					size.x = std::max(
+						jsonChild->getSize().x + jsonChild->getPosition().x, size.x
+					);
+					size.y = std::max(
+						jsonChild->getSize().y + jsonChild->getPosition().y, size.y
+					);
+					offsetSize.y = std::max(offsetSize.y, jsonChild->getSize().y);
+
+					pos.y += offsetSize.y;
+				}
 			}
 		}
 	}

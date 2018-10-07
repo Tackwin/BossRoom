@@ -102,13 +102,13 @@ void populate_widget_with_editable_json_object_form(
 				it.value().size() == 2 &&
 				it.value().at(0).is_number_float() &&
 				it.value().at(1).is_number_float()
-			) {
-				Vector2f x{it.value().at(0).get<float>(), it.value().at(1).get<float>()};
+				) {
+				Vector2f x{ it.value().at(0).get<float>(), it.value().at(1).get<float>() };
 				p->makeChild<PosPicker>({
 					{"pos", Vector2f{pos.x + label->getGlobalBoundingBox().w, pos.y}},
 					{"name", it.key() + "_value"},
 					{"x", x}
-				});
+					});
 			}
 			else {
 				int i = 0;
