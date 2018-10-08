@@ -3,6 +3,7 @@
 #include "Panel.hpp"
 #include "Label.hpp"
 #include "PosPicker.hpp"
+#include "BoolPicker.hpp"
 #include "ValuePicker.hpp"
 
 #include "Math/algorithms.hpp"
@@ -73,54 +74,81 @@ void JsonTree::contructTree() noexcept {
 			if (value.is_number_integer()) str = std::to_string(value.get<int>());
 			if (value.is_number_unsigned()) str = std::to_string(value.get<unsigned>());
 			if (value.is_null()) str = "null";
-			if (value.is_boolean()) str = value.get<bool>() ? "true" : "false";
 			if (value.is_string()) str = value.get<std::string>();
 
-			auto valuePicker = makeChild<ValuePicker>({
-				{"pos", Vector2f::saveJson(offsetLabel)},
-				{"name", key + "_value"},
-				//{"origin", {0, 0.5}},
-				{"unfocusedColor", {0.2, 0.2, 0.2, 0.2}},
-				{"focusedColor", {0.5, 0.5, 0.5, 0.5}},
-				{"font", "consola"},
-				{"size", {100, 15}},
-				{"charSize", 14},
-				{"text", str}
-			});
-			size.x = std::max(
-				valuePicker->getSize().x + valuePicker->getPosition().x, size.x
-			);
-			size.y = std::max(
-				valuePicker->getSize().y + valuePicker->getPosition().y, size.y
-			);
-			offsetSize.y = std::max(offsetSize.y, valuePicker->getSize().y);
-			valuePicker->listenChange(
-				[&, copy_value = value, &ref_value = value]
-				(const std::string& new_str) mutable {
-					if (copy_value.is_number()) {
-						if (str::represent_number(new_str)) {
-							if (copy_value.is_number_float())
-								ref_value = std::stof(new_str);
-							if (copy_value.is_number_integer())
-								ref_value = std::stoi(new_str);
-							if (copy_value.is_number_integer())
-								ref_value = (unsigned)std::stoul(new_str);
+			Vector2f child_size;
+
+			if (value.is_boolean()) {
+				auto boolPicker = makeChild<BoolPicker>({
+					{"pos", offsetLabel},
+					{"name", key + "_value"},
+					{"size", {15, 15}},
+					{"x", value.get<bool>()}
+				});
+
+				boolPicker->listenChange(
+					[&, copy_value = value, &ref_value = value]
+					(bool x) mutable {
+						ref_value = x;
+
+						for (auto& [_, f] : changeListeners) {
+							f(structure);
 						}
 					}
-					if (copy_value.is_string()) {
-						ref_value = new_str;
-					}
-					if (
-						copy_value.is_boolean() && new_str == "true" || new_str == "false"
-					) {
-						ref_value = (new_str == "true");
-					}
+				);
 
-					for (auto& [_, f] : changeListeners) {
-						f(structure);
+				child_size = boolPicker->getSize();
+			}
+			else {
+				auto valuePicker = makeChild<ValuePicker>({
+					{"pos", Vector2f::saveJson(offsetLabel)},
+					{"name", key + "_value"},
+					//{"origin", {0, 0.5}},
+					{"unfocusedColor", {0.2, 0.2, 0.2, 0.2}},
+					{"focusedColor", {0.5, 0.5, 0.5, 0.5}},
+					{"font", "consola"},
+					{"size", {100, 15}},
+					{"charSize", 14},
+					{"text", str}
+				});
+
+				valuePicker->listenChange(
+					[&, copy_value = value, &ref_value = value]
+					(const std::string& new_str) mutable {
+						if (copy_value.is_number()) {
+							if (str::represent_number(new_str)) {
+								if (copy_value.is_number_float())
+									ref_value = std::stof(new_str);
+								if (copy_value.is_number_integer())
+									ref_value = std::stoi(new_str);
+								if (copy_value.is_number_integer())
+									ref_value = (unsigned)std::stoul(new_str);
+							}
+						}
+						if (copy_value.is_string()) {
+							ref_value = new_str;
+						}
+						if (
+							copy_value.is_boolean() && new_str == "true" || new_str == "false"
+						) {
+							ref_value = (new_str == "true");
+						}
+
+						for (auto& [_, f] : changeListeners) {
+							f(structure);
+						}
 					}
-				}
+				);
+
+				child_size = valuePicker->getSize();
+			}
+			size.x = std::max(
+				child_size.x + offsetLabel.x, size.x
 			);
+			size.y = std::max(
+				child_size.y + offsetLabel.y, size.y
+			);
+			offsetSize.y = std::max(offsetSize.y, child_size.y);
 			pos.y += offsetSize.y;
 		}
 		else if (value.is_object()) {

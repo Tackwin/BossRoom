@@ -152,6 +152,30 @@
 		"panel_a": {
 			"sheet": "images/panel_a.png"
 		},
+		"on_on_off": {
+			"sheet": "images/on_on_off.png",
+			"smooth": false
+		},
+		"off_on_off": {
+			"sheet": "images/off_on_off.png",
+			"smooth": false
+		},
+		"on_off": {
+			"sheet": "images/on_off.png",
+			"rect": [
+				10, 10
+			],
+			"on": {
+				"row": 0,
+				"col": 0,
+				"frames": 1
+			},
+			"off": {
+				"row": 0,
+				"col": 1,
+				"frames": 1
+			}
+		},
 		"panel_b": {
 			"sheet": "images/panel_b.png"
 		},

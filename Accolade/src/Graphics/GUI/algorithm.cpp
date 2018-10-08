@@ -3,6 +3,7 @@
 #include "Common.hpp"
 
 #include "ValuePicker.hpp"
+#include "BoolPicker.hpp"
 #include "PosPicker.hpp"
 #include "Panel.hpp"
 #include "Label.hpp"
@@ -29,10 +30,9 @@ void populate_widget_with_editable_json_object_form(
 			auto str = std::string{};
 			if (it.value().is_number()) str = std::to_string(it.value().get<long double>());
 			if (it.value().is_null()) str = "null";
-			if (it.value().is_boolean()) str = it.value().get<bool>() ? "true" : "false";
 			if (it.value().is_string()) str = it.value().get<std::string>();
 
-			Label* label = new Label{nlohmann::json{
+			Label* label = p->makeChild<Label>({
 				{"pos", Vector2f::saveJson(pos) },
 				{"name", it.key() + "_label"},
 				//{"origin", {0, 0.5}},
@@ -40,25 +40,37 @@ void populate_widget_with_editable_json_object_form(
 				{"charSize", 14},
 				{"text", it.key()},
 				{"textColor", {1, 1, 1, 1}}
-			}};
+			});
 			auto offsetLabel = Vector2f{
 				pos.x + label->getGlobalBoundingBox().w + 5, pos.y
 			};
-			ValuePicker* picker = new ValuePicker({ nlohmann::json{
-				{"pos", Vector2f::saveJson(offsetLabel)},
-				{"name", it.key() + "_value"},
-				//{"origin", {0, 0.5}},
-				{"unfocusedColor", {0.2, 0.2, 0.2, 0.2}},
-				{"focusedColor", {0.5, 0.5, 0.5, 0.5}},
-				{"font", "consola"},
-				{"size", {100, 15}},
-				{"charSize", 14},
-				{"text", str}
-			}});
 
-			// Now _you_ deal with this.
-			p->addChild(label);
-			p->addChild(picker);
+			if (it.value().is_boolean()) {
+				p->makeChild<BoolPicker>({
+					{"pos", Vector2f::saveJson(offsetLabel)},
+					{"name", it.key() + "_value"},
+					//{"origin", {0, 0.5}},
+					{"unfocusedColor", {0.2, 0.2, 0.2, 0.2}},
+					{"focusedColor", {0.5, 0.5, 0.5, 0.5}},
+					{"font", "consola"},
+					{"size", {100, 15}},
+					{"charSize", 14},
+					{"text", str}
+				});
+			}
+			else {
+				p->makeChild<ValuePicker>({
+					{"pos", Vector2f::saveJson(offsetLabel)},
+					{"name", it.key() + "_value"},
+					//{"origin", {0, 0.5}},
+					{"unfocusedColor", {0.2, 0.2, 0.2, 0.2}},
+					{"focusedColor", {0.5, 0.5, 0.5, 0.5}},
+					{"font", "consola"},
+					{"size", {100, 15}},
+					{"charSize", 14},
+					{"text", str}
+				});
+			}
 		}
 		else if (it.value().is_object()) {
 			Label* label = new Label{ nlohmann::json{

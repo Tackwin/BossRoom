@@ -1,11 +1,10 @@
 #include "Button.hpp"
 
-Button::Button(const nlohmann::json& json) :
-	Widget(json),
-	_normal{ new Panel{json.count("normal") ? json.at("normal") : nlohmann::json{}} },
-	_hold{ new Panel{json.count("hold") ? json.at("hold") : nlohmann::json{}} },
-	_label{ new Label{json.count("label") ? json.at("label") : nlohmann::json{}} }
-{
+Button::Button(const nlohmann::json& json) : Widget(json) {
+	_hold = makeChild<Panel>(json.count("hold") ? json.at("hold") : nlohmann::json{});
+	_label = makeChild<Label>(json.count("label") ? json.at("label") : nlohmann::json{}, 1);
+	_normal = makeChild<Panel>(json.count("normal") ? json.at("normal") : nlohmann::json{});
+
 	//_onClick.began = std::bind(&Button::onClickBegan, this);
 	//_onClick.ended = std::bind(&Button::onClickEnded, this);
 
@@ -16,7 +15,10 @@ Button::Button(const nlohmann::json& json) :
 		setHoldSprite(*it);
 	}
 	if (const auto& it = json.find("color"); it != std::end(json)) {
-		getSprite().setColor(Vector4d::loadJson(*it));
+		normal_color = *it;
+	}
+	if (const auto& it = json.find("hoverColor"); it != std::end(json)) {
+		hover_color = *it;
 	}
 
 	// the panels here are static so we overwrite their callbacks.
@@ -25,18 +27,21 @@ Button::Button(const nlohmann::json& json) :
 
 	_hold->setVisible(false);
 
-	_normal->setParent(this, 0);
-	_hold->setParent(this, 1);
-	_label->setParent(this, 2);
-
 	_normal->setOrigin(getOrigin());
 	_hold->setOrigin(getOrigin());
 	_label->setOrigin(getOrigin());
+
+	_normal->setSize(getSize());
+	_hold->setSize(getSize());
 }
 
 
 sf::Sprite& Button::getSprite() {
 	return _normal->getSprite();
+}
+
+sf::Sprite& Button::getCurrentSprite() noexcept {
+	return _hold->isVisible() ? _hold->getSprite() : _normal->getSprite();
 }
 
 sf::Sprite& Button::getHoldSprite() {
@@ -57,19 +62,23 @@ void Button::computeSize() {
 	_hold->computeSize();
 	_label->computeSize();
 
-	_size.x = std::max({ 
+	_size.x = std::max({
 		_normal->getSize().x,
 		_hold->getSize().x,
 		_label->getSize().x
 	});
-	_size.y = std::max({ 
+	_size.y = std::max({
 		_normal->getSize().y,
 		_hold->getSize().y,
-		_label->getSize().y 
+		_label->getSize().y
 	});
 }
 
-void Button::render(sf::RenderTarget&) {}
+void Button::render(sf::RenderTarget& target) {
+	Widget::render(target);
+
+	getSprite().setColor(_hovered ? hover_color : normal_color);
+}
 
 void Button::setStdString(const std::string& label) {
 	_label->setStdString(label);

@@ -9,6 +9,7 @@
 #include "ValuePicker.hpp"
 #include "Switcher.hpp"
 #include "PosPicker.hpp"
+#include "BoolPicker.hpp"
 #include "Button.hpp"
 
 const Widget::Callback::type Widget::Callback::FALSE = []() { return false; };
@@ -18,13 +19,13 @@ Widget::Widget() : Widget(nlohmann::json{}) {}
 
 Widget::Widget(nlohmann::json json) noexcept {
 	if (auto it = json.find("pos"); it != json.end()) {
-		setPosition(Vector2f::loadJson(*it));
+		setPosition(*it);
 	} if (auto it = json.find("origin"); it != json.end()) {
-		setOrigin(Vector2f::loadJson(*it));
+		setOrigin(*it);
 	} if (auto it = json.find("originAbs"); it != json.end()) {
-		setOriginAbs(Vector2f::loadJson(*it));
+		setOriginAbs(*it);
 	} if (auto it = json.find("size"); it != json.end()) {
-		setSize(Vector2f::loadJson(*it));
+		setSize(*it);
 	} if (auto it = json.find("visible"); it != json.end()) {
 		setVisible(it->get<bool>());
 	} if (auto it = json.find("name"); it != json.end()) {
@@ -44,6 +45,7 @@ Widget::Widget(nlohmann::json json) noexcept {
 				X(Panel);
 				X(Button);
 				X(PosPicker);
+				X(BoolPicker);
 #undef X
 			}
 			else {

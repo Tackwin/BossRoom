@@ -223,10 +223,11 @@
       "confirm": {
         "name": "confirm",
         "type": "Button",
-        "size": [10, 25],
+        "size": [10, 50],
         "origin": [0, 1],
         "pos": [10, 490],
-        "color": [0.2, 0.2, 0.2, 1],
+        "color": [0.6, 0.1, 0.1, 1],
+        "hoverColor": [0.65, 0.13, 0.13, 1],
         "label": {
           "charSize": 14,
           "text": "Confirm",

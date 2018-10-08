@@ -56,7 +56,8 @@ void EditSectionScreen::update(double dt) {
 	bool shiftPressed =
 		IM::isKeyPressed(sf::Keyboard::LShift) || IM::isKeyPressed(sf::Keyboard::RShift);
 
-	if (IM::isKeyPressed(sf::Keyboard::LControl) &&
+	if (
+		IM::isKeyPressed(sf::Keyboard::LControl) &&
 		IM::isKeyJustPressed(sf::Keyboard::E)
 	) {
 		saveSection(str::trim_whitespace(_savePicker->getStdString()));
@@ -948,9 +949,11 @@ void EditSectionScreen::selectFocus() noexcept {
 
 		jsonEditPanel->killDirectChild(root_properties_name);
 		JsonTree* json_tree = jsonEditPanel->makeChild<JsonTree>({
+			{"pos", Vector2f{0, jsonEditPanel->getSize().y * 0.1f + 5}},
 			{"name", root_properties_name},
 			{"structure", type::saveJson(*focused)}
 		});
+		if (jsonEditPanel->isCollapsed()) json_tree->setVisible(false);
 
 		auto open = json_tree->getChilds();
 		while (!open.empty()) {

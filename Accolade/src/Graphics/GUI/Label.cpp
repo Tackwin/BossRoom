@@ -21,9 +21,9 @@ Label::Label(nlohmann::json json) noexcept : Widget(json) {
 	}
 	computeSize();
 	_text.setOrigin({
-		_origin.x * _size.x,
-		_origin.y * _size.y
-		});
+		_origin.x * _text.getLocalBounds().width,
+		_origin.y * _text.getLocalBounds().height
+	});
 	_text.setPosition(getGlobalPosition());
 }
 
@@ -57,8 +57,8 @@ void Label::render(sf::RenderTarget & target) {
 	if (!_visible) return;
 
 	_text.setOrigin({
-		_origin.x * _size.x,
-		_origin.y * _size.y
+		_origin.x * _text.getLocalBounds().width,
+		_origin.y * _text.getLocalBounds().height
 	});
 	_text.setPosition(getGlobalPosition());
 	// _size is kinda ignored right now

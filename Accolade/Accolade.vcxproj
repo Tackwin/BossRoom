@@ -357,6 +357,7 @@
     <ClCompile Include="src\Gameplay\Magic\Spells\SpellTarget.cpp" />
     <ClCompile Include="src\Gameplay\Magic\Spells\Spell.cpp" />
     <ClCompile Include="src\Graphics\GUI\algorithm.cpp" />
+    <ClCompile Include="src\Graphics\GUI\BoolPicker.cpp" />
     <ClCompile Include="src\Graphics\GUI\InputText.cpp" />
     <ClCompile Include="src\Graphics\GUI\JsonTree.cpp" />
     <ClCompile Include="src\Graphics\GUI\PosPicker.cpp" />
@@ -442,6 +443,7 @@
     <ClInclude Include="src\Gameplay\Magic\Spells\SpellTarget.hpp" />
     <ClInclude Include="src\Gameplay\Magic\Spells\Spell.hpp" />
     <ClInclude Include="src\Graphics\GUI\algorithm.hpp" />
+    <ClInclude Include="src\Graphics\GUI\BoolPicker.hpp" />
     <ClInclude Include="src\Graphics\GUI\InputText.hpp" />
     <ClInclude Include="src\Graphics\GUI\JsonTree.hpp" />
     <ClInclude Include="src\Graphics\GUI\PosPicker.hpp" />

@@ -110,8 +110,8 @@ bool ValuePicker::onHoverEnded() noexcept {
 bool ValuePicker::onKeyBegan() noexcept {
 	if (IM::isKeyJustPressed(sf::Keyboard::BackSpace)) {
 		if (_inputString.length() != 0 && cursorPos > 0) {
-			setStdString(getStdString().erase(cursorPos - 1, 1));
 			cursorPos = cursorPos - 1;
+			setStdString(getStdString().erase(cursorPos, 1));
 			setCursorSpritePos();
 		}
 	}
@@ -143,6 +143,7 @@ void ValuePicker::setFocus(bool v) noexcept {
 
 void ValuePicker::setStdString(std::string str) noexcept {
 	_inputString = str;
+	cursorPos = std::min(cursorPos, str.size());
 	_label->setStdString(str);
 	setCursorSpritePos();
 	for (auto& [_, f] : changeListeners)

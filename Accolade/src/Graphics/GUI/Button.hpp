@@ -15,6 +15,7 @@ public:
 	Button(const nlohmann::json& json = {});
 
 	sf::Sprite& getSprite();
+	sf::Sprite& getCurrentSprite() noexcept;
 	sf::Sprite& getHoldSprite();
 	Label& getLabel();
 
@@ -40,4 +41,7 @@ private:
 	Panel* _hold;
 
 	Label* _label;
+
+	Vector4d normal_color;
+	Vector4d hover_color;
 };
