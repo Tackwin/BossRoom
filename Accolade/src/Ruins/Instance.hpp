@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <optional>
 #include <vector>
 
 #include "Entity/EntityStore.hpp"
@@ -29,6 +30,7 @@ class Instance {
 public:
 	Instance(const InstanceInfo& info) noexcept;
 
+	void generateMaze(size_t width, size_t height) noexcept;
 	void generateGrid(size_t n) noexcept;
 
 	void startAt(size_t p) noexcept;

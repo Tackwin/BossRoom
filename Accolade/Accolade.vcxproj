@@ -455,6 +455,7 @@
     <ClInclude Include="src\Metaprogramming\TypeList.hpp" />
     <ClInclude Include="src\Navigation\NavigationLink.hpp" />
     <ClInclude Include="src\Navigation\NavigationPoint.hpp" />
+    <ClInclude Include="src\Order\OrderedPair.hpp" />
     <ClInclude Include="src\OS\OpenFile.hpp" />
     <ClInclude Include="src\OS\PathDefinition.hpp" />
     <ClInclude Include="src\OS\SystemConfiguration.hpp" />

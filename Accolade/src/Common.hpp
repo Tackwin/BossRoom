@@ -117,4 +117,11 @@ namespace xstd {
 	> append(T a, U b) {
 		return std::string{ a } +b;
 	}
+
+	template<typename T>
+	inline std::size_t hash_combine(std::size_t seed, const T& v) noexcept {
+		std::hash<T> h;
+		seed ^= h(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+		return seed;
+	}
 }

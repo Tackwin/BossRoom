@@ -8,6 +8,8 @@
 
 #include "Utils/container_algorithm.hpp"
 
+#include "Order/OrderedPair.hpp"
+
 #define SAVE(x, y) json[#x] = y(info.x);
 nlohmann::json InstanceInfo::saveJson(const InstanceInfo& info) noexcept {
 	nlohmann::json json;
@@ -31,6 +33,16 @@ InstanceInfo InstanceInfo::loadJson(const nlohmann::json& json) noexcept {
 #undef LOAD
 
 Instance::Instance(const InstanceInfo& info) noexcept : info(info) {}
+
+void Instance::generateMaze(size_t width, size_t height) noexcept {
+	std::unordered_map<OrderedPair<size_t>, std::string> rooms;
+	rooms[OrderedPair<size_t>{0, 1}] = "left_to_up";
+	rooms[OrderedPair<size_t>{0, 2}] = "left_to_right";
+	rooms[OrderedPair<size_t>{0, 3}] = "left_to_down";
+	rooms[OrderedPair<size_t>{1, 2}] = "up_to_right";
+	rooms[OrderedPair<size_t>{1, 3}] = "up_to_down";
+	rooms[OrderedPair<size_t>{2, 3}] = "right_to_down";
+}
 
 void Instance::generateGrid(size_t n) noexcept {
 	SectionInfo model = SectionInfo::loadJson(AM::getJson("1x1"));
