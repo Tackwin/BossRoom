@@ -124,4 +124,13 @@ namespace xstd {
 		seed ^= h(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 		return seed;
 	}
-}
+};
+
+namespace std {
+	template<typename T>
+	struct hash<std::pair<T, T>> {
+		size_t operator()(const std::pair<size_t, size_t>& x) const noexcept {
+			return xstd::hash_combine(std::hash<T>()(x.first), x.second);
+		}
+	};
+};

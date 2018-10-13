@@ -34,14 +34,110 @@ InstanceInfo InstanceInfo::loadJson(const nlohmann::json& json) noexcept {
 
 Instance::Instance(const InstanceInfo& info) noexcept : info(info) {}
 
-void Instance::generateMaze(size_t width, size_t height) noexcept {
-	std::unordered_map<OrderedPair<size_t>, std::string> rooms;
-	rooms[OrderedPair<size_t>{0, 1}] = "left_to_up";
-	rooms[OrderedPair<size_t>{0, 2}] = "left_to_right";
-	rooms[OrderedPair<size_t>{0, 3}] = "left_to_down";
-	rooms[OrderedPair<size_t>{1, 2}] = "up_to_right";
-	rooms[OrderedPair<size_t>{1, 3}] = "up_to_down";
-	rooms[OrderedPair<size_t>{2, 3}] = "right_to_down";
+OrderedPair<size_t> pick_random_dir_to_dir() noexcept {
+	return { (size_t)(unitaryRng(RD) * 4), (size_t)(unitaryRng(RD) * 4) };
+}
+
+std::pair<size_t, size_t>
+next_pos_from_to(std::pair<size_t, size_t> pos, size_t dir) noexcept
+{
+	switch (dir)
+	{
+	case 0: return { pos.first - 1, pos.second };
+	case 1: return { pos.first, pos.second + 1 };
+	case 2: return { pos.first + 1, pos.second };
+	case 3: return { pos.first, pos.second - 1 };
+	default: return assert(true), pos;
+	}
+}
+size_t portal_spot_to_look_for_from_dir(size_t dir) noexcept {
+	return (dir + 2) % 4;
+}
+
+InstanceInfo InstanceInfo::generateMaze(size_t width, size_t height) noexcept {
+	assert(width > 0);
+	assert(height > 0);
+
+	InstanceInfo info;
+
+	std::unordered_map<OrderedPair<size_t>, std::string> rooms_name;
+	rooms_name[OrderedPair<size_t>{0, 1}] = "left_up";
+	rooms_name[OrderedPair<size_t>{0, 2}] = "left_right";
+	rooms_name[OrderedPair<size_t>{0, 3}] = "left_down";
+	rooms_name[OrderedPair<size_t>{1, 2}] = "up_right";
+	rooms_name[OrderedPair<size_t>{1, 3}] = "up_down";
+	rooms_name[OrderedPair<size_t>{2, 3}] = "right_down";
+
+	std::unordered_map<std::pair<size_t, size_t>, OrderedPair<size_t>> pos_to_dir;
+
+	for (size_t y = 0; y < height; ++y) {
+		for (size_t x = 0; x < width; x++) {
+			if (x == 0 || x + 1 == width) continue; // we'll do the turn later
+
+			pos_to_dir[{x, y}] = { 0, 2 };
+		}
+	}
+
+	for (size_t y = 0; y < height; y+=2) {
+		pos_to_dir[{0, y}] = { 3, 2 };
+		pos_to_dir[{width - 1, y}] = { 0, 1 };
+	}
+	for (size_t y = 1; y < height; y+=2) {
+		pos_to_dir[{0, y}] = { 2, 1 };
+		pos_to_dir[{width - 1, y}] = { 3, 0 };
+	}
+
+	std::unordered_map<std::pair<size_t, size_t>, size_t> pos_to_index;
+
+	// now we construct the Sections.
+	for (auto& [pos, dir] : pos_to_dir) {
+		pos_to_index[pos] = info.sections.size();
+
+		info.sections.push_back(SectionInfo::loadJson(AM::getJson(rooms_name[dir])));
+		auto& sec = info.sections.back();
+		std::transform( //we don't care for the id in the json, we reinstantiate them.
+			std::begin(sec.portals),
+			std::end(sec.portals),
+			std::begin(sec.portals),
+			[](const PortalInfo& i) {
+				auto copy = i;
+				copy.id = UUID{};
+				return copy;
+			}
+		);
+
+		auto list_of_dir = { dir.a, dir.b }; // we link all the portals together.
+		for (auto d : list_of_dir) {
+			if ( // little hack, we don't want to connect actively the ends points.
+				(pos.first == 0 && pos.second == 0) ||
+				((pos.first == 0 || pos.first + 1 == width) && pos.second + 1 == height)
+			) continue;
+			if (
+				auto next_pos = next_pos_from_to(pos, d);
+				pos_to_index.count(next_pos) > 0
+			) {
+				auto portal_spot_to_look_for = portal_spot_to_look_for_from_dir(d);
+
+				PortalInfo* their_portal{ nullptr };
+				PortalInfo* my_portal{ nullptr };
+
+				for (auto& p : info.sections[pos_to_index[next_pos]].portals) {
+					if (p.spot == portal_spot_to_look_for) { their_portal = &p; break; }
+				}
+				for (auto& p : sec.portals) {
+					if (p.spot == d) { my_portal = &p; break; }
+				}
+
+				assert(their_portal);
+				assert(my_portal);
+
+				my_portal->tp_to = their_portal->id;
+				their_portal->tp_to = my_portal->id;
+			}
+		}
+	}
+
+	return info;
 }
 
 void Instance::generateGrid(size_t n) noexcept {

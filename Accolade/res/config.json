@@ -248,7 +248,13 @@
 		"SourceVaccum": "sources/vaccum.json",
 		"SourceDirectionInfo": "sources/direction.json",
 		"FlyInfo": "characters/fly.json",
-		"1x1": "rooms/1x1.json"
+		"1x1": "rooms/1x1.json",
+		"left_down": "rooms/left_down.json",
+		"left_right": "rooms/left_right.json",
+		"left_up": "rooms/left_up.json",
+		"right_down": "rooms/right_down.json",
+		"up_down": "rooms/up_down.json",
+		"up_right": "rooms/up_right.json"
 	},
 	"StartRoom": "rooms/1x1.json",
 	"bosses": [

@@ -40,9 +40,8 @@ LevelScreen::LevelScreen(u32 n) :
 	);
 	_bossHealthTileSprite.setPosition(35, 35);
 
-	InstanceInfo info;
+	InstanceInfo info = InstanceInfo::generateMaze(5, 5);
 	instance = std::make_unique<Instance>(info);
-	instance->generateGrid(10);
 	instance->startAt(0);
 
 	std::filesystem::path startRoom = AM::getJson(JSON_KEY)["StartRoom"].get<std::string>();

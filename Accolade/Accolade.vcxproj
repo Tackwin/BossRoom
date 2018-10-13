@@ -522,6 +522,7 @@
     <ClInclude Include="src\Utils\vector_algorithms.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="cpp.hint" />
     <None Include="res\characters\boloss.json" />
     <None Include="res\config.json" />
     <None Include="res\keys\default.json" />

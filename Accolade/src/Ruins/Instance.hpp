@@ -24,13 +24,13 @@ struct InstanceInfo {
 	static InstanceInfo loadJson(const nlohmann::json& json) noexcept;
 	static nlohmann::json saveJson(const InstanceInfo& info) noexcept;
 
+	static InstanceInfo generateMaze(size_t width, size_t height) noexcept;
 };
 
 class Instance {
 public:
 	Instance(const InstanceInfo& info) noexcept;
 
-	void generateMaze(size_t width, size_t height) noexcept;
 	void generateGrid(size_t n) noexcept;
 
 	void startAt(size_t p) noexcept;
