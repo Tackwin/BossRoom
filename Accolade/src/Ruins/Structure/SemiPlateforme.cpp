@@ -38,8 +38,8 @@ SemiPlateforme::SemiPlateforme(const SemiPlateformeInfo& info) noexcept : info(i
 	pos = info.rec.pos;
 }
 
-
 void SemiPlateforme::update(double) noexcept {};
+
 void SemiPlateforme::render(sf::RenderTarget&) noexcept {};
 void SemiPlateforme::renderDebug(sf::RenderTarget& target) noexcept {
 	sf::RectangleShape shape{ info.rec.size };
@@ -49,3 +49,4 @@ void SemiPlateforme::renderDebug(sf::RenderTarget& target) noexcept {
 	shape.setOutlineColor(Vector4d{ 0, 1, 0, 1 });
 	target.draw(shape);
 }
+

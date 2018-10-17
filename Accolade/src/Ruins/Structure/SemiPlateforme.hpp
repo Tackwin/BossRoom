@@ -25,6 +25,8 @@ public:
 	void renderDebug(sf::RenderTarget& target) noexcept;
 	void render(sf::RenderTarget& target) noexcept;
 	void update(double dt) noexcept;
+
+
 private:
 	SemiPlateformeInfo info;
 };

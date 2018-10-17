@@ -50,9 +50,13 @@ void World::update(double dt) {
 
 		Vector2f pos = obj1->pos;
 
-		Vector2f nVel = obj1->velocity + (obj1->force + flatForces) * dt;
-		Vector2f nPos = obj1->pos + (nVel + flatVelocities) * dt * 0.5f;
+		Vector2f new_vel = obj1->velocity + (obj1->force + flatForces) * dt;
+		Vector2f nPos = obj1->pos + (new_vel + flatVelocities) * dt * 0.5f;
 
+		// We set twice the velocity beacause the user callback might want to know
+		// this info.
+		obj1->velocity = new_vel;
+		
 		bool xCollider = false;
 		bool yCollider = false;
 
@@ -73,7 +77,7 @@ void World::update(double dt) {
 					obj1->collider->filterCollide(*obj2.get())
 				) {
 					if (!obj1->collider->sensor) {
-						nVel.x = 0;
+						new_vel.x = 0;
 						obj1->pos.x = pos.x;
 						nPos.x = pos.x;
 						xCollider = true;
@@ -88,17 +92,18 @@ void World::update(double dt) {
 				obj1->collider->setPos({ pos.x, nPos.y });
 
 				if (
-					obj1->collider->collideWith(obj2->collider.get()) &&
-					obj1->collider->filterCollide(*obj2.get())
-				) {
-					if (!obj1->collider->sensor){
-						nVel.y = 0;
-						obj1->pos.y = pos.y;
-						nPos.y = pos.y;
-						yCollider = true;
-					}
+					obj1->collider->collideWith(obj2->collider.get())
+				){
+ 					if (obj1->collider->filterCollide(*obj2.get())) {
+						if (!obj1->collider->sensor) {
+							new_vel.y = 0;
+							obj1->pos.y = pos.y;
+							nPos.y = pos.y;
+							yCollider = true;
+						}
 
-					flag = true;
+						flag = true;
+					}
 				}
 			}
 
@@ -120,7 +125,7 @@ void World::update(double dt) {
 		}
 
 		obj1->force = { 0, 0 };
-		obj1->velocity = nVel;
+		obj1->velocity = new_vel;
 		obj1->pos = nPos;
 
 		if (obj1->collider)

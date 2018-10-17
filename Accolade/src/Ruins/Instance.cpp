@@ -1,4 +1,4 @@
-#include "Instance.hpp"
+﻿#include "Instance.hpp"
 #include "Common.hpp"
 
 #include "Math/Segment.hpp"
@@ -217,7 +217,7 @@ void Instance::update(double dt) noexcept {
 
 	std::optional<PortalInfo> opt;
 
-	if (section->getTimeSinceEntered() > 5.0) {
+	if (section->getTimeSinceEntered() > 0.0) {
 		for (auto& p : section->getAllPortals()) {
 			if (min_dist2(p.frontier, playerPos) < 1) {
 				opt = p;

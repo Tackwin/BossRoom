@@ -38,6 +38,10 @@ struct Rectangle {
 
 		return y < other.y && distEdgeToEdge < sumOfWidth;
 	}
+	bool isFullyOnTopOf(Rectangle<T> other, T tolerance = FLT_EPSILON) const noexcept {
+		return y + h < other.y + tolerance;
+	}
+
 	// works only for top down y
 	bool isOnBotOf(Rectangle<T> other) const {
 		T distEdgeToEdge = std::max(other.x + other.w - x, x + w - other.x);

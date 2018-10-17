@@ -148,8 +148,6 @@ void Section::enter() noexcept {
 	_player = std::make_shared<Player>(C::game->getPlayerInfo());
 	_player->setPos(_info.startPos);
 	_player->enter(this);
-	_player->collider->onEnter =
-		std::bind(&Section::playerOnEnter, this, std::placeholders::_1);
 
 	if (_player->isEquiped()) {
 		_player->swapWeapon(_player->getPlayerInfo().weapon.value());
@@ -391,14 +389,6 @@ void Section::removeDeadObject() noexcept {
 	removeDead(flies);
 }
 
-void Section::playerOnEnter(Object* object) noexcept {
-	if (object->idMask[Object::STRUCTURE]) {
-		auto box = ((Box*)object->collider.get())->getGlobalBoundingBox();
-
-		if (_player->getBoundingBox().isOnTopOf(box)) _player->floored();
-		if (_player->getBoundingBox().isOnBotOf(box)) _player->ceiled();
-	}
-}
 void Section::playerOnExit(Object*) noexcept {
 
 }

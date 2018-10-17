@@ -49,3 +49,5 @@ struct Object {
 
 	const UUID uuid;
 };
+
+extern Vector2f get_summed_velocities(Object& obj) noexcept;

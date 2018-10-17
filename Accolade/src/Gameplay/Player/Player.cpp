@@ -15,6 +15,8 @@
 #include "Gameplay/Projectile.hpp"
 #include "Gameplay/Wearable/Wearable.hpp"
 
+#include "Ruins/Structure/Plateforme.hpp"
+
 Player::Player() noexcept : Player(C::game->getPlayerInfo()) {}
 
 Player::Player(PlayerInfo info) noexcept :
@@ -37,6 +39,8 @@ Player::Player(PlayerInfo info) noexcept :
 	_hitBox->userPtr = this;
 	_hitBox->setSize(_info.hitBox);
 	_hitBox->dtPos = _info.hitBox / -2.f;
+	_hitBox->onEnter = [&](Object* obj) { onEnter(obj); };
+	_hitBox->onExit = [&](Object* obj) { onExit(obj); };
 
 	pos = { 100, 100 };
 	idMask.set((size_t)Object::BIT_TAGS::PLAYER);
@@ -48,7 +52,6 @@ Player::Player(PlayerInfo info) noexcept :
 void Player::enterLevel(Level* level) noexcept {
  	_level = level;
 
-	_hitBox->onEnter = [&](Object* obj) { collision(obj); };
 }
 void Player::exitLevel() noexcept {
 	_level = nullptr;
@@ -209,22 +212,32 @@ bool Player::isInvicible() const {
 	return _invincible;
 }
 
-void Player::collision(Object* obj) {
-	if (auto ptr = (Projectile*)obj; 
-		ptr->idMask.test((size_t)Object::BIT_TAGS::PROJECTILE) &&
-		!ptr->isFromPlayer()
+void Player::onEnter(Object* obj) noexcept {
+	if (
+		auto ptr = (Projectile*)obj; 
+		obj->idMask.test((size_t)Object::BIT_TAGS::PROJECTILE) && !ptr->isFromPlayer()
 	) {
 		if (!_invincible) {
 			hit(ptr->getDamage());
 		}
 		ptr->remove();
 	}
+	if (obj->idMask[Object::STRUCTURE]) {
+		auto box = ((Box*)obj->collider.get())->getGlobalBoundingBox();
+	
+		if (getBoundingBox().isOnTopOf(box)) floored();
+		if (getBoundingBox().isOnBotOf(box)) ceiled();
+	}
+}
+void Player::onExit(Object* obj) noexcept {
+	if (plateforme_colliding.count(obj->uuid) > 0) plateforme_colliding.erase(obj->uuid);
 }
 
 void Player::floored() {
 	_nJumpsLeft = 2u;
 	_floored = true;
 
+	pass_though_semiPlateforme = false;
 	clearKnockBack();
 	clearJump();
 }
@@ -257,6 +270,7 @@ void Player::jumpKeyPressed() {
 		velocity.y = 0.f;
 
 		continueToJump_ = true;
+		pass_though_semiPlateforme = true;
 
 		auto jumpVelocity = Vector2f{ 0.f, -sqrtf(G * 2 * _info.jumpHeight) };
 
@@ -295,7 +309,8 @@ void Player::keyPressed(sf::Keyboard::Key key) {
 	}
 
 	if (key == kb.getKey(KeyBindings::MOVE_DOWN)) {
-		passingSemiPlateforme = true;
+		wanting_to_pass_semiPlatforme = true;
+		pass_though_semiPlateforme = true;
 	}
 }
 
@@ -315,7 +330,7 @@ void Player::keyReleased(sf::Keyboard::Key key) {
 		_dir.x = std::min(_dir.x, 0.f);
 	}
 	if (key == kb.getKey(KeyBindings::MOVE_DOWN)) {
-		passingSemiPlateforme = false;
+		wanting_to_pass_semiPlatforme = false;
 	}
 }
 
@@ -474,8 +489,26 @@ Rectangle2f Player::getBoundingBox() const noexcept {
 
 bool Player::filterCollision(Object& obj) noexcept {
 	if (auto ptr = dynamic_cast<Plateforme*>(&obj); ptr && ptr->isPassable()) {
-		if (continueToJump_ && velocity.y < 0) return false;
-		if (passingSemiPlateforme) return false;
+		// If the player is moving up we say go for it.
+		if (get_summed_velocities(*this).y < 0) return false;
+		auto it = getBoundingBox();
+		auto that = ptr->getBoundingBox();
+		std::cout << get_summed_velocities(*this).y << "; " <<
+			it.y << "; " << it.h << "; " << that.y << "; " << that.h << std::boolalpha <<
+			getBoundingBox().isFullyOnTopOf(ptr->getBoundingBox()) <<
+			wanting_to_pass_semiPlatforme <<
+			std::endl;
+
+		// if the player is on top of the box like we block him, that means it fall back
+		// BUT
+		// If the user explicitly asked to pass through, then what can we do, the player
+		// shall have what s.he desire.
+		if (
+			!wanting_to_pass_semiPlatforme &&
+			getBoundingBox().isFullyOnTopOf(ptr->getBoundingBox(), 0.1f)
+		) return true;
+
+		if (pass_though_semiPlateforme) return false;
 	}
 	return true;
 }

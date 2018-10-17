@@ -56,6 +56,7 @@ class Game;
 class Level;
 class Section;
 class Projectile;
+class Plateforme;
 class Player : 
 	public Object,
 	public Removable,
@@ -109,8 +110,6 @@ public:
 
 	bool isInvicible() const;
 
-	void collision(Object* obj);
-
 	void floored();
 	void ceiled() noexcept;
 	bool isFloored() const;
@@ -150,6 +149,9 @@ private: //TODO: Make private
 	void jumpKeyPressed();
 	bool filterCollision(Object& obj) noexcept;
 
+	void onEnter(Object* obj) noexcept;
+	void onExit(Object* obj) noexcept;
+
 	u32 _nJumpsLeft{ 2 };
 
 	std::optional<Vector2f> _knockBack{};
@@ -182,7 +184,8 @@ private: //TODO: Make private
 	bool _invincible{ false };
 	double _invincibleTime{ 0.f };
 
-	bool passingSemiPlateforme{ false };
+	bool wanting_to_pass_semiPlatforme{ false };
+	bool pass_though_semiPlateforme{ false };
 
 	//Todo clean up level.
 	Level* _level{ nullptr };
@@ -192,6 +195,7 @@ private: //TODO: Make private
 	sf::Sound _hitSound;
 
 	std::unordered_set<std::string> _events;
+	std::unordered_set<UUID> plateforme_colliding;
 
 	std::vector<std::shared_ptr<Projectile>> _projectilesToShoot;
 	std::vector<std::shared_ptr<Zone>> _zonesToApply;

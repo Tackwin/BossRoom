@@ -62,7 +62,6 @@ void LevelScreen::onEnter(std::any input) {
 
 		instance->hardSetCurrentSection(std::get<0>(returnValue));
 
-
 		//_section = std::make_unique<Section>(std::get<0>(returnValue));
 		//_section->setFilepath(std::get<1>(returnValue));
 	}
@@ -180,9 +179,7 @@ void LevelScreen::renderGui(sf::RenderTarget& target) {
 				? 1 
 				: 0
 		);
-		const float& r = std::get<0>(colors[color]); // ughh i wish that intelissens could do: const auto& [r, g, b] = tuple;
-		const float& g = std::get<1>(colors[color]);
-		const float& b = std::get<2>(colors[color]);
+		const auto& [r, g, b] = colors[color];
 
 		_bossHealthTileSprite.setColor(sf::Color(
 			(u08)(r * 255), 
