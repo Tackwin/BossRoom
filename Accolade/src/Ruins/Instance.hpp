@@ -43,6 +43,7 @@ public:
 
 	const Section& getCurrentSection() const noexcept;
 	Section& getCurrentSection() noexcept;
+	size_t getCurrentSectionIndex() const noexcept;
 
 	std::optional<Eid<Section>> getNextSectionIfInstantiated(size_t dir) const noexcept;
 

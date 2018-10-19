@@ -1,8 +1,10 @@
 #pragma once
 #include <string>
+#include <optional>
 
 #include "Vector.hpp"
 #include "Segment.hpp"
+#include "Rectangle.hpp"
 
 template<typename T>
 T min_dist2(const Segment2<T>& seg, const Vector2<T>& p) noexcept {
@@ -26,3 +28,7 @@ T min_dist(const Segment2<T>& seg, const Vector2<T>& p) noexcept {
 }
 extern bool is_in_ellipse(Vector2f A, Vector2f B, float r, Vector2f p) noexcept;
 extern double evaluate_expression(const std::string& str) noexcept;
+extern
+std::optional<Vector2f> segment_rec(const Segment2f& seg, const Rectangle2f& rec) noexcept;
+extern
+std::optional<Vector2f> segment_segment(const Segment2f& A, const Segment2f& B) noexcept;

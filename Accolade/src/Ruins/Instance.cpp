@@ -110,7 +110,7 @@ InstanceInfo InstanceInfo::generateMaze(size_t width, size_t height) noexcept {
 		for (auto d : list_of_dir) {
 			if ( // little hack, we don't want to connect actively the ends points.
 				(pos.first == 0 && pos.second == 0) ||
-				((pos.first == 0 || pos.first + 1 == width) && pos.second + 1 == height)
+				pos.first == (height % 2 ? width : 0) && pos.second + 1 == height
 			) continue;
 			if (
 				auto next_pos = next_pos_from_to(pos, d);
@@ -215,11 +215,12 @@ void Instance::update(double dt) noexcept {
 
 	section->update(dt);
 
-	std::optional<PortalInfo> opt;
 
 	if (section->getTimeSinceEntered() > 0.0) {
+		std::optional<PortalInfo> opt;
+		
 		for (auto& p : section->getAllPortals()) {
-			if (min_dist2(p.frontier, playerPos) < 1) {
+			if (segment_rec(p.frontier, section->getPlayer()->getBoundingBox())) {
 				opt = p;
 				break;
 			}
@@ -722,4 +723,10 @@ size_t Instance::complementary_dir(size_t dir) const noexcept {
 			dir == 1 ? 3 :
 			dir == 2 ? 0 :
 			dir == 3 ? 1 : assert("???"), 0;
+}
+
+size_t Instance::getCurrentSectionIndex() const noexcept {
+	return 
+		std::find(std::begin(sections), std::end(sections), current_section) - 
+		std::begin(sections);
 }

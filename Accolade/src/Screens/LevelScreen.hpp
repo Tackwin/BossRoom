@@ -14,6 +14,7 @@
 #include "Ruins/Instance.hpp"
 
 class Level;
+class Label;
 class LevelScreen : public Screen {
 public:
 	LevelScreen(u32 n);
@@ -44,6 +45,7 @@ private:
 	
 	std::unique_ptr<Instance> instance;
 
+	std::unique_ptr<Label> section_id_label{ nullptr };
 	sf::Sprite _bossHealthTileSprite;
 	std::unique_ptr<Section> _section;
 	std::vector<sf::RectangleShape> _playerLife;

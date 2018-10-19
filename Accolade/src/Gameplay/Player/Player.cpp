@@ -26,9 +26,11 @@ Player::Player(PlayerInfo info) noexcept :
 	_sprite = AnimatedSprite(_info.sprite);
 	_sprite.pushAnim("idle");
 
+	origin = { 0.5, 1 };
+
 	_sprite.getSprite().setOrigin(
-		_sprite.getSprite().getGlobalBounds().width / 2.f,
-		_sprite.getSprite().getGlobalBounds().height / 2.f
+		_sprite.getSprite().getGlobalBounds().width * origin.x,
+		_sprite.getSprite().getGlobalBounds().height * origin.y
 	);
 	_sprite.getSprite().setPosition(pos);
 
@@ -38,7 +40,7 @@ Player::Player(PlayerInfo info) noexcept :
 	_hitBox = (Box*)collider.get();
 	_hitBox->userPtr = this;
 	_hitBox->setSize(_info.hitBox);
-	_hitBox->dtPos = _info.hitBox / -2.f;
+	_hitBox->dtPos = { -_info.hitBox.x * origin.x, -_info.hitBox.y * origin.y };
 	_hitBox->onEnter = [&](Object* obj) { onEnter(obj); };
 	_hitBox->onExit = [&](Object* obj) { onExit(obj); };
 
@@ -133,7 +135,27 @@ void Player::update(double dt) {
 	flatForces.push_back({ 0, G });
 	velocity *= (float)std::pow(0.2, dt);
 
+	input();
 	_events.clear();
+}
+void Player::input() noexcept {
+	auto key_binding = game->getCurrentKeyBindings();
+
+	_dir = { 0, 0 };
+
+	if (IM::isKeyPressed(key_binding.getKey(KeyBindings::MOVE_UP))) {
+		_dir.y = -1;
+	}
+	else if (IM::isKeyPressed(key_binding.getKey(KeyBindings::MOVE_DOWN))) {
+		_dir.y = 1;
+	}
+
+	if (IM::isKeyPressed(key_binding.getKey(KeyBindings::MOVE_LEFT))) {
+		_dir.x = -1;
+	}
+	else if (IM::isKeyPressed(key_binding.getKey(KeyBindings::MOVE_RIGHT))) {
+		_dir.x = 1;
+	}
 }
 
 void Player::render(sf::RenderTarget &target) {
@@ -294,19 +316,6 @@ void Player::keyPressed(sf::Keyboard::Key key) {
 		jumpKeyPressed();
 	}
 
-	if (key == kb.getKey(KeyBindings::MOVE_UP)) {
-		_dir.y = -1;
-	}
-	else if (key == kb.getKey(KeyBindings::MOVE_DOWN)) {
-		_dir.y = 1;
-	}
-
-	if (key == kb.getKey(KeyBindings::MOVE_LEFT)) {
-		_dir.x = -1;
-	}
-	else if (key == kb.getKey(KeyBindings::MOVE_RIGHT)) {
-		_dir.x = 1;
-	}
 
 	if (key == kb.getKey(KeyBindings::MOVE_DOWN)) {
 		wanting_to_pass_semiPlatforme = true;
@@ -316,19 +325,7 @@ void Player::keyPressed(sf::Keyboard::Key key) {
 
 void Player::keyReleased(sf::Keyboard::Key key) {
 	auto kb = game->getCurrentKeyBindings();
-	if (key == kb.getKey(KeyBindings::MOVE_UP)) {
-		_dir.y = std::max(_dir.y, 0.f);
-	}
-	else if (key == kb.getKey(KeyBindings::MOVE_DOWN)) {
-		_dir.y = std::min(_dir.y, 0.f);
-	}
 
-	if (key == kb.getKey(KeyBindings::MOVE_LEFT)) {
-		_dir.x = std::max(_dir.x, 0.f);
-	}
-	else if (key == kb.getKey(KeyBindings::MOVE_RIGHT)) {
-		_dir.x = std::min(_dir.x, 0.f);
-	}
 	if (key == kb.getKey(KeyBindings::MOVE_DOWN)) {
 		wanting_to_pass_semiPlatforme = false;
 	}
@@ -493,11 +490,6 @@ bool Player::filterCollision(Object& obj) noexcept {
 		if (get_summed_velocities(*this).y < 0) return false;
 		auto it = getBoundingBox();
 		auto that = ptr->getBoundingBox();
-		std::cout << get_summed_velocities(*this).y << "; " <<
-			it.y << "; " << it.h << "; " << that.y << "; " << that.h << std::boolalpha <<
-			getBoundingBox().isFullyOnTopOf(ptr->getBoundingBox()) <<
-			wanting_to_pass_semiPlatforme <<
-			std::endl;
 
 		// if the player is on top of the box like we block him, that means it fall back
 		// BUT

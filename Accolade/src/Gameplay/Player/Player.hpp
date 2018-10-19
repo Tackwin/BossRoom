@@ -73,6 +73,7 @@ public:
 	void enter(Section* section)	noexcept;
 	void leave()					noexcept;
 
+	void input() noexcept;
 	void update(double dt);
 	void render(sf::RenderTarget& target);
 
@@ -200,10 +201,10 @@ private: //TODO: Make private
 	std::vector<std::shared_ptr<Projectile>> _projectilesToShoot;
 	std::vector<std::shared_ptr<Zone>> _zonesToApply;
 
-
+	Vector2f origin;
 	// Now there is stuff for the magic spells, i need to figure out
 	// a way to make that generics, i'll wait for a number of spell to be implemented
-	// before id do that. Right now i don't see pattern to generalize, maybe there isn't,
+	// before i do that. Right now i don't see pattern to generalize, maybe there isn't,
 	// we'll see
 public:
 

@@ -11,6 +11,7 @@
 #include "./../Managers/TimerManager.hpp"
 
 #include "./../Graphics/GUI/Panel.hpp"
+#include "Graphics/GUI/Label.hpp"
 
 #include "./../Gameplay/Projectile.hpp"
 #include "./../Gameplay/Wearable/Wearable.hpp"
@@ -51,6 +52,14 @@ LevelScreen::LevelScreen(u32 n) :
 	_section = std::make_unique<Section>(sectionInfo);
 	_section->setFileName(startRoom.filename());
 	_section->setFilepath(startRoom);
+
+	section_id_label = std::make_unique<Label>(nlohmann::json{
+		{"pos", {WIDTH - 10, 10}},
+		{"origin", {1, 0}},
+		{"text", "Section: "},
+		{"font", "consola"},
+		{"charSize", 8}
+	});
 }
 
 LevelScreen::~LevelScreen() {
@@ -119,6 +128,10 @@ void LevelScreen::update(double dt) {
 	}
 	
 	instance->update(dt);
+	section_id_label->setStdString(
+		"Section: " + std::to_string(instance->getCurrentSectionIndex())
+	);
+
 	/*if (_level) {
 		_level->update(dt);
 		if (_level->lost()) {
@@ -201,6 +214,8 @@ void LevelScreen::renderGui(sf::RenderTarget& target) {
 		weaponGuiSprite.setPosition({ WIDTH - 50.f, HEIGHT - 50.f });
 		target.draw(weaponGuiSprite);
 	}
+
+	section_id_label->propagateRender(target);
 }
 
 void LevelScreen::shakeScreen(float power) {
