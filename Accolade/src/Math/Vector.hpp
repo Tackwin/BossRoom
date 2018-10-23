@@ -410,6 +410,7 @@ struct Vector : public __vec_member<D, T> {
 		return result;
 	}
 
+
 	template<typename U>
 	Vector<D, T>& operator+=(const U& other) {
 		for (size_t i = 0; i < getDimension(); ++i) {
@@ -519,6 +520,14 @@ struct Vector : public __vec_member<D, T> {
 	bool operator!=(const sf::Vector2<U>& other) const {
 		static_assert(D == 2);
 		return !this->operator==(other);
+	}
+	template<typename U>
+	Vector<2, T> operator-(const sf::Vector2<U>& other) const {
+		static_assert(D == 2);
+		Vector<2, T> result;
+		result.x = x - other.x;
+		result.y = y - other.y;
+		return result;
 	}
 
 	static void renderLine(

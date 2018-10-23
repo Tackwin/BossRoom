@@ -45,7 +45,8 @@ public:
 	Section& getCurrentSection() noexcept;
 	size_t getCurrentSectionIndex() const noexcept;
 
-	std::optional<Eid<Section>> getNextSectionIfInstantiated(size_t dir) const noexcept;
+	std::optional<Eid<Section>>
+	getNextSectionIfInstantiated(const PortalInfo& portal) const noexcept;
 
 private:
 	InstanceInfo info;

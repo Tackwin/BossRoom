@@ -55,8 +55,13 @@ size_t portal_spot_to_look_for_from_dir(size_t dir) noexcept {
 }
 
 InstanceInfo InstanceInfo::generateMaze(size_t width, size_t height) noexcept {
-	assert(width > 0);
-	assert(height > 0);
+	assert(width != 0);
+	assert(height != 0);
+
+	// Right now we just generate a snake maze since we don't have more thant 2 way
+	// cross maps.
+	// The end point should tp to a the boss_1 room.
+	// And the boss_1 room should link back to the beginning.
 
 	InstanceInfo info;
 
@@ -105,13 +110,17 @@ InstanceInfo InstanceInfo::generateMaze(size_t width, size_t height) noexcept {
 				return copy;
 			}
 		);
-
 		auto list_of_dir = { dir.a, dir.b }; // we link all the portals together.
 		for (auto d : list_of_dir) {
-			if ( // little hack, we don't want to connect actively the ends points.
-				(pos.first == 0 && pos.second == 0) ||
-				pos.first == (height % 2 ? width : 0) && pos.second + 1 == height
+
+			// little hack, we don't want to connect actively the ends points.
+			if (pos == std::pair<size_t, size_t>{0, 0} && d != 2u) continue;
+			if (
+				pos == std::pair<size_t, size_t>{height % 2 ? width - 1 : 0, height + 1} &&
+				d != (height % 2 ? 0u : 2u)
 			) continue;
+			
+
 			if (
 				auto next_pos = next_pos_from_to(pos, d);
 				pos_to_index.count(next_pos) > 0
@@ -136,6 +145,35 @@ InstanceInfo InstanceInfo::generateMaze(size_t width, size_t height) noexcept {
 			}
 		}
 	}
+
+	auto& first_section = info.sections[pos_to_index[{0, 0}]];
+	auto& last_section = info.sections[pos_to_index[{
+		(height % 2) == 0 ? 0 : width - 1, height - 1
+	}]];
+
+	auto last_portal_it = std::find_if(
+		std::begin(last_section.portals),
+		std::end(last_section.portals),
+		[](const PortalInfo& it) {return it.spot == 1; }
+	);
+	assert(last_portal_it != std::end(last_section.portals));
+
+	auto first_portal_it = std::find_if(
+		std::begin(first_section.portals),
+		std::end(first_section.portals),
+		[](const PortalInfo& it) {return it.spot == 3; }
+	);
+	assert(first_portal_it != std::end(first_section.portals));
+
+	// We know it only has one portal.
+	auto boss_section = SectionInfo::loadJson(AM::getJson("boss_1"));
+	auto& boss_portal = boss_section.portals[0];
+	boss_portal.id = {};
+
+	last_portal_it->tp_to = boss_portal.id;
+	boss_portal.tp_to = first_portal_it->id;
+
+	info.sections.push_back(boss_section);
 
 	return info;
 }
@@ -228,7 +266,7 @@ void Instance::update(double dt) noexcept {
 
 		if (auto p = *opt; opt) {
 			section->exit();
-			auto next = getNextSectionIfInstantiated(p.spot);
+			auto next = getNextSectionIfInstantiated(p);
 			
 			PortalInfo portal_to_enter_from;
 			if (next) {
@@ -301,7 +339,6 @@ void Instance::runAlgo(sf::RenderWindow& window) noexcept {
 	// generateTowersBridge(window); if (rerun) return;
 	window.setView(old);
 }
-
 void Instance::samples(sf::RenderWindow& window) noexcept {
 	size_t n_current = 0;
 	size_t i = 0;
@@ -353,7 +390,6 @@ void Instance::samples(sf::RenderWindow& window) noexcept {
 		i++;
 	}
 }
-
 void Instance::smoothSamples(sf::RenderWindow& window) noexcept {
 	size_t i = 0;
 	size_t n_frames = 0;
@@ -420,7 +456,6 @@ void Instance::smoothSamples(sf::RenderWindow& window) noexcept {
 		n_frames++;
 	}
 }
-
 void Instance::selectSamples(sf::RenderWindow& window) noexcept {
 	size_t n_frames = 0;
 	while (window.isOpen())
@@ -470,7 +505,6 @@ void Instance::selectSamples(sf::RenderWindow& window) noexcept {
 		n_frames++;
 	}
 }
-
 void Instance::generateRoughTowers(sf::RenderWindow& window) noexcept {
 	size_t n_frames = 0;
 	size_t i = 0;
@@ -544,7 +578,6 @@ void Instance::generateRoughTowers(sf::RenderWindow& window) noexcept {
 		n_frames++;
 	}
 }
-
 void Instance::spaceTowers(sf::RenderWindow& window) noexcept {
 	size_t n_frames = 0;
 	size_t i = 0;
@@ -611,7 +644,6 @@ void Instance::spaceTowers(sf::RenderWindow& window) noexcept {
 		n_frames++;
 	}
 }
-
 void Instance::generateTowersBridge(sf::RenderWindow& window) noexcept {
 	size_t n_frames = 0;
 	size_t i = 0;
@@ -687,17 +719,8 @@ void Instance::generateTowersBridge(sf::RenderWindow& window) noexcept {
 }
 
 std::optional<Eid<Section>>
-Instance::getNextSectionIfInstantiated(size_t dir) const noexcept {
-	auto& s = getCurrentSection();
-	auto tp_to_it = std::find_if(
-		std::begin(s.getAllPortals()),
-		std::end(s.getAllPortals()),
-		[dir](PortalInfo i) {
-			return i.spot == dir;
-		}
-	);
-	assert(tp_to_it != std::end(s.getAllPortals()));
-	auto tp_to = tp_to_it->tp_to;
+Instance::getNextSectionIfInstantiated(const PortalInfo& portal) const noexcept {
+	auto tp_to = portal.tp_to;
 
 	auto it = std::find_if(
 		std::begin(sections),

@@ -35,7 +35,7 @@ public:
 
 private:
 
-	std::vector<Task> _in;
-	std::vector<Task> _till;
-	std::vector<std::pair<double, Task>> _every;
+	std::vector<Task> in_;
+	std::vector<Task> till_;
+	std::vector<std::pair<double, Task>> every_;
 };

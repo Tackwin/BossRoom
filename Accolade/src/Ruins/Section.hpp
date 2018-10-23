@@ -21,16 +21,12 @@
 #include "Gameplay/Magic/Sources/SourceTarget.hpp"
 #include "Gameplay/Magic/Sources/SourceVaccum.hpp"
 #include "Gameplay/Magic/Sources/Source.hpp"
-
 #include "Gameplay/Magic/Spells/Spell.hpp"
-
 #include "Gameplay/Characters/DistanceGuy.hpp"
 #include "Gameplay/Characters/MeleeGuy.hpp"
 #include "Gameplay/Characters/Slime.hpp"
 #include "Gameplay/Characters/Fly.hpp"
-
 #include "Gameplay/Player/Player.hpp"
-
 #include "Gameplay/Boss.hpp"
 
 struct SectionInfo {
@@ -120,8 +116,14 @@ public:
 	std::filesystem::path getFilepath() const noexcept;
 
 	double getTimeSinceEntered() const noexcept;
+
+	void startAimAnimation() noexcept;
+	void stopAimAnimation() noexcept;
 private:
-	// remove all object wich has the remove flag set
+
+	void updateAimAnimation(double dt) noexcept;
+
+		// remove all object wich has the remove flag set
 	void removeDeadObject() noexcept;
 
 	void playerOnEnter(Object*) noexcept;
@@ -152,7 +154,6 @@ private:
 
 	std::shared_ptr<Object> targetEnnemy_;
 
-
 	std::vector<std::shared_ptr<Source>>			_sources;
 
 	std::vector<std::shared_ptr<Projectile>>		_projectiles;
@@ -168,6 +169,10 @@ private:
 	std::vector<std::shared_ptr<Slime>>				_slimes;
 	std::vector<std::shared_ptr<Fly>>				flies;
 
+
+	bool aiming{ false };
+	float elastic_force_aim_sprite{ 1.f };
+	sf::Sprite aim_sprite;
 
 	UUID _keyPressedEvent{ UUID::zero() };
 	UUID _keyReleasedEvent{ UUID::zero() };

@@ -10,7 +10,7 @@
 #include "Projectile.hpp"
 #include "Patterns.hpp"
 #include "Player/Player.hpp"
-#include "Level.hpp"
+#include "Ruins/Section.hpp"
 
 void Boss::createBosses() {
 	bosses[0] = std::make_shared<Boss>(
@@ -53,7 +53,7 @@ void Boss::createBosses() {
 						randomFireInfo["nOrbs"] = 30;
 						randomFireInfo["eTime"] = 1.5f;
 						randomFireInfo["a"] =
-							(float)boss.getPos().angleTo(boss.getLevel()->getPlayerPos());
+							(float)boss.getPos().angleTo(boss.getSection()->getPlayerPos());
 						randomFireInfo["dtA"] = PIf / 1.5f;
 
 						Patterns::randomFire(

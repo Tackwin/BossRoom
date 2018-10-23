@@ -49,7 +49,7 @@
 		"source_boomerang": {
 			"sheet": "images/source2.png"
 		},
-		"aim": {
+		"aim_texture": {
 			"sheet": "images/aim.png"
 		},
 		"health_tile": {
@@ -160,6 +160,9 @@
 			"sheet": "images/off_on_off.png",
 			"smooth": false
 		},
+		"arch": {
+			"sheet": "images/arch.png"
+		},
 		"on_off": {
 			"sheet": "images/on_off.png",
 			"rect": [
@@ -254,6 +257,7 @@
 		"left_up": "rooms/left_up.json",
 		"right_down": "rooms/right_down.json",
 		"up_down": "rooms/up_down.json",
+		"boss_1": "rooms/boss_1.json",
 		"up_right": "rooms/up_right.json"
 	},
 	"StartRoom": "rooms/1x1.json",

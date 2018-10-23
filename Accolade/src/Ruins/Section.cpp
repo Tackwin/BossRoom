@@ -140,6 +140,12 @@ Section::Section(SectionInfo info) noexcept : _info(info) {
 		auto ptr = std::make_shared<Fly>(e);
 		addFly(ptr);
 	}
+
+	aim_sprite = sf::Sprite{ AM::getTexture("aim_texture") };
+	aim_sprite.setOrigin(
+		aim_sprite.getTextureRect().width * 0.5f,
+		aim_sprite.getTextureRect().height * 0.5f
+	);
 }
 
 void Section::enter() noexcept {
@@ -228,8 +234,9 @@ void Section::update(double dt) noexcept {
 	for (auto& fly : flies) {
 		fly->update(dt);
 	}
-
+	
 	removeDeadObject();
+	if (!aiming) updateAimAnimation(dt);
 
 	pullZonesFromObjects();
 	pullProjectilsFromObjects();
@@ -237,6 +244,13 @@ void Section::update(double dt) noexcept {
 	_world.updateInc(dt, 1);
 
 	targetEnnemy_ = getTargetEnnemyFromMouse();
+}
+void Section::updateAimAnimation(double dt) noexcept {
+	auto delta = getPlayerPos() - aim_sprite.getPosition();
+	// hooke's law
+	delta = delta.normalize() * delta.length() * elastic_force_aim_sprite;
+
+	aim_sprite.move(delta * dt);
 }
 void Section::render(sf::RenderTarget& target) const noexcept {
 	auto oldView = target.getView();
@@ -303,6 +317,7 @@ void Section::render(sf::RenderTarget& target) const noexcept {
 	for (const auto& p : _info.portals) ::render(p, target);
 
 	renderCrossOnTarget(target);
+	if (aiming) target.draw(aim_sprite);
 
 	target.setView(oldView);
 }
@@ -515,9 +530,8 @@ NavigationPointInfo Section::getNavigationPoint(UUID link, UUID current) const n
 	return getNavigationPoint(it->A == current ? it->B : it->A);
 }
 
-NavigationPointInfo Section::getNextNavigationPointFrom(
-	UUID id, Vector2f to
-) const noexcept {
+NavigationPointInfo
+Section::getNextNavigationPointFrom(UUID id, Vector2f to) const noexcept {
 	auto navPoint = getNavigationPoint(id);
 
 	NavigationPointInfo closest;
@@ -588,4 +602,18 @@ const PortalInfo& Section::getPortal(UUID id) const noexcept {
 
 double Section::getTimeSinceEntered() const noexcept {
 	return time_since_entered;
+}
+
+void Section::startAimAnimation() noexcept {
+	auto player_pos = getPlayerPos();
+	aim_sprite.setPosition(
+		player_pos +
+		Vector2f::createUnitVector(unitaryRng(RD) * 2 * PIf) * (unitaryRng(RD) * 50 + 100)
+	);
+
+	aiming = true;
+}
+
+void Section::stopAimAnimation() noexcept {
+	aiming = false;
 }

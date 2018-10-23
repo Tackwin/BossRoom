@@ -9,7 +9,7 @@
 
 #include "./../Game.hpp"
 
-#include "Level.hpp"
+#include "Ruins/Section.hpp"
 #include "Projectile.hpp"
 #include "Player/Player.hpp"
 
@@ -51,7 +51,8 @@ void Patterns::randomFire(
 	nlohmann::json projectile
 ) {
 	std::uniform_real_distribution<float> rngA(a - dtA * 0.5f, a + dtA * 0.5f);
-	std::uniform_real_distribution<float> rngDelay(0, 2 * time / nOrbs); //nOrbs * E(rngDt) = time
+	//nOrbs * E(rngDt) = time
+	std::uniform_real_distribution<float> rngDelay(0, 2 * time / nOrbs);
 
 	float sumDelay = 0.f;
 	
@@ -87,7 +88,7 @@ void Patterns::directionalFire(
 	const auto& key = TimerManager::addFunction(1 / fireRate, 
 		[&boss, projectile, N = time * fireRate](double) mutable -> bool {
 			float a = 
-				(float)boss.getPos().angleTo(boss.getLevel()->getPlayerPos());
+				(float)boss.getPos().angleTo(boss.getSection()->getPlayerPos());
 
 			Vector2f dir = Vector2f::createUnitVector(a);
 
@@ -160,16 +161,16 @@ void Patterns::snipe(
 ) {
 	const auto& key = TM::addFunction(aimTime + iTime, 
 		[&boss, aimTime, projectile, nShots](double) mutable -> bool {
-			boss.getLevel()->startAim();
+			boss.getSection()->startAimAnimation();
 
 			const auto& key = TM::addFunction(aimTime, 
 				[&boss, projectile](double) mutable -> bool {
-					boss.getLevel()->stopAim();
+					boss.getSection()->stopAimAnimation();
 
 					Vector2f pos = boss.getPos();
 					auto dir = 
 						Vector2f::createUnitVector(
-							(float)boss.getPos().angleTo(boss.getLevel()->getPlayerPos())
+							(float)boss.getPos().angleTo(boss.getSection()->getPlayerPos())
 						);
 					pos = pos + dir *
 						(

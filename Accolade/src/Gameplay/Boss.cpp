@@ -10,6 +10,7 @@
 #include "Player/Player.hpp"
 #include "Projectile.hpp"
 #include "Patterns.hpp"
+#include "Ruins/Section.hpp"
 
 using namespace nlohmann;
 
@@ -60,8 +61,8 @@ Boss::~Boss() noexcept {
 	}
 }
 
-void Boss::enterLevel(Level* level) {
-	_level = level;
+void Boss::enterSection(Section* section) noexcept {
+	this->section = section;
 
 	_life = getJsonValue<float>(_json, "life");
 	_maxLife = _life;
@@ -88,14 +89,14 @@ void Boss::enterLevel(Level* level) {
 
 	_init(*this);
 }
-void Boss::exitLevel() {
+void Boss::leaveSection() noexcept {
 	for (auto& k : _keyPatterns) {
 		TimerManager::removeFunction(k);
 	}
 	_keyPatterns.clear();
 	
 	_unInit(*this);
-	_level = nullptr;
+	section = nullptr;
 }
 
 void Boss::die() {
@@ -149,7 +150,8 @@ void Boss::hit(float d) noexcept {
 }
 
 void Boss::shoot(const std::shared_ptr<Projectile>& projectile) {
-	if (_level && _life > 0) {
+	assert(section);
+	if (_life > 0) {
 		_projectilesToShoot.push_back(projectile);
 	}
 }
@@ -157,7 +159,8 @@ void Boss::shoot(const std::shared_ptr<Projectile>& projectile) {
 void Boss::shoot(const nlohmann::json& json,
 	const Vector2f& pos_, const Vector2f& dir) 
 {
-	if (_level && _life > 0) {
+	assert(section);
+	if (_life > 0) {
 		_projectilesToShoot.push_back(
 			std::make_shared<Projectile>(json, pos_, dir, false)
 		);
@@ -209,8 +212,8 @@ float Boss::getLife() const {
 float Boss::getMaxLife() const {
 	return _maxLife;
 }
-Level* Boss::getLevel() const {
-	return _level;
+Section* Boss::getSection() const {
+	return section;
 }
 
 void Boss::addKeyTimer(UUID key) {

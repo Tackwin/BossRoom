@@ -4,70 +4,70 @@ using Task = Scheduler::Task;
 
 Task& Scheduler::getTask(UUID id) noexcept {
 	auto inIt = std::find_if(
-		std::begin(_in),
-		std::end(_in),
+		std::begin(in_),
+		std::end(in_),
 		[id](const Task& a) {
 			return a.id == id;
 		}
 	);
-	if (inIt != std::end(_in)) {
+	if (inIt != std::end(in_)) {
 		return *inIt;
 	}
 
 	auto inTill = std::find_if(
-		std::begin(_till),
-		std::end(_till),
+		std::begin(till_),
+		std::end(till_),
 		[id](const Task& a) {
 		return a.id == id;
 	}
 	);
-	if (inTill != std::end(_till)) {
+	if (inTill != std::end(till_)) {
 		return *inTill;
 	}
 
 	auto inEvery = std::find_if(
-		std::begin(_every),
-		std::end(_every),
+		std::begin(every_),
+		std::end(every_),
 		[id](const std::pair<double, Task>& a) {
 		return a.second.id == id;
 	}
 	);
-	if (inEvery != std::end(_every)) {
+	if (inEvery != std::end(every_)) {
 		return inEvery->second;
 	}
 	std::abort();
 }
 const Task& Scheduler::getTask(UUID id) const noexcept {
 	auto inIt = std::find_if(
-		std::begin(_in),
-		std::end(_in),
+		std::begin(in_),
+		std::end(in_),
 		[id](const Task& a) {
 		return a.id == id;
 	}
 	);
-	if (inIt != std::end(_in)) {
+	if (inIt != std::end(in_)) {
 		return *inIt;
 	}
 
 	auto inTill = std::find_if(
-		std::begin(_till),
-		std::end(_till),
+		std::begin(till_),
+		std::end(till_),
 		[id](const Task& a) {
 		return a.id == id;
 	}
 	);
-	if (inTill != std::end(_till)) {
+	if (inTill != std::end(till_)) {
 		return *inTill;
 	}
 
 	auto inEvery = std::find_if(
-		std::begin(_every),
-		std::end(_every),
+		std::begin(every_),
+		std::end(every_),
 		[id](const std::pair<double, Task>& a) {
 		return a.second.id == id;
 	}
 	);
-	if (inEvery != std::end(_every)) {
+	if (inEvery != std::end(every_)) {
 		return inEvery->second;
 	}
 	std::abort();
@@ -85,7 +85,7 @@ UUID Scheduler::in(double seconds, Task::Fun&& lamb) noexcept {
 	};
 
 	// sorted insert;
-	_in.insert(std::upper_bound(std::begin(_in), std::end(_in), t, pred), t);
+	in_.insert(std::upper_bound(std::begin(in_), std::end(in_), t, pred), t);
 
 	return t.id;
 }
@@ -100,7 +100,7 @@ UUID Scheduler::till(double seconds, Task::Fun&& lamb) noexcept {
 		return a.time > b.time;
 	};
 
-	_till.insert(std::upper_bound(std::begin(_till), std::end(_till), t, pred), t);
+	till_.insert(std::upper_bound(std::begin(till_), std::end(till_), t, pred), t);
 
 	return t.id;
 }
@@ -115,9 +115,9 @@ UUID Scheduler::every(double seconds, Task::Fun&& lamb) noexcept {
 		return a.second.time > b.second.time;
 	};
 
-	_every.insert(
+	every_.insert(
 		std::upper_bound(
-			std::begin(_every), std::end(_every), std::pair{ seconds, t }, pred
+			std::begin(every_), std::end(every_), std::pair{ seconds, t }, pred
 		),
 		std::pair{ seconds, t }
 	);
@@ -128,8 +128,8 @@ UUID Scheduler::every(double seconds, Task::Fun&& lamb) noexcept {
 void Scheduler::update(double dt) noexcept {
 
 	size_t iIn = 0;
-	for (size_t i = 0; i < _in.size(); ++i, ++iIn) {
-		auto& in = _in[i];
+	for (size_t i = 0; i < in_.size(); ++i, ++iIn) {
+		auto& in = in_[i];
 		in.time -= dt;
 
 		if (in.time <= 0.0) {
@@ -137,28 +137,28 @@ void Scheduler::update(double dt) noexcept {
 		}
 		else {
 
-			for (size_t j = i; j < _in.size(); ++j) {
-				_in[j].time -= dt;
+			for (size_t j = i; j < in_.size(); ++j) {
+				in_[j].time -= dt;
 			}
 
 			break;
 		}
 	}
-	std::rotate(std::begin(_in), std::begin(_in) + iIn, std::end(_in));
-	_in.erase(std::end(_in) - iIn, std::end(_in));
+	std::rotate(std::begin(in_), std::begin(in_) + iIn, std::end(in_));
+	in_.erase(std::end(in_) - iIn, std::end(in_));
 
-	for (size_t i = 0; i < _till.size(); ++i) {
-		auto& till = _till[i];
+	for (size_t i = 0; i < till_.size(); ++i) {
+		auto& till = till_[i];
 		till.time -= dt;
 		if (till.time >= 0.0) {
 			till.f(till.id);
 		}
 
-		_till.erase(std::begin(_till) + i, std::end(_till));
+		till_.erase(std::begin(till_) + i, std::end(till_));
 	}
 
-	for (size_t i = 0; i < _every.size(); ++i) {
-		auto& every = _every[i].second;
+	for (size_t i = 0; i < every_.size(); ++i) {
+		auto& every = every_[i].second;
 		every.time -= dt;
 
 		if (every.time <= 0.0) {
@@ -167,13 +167,13 @@ void Scheduler::update(double dt) noexcept {
 		else {
 
 			for (size_t j = 0; j < i; ++j) {
-				_every[j].second.time = _every[j].first;
+				every_[j].second.time = every_[j].first;
 			}
 
 			auto pred = [](std::pair<double, Task> a, std::pair<double, Task> b) {
 				return a.second.time < b.second.time;
 			};
-			std::sort(std::begin(_every), std::end(_every), pred);
+			std::sort(std::begin(every_), std::end(every_), pred);
 
 			break;
 		}

@@ -19,7 +19,7 @@
 
 #include "Components/Hitable.hpp"
 
-class Level;
+class Section;
 class Projectile;
 class Boss : public Object, public Hitable {
 public:
@@ -32,9 +32,9 @@ public:
 		 std::function<void(Boss&)> unInitFunction);
 
 	~Boss() noexcept;
-
-	void enterLevel(Level* level);
-	void exitLevel();
+	
+	void enterSection(Section* section) noexcept;
+	void leaveSection() noexcept;
 
 	void die();
 	
@@ -56,7 +56,7 @@ public:
 	float getLife() const;
 	float getMaxLife() const;
 
-	Level* getLevel() const;
+	Section* getSection() const;
 
 	void addKeyTimer(UUID key);
 	void delKeyTimer(UUID key);
@@ -76,8 +76,6 @@ private:
 	float _radius;
 	sf::Color _color;
 
-	Level* _level;
-
 	Disk* _disk;
 
 	std::vector<std::shared_ptr<Projectile>> _projectilesToShoot;
@@ -93,6 +91,8 @@ private:
 	AnimatedSprite _sprite;
 
 	std::vector<sf::Sound> _sounds;
+
+	Section* section{ nullptr };
 
 	std::vector<std::unique_ptr<ParticleGenerator>> _particleEffects;
 private:
