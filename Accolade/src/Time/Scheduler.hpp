@@ -31,11 +31,24 @@ public:
 	// run lamb every x seconds.
 	UUID every(double seconds, Task::Fun&& lamb) noexcept;
 
+	// run lamb in x seconds after id has been ran.
+	UUID after_in(UUID id, double seconds, Task::Fun&& lamb) noexcept;
+
+	void cancel(UUID id) noexcept;
+
+	void pause(UUID id) noexcept;
+	void resume(UUID id) noexcept;
+
 	void update(double dt) noexcept;
 
 private:
 
 	std::vector<Task> in_;
+	std::vector<Task> paused_in;
+
 	std::vector<Task> till_;
+	std::vector<Task> paused_till;
+
 	std::vector<std::pair<double, Task>> every_;
+	std::vector<std::pair<double, Task>> paused_every;
 };

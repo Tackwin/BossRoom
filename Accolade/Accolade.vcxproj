@@ -346,6 +346,7 @@
     <ClCompile Include="src\brx\Serializer.cpp" />
     <ClCompile Include="src\Entity\EntityStore.cpp" />
     <ClCompile Include="src\Gameplay\Characters\DistanceGuy.cpp" />
+    <ClCompile Include="src\Gameplay\Characters\FirstBoss.cpp" />
     <ClCompile Include="src\Gameplay\Characters\Fly.cpp" />
     <ClCompile Include="src\Gameplay\Characters\MeleeGuy.cpp" />
     <ClCompile Include="src\Gameplay\Characters\Slime.cpp" />
@@ -433,6 +434,7 @@
     <ClInclude Include="src\Entity\EntityStore.hpp" />
     <ClInclude Include="src\Entity\OwnId.hpp" />
     <ClInclude Include="src\Gameplay\Characters\DistanceGuy.hpp" />
+    <ClInclude Include="src\Gameplay\Characters\FirstBoss.hpp" />
     <ClInclude Include="src\Gameplay\Characters\Fly.hpp" />
     <ClInclude Include="src\Gameplay\Characters\MeleeGuy.hpp" />
     <ClInclude Include="src\Gameplay\Characters\Slime.hpp" />

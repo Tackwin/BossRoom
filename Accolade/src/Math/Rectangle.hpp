@@ -1,6 +1,5 @@
 #pragma once
 #include "Vector.hpp"
-#include "3rd/json.hpp"
 
 template<typename T>
 struct Rectangle {
@@ -60,6 +59,12 @@ struct Rectangle {
 
 	T bot() const {
 		return pos.y + size.y;
+	}
+
+	// >TODO: implement this, for now we treat this as if it were the support
+	// of a circle of radius max(w, h) / 2
+	Vector2<T> support(T a, T d) const noexcept {
+		return Vector2<T>::createUnitVector((double)a) * (d + std::max({ w, h }) / 2);
 	}
 
 	Vector2<T> topLeft() const noexcept {
@@ -179,3 +184,29 @@ struct Rectangle {
 template<typename T>
 using Rectangle2 = Rectangle<T>;
 using Rectangle2f = Rectangle2<float>;
+
+#ifdef NLOHMANN_JSON_HPP
+template<typename T>
+void from_json(const nlohmann::json& json, Rectangle<T>& x) noexcept {
+	assert(json.is_array());
+
+	if (json.size() == 2) {
+		x.pos = json.at(0);
+		x.size = json.at(1);
+	}
+	else {
+		x.x = json.at(0);
+		x.y = json.at(1);
+		x.w = json.at(2);
+		x.h = json.at(3);
+	}
+}
+
+template<typename T>
+void to_json(nlohmann::json& json, const Rectangle<T>& x) noexcept {
+	json.push_back(x.x);
+	json.push_back(x.y);
+	json.push_back(x.w);
+	json.push_back(x.h);
+}
+#endif
