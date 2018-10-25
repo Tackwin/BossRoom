@@ -160,6 +160,9 @@
 			"sheet": "images/off_on_off.png",
 			"smooth": false
 		},
+		"first_boss": {
+			"sheet": "images/First Boss.png"
+		},
 		"arch": {
 			"sheet": "images/arch.png"
 		},
@@ -258,7 +261,8 @@
 		"right_down": "rooms/right_down.json",
 		"up_down": "rooms/up_down.json",
 		"boss_1": "rooms/boss_1.json",
-		"up_right": "rooms/up_right.json"
+		"up_right": "rooms/up_right.json",
+		"FirstBossInfo": "characters/first_boss.json"
 	},
 	"StartRoom": "rooms/1x1.json",
 	"bosses": [

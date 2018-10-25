@@ -52,6 +52,7 @@ SectionInfo SectionInfo::loadJson(const nlohmann::json& json) noexcept {
 	load_vectors(info.plateformes);
 	load_vectors(info.portals);
 
+	load_vectors(info.first_bosses);
 	load_vectors(info.distanceGuys);
 	load_vectors(info.meleeGuys);
 	load_vectors(info.slimes);
@@ -89,6 +90,7 @@ nlohmann::json SectionInfo::saveJson(SectionInfo info) noexcept {
 	save_vectors(info.navigationPoints);
 	save_vectors(info.navigationLinks);
 
+	save_vectors(info.first_bosses);
 	save_vectors(info.distanceGuys);
 	save_vectors(info.meleeGuys);
 	save_vectors(info.slimes);
@@ -128,6 +130,8 @@ Section::Section(SectionInfo info) noexcept : _info(info) {
 		addSlime(ptr);
 	}
 
+	auto add_ennemy = [&](const auto& x) { for (const auto& i : x) addEnnemy(i); };
+
 	for (auto& slime : _info.distanceGuys) {
 		auto ptr = std::make_shared<DistanceGuy>(slime);
 		addDistanceGuy(ptr);
@@ -140,6 +144,8 @@ Section::Section(SectionInfo info) noexcept : _info(info) {
 		auto ptr = std::make_shared<Fly>(e);
 		addFly(ptr);
 	}
+	// >Add ennemy.
+	add_ennemy(_info.first_bosses);
 
 	aim_sprite = sf::Sprite{ AM::getTexture("aim_texture") };
 	aim_sprite.setOrigin(
@@ -162,26 +168,23 @@ void Section::enter() noexcept {
 	for (auto& structure : _structures) {
 		_world.addObject(structure);
 	}
-	for (auto& slime : _slimes) {
-		slime->enterSection(this);
-		_world.addObject(slime);
-	}
 	for (auto& source : _sources) {
 		source->enter(this);
 		_world.addObject(source);
 	}
-	for (auto& distance: distanceGuys_) {
-		distance->enterSection(this);
-		_world.addObject(distance);
-	}
-	for (auto& melee : meleeGuys_) {
-		melee->enterSection(this);
-		_world.addObject(melee);
-	}
-	for (auto& fly : flies) {
-		fly->enterSection(this);
-		_world.addObject(fly);
-	}
+
+	auto enter_ennemies = [&](const auto& x) {
+		for (auto& element : x) {
+			element->enterSection(this);
+			_world.addObject(element);
+		}
+	};
+	enter_ennemies(first_bosses);
+	enter_ennemies(distanceGuys_);
+	enter_ennemies(meleeGuys_);
+	enter_ennemies(_slimes);
+	enter_ennemies(flies);
+
 	_world.addObject(_player);
 
 	subscribeToEvents();
@@ -193,12 +196,15 @@ void Section::exit() noexcept {
 	for (auto& source : _sources) {
 		source->exit();
 	}
-	for (auto& melee : meleeGuys_) {
-		melee->leaveSection();
-	}
-	for (auto& fly : flies) {
-		fly->leaveSection();
-	}
+
+	auto leave_ennemies = [&](const auto& x) {
+		for (auto& element : x) {
+			element->leaveSection();
+		}
+	};
+	leave_ennemies(meleeGuys_);
+	leave_ennemies(flies);
+	leave_ennemies(first_bosses);
 
 	_world.purge();
 }
@@ -210,31 +216,23 @@ void Section::update(double dt) noexcept {
 
 	_player->setFacingDir((float)(mouse - _player->getPos()).angleX());
 	_player->update(dt);
-	for (auto& projectile : _projectiles) {
-		projectile->update(dt);
-	}
-	for (auto& spatial : _structures) {
-		spatial->update(dt);
-	}
-	for (auto& source : _sources) {
-		source->update(dt);
-	}
-	for (auto& slime : _slimes) {
-		slime->update(dt);
-	}
-	for (auto& distance : distanceGuys_) {
-		distance->update(dt);
-	}
-	for (auto& melee : meleeGuys_) {
-		melee->update(dt);
-	}
-	for (auto& spell : spells_) {
-		spell->update(dt);
-	}
-	for (auto& fly : flies) {
-		fly->update(dt);
-	}
-	
+
+	auto update_vector = [&](auto& x) {
+		for (auto& element : x) {
+			element->update(dt);
+		}
+	};
+
+	update_vector(_projectiles);
+	update_vector(_structures);
+	update_vector(_sources);
+	update_vector(_slimes);
+	update_vector(distanceGuys_);
+	update_vector(meleeGuys_);
+	update_vector(spells_);
+	update_vector(flies);
+	update_vector(first_bosses);
+
 	removeDeadObject();
 	if (!aiming) updateAimAnimation(dt);
 
@@ -266,30 +264,20 @@ void Section::render(sf::RenderTarget& target) const noexcept {
 
 	_player->render(target);
 
-	for (auto& proj : _projectiles) {
-		proj->render(target);
-	}
-	for (auto& source : _sources) {
-		source->render(target);
-	}
-	for (auto& slime : _slimes) {
-		slime->render(target);
-	}
-	for (auto& distance : distanceGuys_) {
-		distance->render(target);
-	}
-	for (auto& melee : meleeGuys_) {
-		melee->render(target);
-	}
-	for (auto& fly : flies) {
-		fly->render(target);
-	}
-	for (auto& spell : spells_) {
-		spell->render(target);
-	}
-	for (auto& zone : _zones) {
-		zone->render(target);
-	}
+	auto render_vector = [&](const auto& x) {
+		for (auto& element : x) { element->render(target); }
+	};
+
+	render_vector(_projectiles);
+	render_vector(_sources);
+	render_vector(_slimes);
+	render_vector(distanceGuys_);
+	render_vector(meleeGuys_);
+	render_vector(spells_);
+	render_vector(flies);
+	render_vector(_zones);
+	render_vector(first_bosses);
+
 	for (auto& nav : _info.navigationPoints) {
 		nav.pos.plot(target, nav.range, { 1.0, 1.0, 0.0, 0.5 }, {}, 0.f);
 	}
@@ -360,6 +348,9 @@ void Section::addSlime(const std::shared_ptr<Slime>& slime) noexcept {
 void Section::addFly(const std::shared_ptr<Fly>& ptr) noexcept {
 	flies.push_back(ptr);
 }
+void Section::addEnnemy(const FirstBossInfo& info) noexcept {
+	first_bosses.push_back(std::make_shared<FirstBoss>(info));
+}
 
 void Section::subscribeToEvents() noexcept {
 	_keyPressedEvent = EventManager::subscribe("keyPressed",
@@ -394,13 +385,14 @@ void Section::removeDeadObject() noexcept {
 			if (x[i - 1]->toRemove()) x.erase(std::begin(x) + i - 1);
 	};
 
-	removeDead(_projectiles);
-	removeDead(_slimes);
-	removeDead(_zones);
 	removeDead(distanceGuys_);
+	removeDead(_projectiles);
+	removeDead(first_bosses);
 	removeDead(meleeGuys_);
 	removeDead(_sources);
 	removeDead(spells_);
+	removeDead(_slimes);
+	removeDead(_zones);
 	removeDead(flies);
 }
 
@@ -441,6 +433,14 @@ void Section::pullProjectilsFromObjects() noexcept {
 		_projectiles.push_back(p);
 	}
 	_player->clearProtectilesToShoot();
+
+	for (auto& first_boss : first_bosses) {
+		for (auto& p : first_boss->getProtectilesToShoot()) {
+			_world.addObject(p);
+			_projectiles.push_back(p);
+		}
+		first_boss->clearProtectilesToShoot();
+	}
 }
 
 SectionInfo Section::getInfo() const noexcept {
@@ -479,6 +479,7 @@ std::shared_ptr<Object> Section::getTargetEnnemyFromMouse() noexcept {
 		iterate(distanceGuys_);
 		iterate(meleeGuys_);
 		iterate(flies);
+		iterate(first_bosses);
 
 		return minPair.second;
 	}

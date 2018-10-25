@@ -175,6 +175,11 @@
             "name": "FlyInfo",
             "type": "Panel",
             "sprite": "FlyInfo"
+          },
+          {
+            "name": "FirstBossInfo",
+            "type": "Panel",
+            "sprite": "first_boss"
           }
         ]
       },

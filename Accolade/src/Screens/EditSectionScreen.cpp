@@ -227,6 +227,7 @@ void EditSectionScreen::updateSource() noexcept {
 	}
 }
 void EditSectionScreen::updatePlaceSlime() noexcept {
+	// >Add ennemy.
 	if (IM::isMouseJustPressed(sf::Mouse::Left)) {
 		if (ennemySwitcher_->getCurrentPanel()->getName() == SlimeInfo::JSON_ID) {
 			auto info = SlimeInfo::loadJson(AM::getJson(SlimeInfo::JSON_ID));
@@ -253,6 +254,14 @@ void EditSectionScreen::updatePlaceSlime() noexcept {
 			auto info = FlyInfo::loadJson(AM::getJson(FlyInfo::JSON_ID));
 			info.startPos = getSnapedMouseCameraPos();
 			sectionInfo_.flies.push_back(info);
+		}
+		else if (
+			ennemySwitcher_->getCurrentPanel()->getName() == FirstBossInfo::JSON_ID
+		) {
+			FirstBossInfo info;
+			from_json(AM::getJson(FirstBossInfo::JSON_ID), info);
+			info.start_pos = getSnapedMouseCameraPos();
+			sectionInfo_.first_bosses.push_back(info);
 		}
 	}
 }
@@ -476,6 +485,7 @@ void EditSectionScreen::render(sf::RenderTarget& target) {
 
 	for (auto source : sectionInfo_.sourcesBoomerang) renderDebug(target, source.source);
 	for (auto source : sectionInfo_.sourcesDirection) renderDebug(target, source.source);
+	for (auto first_boss : sectionInfo_.first_bosses) renderDebug(target, first_boss);
 	for (auto source : sectionInfo_.sourcesVaccum) renderDebug(target, source.source);
 	for (auto plateforme : sectionInfo_.plateformes) renderDebug(target, plateforme);
 	for (auto distance : sectionInfo_.distanceGuys) renderDebug(target, distance);
@@ -612,7 +622,7 @@ void EditSectionScreen::exitToolState() noexcept {
 }
 
 void EditSectionScreen::renderDebug(
-	sf::RenderTarget& target, PlateformeInfo info
+	sf::RenderTarget& target, const PlateformeInfo& info
 ) noexcept {
 	Vector4f color{ 0.8f, 0.8f, 0.0f, info.passable ? 0.5f : 1.0f };
 	if (info.rectangle.in(IM::getMousePosInView(*es_instance->get(cameraView)))) {
@@ -621,7 +631,7 @@ void EditSectionScreen::renderDebug(
 	info.rectangle.render(target, color);
 }
 void EditSectionScreen::renderDebug(
-	sf::RenderTarget& target, SlimeInfo info
+	sf::RenderTarget& target, const SlimeInfo& info
 ) noexcept {
 	Vector4d color{ 0.0, 0.8, 0.8, 1.0 };
 	auto dist2 = (info.startPos - IM::getMousePosInView(*es_instance->get(cameraView)))
@@ -634,7 +644,7 @@ void EditSectionScreen::renderDebug(
 	);
 }
 void EditSectionScreen::renderDebug(
-	sf::RenderTarget& target, DistanceGuyInfo info
+	sf::RenderTarget& target, const DistanceGuyInfo& info
 ) noexcept {
 	Vector4d color{ 0.1, 0.7, 0.7, 1.0 };
 	auto dist2 = (info.startPos - IM::getMousePosInView(*es_instance->get(cameraView)))
@@ -647,7 +657,7 @@ void EditSectionScreen::renderDebug(
 	);
 }
 void EditSectionScreen::renderDebug(
-	sf::RenderTarget& target, MeleeGuyInfo info
+	sf::RenderTarget& target, const MeleeGuyInfo& info
 ) noexcept {
 	Vector4d color{ 0.1, 0.7, 0.7, 1.0 };
 	auto dist2 = (info.startPos - IM::getMousePosInView(*es_instance->get(cameraView)))
@@ -660,7 +670,7 @@ void EditSectionScreen::renderDebug(
 	);
 }
 void EditSectionScreen::renderDebug(
-	sf::RenderTarget& target, FlyInfo info
+	sf::RenderTarget& target, const FlyInfo& info
 ) noexcept {
 	Vector4d color{ 0.1, 0.7, 0.7, 1.0 };
 	auto dist2 = (info.startPos - IM::getMousePosInView(*es_instance->get(cameraView)))
@@ -673,7 +683,7 @@ void EditSectionScreen::renderDebug(
 	);
 }
 void EditSectionScreen::renderDebug(
-	sf::RenderTarget& target, SourceInfo info
+	sf::RenderTarget& target, const SourceInfo& info
 ) noexcept {
 	Vector4d color{ 0.8, 0.0, 0.8, 1.0 };
 	auto dist2 = (info.pos - IM::getMousePosInView(*es_instance->get(cameraView)))
@@ -686,7 +696,7 @@ void EditSectionScreen::renderDebug(
 	);
 }
 void EditSectionScreen::renderDebug(
-	sf::RenderTarget& target, PortalInfo info
+	sf::RenderTarget& target, const PortalInfo& info
 ) noexcept {
 	auto color = Vector4d{ 1, 1, 1, 1 };
 	if (is_in_ellipse(
@@ -699,7 +709,7 @@ void EditSectionScreen::renderDebug(
 	info.frontier.render(target, color);
 }
 void EditSectionScreen::renderDebug(
-	sf::RenderTarget& target, NavigationPointInfo info
+	sf::RenderTarget& target, const NavigationPointInfo& info
 ) noexcept {
 	Vector4d color{ 0.8, 0.0, 0.8, 1.0 };
 	auto dist2 = (info.pos - IM::getMousePosInView(*es_instance->get(cameraView)))
@@ -710,7 +720,7 @@ void EditSectionScreen::renderDebug(
 	info.pos.plot(target, info.range, color, { 0.0, 0.0, 0.0, 0.0 }, 0.f);
 }
 void EditSectionScreen::renderDebug(
-	sf::RenderTarget& target, NavigationLinkInfo info
+	sf::RenderTarget& target, const NavigationLinkInfo& info
 ) noexcept {
 	Vector4d color{ 0.8, 0.0, 0.8, 1.0 };
 
@@ -736,6 +746,16 @@ void EditSectionScreen::renderDebug(
 	}
 
 	Vector2f::renderLine(target, a->pos, b->pos, color);
+}
+void EditSectionScreen::renderDebug(
+	sf::RenderTarget& target, const FirstBossInfo& info
+) noexcept {
+	Vector4d color{ 1.0, 0.7, 0.7, 1.0 };
+	auto dist = IM::getMousePosInView(*es_instance->get(cameraView)) - info.start_pos;
+	if (info.hitbox.in(dist)) {
+		color = { 0.8, 0.6, 0.9, 1.0 };
+	}
+	info.start_pos.plot(target, info.hitbox.w / 2.f, color, { 0.0, 0.0, 0.0, 0.0 }, 0.f);
 }
 
 void EditSectionScreen::changeColorLabel(std::string name, Vector4f color) noexcept {
@@ -785,6 +805,7 @@ void EditSectionScreen::selectFocus() noexcept {
 	auto& sourcesVaccum = sectionInfo_.sourcesVaccum;
 	auto& navigationPoints = sectionInfo_.navigationPoints;
 	auto& navigationLinks = sectionInfo_.navigationLinks;
+	auto& first_bosses = sectionInfo_.first_bosses;
 	
 	currentlyFocused = std::nullopt;
 	auto mouse_pos_in_camera_view = IM::getMousePosInView(*es_instance->get(cameraView));
@@ -903,6 +924,15 @@ void EditSectionScreen::selectFocus() noexcept {
 			};
 		}
 	}
+	for (size_t i = first_bosses.size(); i > 0; --i) {
+		auto dist = mouse_pos_in_camera_view - first_bosses[i - 1].start_pos;
+		if (first_bosses[i - 1].hitbox.in(dist)) {
+			currentlyFocused = {
+				holded_t<decltype(first_bosses)>::JSON_ID,
+				(void*)&first_bosses[i - 1]
+			};
+		}
+	}
 	for (size_t i = navigationLinks.size(); i > 0; --i) {
 		auto link = navigationLinks[i - 1];
 
@@ -983,6 +1013,7 @@ void EditSectionScreen::deleteHovered() noexcept {
 	auto& sources = sectionInfo_.sources;
 	auto& sourcesBoomerang = sectionInfo_.sourcesBoomerang;
 	auto& sourcesDirection = sectionInfo_.sourcesDirection;
+	auto& first_bosses = sectionInfo_.first_bosses;
 	auto& sourcesVaccum = sectionInfo_.sourcesVaccum;
 	auto& navigationPoints = sectionInfo_.navigationPoints;
 	auto& navigationLinks = sectionInfo_.navigationLinks;
@@ -1009,6 +1040,13 @@ void EditSectionScreen::deleteHovered() noexcept {
 		auto dist2 = (distance[i - 1].startPos - mouse_pos_in_camera_view).length2();
 		if (dist2 < distance[i - 1].size.x * distance[i - 1].size.x / 4.f) {
 			distance.erase(std::begin(distance) + i - 1);
+			return;
+		}
+	}
+	for (size_t i = first_bosses.size(); i > 0; --i) {
+		auto dist = mouse_pos_in_camera_view - first_bosses[i - 1].start_pos;
+		if (first_bosses[i - 1].hitbox.in(dist)) {
+			first_bosses.erase(std::begin(first_bosses) + i - 1);
 			return;
 		}
 	}

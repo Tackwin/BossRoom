@@ -8,21 +8,71 @@
 #include "Ruins/Section.hpp"
 #include "Utils/meta_algorithms.hpp"
 
+#define FROM(x) info.x = json.at(#x)
+
 void from_json(const nlohmann::json& json, FirstBossInfo& info) noexcept {
-	info.hitbox = json.at("hitbox");
-	info.max_life = json.at("max_life");
-	info.start_pos = json.at("start_pos");
-	info.origin = json.at("origin");
-	info.hit_particle = json.at("hit_particle");
+	FROM(sniper_shots);
+	FROM(random_fire_orbs);
+
+	FROM(max_life);
+	FROM(directional_fire_rate);
+	FROM(directional_fire_duration);
+	FROM(sniper_aim_time);
+	FROM(sniper_calm_time);
+	FROM(cd_directional);
+	FROM(cd_random_fire);
+	FROM(cd_snipe);
+	FROM(random_fire_spread);
+	FROM(random_fire_aim);
+	FROM(random_fire_estimated_time);
+
+	FROM(hitbox);
+
+	FROM(start_pos);
+	FROM(origin);
+
+	FROM(texture).get<std::string>();
+
+	FROM(hit_particle);
+	FROM(directional_fire_projectile);
+	FROM(sniper_projectile);
+	FROM(random_fire_projectile);
 }
 
+#undef FROM
+#define TO(x) json[#x] = info.x
+
 void to_json(nlohmann::json& json, const FirstBossInfo& info) noexcept {
-	json["max_life"] = info.max_life;
-	json["start_pos"] = info.start_pos;
-	json["hitbox"] = info.hitbox;
-	json["origin"] = info.origin;
-	json["hit_particle"] = info.hit_particle;
+	TO(sniper_shots);
+	TO(random_fire_orbs);
+
+	TO(max_life);
+	TO(directional_fire_rate);
+	TO(directional_fire_duration);
+	TO(sniper_aim_time);
+	TO(sniper_calm_time);
+	TO(cd_directional);
+	TO(cd_random_fire);
+	TO(cd_snipe);
+
+	TO(random_fire_spread);
+	TO(random_fire_aim);
+	TO(random_fire_estimated_time);
+
+	TO(hitbox);
+
+	TO(start_pos);
+	TO(origin);
+
+	TO(texture);
+
+	TO(hit_particle);
+	TO(directional_fire_projectile);
+	TO(sniper_projectile);
+	TO(random_fire_projectile);
 }
+
+#undef TO
 
 FirstBossInfo FirstBossInfo::loadJson(const nlohmann::json& json) noexcept {
 	FirstBossInfo i;
@@ -55,6 +105,9 @@ FirstBoss::FirstBoss(const FirstBossInfo& info) noexcept : info(info) {
 
 	idMask.set(Object::BIT_TAGS::BOSS);
 	collisionMask.set(Object::BIT_TAGS::PROJECTILE);
+
+	pos = info.start_pos;
+	life = info.max_life;
 }
 
 void FirstBoss::enterSection(Section* section) noexcept {
@@ -74,6 +127,8 @@ void FirstBoss::leaveSection() noexcept {
 }
 
 void FirstBoss::update(double dt) noexcept {
+	scheduler.update(dt);
+
 	for (auto& particles : particle_effects) {
 		particles->update(dt);
 	}
@@ -174,7 +229,7 @@ void FirstBoss::directionalFire() noexcept {
 		Vector2f proj_pos =
 			pos +
 			Vector2f::createUnitVector(a + PIf / 9) *
-			(info.hitbox.w / 2 + 10);
+			(info.hitbox.w / 2 + info.directional_fire_projectile["radius"]);
 
 		auto proj = std::make_shared<Projectile>(
 			info.directional_fire_projectile, proj_pos, dir, false
@@ -184,7 +239,7 @@ void FirstBoss::directionalFire() noexcept {
 		proj_pos =
 			pos +
 			Vector2f::createUnitVector(a - PIf / 9) *
-			(info.hitbox.w / 2 + 10);
+			(info.hitbox.w / 2 + info.directional_fire_projectile["radius"]);
 
 		proj = std::make_shared<Projectile>(
 			info.directional_fire_projectile, proj_pos, dir, false

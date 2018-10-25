@@ -51,4 +51,6 @@ private:
 
 	std::vector<std::pair<double, Task>> every_;
 	std::vector<std::pair<double, Task>> paused_every;
+
+	bool in_update{ false };
 };

@@ -18,6 +18,7 @@
 
 #include "Gameplay/Characters/Slime.hpp"
 #include "Gameplay/Characters/DistanceGuy.hpp"
+#include "Gameplay/Characters/FirstBoss.hpp"
 
 #include "Navigation/NavigationPoint.hpp"
 #include "Navigation/NavigationLink.hpp"
@@ -55,6 +56,7 @@ private:
 		auto ptr = currentlyFocused->second;
 #define X(x) if (id == x::JSON_ID) f((x*)ptr)
 
+		// >Add ennemy.
 		X(NavigationPointInfo);
 		X(NavigationLinkInfo);
 		X(SourceDirectionInfo);
@@ -62,6 +64,7 @@ private:
 		X(SourceVaccumInfo);
 		X(DistanceGuyInfo);
 		X(PlateformeInfo);
+		X(FirstBossInfo);
 		X(MeleeGuyInfo);
 		X(PortalInfo);
 		X(SlimeInfo);
@@ -87,15 +90,16 @@ private:
 	void updateNothing() noexcept;
 	void updateSource() noexcept;
 
-	void renderDebug(sf::RenderTarget& target, NavigationPointInfo info) noexcept;
-	void renderDebug(sf::RenderTarget& target, NavigationLinkInfo info) noexcept;
-	void renderDebug(sf::RenderTarget& target, DistanceGuyInfo info) noexcept;
-	void renderDebug(sf::RenderTarget& target, PlateformeInfo info) noexcept;
-	void renderDebug(sf::RenderTarget& target, MeleeGuyInfo info) noexcept;
-	void renderDebug(sf::RenderTarget& target, SourceInfo info) noexcept;
-	void renderDebug(sf::RenderTarget& target, PortalInfo info) noexcept;
-	void renderDebug(sf::RenderTarget& target, SlimeInfo info) noexcept;
-	void renderDebug(sf::RenderTarget& target, FlyInfo info) noexcept;
+	void renderDebug(sf::RenderTarget& target, const NavigationPointInfo& info) noexcept;
+	void renderDebug(sf::RenderTarget& target, const NavigationLinkInfo& info) noexcept;
+	void renderDebug(sf::RenderTarget& target, const DistanceGuyInfo& info) noexcept;
+	void renderDebug(sf::RenderTarget& target, const PlateformeInfo& info) noexcept;
+	void renderDebug(sf::RenderTarget& target, const FirstBossInfo& info) noexcept;
+	void renderDebug(sf::RenderTarget& target, const MeleeGuyInfo& info) noexcept;
+	void renderDebug(sf::RenderTarget& target, const SourceInfo& info) noexcept;
+	void renderDebug(sf::RenderTarget& target, const PortalInfo& info) noexcept;
+	void renderDebug(sf::RenderTarget& target, const SlimeInfo& info) noexcept;
+	void renderDebug(sf::RenderTarget& target, const FlyInfo& info) noexcept;
 
 	void loadSectionFile(std::filesystem::path path) noexcept;
 

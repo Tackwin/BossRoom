@@ -23,6 +23,7 @@
 #include "Gameplay/Magic/Sources/Source.hpp"
 #include "Gameplay/Magic/Spells/Spell.hpp"
 #include "Gameplay/Characters/DistanceGuy.hpp"
+#include "Gameplay/Characters/FirstBoss.hpp"
 #include "Gameplay/Characters/MeleeGuy.hpp"
 #include "Gameplay/Characters/Slime.hpp"
 #include "Gameplay/Characters/Fly.hpp"
@@ -34,6 +35,7 @@ struct SectionInfo {
 	std::vector<NavigationLinkInfo> navigationLinks;
 
 	std::vector<DistanceGuyInfo> distanceGuys;
+	std::vector<FirstBossInfo> first_bosses;
 	std::vector<MeleeGuyInfo> meleeGuys;
 	std::vector<SlimeInfo> slimes;
 	std::vector<FlyInfo> flies;
@@ -86,6 +88,8 @@ public:
 	void addMeleeGuy(const std::shared_ptr<MeleeGuy>& ptr) noexcept;
 	void addSlime(const std::shared_ptr<Slime>& ptr) noexcept;
 	void addFly(const std::shared_ptr<Fly>& ptr) noexcept;
+
+	void addEnnemy(const FirstBossInfo& info) noexcept;
 
 	// Get NavigationPoint from id
 	NavigationPointInfo getNavigationPoint(UUID id) const noexcept;
@@ -165,10 +169,10 @@ private:
 	std::vector<std::shared_ptr<Zone>>				_zones;
 
 	std::vector<std::shared_ptr<DistanceGuy>>		distanceGuys_;
+	std::vector<std::shared_ptr<FirstBoss>>			first_bosses;
 	std::vector<std::shared_ptr<MeleeGuy>>			meleeGuys_;
 	std::vector<std::shared_ptr<Slime>>				_slimes;
 	std::vector<std::shared_ptr<Fly>>				flies;
-
 
 	bool aiming{ false };
 	float elastic_force_aim_sprite{ 1.f };

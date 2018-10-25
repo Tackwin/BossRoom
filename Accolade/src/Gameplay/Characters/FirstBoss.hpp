@@ -25,17 +25,6 @@
 struct FirstBossInfo {
 	static constexpr auto JSON_ID = "FirstBossInfo";
 
-
-	// >TODO serialize these !!!
-	// >TODO serialize these !!!
-	// >TODO serialize these !!!
-	// >TODO serialize these !!!
-	// >TODO serialize these !!!
-	// >TODO serialize these !!!
-	// >TODO serialize these !!!
-	// >TODO serialize these !!!
-	// >TODO serialize these !!!
-	// >TODO serialize these !!!
 	size_t sniper_shots{ 0 };
 	size_t random_fire_orbs{ 0 };
 
@@ -50,13 +39,6 @@ struct FirstBossInfo {
 	float random_fire_spread{ NAN };
 	float random_fire_aim{ NAN };
 	float random_fire_estimated_time{ NAN };
-	// >TODO serialize these !!!
-	// >TODO serialize these !!!
-	// >TODO serialize these !!!
-	// >TODO serialize these !!!
-	// >TODO serialize these !!!
-	// >TODO serialize these !!!
-	// >TODO serialize these !!!
 
 	Rectangle2f hitbox;
 
@@ -64,22 +46,14 @@ struct FirstBossInfo {
 	Vector2f origin;
 
 	std::string texture;
-	// >TODO serialize these !!!
-	// >TODO serialize these !!!
-	// >TODO serialize these !!!
-	// >TODO serialize these !!!
 
 	nlohmann::json hit_particle;
 	nlohmann::json directional_fire_projectile;
 	nlohmann::json sniper_projectile;
 	nlohmann::json random_fire_projectile;
-	// >TODO serialize these !!!
-	// >TODO serialize these !!!
-	// >TODO serialize these !!!
-	// >TODO serialize these !!!
 
-	FirstBossInfo loadJson(const nlohmann::json& json) noexcept;
-	nlohmann::json saveJson(const FirstBossInfo& info) noexcept;
+	static FirstBossInfo loadJson(const nlohmann::json& json) noexcept;
+	static nlohmann::json saveJson(const FirstBossInfo& info) noexcept;
 };
 
 extern void from_json(const nlohmann::json& json, FirstBossInfo& info) noexcept;

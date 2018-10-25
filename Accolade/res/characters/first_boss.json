@@ -1,0 +1,101 @@
+{
+	"sniper_shots" : 1,
+	"random_fire_orbs": 50,
+
+	"max_life": 10,
+	"directional_fire_rate": 2,
+	"directional_fire_duration": 2,
+	"sniper_aim_time": 0.5,
+	"sniper_calm_time": 0.1,
+	"cd_directional": 1,
+	"cd_random_fire": 3,
+	"cd_snipe": 2,
+	"random_fire_spread": 3.145926,
+	"random_fire_aim": 1.0,
+	"random_fire_estimated_time": 0.5,
+
+	"hitbox" : [-1, -0.9, 2, 1],
+
+	"start_pos": [0, 0],
+	"origin": [0.5, 0.9],
+
+	"texture": "first_boss",
+	"hit_particle": {
+		"nParticles": {
+			"mean": 1000000,
+			"range": 5,
+			"type": "normal",
+			"min": 0,
+			"real": false
+		},
+		"iTime": {
+			"mean": 5e-7,
+			"range": 5e-7,
+			"type": "normal",
+			"min": 0,
+			"real": true
+		},
+		"lifetime": 0,
+		"particle": {
+			"sprite": "particle_feather",
+			"size": {
+				"mean": 0.5,
+				"range": 0.05,
+				"real": true,
+				"min": 0
+			},
+			"lifetime": {
+				"mean": 0.7,
+				"range": 0.1,
+				"type": "normal"
+			},
+			"a": {
+				"mean": 0,
+				"range": 3.14159265,
+				"type": "uniform",
+				"real": true
+			},
+			"speed": {
+				"mean": 6,
+				"range": 1,
+				"type": "normal"
+			}
+		}
+	},
+	"directional_fire_projectile": {
+		"damage": 1,
+		"speed": 18,
+		"radius": 0.10,
+		"lifespan": 5,
+		"destroyOthers": false,
+		"sprite": "boulefeu",
+		"explosion": {
+			"radius": 0.4,
+			"damage": 1,
+			"force": 300,
+			"time": 0.05
+		}
+	},
+	"sniper_projectile": {
+		"damage": 1,
+		"speed": 38,
+		"radius": 0.07,
+		"lifespan": 2,
+		"destroyOthers": false,
+		"sprite": "boulefeu"
+	},
+	"random_fire_projectile": {
+		"damage": 1,
+		"speed": 17,
+		"radius": 0.10,
+		"lifespan": 7.5,
+		"destroyOthers": false,
+		"sprite": "boulefeu",
+		"explosion": {
+			"radius": 0.20,
+			"damage": 1,
+			"force": 100,
+			"time": 0.05
+		}
+	}
+}

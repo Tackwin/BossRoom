@@ -113,16 +113,23 @@ UUID Scheduler::every(double seconds, Task::Fun&& lamb) noexcept {
 	t.time = seconds;
 
 	// we want to store the next to execute first.
-	auto pred = [](std::pair<double, Task> a, std::pair<double, Task> b) -> bool {
+	auto pred =
+	[](const std::pair<double, Task>& a, const std::pair<double, Task>& b) -> bool {
 		return a.second.time > b.second.time;
 	};
 
-	every_.insert(
-		std::upper_bound(
-			std::begin(every_), std::end(every_), std::pair{ seconds, t }, pred
-		),
-		std::pair{ seconds, t }
-	);
+	// if we are in an update we are gonna sort everything anyway so we don't bother here.
+	if (in_update) {
+		every_.push_back({ seconds, t });
+	}
+	else {
+		every_.insert(
+			std::upper_bound(
+				std::begin(every_), std::end(every_), std::pair{ seconds, t }, pred
+			),
+			{ seconds, t }
+		);
+	}
 
 	return t.id;
 }
@@ -165,12 +172,13 @@ void Scheduler::pause(UUID id) noexcept {
 	auto every_it = std::find_if(std::begin(every_), std::end(every_), pred_pair);
 	if (every_it != std::end(every_)) {
 		auto t = *every_it;
-		cancel(till_it->id);
+		cancel(every_it->second.id);
 		paused_every.push_back(t);
 		return;
 	}
 
-	assert("id is not scheduled here.");
+	// "id is not scheduled here."
+	std::abort();
 }
 
 void Scheduler::resume(UUID id) noexcept {
@@ -197,10 +205,12 @@ void Scheduler::resume(UUID id) noexcept {
 		return;
 	}
 
-	assert("id is not paused here.");
+	// id is not paused here.;
+	std::abort();
 }
 
 void Scheduler::update(double dt) noexcept {
+	in_update = true;
 
 	size_t iIn = 0;
 	for (size_t i = 0; i < in_.size(); ++i, ++iIn) {
@@ -232,25 +242,25 @@ void Scheduler::update(double dt) noexcept {
 		till_.erase(std::begin(till_) + i, std::end(till_));
 	}
 
+	// >Perf see if i can make that better. I don't want to sort everything again,
+	// _BUT_ Scheduler::every rely on this behaviour so make sure to check that
+	auto everies = every_;
 	for (size_t i = 0; i < every_.size(); ++i) {
 		auto& every = every_[i].second;
 		every.time -= dt;
 
 		if (every.time <= 0.0) {
 			every.f(every.id);
+			every.time = every_[i].first;
 		}
 		else {
-
-			for (size_t j = 0; j < i; ++j) {
-				every_[j].second.time = every_[j].first;
-			}
-
-			auto pred = [](std::pair<double, Task> a, std::pair<double, Task> b) {
-				return a.second.time < b.second.time;
-			};
-			std::sort(std::begin(every_), std::end(every_), pred);
-
 			break;
 		}
 	}
+	auto pred = [](std::pair<double, Task> a, std::pair<double, Task> b) {
+		return a.second.time < b.second.time;
+	};
+	std::sort(std::begin(every_), std::end(every_), pred);
+
+	in_update = false;
 }
