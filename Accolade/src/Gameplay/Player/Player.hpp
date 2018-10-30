@@ -29,6 +29,8 @@
 #include "Components/Removable.hpp"
 #include "Components/Hitable.hpp"
 
+#include "Entity/EntityStore.hpp"
+
 struct PlayerInfo {
 	static constexpr auto BOLOSS = "char_boloss";
 
@@ -51,6 +53,7 @@ struct PlayerInfo {
 	PlayerInfo(nlohmann::json json);
 };
 
+class Item;
 class Zone;
 class Game;
 class Level;
@@ -77,7 +80,6 @@ public:
 	void update(double dt);
 	void render(sf::RenderTarget& target);
 
-	void shoot() noexcept;
 	virtual void hit(float damage) noexcept override;
 
 	bool isAlive() const;
@@ -86,6 +88,9 @@ public:
 	std::optional<std::string> getWeapon() const noexcept;
 	void swapWeapon(std::string weapon);
 	bool isEquiped() const noexcept;
+
+	void mountItem(OwnId<Item>&& item) noexcept;
+	const std::vector<OwnId<Item>>& getItems() noexcept;
 
 	template<class... Args>
 	void addProjectile(Args... args) {
@@ -137,8 +142,6 @@ public:
 	void keyReleased(sf::Keyboard::Key key);
 
 	Vector2f support(float a, float d) const noexcept;
-
-	bool eventFired(const std::string& name) const noexcept;
 
 	virtual void remove() noexcept override;
 	virtual bool toRemove() const noexcept override;
@@ -195,8 +198,9 @@ private: //TODO: Make private
 	AnimatedSprite _sprite;
 	sf::Sound _hitSound;
 
-	std::unordered_set<std::string> _events;
 	std::unordered_set<UUID> plateforme_colliding;
+
+	std::vector<OwnId<Item>> own_items;
 
 	std::vector<std::shared_ptr<Projectile>> _projectilesToShoot;
 	std::vector<std::shared_ptr<Zone>> _zonesToApply;

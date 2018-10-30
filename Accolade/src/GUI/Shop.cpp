@@ -12,6 +12,8 @@
 
 #include "./../Gameplay/Player/Player.hpp"
 
+// >TODO everything.
+
 Shop::Shop() : 
 	Widget(),
 	_infoPanel(new _InfoPanel{ this }),
@@ -59,29 +61,28 @@ void Shop::setPlayer(std::weak_ptr<Player> player) {
 
 
 void Shop::addWeapon(const std::string& weapon) {
-	constexpr u32 itemPerRow = 7;
-
 	u32 size = (u32)_itemPanels.size();
-	u32 nId = 0u;
-	bool flag = false;
-	do {
-		flag = false;
-		for (const auto& it : _itemPanels) {
-			if (nId == it.first) {
-				nId++;
-				flag = true;
-				break;
-			}
-		}
-	} while (flag);
+	UUID nId;
 
-	assert(_itemPanels.count(nId) == 0);
 	_itemPanels[nId] = new _ItemPanel{ this, weapon, nId };
 	_itemPanels[nId]->setPosition({
-		(size % itemPerRow) * (_ItemPanel::PANEL_SIZE + 5.f) + 10,
-		(size / itemPerRow) * (_ItemPanel::PANEL_SIZE + 5.f) + 30
+		(size % item_per_row) * (_ItemPanel::PANEL_SIZE + 5.f) + 10,
+		(size / item_per_row) * (_ItemPanel::PANEL_SIZE + 5.f) + 30
 	});
 	_itemPanels[nId]->setParent(_merchantPanel, 1);
+}
+
+void Shop::addItem(OwnId<Item>&& item) noexcept {
+	size_t size = _itemPanels.size();
+	UUID nId;
+
+	auto item_panel = new _ItemPanel{ this, std::move(item), nId };
+	item_panel->setPosition({
+		(size % item_per_row) * (_ItemPanel::PANEL_SIZE + 5.f) + 10,
+		(size / item_per_row) * (_ItemPanel::PANEL_SIZE + 5.f) + 30
+	});
+	item_panel->setParent(_merchantPanel, 1);
+	_itemPanels[nId] = item_panel;
 }
 
 void Shop::enter() {
@@ -105,12 +106,12 @@ bool Shop::onClickBegan() {
 
 	rect = Rectangle2f(
 		{ 
-			_merchantPanel->getGlobalPosition().x, 
-			_merchantPanel->getGlobalPosition().y 
+			_merchantPanel->getGlobalPosition().x,
+			_merchantPanel->getGlobalPosition().y
 		},
 		{ 
-			_merchantPanel->getSize().x,			
-			_merchantPanel->getSize().y * 0.05f 
+			_merchantPanel->getSize().x,
+			_merchantPanel->getSize().y * 0.05f
 		}
 	);
 	if (InputsManager::getMouseScreenPos().inRect(rect.pos, rect.size)) {
@@ -139,15 +140,15 @@ bool Shop::onClickGoing() {
 	return false;
 }
 
-void Shop::focusItem(u32 i) {
+void Shop::focusItem(UUID i) {
 	_focused = i;
 	_focusPanel->setParent(_itemPanels[i]->sprite, 1);
 	
-	_infoPanel->populateBy(_itemPanels[i]->weapon);
+	_infoPanel->populateBy(*_itemPanels[i]);
 	_infoPanel->setVisible(true);
 }
 void Shop::unFocus() {
-	_focused = 0u;
+	_focused = UUID::zero();
 	_focusPanel->emancipate();
 
 	_infoPanel->setVisible(false);
@@ -158,7 +159,7 @@ bool Shop::isIn() const {
 }
 
 
-Shop::_ItemPanel::_ItemPanel(Shop* shop, const std::string& weapon, u32 id) :
+Shop::_ItemPanel::_ItemPanel(Shop* shop, const std::string& weapon, UUID id) :
 	_shop(shop),
 	weapon(weapon),
 	_id(id),
@@ -177,8 +178,31 @@ Shop::_ItemPanel::_ItemPanel(Shop* shop, const std::string& weapon, u32 id) :
 		std::bind(&Shop::_ItemPanel::onClickBegan, this),
 		std::bind(&Shop::_ItemPanel::onClickEnded, this),
 		std::bind(&Shop::_ItemPanel::onClickGoing, this)
-	});
+		});
+	addChild(sprite, 1);
+	addChild(label, 2);
+}
 
+Shop::_ItemPanel::_ItemPanel(Shop* shop, OwnId<Item> item, UUID id) :
+	_shop(shop),
+	item(std::move(item)),
+	_id(id),
+	sprite(new Panel{}),
+	label(new Label{})
+{
+
+	setTexture("panel_a");
+	getSprite().setColor({ 80, 80, 80 });
+	setSize({ PANEL_SIZE, PANEL_SIZE });
+
+	sprite->getSprite().setTexture(es_instance->get(this->item)->getIconTexture());
+	sprite->setSize({ PANEL_SIZE - 4, PANEL_SIZE - 4 });
+	sprite->setPosition({ 2, 2 });
+	sprite->setOnClick({
+		std::bind(&Shop::_ItemPanel::onClickBegan, this),
+		std::bind(&Shop::_ItemPanel::onClickEnded, this),
+		std::bind(&Shop::_ItemPanel::onClickGoing, this)
+		});
 	addChild(sprite, 1);
 	addChild(label, 2);
 }
@@ -254,25 +278,33 @@ Shop::_InfoPanel::_InfoPanel(Shop* shop) :
 		std::bind(&Shop::_InfoPanel::onClickGoing, this)
 	});
 }
-void Shop::_InfoPanel::populateBy(const std::string& weapon) {
-	const auto& w = Wearable::GetWearableinfo(weapon);
-
+void Shop::_InfoPanel::populateBy(const Shop::_ItemPanel& item_panel) {
+	this->item_panel = &item_panel;
+	
 	assert(panels.count("icon") > 0);
 	assert(labels.count("name") > 0);
 	assert(labels.count("cost") > 0);
 
 	auto& icon = panels["icon"];
-	icon->setTexture(w.uiTexture);
 	icon->setSize({ 150, 150 });
 	icon->setPosition({ 50, 120 });
 
 	auto& name = labels["name"];
-	name->setStdString("Name: " + w.name);
 
 	auto& cost = labels["cost"];
-	cost->setStdString("Cost: " + std::to_string(w.cost));
-
-	_weapon = weapon;
+	if (item_panel.weapon != "") {
+		const auto& w = Wearable::GetWearableinfo(item_panel.weapon);
+		icon->setTexture(w.uiTexture);
+		name->setStdString("Name: " + w.name);
+		cost->setStdString("Cost: " + std::to_string(w.cost));
+	}
+	else {
+		auto item = es_instance->get(item_panel.item);
+		assert(item);
+		icon->getSprite().setTexture(item->getIconTexture());
+		name->setStdString("Name: " + item->getName());
+		cost->setStdString("Cost: " + item->getCost());
+	}
 }
 
 bool Shop::_InfoPanel::onClickBegan() {
@@ -280,7 +312,18 @@ bool Shop::_InfoPanel::onClickBegan() {
 }
 bool Shop::_InfoPanel::onClickEnded() {
 	if (!_shop->_player.expired()) {
-		_shop->_player.lock()->swapWeapon(_weapon);
+
+		if (item_panel->item) {
+			auto new_item = std::unique_ptr<Item>{
+				(Item*)es_instance->get<Item>(item_panel->item)->clone()
+			};
+			OwnId<Item> new_item_id = es_instance->integrate(std::move(new_item));
+			_shop->_player.lock()->mountItem(std::move(new_item_id));
+		}
+		else {
+			assert(item_panel);
+			_shop->_player.lock()->swapWeapon(item_panel->weapon);
+		}
 	}
 	return true;
 }

@@ -29,7 +29,6 @@ Panel::Panel(nlohmann::json json) noexcept : Widget(json) {
 		_focused = true;
 		auto mousePos = IM::getMouseScreenPos();
 
-
 		if (isInHeader(mousePos)) {
 			deltaDrag = mousePos - getGlobalPosition();
 
@@ -40,13 +39,17 @@ Panel::Panel(nlohmann::json json) noexcept : Widget(json) {
 			else {
 				doubleClickClock = Clock{ get_double_click_time().value_or(1000) / 1000.0 };
 			}
+			return true;
 		}
 
-		return true;
+		return false;
 	};
 	onClick.going = [&] {
-		if (deltaDrag) setGlobalPosition(IM::getMouseScreenPos() - *deltaDrag);
-		return true;
+		if (deltaDrag) {
+			setGlobalPosition(IM::getMouseScreenPos() - *deltaDrag);
+			return true;
+		}
+		return false;
 	};
 	onClick.ended = [&] {
 		_focused = false;

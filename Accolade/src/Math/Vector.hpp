@@ -530,6 +530,14 @@ struct Vector : public __vec_member<D, T> {
 		return result;
 	}
 
+	Vector<D, T> productCW(const Vector<D, T>& other) const noexcept {
+		Vector<D, T> result;
+		for (size_t i = 0; i < D; ++i) {
+			result[i] = components[i] * other[i];
+		}
+		return result;
+	}
+
 	static void renderLine(
 		sf::RenderTarget& target,
 		Vector<2U, T> A,

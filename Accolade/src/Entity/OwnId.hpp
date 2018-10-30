@@ -50,22 +50,22 @@ public:
 	}
 
 	// TOSEE i don't know if i must make a deep copy or forbid copy...
-	constexpr OwnId(
+	/*constexpr OwnId(
 		std::enable_if_t<std::is_copy_constructible_v<T>, OwnId<T>>& other
 	) noexcept {
 		ptr = es_instance->copy<T>(es_instance->get<T>(other.ptr));
-	}
+	}*/
 	constexpr OwnId(OwnId<T>&& other) noexcept : ptr(other.ptr) {
 		other.ptr = NULL_PTR;
 	}
-
-	constexpr OwnId& operator=(
+	
+	/*constexpr OwnId& operator=(
 		std::enable_if_t<std::is_copy_constructible_v<T>, OwnId<T>>& other
 	) noexcept {
 		ptr = es_instance->copy<T>(es_instance->get<T>(other.ptr));
 		return *this;
-	}
-	constexpr OwnId& operator=(OwnId<T>&& other) noexcept {
+	}*/
+	OwnId& operator=(OwnId<T>&& other) noexcept {
 		ptr = other.ptr;
 
 		other.ptr = NULL_PTR;

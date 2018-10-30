@@ -1,0 +1,11 @@
+{
+	"fire_rate": 2,
+	"projectile": {
+		"damage": 0.5,
+		"speed": 25,
+		"radius": 0.05,
+		"lifespan": 5,
+		"destroyOthers": false,
+		"sprite": "projectiles-1"
+	}
+}

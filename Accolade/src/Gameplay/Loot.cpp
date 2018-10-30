@@ -54,7 +54,7 @@ void Loot::render(sf::RenderTarget& target) {
 	}
 }
 
-void Loot::onEnter(Object* obj) { // we know typeof(obj) is necessarly Player*
+void Loot::onEnter(Object* obj) { // we know decltype(obj) is necessarly Player*
 	if (!_lootable) return;
 
 	switch (_lootType) {

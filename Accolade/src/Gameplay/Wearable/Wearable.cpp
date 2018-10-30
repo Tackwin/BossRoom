@@ -15,6 +15,8 @@ void Wearable::unmount() noexcept {
 	_info.onUnmount(*this);
 }
 
+void Wearable::render(sf::RenderTarget&) noexcept {}
+
 void Wearable::update(double dt) noexcept {
 	_info.onUpdate(dt, *this);
 }

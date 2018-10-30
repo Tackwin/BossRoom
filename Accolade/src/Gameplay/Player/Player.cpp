@@ -17,6 +17,12 @@
 
 #include "Ruins/Structure/Plateforme.hpp"
 
+#include "Events/Event.hpp"
+
+#include "Gameplay/Item/Item.hpp"
+
+#include "Entity/OwnId.hpp"
+
 Player::Player() noexcept : Player(C::game->getPlayerInfo()) {}
 
 Player::Player(PlayerInfo info) noexcept :
@@ -62,13 +68,6 @@ void Player::exitLevel() noexcept {
 void Player::update(double dt) {
 	auto& kb = game->getCurrentKeyBindings();
 
-	bool tryingToShoot = 
-		InputsManager::isMousePressed(kb.getKey(KeyBindings::ACTION)) && 
-		_focus;
-	if (tryingToShoot) {
-		_events.emplace(Event::FIRE);
-	}
-
 	if (_invincible) {
 		_invincibleTime -= dt;
 		if (_invincibleTime < 0.0) {
@@ -77,6 +76,7 @@ void Player::update(double dt) {
 	}
 
 	_weapon.update(dt);
+	for (auto& x : own_items) es_instance->get(x)->update(dt);
 
 	if (!_freeze) {
 		if (_knockBack) {
@@ -136,7 +136,6 @@ void Player::update(double dt) {
 	velocity *= (float)std::pow(0.2, dt);
 
 	input();
-	_events.clear();
 }
 void Player::input() noexcept {
 	auto key_binding = game->getCurrentKeyBindings();
@@ -155,6 +154,10 @@ void Player::input() noexcept {
 	}
 	else if (IM::isKeyPressed(key_binding.getKey(KeyBindings::MOVE_RIGHT))) {
 		_dir.x = 1;
+	}
+
+	if (IM::isMousePressed(sf::Mouse::Left)) {
+		EM::fire(EM::EventType::Player_Use_Main_Weapon, { this });
 	}
 }
 
@@ -178,9 +181,6 @@ void Player::render(sf::RenderTarget &target) {
 	playerPosMark.setPosition(pos);
 	target.draw(playerPosMark);
 }
-void Player::shoot() noexcept {
-	_sprite.pushAnim("action");
-}
 
 void Player::hit(float d) noexcept {
 	if (_invincible) return;
@@ -200,7 +200,6 @@ std::optional<std::string> Player::getWeapon() const noexcept {
 bool Player::isEquiped() const noexcept {
 	return _info.weapon.has_value();
 }
-
 
 void Player::swapWeapon(std::string weapon) {
 	auto info = game->getPlayerInfo();
@@ -370,6 +369,10 @@ float Player::getLife() const {
 void Player::unmount() {
 	_weapon.unmount();
 	_info.weapon.reset();
+	for (auto& i : own_items) {
+		es_instance->get(i)->unMount();
+	}
+	own_items.clear();
 }
 
 void Player::knockBack(Vector2f recoil, float time) noexcept {
@@ -389,10 +392,6 @@ void Player::setFacingDir(float dir) noexcept {
 
 Vector2f Player::support(float a, float d) const noexcept {
 	return pos + Vector2f::createUnitVector(a) * (d + _info.hitBox.length());
-}
-
-bool Player::eventFired(const std::string& name) const noexcept {
-	return _events.count(name) > 0;
 }
 
 PlayerInfo::PlayerInfo() {
@@ -418,6 +417,9 @@ void Player::enter(Section* section) noexcept {
 }
 void Player::leave() noexcept {
 	section_ = nullptr;
+	for (auto& i : own_items) {
+		es_instance->get(i)->unMount();
+	}
 }
 
 // Magic spell stuff.
@@ -504,3 +506,14 @@ bool Player::filterCollision(Object& obj) noexcept {
 	}
 	return true;
 }
+
+
+void Player::mountItem(OwnId<Item>&& item) noexcept {
+	es_instance->get(item)->mount();
+	own_items.push_back(std::move(item));
+}
+
+const std::vector<OwnId<Item>>& Player::getItems() noexcept {
+	return own_items;
+}
+

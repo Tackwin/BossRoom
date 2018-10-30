@@ -12,6 +12,7 @@ public:
 		count
 	};
 
+	bool exit_screen{ false };
 public:
 	virtual Type getType() const noexcept = 0;
 
@@ -20,5 +21,6 @@ public:
 
 	virtual void update(double dt) = 0;
 	virtual void render(sf::RenderTarget& target) = 0;
+	bool toExitScreen() const noexcept;
 };
 

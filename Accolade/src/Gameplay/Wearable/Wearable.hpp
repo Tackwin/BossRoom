@@ -1,20 +1,20 @@
 #pragma once
+#include <any>
 #include <array>
 #include <vector>
 #include <bitset>
 #include <memory>
 #include <functional>
 #include <unordered_set>
-#include <any>
 
-#include "./../../3rd/json.hpp"
+#include <SFML/Graphics.hpp>
 
-#include "./../../Common.hpp"
-#include "./../../Utils/UUID.hpp"
+#include "3rd/json.hpp"
+
+#include "Common.hpp"
+#include "Utils/UUID.hpp"
 
 #include "WearableInfo.hpp"
-
-#include "../../Events/Event.hpp"
 
 class Player;
 class Wearable {
@@ -38,7 +38,8 @@ public:
 	void mount(std::weak_ptr<Player> player) noexcept;
 	void unmount() noexcept;
 
-	void update(double dt) noexcept;
+	virtual void render(sf::RenderTarget& target) noexcept;
+	virtual void update(double dt) noexcept;
 
 	WearableInfo getInfo() const noexcept;
 

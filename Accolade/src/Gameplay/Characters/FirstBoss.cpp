@@ -105,6 +105,7 @@ FirstBoss::FirstBoss(const FirstBossInfo& info) noexcept : info(info) {
 
 	idMask.set(Object::BIT_TAGS::BOSS);
 	collisionMask.set(Object::BIT_TAGS::PROJECTILE);
+	collisionMask.set(Object::BIT_TAGS::STRUCTURE);
 
 	pos = info.start_pos;
 	life = info.max_life;
@@ -132,6 +133,8 @@ void FirstBoss::update(double dt) noexcept {
 	for (auto& particles : particle_effects) {
 		particles->update(dt);
 	}
+	
+	flatForces.push_back({ 0, C::G });
 
 	removeNeeded();
 }
@@ -221,30 +224,20 @@ void FirstBoss::directionalFire() noexcept {
 			return;
 		}
 
-		float a =
-			(float)pos.angleTo(section->getPlayerPos());
+		float a = (float)pos.angleTo(section->getPlayerPos());
 
-		Vector2f dir = Vector2f::createUnitVector(a);
 
 		Vector2f proj_pos =
 			pos +
 			Vector2f::createUnitVector(a + PIf / 9) *
 			(info.hitbox.w / 2 + info.directional_fire_projectile["radius"]);
-
-		auto proj = std::make_shared<Projectile>(
-			info.directional_fire_projectile, proj_pos, dir, false
-		);
-		projectiles_to_shoot.push_back(proj);
+		shoot(info.directional_fire_projectile, proj_pos, a);
 
 		proj_pos =
 			pos +
 			Vector2f::createUnitVector(a - PIf / 9) *
 			(info.hitbox.w / 2 + info.directional_fire_projectile["radius"]);
-
-		proj = std::make_shared<Projectile>(
-			info.directional_fire_projectile, proj_pos, dir, false
-		);
-		projectiles_to_shoot.push_back(proj);
+		shoot(info.directional_fire_projectile, proj_pos, a);
 
 		if (--N <= 0) {
 			scheduler.cancel(my_id);
@@ -254,24 +247,39 @@ void FirstBoss::directionalFire() noexcept {
 
 	// >TODO push_anim;
 }
+std::shared_ptr<Projectile>
+FirstBoss::shoot(const nlohmann::json& info, const Vector2f& pos, float dir) noexcept {
+	auto proj = std::make_shared<Projectile>(
+		info, pos, Vector2f::createUnitVector(dir), false
+	);
+
+	proj->collider->onEnter = [proj](Object* obj) {
+		if (auto ptr = (Player*)obj; obj->idMask.test(Object::PLAYER)) {
+			ptr->hit(proj->getDamage());
+			proj->remove();
+		}
+	};
+
+	projectiles_to_shoot.push_back(proj);
+	return proj;
+}
 
 void FirstBoss::snipe() noexcept {
 	if (info.sniper_shots == 0) return;
 
-	auto shoot = [&](auto) {
+	auto fire = [&](auto) {
 		section->stopAimAnimation();
 
 		auto dir = Vector2f::createUnitVector(pos.angleTo(section->getPlayerPos()));
 		auto proj_pos = support((float)dir.angleX(), info.sniper_projectile["radius"]);
-		auto proj = std::make_shared<Projectile>(
-			info.sniper_projectile, proj_pos, dir, false
+		shoot(
+			info.sniper_projectile, proj_pos, (float)pos.angleTo(section->getPlayerPos())
 		);
-		projectiles_to_shoot.push_back(proj);
 	};
 	auto start_aim_anim = [&, N = info.sniper_shots](UUID my_id) mutable {
 		section->startAimAnimation();
 
-		scheduler.in(info.sniper_aim_time, shoot);
+		scheduler.in(info.sniper_aim_time, fire);
 
 		if (--N == 0) {
 			scheduler.cancel(my_id);
@@ -291,19 +299,17 @@ void FirstBoss::randomFire() noexcept {
 		0, 2 * info.random_fire_estimated_time / info.random_fire_orbs
 	);
 
-	auto shoot = [&](auto) {
+	auto fire = [&](auto) {
 		float a = info.random_fire_aim + rngA(C::RD);
 		auto dir = Vector2f::createUnitVector(a);
 		auto proj_pos = support(a, info.random_fire_projectile["radius"]);
 
-		auto proj = std::make_shared<Projectile>(
-			info.random_fire_projectile, proj_pos, dir, false
-		);
+		shoot(info.random_fire_projectile, proj_pos, a);
 	};
 
-	UUID previous = scheduler.in(rngDelay(C::RD), shoot);
+	UUID previous = scheduler.in(rngDelay(C::RD), fire);
 
 	for (size_t i = 1; i < info.random_fire_orbs; ++i) {
-		previous = scheduler.after_in(previous, rngDelay(C::RD), shoot);
+		previous = scheduler.after_in(previous, rngDelay(C::RD), fire);
 	}
 }

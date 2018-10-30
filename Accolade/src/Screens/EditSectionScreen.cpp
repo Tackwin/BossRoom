@@ -47,11 +47,16 @@ EditSectionScreen::EditSectionScreen(Section* section) :
 	viewSize_.size = sectionInfo_.viewSize.fitUpRatio(RATIO);
 }
 
-void EditSectionScreen::update(double dt) {
-	if (toLoadFile) {
-		std::lock_guard{ fileToLoadMutex };
-		loadSectionFile(fileToLoad);
+void EditSectionScreen::input(double dt) noexcept {
+	input_caught_by_ui.reset();
+	for (auto&[_, w] : _widgets) {
+		_;
+		input_caught_by_ui |= w->postOrderInput(input_caught_by_ui);
 	}
+
+	if (input_caught_by_ui.test(Widget::Input_Mask::Key_Ended)) return;
+	updateCameraMovement(dt);
+	inputSwitchState();
 
 	bool shiftPressed =
 		IM::isKeyPressed(sf::Keyboard::LShift) || IM::isKeyPressed(sf::Keyboard::RShift);
@@ -61,7 +66,7 @@ void EditSectionScreen::update(double dt) {
 		IM::isKeyJustPressed(sf::Keyboard::E)
 	) {
 		saveSection(str::trim_whitespace(_savePicker->getStdString()));
-		C::game->exitScreen();
+		exit_screen = true;
 		return;
 	}
 
@@ -79,7 +84,7 @@ void EditSectionScreen::update(double dt) {
 
 	if (IM::isLastSequenceJustFinished({
 		sf::Keyboard::LControl, sf::Keyboard::T, sf::Keyboard::V
-	})) {
+		})) {
 		viewSize_.pos =
 			es_instance->get(cameraView)->getCenter() -
 			es_instance->get(cameraView)->getSize() / 2.f;
@@ -89,9 +94,9 @@ void EditSectionScreen::update(double dt) {
 
 	if (
 		IM::isKeyPressed(sf::Keyboard::LControl) &&
-		(IM::isLastSequenceJustFinished({sf::Keyboard::D }) ||
-		IM::isMousePressed(sf::Mouse::Right))
-	) {
+		(IM::isLastSequenceJustFinished({ sf::Keyboard::D }) ||
+			IM::isMousePressed(sf::Mouse::Right))
+		) {
 		deleteHovered();
 	}
 
@@ -105,11 +110,14 @@ void EditSectionScreen::update(double dt) {
 	_snapLevel = std::clamp(_snapLevel, 0.0001f, 1.f);
 
 	_snapGrid->setStdString("Snap grid " + std::to_string(_snapLevel) + "m");
+}
 
-	inputSwitchState();
-	for (auto&[_, w] : _widgets) {
-		_;
-		w->propagateInput();
+void EditSectionScreen::update(double dt) {
+	input(dt);
+
+	if (toLoadFile) {
+		std::lock_guard{ fileToLoadMutex };
+		loadSectionFile(fileToLoad);
 	}
 
 	switch (_toolState)
@@ -138,8 +146,6 @@ void EditSectionScreen::update(double dt) {
 	default:
 		break;
 	}
-
-	updateCameraMovement(dt);
 }
 
 void EditSectionScreen::updatePlaceNavigationLink() noexcept {
@@ -195,7 +201,7 @@ void EditSectionScreen::updatePlaceNavigationPoint() noexcept {
 void EditSectionScreen::updateSource() noexcept {
 	_newSource->pos = getSnapedMouseCameraPos();
 	if (IM::isMouseJustPressed(sf::Mouse::Left)) {
-		_newSource->sprite = sourceSwitcher_->getCurrentPanel()->getTexture();
+		_newSource->texture = sourceSwitcher_->getCurrentPanel()->getTexture();
 
 		if (sourceSwitcher_->getCurrentPanel()->getName() == "source") {
 			sectionInfo_.sources.push_back(*_newSource);
@@ -347,18 +353,23 @@ void EditSectionScreen::updateDrawPlateform() noexcept {
 	}
 }
 void EditSectionScreen::updateNothing() noexcept {
-	if (IM::isMouseJustPressed(sf::Mouse::Right)) {
-		selectFocus();
+	if (!input_caught_by_ui.test(Widget::Input_Mask::Mouse_Began)) {
+		if (IM::isMouseJustPressed(sf::Mouse::Right)) {
+			selectFocus();
+		}
+		if (
+			IM::isMouseJustPressed(sf::Mouse::Left) && !draggingScreen) {
+			draggingScreen = true;
+		}
 	}
-	if (IM::isMouseJustPressed(sf::Mouse::Left) && !draggingScreen) {
-		draggingScreen = true;
+	if (!input_caught_by_ui.test(Widget::Input_Mask::Mouse_Going)) {
+		if (draggingScreen && IM::isMousePressed(sf::Mouse::Left)) {
+			es_instance->get(cameraView)->move(
+				-1 * IM::getMouseDeltaInView(*es_instance->get(cameraView))
+			);
+		}
+		else draggingScreen = false;
 	}
-	else if (draggingScreen && IM::isMousePressed(sf::Mouse::Left)) {
-		es_instance->get(cameraView)->move(
-			-1 * IM::getMouseDeltaInView(*es_instance->get(cameraView))
-		);
-	}
-	else draggingScreen = false;
 }
 void EditSectionScreen::updateCameraMovement(double dt) noexcept {
 	if (IM::isKeyPressed(sf::Keyboard::LControl)) return;
@@ -483,6 +494,19 @@ void EditSectionScreen::render(sf::RenderTarget& target) {
 	viewSize_.pos =
 		(Vector2f)es_instance->get(cameraView)->getCenter() - viewSize_.size / 2.f;
 
+	printf(
+		R"_(
+boomer: %u,
+direct: %u,
+common: %u,
+vaccum: %u,
+		)_",
+		sectionInfo_.sourcesBoomerang.size(),
+		sectionInfo_.sourcesDirection.size(),
+		sectionInfo_.sources.size(),
+		sectionInfo_.sourcesVaccum.size()
+	);
+
 	for (auto source : sectionInfo_.sourcesBoomerang) renderDebug(target, source.source);
 	for (auto source : sectionInfo_.sourcesDirection) renderDebug(target, source.source);
 	for (auto first_boss : sectionInfo_.first_bosses) renderDebug(target, first_boss);
@@ -573,7 +597,7 @@ void EditSectionScreen::enterToolState(
 		changeColorLabel(PLACE_START_POS, { 0.0, 1.0, 0.0, 1.0 });
 		break;
 	case place_source:
-		_newSource = SourceInfo();
+		_newSource = SourceInfo::loadJson(AM::getJson("source"));
 		changeColorLabel(PLACE_SOURCE, { 0.0, 1.0, 0.0, 1.0 }); 
 		sourceSwitcher_->setVisible(true);
 		break;
@@ -685,15 +709,26 @@ void EditSectionScreen::renderDebug(
 void EditSectionScreen::renderDebug(
 	sf::RenderTarget& target, const SourceInfo& info
 ) noexcept {
-	Vector4d color{ 0.8, 0.0, 0.8, 1.0 };
-	auto dist2 = (info.pos - IM::getMousePosInView(*es_instance->get(cameraView)))
-		.length2();
-	if (dist2 < info.size.x * info.size.x / 4.f) {
-		color = { 0.7, 0.0, 1.0, 1.0 };
-	}
-	info.pos.plot(
-		target, info.size.x / 2.f, color, { 0.0, 0.0, 0.0, 0.0 }, 0.f
+sf::Sprite spr{ AM::getTexture(info.texture) };
+	spr.setPosition(info.pos);
+	spr.setOrigin(
+		info.origin.x * spr.getTextureRect().width,
+		info.origin.y * spr.getTextureRect().height
 	);
+	spr.setScale(
+		info.size.x / spr.getTextureRect().width,
+		info.size.y / spr.getTextureRect().height
+	);
+	
+	auto mouse_pos = IM::getMousePosInView(*es_instance->get(cameraView));
+	if (is_in(mouse_pos, info)) {
+		spr.setColor(Vector4d{ 1, 1, 1, 1 });
+	}
+	else {
+		spr.setColor(Vector4d{ 0.8, 0.8, 0.8, 1.0 });
+	}
+
+	target.draw(spr);
 }
 void EditSectionScreen::renderDebug(
 	sf::RenderTarget& target, const PortalInfo& info
@@ -859,58 +894,30 @@ void EditSectionScreen::selectFocus() noexcept {
 		}
 	}
 
-	for (size_t i = sources.size(); i > 0; --i) {
-
-		auto dist2 = (sources[i - 1].pos - mouse_pos_in_camera_view).length2();
-		if (dist2 < sources[i - 1].size.x * sources[i - 1].size.x / 4.f) {
-			currentlyFocused = {
-				holded_t<decltype(sources)>::JSON_ID,
-				(void*)&sources[i - 1]
-			};
+	for (size_t i = sources.size() - 1; i + 1 > 0; --i) {
+		if (is_in(mouse_pos_in_camera_view, sources[i])) {
+			currentlyFocused = { holded_t<decltype(sources)>::JSON_ID, (void*)&sources[i] };
 		}
 	}
 
-	for (size_t i = sourcesBoomerang.size(); i > 0; --i) {
-
-		auto dist2 =
-			(sourcesBoomerang[i - 1].source.pos - mouse_pos_in_camera_view).length2();
-
-		if (
-			dist2 < sourcesBoomerang[i - 1].source.size.x *
-			sourcesBoomerang[i - 1].source.size.x / 4.f
-		) {
+	for (size_t i = sourcesBoomerang.size() - 1; i + 1 > 0; --i) {
+		if (is_in(mouse_pos_in_camera_view, sourcesBoomerang[i].source)) {
 			currentlyFocused = {
-				holded_t<decltype(sourcesBoomerang)>::JSON_ID,
-				(void*)&sourcesBoomerang[i - 1]
+				holded_t<decltype(sourcesBoomerang)>::JSON_ID, (void*)&sourcesBoomerang[i]
 			};
 		}
 	}
-	for (size_t i = sourcesVaccum.size(); i > 0; --i) {
-
-		auto dist2 = (sourcesVaccum[i - 1].source.pos - mouse_pos_in_camera_view).length2();
-
-		if (
-			dist2 < sourcesVaccum[i - 1].source.size.x *
-			sourcesVaccum[i - 1].source.size.x / 4.f
-		) {
+	for (size_t i = sourcesVaccum.size() - 1; i + 1 > 0; --i) {
+		if (is_in(mouse_pos_in_camera_view, sourcesVaccum[i].source)) {
 			currentlyFocused = {
-				holded_t<decltype(sourcesVaccum)>::JSON_ID,
-				(void*)&sourcesVaccum[i - 1]
+				holded_t<decltype(sourcesVaccum)>::JSON_ID, (void*)&sourcesVaccum[i]
 			};
 		}
 	}
-	for (size_t i = sourcesDirection.size(); i > 0; --i) {
-
-		auto dist2 =
-			(sourcesDirection[i - 1].source.pos - mouse_pos_in_camera_view).length2();
-
-		if (
-			dist2 < sourcesDirection[i - 1].source.size.x *
-			sourcesDirection[i - 1].source.size.x / 4.f
-		) {
+	for (size_t i = sourcesDirection.size() - 1; i + 1 > 0; --i) {
+		if (is_in(mouse_pos_in_camera_view, sourcesDirection[i].source)) {
 			currentlyFocused = {
-				holded_t<decltype(sourcesDirection)>::JSON_ID,
-				(void*)&sourcesDirection[i - 1]
+				holded_t<decltype(sourcesDirection)>::JSON_ID, (void*)&sourcesDirection[i]
 			};
 		}
 	}
@@ -1065,50 +1072,28 @@ void EditSectionScreen::deleteHovered() noexcept {
 		}
 	}
 
-	for (size_t i = sources.size(); i > 0; --i) {
-
-		auto dist2 = (sources[i - 1].pos - mouse_pos_in_camera_view).length2();
-		if (dist2 < sources[i - 1].size.x * sources[i - 1].size.x / 4.f) {
-			sources.erase(std::begin(sources) + i - 1);
+	for (size_t i = sources.size() - 1; i + 1 > 0; --i) {
+		if (is_in(mouse_pos_in_camera_view, sources[i])) {
+			sources.erase(std::begin(sources) + i);
 			return;
 		}
 	}
 
-	for (size_t i = sourcesBoomerang.size(); i > 0; --i) {
-
-		auto dist2 =
-			(sourcesBoomerang[i - 1].source.pos - mouse_pos_in_camera_view).length2();
-
-		if (
-			dist2 < sourcesBoomerang[i - 1].source.size.x *
-			sourcesBoomerang[i - 1].source.size.x / 4.f
-			) {
-			sourcesBoomerang.erase(std::begin(sourcesBoomerang) + i - 1);
+	for (size_t i = sourcesBoomerang.size() - 1; i + 1 > 0; --i) {
+		if (is_in(mouse_pos_in_camera_view, sourcesBoomerang[i].source)) {
+			sourcesBoomerang.erase(std::begin(sourcesBoomerang) + i);
 			return;
 		}
 	}
-	for (size_t i = sourcesVaccum.size(); i > 0; --i) {
-
-		auto dist2 = (sourcesVaccum[i - 1].source.pos - mouse_pos_in_camera_view).length2();
-
-		if (
-			dist2 < sourcesVaccum[i - 1].source.size.x *
-			sourcesVaccum[i - 1].source.size.x / 4.f
-			) {
-			sourcesVaccum.erase(std::begin(sourcesVaccum) + i - 1);
+	for (size_t i = sourcesVaccum.size() - 1; i + 1 > 0; --i) {
+		if (is_in(mouse_pos_in_camera_view, sourcesVaccum[i].source)) {
+			sourcesVaccum.erase(std::begin(sourcesVaccum) + i);
 			return;
 		}
 	}
-	for (size_t i = sourcesDirection.size(); i > 0; --i) {
-
-		auto dist2 =
-			(sourcesDirection[i - 1].source.pos - mouse_pos_in_camera_view).length2();
-
-		if (
-			dist2 < sourcesDirection[i - 1].source.size.x *
-			sourcesDirection[i - 1].source.size.x / 4.f
-		) {
-			sourcesDirection.erase(std::begin(sourcesDirection) + i - 1);
+	for (size_t i = sourcesDirection.size() - 1; i + 1 > 0; --i) {
+		if (is_in(mouse_pos_in_camera_view, sourcesDirection[i].source)) {
+			sourcesDirection.erase(std::begin(sourcesDirection) + i);
 			return;
 		}
 	}
@@ -1246,12 +1231,12 @@ void EditSectionScreen::constructUI() noexcept {
 		}
 	}
 
-	auto root = _widgets.at("root");
-	assert(root);
+	root_ui = _widgets.at("root");
+	assert(root_ui);
 
-	structureSwitcher = (SpriteSwitcher*)(root->findChild("structureSwitcher"));
-	ennemySwitcher_ = (SpriteSwitcher*)(root->findChild("ennemySwitcher"));
-	sourceSwitcher_ = (SpriteSwitcher*)(root->findChild("sourceSwitcher"));
+	structureSwitcher = (SpriteSwitcher*)(root_ui->findChild("structureSwitcher"));
+	ennemySwitcher_ = (SpriteSwitcher*)(root_ui->findChild("ennemySwitcher"));
+	sourceSwitcher_ = (SpriteSwitcher*)(root_ui->findChild("sourceSwitcher"));
 	jsonEditPanel = (Panel*)_widgets.at("propertiesEditor");
 	_savePicker = (ValuePicker*)(_widgets.at("root")->findChild("savePicker"));
 	_savePicker->setStdString(filepath_.generic_string());

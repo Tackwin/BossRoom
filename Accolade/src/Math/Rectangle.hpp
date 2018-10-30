@@ -22,6 +22,13 @@ struct Rectangle {
 		pos(pos),
 		size(size) 
 	{}
+#ifdef SFML_GRAPHICS_HPP
+
+	Rectangle(const sf::FloatRect& rec) : 
+		x(rec.left), y(rec.top), w(rec.width), h(rec.height)
+	{}
+
+#endif
 
 	bool intersect(const Rectangle<T>& other) const {
 		return !(
@@ -59,6 +66,17 @@ struct Rectangle {
 
 	T bot() const {
 		return pos.y + size.y;
+	}
+
+	std::tuple<
+		Rectangle<T>, Rectangle<T>, Rectangle<T>, Rectangle<T>
+	> divide() const noexcept {
+		return {
+			Rectangle<T>{pos, size / 2},
+			Rectangle<T>{ {pos.x + size.x / 2, pos.y}, size / 2 },
+			Rectangle<T>{ {pos.x, pos.y + size.y / 2}, size / 2 },
+			Rectangle<T>{pos + size / 2, size / 2},
+		};
 	}
 
 	// >TODO: implement this, for now we treat this as if it were the support
@@ -129,7 +147,6 @@ struct Rectangle {
 	}
 
 #ifdef SFML_GRAPHICS_HPP
-#include <SFML/Graphics.hpp>
 
 	void render(sf::RenderTarget& target, Vector4f color) const noexcept {
 		sf::RectangleShape shape{ size };

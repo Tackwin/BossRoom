@@ -19,7 +19,7 @@ public:
 	};
 
 	Loot(float r);
-	~Loot() noexcept;
+	virtual ~Loot() noexcept;
 
 	Loot(Loot&) = delete;
 	Loot& operator=(Loot&) = delete;

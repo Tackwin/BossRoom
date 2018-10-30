@@ -54,6 +54,10 @@ template<typename T>
 struct holded<std::shared_ptr<T>> {
 	using type = T;
 };
+template<typename T>
+struct holded<std::unique_ptr<T>> {
+	using type = T;
+};
 
 template<typename T>
 struct key_map_type;

@@ -75,7 +75,11 @@ Screen::Type Game::getLastScreen() const noexcept {
 
 void Game::update(double dt) noexcept {
 	updateDebugText(dt);
+
 	_screens.top()->update(dt);
+	if (_screens.top()->toExitScreen()) {
+		exitScreen();
+	}
 }
 
 void Game::exitScreen() {

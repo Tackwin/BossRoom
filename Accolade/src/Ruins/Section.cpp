@@ -382,9 +382,13 @@ void Section::removeDeadObject() noexcept {
 		>
 	{
 		for (size_t i = x.size(); i > 0; --i) 
-			if (x[i - 1]->toRemove()) x.erase(std::begin(x) + i - 1);
+			if (x[i - 1]->toRemove()) {
+				if constexpr (std::is_base_of_v<Object, holded_t<holded_t<decltype(x)>>>) {
+					_world.delObject(x[i - 1]->uuid);
+				}
+				x.erase(std::begin(x) + i - 1);
+			}
 	};
-
 	removeDead(distanceGuys_);
 	removeDead(_projectiles);
 	removeDead(first_bosses);

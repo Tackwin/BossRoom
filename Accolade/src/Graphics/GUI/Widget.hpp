@@ -13,6 +13,19 @@
 
 class Widget {
 public:
+	struct Input_Mask { enum {
+		Mouse_Began,
+		Mouse_Going,
+		Mouse_Ended,
+		Hover_Began,
+		Hover_Going,
+		Hover_Ended,
+		Key_Began,
+		Key_Going,
+		Key_Ended,
+		Count
+	}; };
+
 	using ID_t = UUID;
 
 	struct Callback {
@@ -85,7 +98,7 @@ public:
 	virtual void propagateRender(sf::RenderTarget& target);
 
 	std::bitset<9u> input(const std::bitset<9u>& mask);
-	void propagateInput();
+	std::bitset<9u> propagateInput();
 	std::bitset<9u> postOrderInput(const std::bitset<9u>& mask);
 
 	UUID getUuid() const noexcept;

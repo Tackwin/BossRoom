@@ -16,7 +16,7 @@ SourceInfo SourceInfo::loadJson(nlohmann::json json) noexcept {
 	X(pos, Vector2f::loadJson);
 	X(size, Vector2f::loadJson);
 	X(origin, Vector2f::loadJson);
-	X(sprite, [](auto a) {return a.get<std::string>(); });
+	X(texture, [](auto a) {return a.get<std::string>(); });
 #undef X
 
 	return info;
@@ -25,7 +25,7 @@ SourceInfo SourceInfo::loadJson(nlohmann::json json) noexcept {
 nlohmann::json SourceInfo::saveJson(SourceInfo info) noexcept {
 	nlohmann::json json;
 	json["id"]			= info.id;
-	json["sprite"]		= info.sprite;
+	json["texture"]		= info.texture;
 	json["kind"]		= (int)info.kind;
 	json["reloadTime"]	= info.reloadTime;
 	json["pos"]			= Vector2f::saveJson(info.pos);
@@ -33,12 +33,17 @@ nlohmann::json SourceInfo::saveJson(SourceInfo info) noexcept {
 	json["origin"]		= Vector2f::saveJson(info.origin);
 	return json;
 }
+
+bool is_in(const Vector2f& p, const SourceInfo& info) noexcept {
+	return Rectangle2f{ info.pos - info.origin.productCW(info.size), info.size }.in(p);
+}
+
 Source::Source(SourceInfo info) noexcept :
 	Object(),
 	info_(info)
 {
 	pos = info_.pos;
-	sprite_.setTexture(AM::getTexture(info_.sprite));
+	sprite_.setTexture(AM::getTexture(info_.texture));
 }
 
 void Source::enter(Section* section) noexcept {

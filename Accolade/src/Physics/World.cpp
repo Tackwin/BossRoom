@@ -250,7 +250,6 @@ std::vector<UUID>
 {
 	static std::unordered_set<UUID> result;
 	result.clear();
-	result.reserve(_objectsMap.size() * Object::SIZE);
 
 	for (size_t i = 0u; i < Object::SIZE; ++i) {
 		if (!mask[i]) continue;

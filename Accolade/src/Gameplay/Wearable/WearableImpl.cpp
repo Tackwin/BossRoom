@@ -23,6 +23,8 @@
 #include "Components/Hitable.hpp"
 #include "Components/Bumpable.hpp"
 
+#include "Events/Event.hpp"
+
 std::unordered_map<std::string, WearableInfo> Wearable::_wearables;
 
 WearableInfo Wearable::GetWearableinfo(std::string wearable) noexcept {
@@ -34,10 +36,10 @@ void Wearable::InitWearable() {
 	WearableInfo fireBall;
 
 	fireBall.name = Wearable::FIRE_BALL;
-	fireBall.configuration = 
+	fireBall.configuration =
 		AssetsManager::getJson(JSON_KEY)["weapons"][fireBall.name];
 	fireBall.uiTexture = fireBall.configuration["sprite"].get<std::string>();
-	fireBall.onMount = [](Wearable& me) {
+	fireBall.onMount = [json = fireBall.configuration](Wearable& me) {
 		auto json = me.getInfo().configuration;
 
 		me._properties["countdown"] = 0.0;
@@ -61,7 +63,7 @@ void Wearable::InitWearable() {
 
 		countdown -= dt;
 
-		if (countdown > 0.0 || !player->eventFired(Event::FIRE)) return;
+		if (countdown > 0.0) return;
 
 		bool& evenShot = me.getPropsRef<bool>("evenShot");
 		double& recoil = me.getPropsRef<double>("recoil");
@@ -92,8 +94,7 @@ void Wearable::InitWearable() {
 	sword.configuration =
 		AssetsManager::getJson(JSON_KEY)["weapons"][sword.name];
 	sword.uiTexture = sword.configuration["sprite"].get<std::string>();
-	sword.onMount = [](Wearable& me) {
-		auto json = me.getInfo().configuration;
+	sword.onMount = [json = sword.configuration](Wearable& me) {
 
 		me.setProp("countdown", 0.0);
 		me.setProp("remainCountdown", 0.0);
@@ -134,7 +135,7 @@ void Wearable::InitWearable() {
 		double& countdown = me.getPropsRef<double>("countdown");
 
 		countdown -= dt;
-		if (countdown > 0.0 || !player->eventFired(Event::FIRE)) return;
+		if (countdown > 0.0) return;
 		
 		float& damage = me.getPropsRef<float>("damage");
 		float& radius = me.getPropsRef<float>("radius");

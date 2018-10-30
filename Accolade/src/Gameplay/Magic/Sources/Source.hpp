@@ -28,13 +28,15 @@ struct SourceInfo {
 	Vector2f origin{ 0.f, 0.f };
 	Vector2f size{ 0.66f, 0.66f };
 
-	std::string sprite{ "source" };
+	std::string texture{ "source" };
 
 	Kind kind;
 
 	static SourceInfo loadJson(nlohmann::json json) noexcept;
 	static nlohmann::json saveJson(SourceInfo info) noexcept;
 };
+
+extern bool is_in(const Vector2f& p, const SourceInfo& info) noexcept;
 
 class Source : public Object, public Removable {
 public:

@@ -2,20 +2,21 @@
 
 #include <algorithm>
 
-#include "./../Common.hpp"
+#include "Common.hpp"
+#include "Game.hpp"
 
-#include "./../Game.hpp"
+#include "Managers/AssetsManager.hpp"
+#include "Managers/InputsManager.hpp"
+#include "Managers/EventManager.hpp"
 
-#include "./../Managers/AssetsManager.hpp"
-#include "./../Managers/InputsManager.hpp"
-#include "./../Managers/EventManager.hpp"
+#include "Graphics/GUI/Button.hpp"
 
-#include "./../Graphics/GUI/Button.hpp"
+#include "Gameplay/Item/AxisAlignedShooter.hpp"
+#include "Gameplay/Wearable/Wearable.hpp"
+#include "Gameplay/Player/Player.hpp"
+#include "Gameplay/Projectile.hpp"
+#include "Gameplay/Zone.hpp"
 
-#include "./../Gameplay/Projectile.hpp"
-#include "./../Gameplay/Wearable/Wearable.hpp"
-#include "./../Gameplay/Player/Player.hpp"
-#include "./../Gameplay/Zone.hpp"
 
 StartScreen::StartScreen() :
 	_guiView({ WIDTH / 2.f, HEIGHT / 2.f }, { (float)WIDTH, (float)HEIGHT }),
@@ -48,6 +49,13 @@ void StartScreen::initializeGui() {
 			_shop->addWeapon(k);
 		}
 	}
+
+	AxisAlignedShooterInfo shooter_info = AM::getJson("axis_aligned_shooter");
+	auto shooter = es_instance->integrate<Item>(
+		std::make_unique<AxisAlignedShooter>(shooter_info)
+	);
+
+	_shop->addItem(std::move(shooter));
 }
 
 void StartScreen::onEnter(std::any) {

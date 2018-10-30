@@ -296,7 +296,6 @@ std::bitset<9u> Widget::input(const std::bitset<9u>& mask) {
 	std::bitset<9u> result;
 	result.reset();
 
-
 	auto mouseIsIn = getGlobalBoundingBox().in(InputsManager::getMouseScreenPos());
 
 	if (mouseIsIn || _focused) {
@@ -346,8 +345,8 @@ std::bitset<9u> Widget::input(const std::bitset<9u>& mask) {
 	return result;
 }
 
-void Widget::propagateInput() {
-	postOrderInput({});
+std::bitset<9u> Widget::propagateInput() {
+	return postOrderInput({});
 }
 
 std::bitset<9u> Widget::postOrderInput(const std::bitset<9>& mask) {

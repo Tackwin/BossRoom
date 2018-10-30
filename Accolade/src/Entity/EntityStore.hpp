@@ -2,8 +2,10 @@
 #include <SFML/Graphics.hpp>
 #include <unordered_map>
 #include <optional>
+#include <memory>
 
 #include "Utils/meta_algorithms.hpp"
+#include "Gameplay/Item/Item.hpp"
 
 #include "Math/Vector.hpp"
 
@@ -16,12 +18,15 @@ public:
 	using integer_t = size_t;
 
 private:
-	std::unordered_map<integer_t, Section> sections;
-	std::unordered_map<integer_t, Vector2f> vector2fs;
-	std::unordered_map<integer_t, sf::View> views;
+	// We use unique_ptr not really for the ownership but to allow use of abstract classes.
+	std::unordered_map<integer_t, std::unique_ptr<Section>> sections;
+	std::unordered_map<integer_t, std::unique_ptr<Vector2f>> vector2fs;
+	std::unordered_map<integer_t, std::unique_ptr<sf::View>> views;
+	std::unordered_map<integer_t, std::unique_ptr<Item>> items;
 #define ITERATE\
 	X(sections);\
 	X(vector2fs);\
+	X(items);\
 	X(views);
 
 
@@ -30,27 +35,30 @@ public:
 	template<typename T>
 	std::enable_if_t<std::is_const_v<T>, T*> get(const Eid<T>& ptr) const noexcept {
 #define X(x)\
-		if constexpr (\
-			std::is_same_v<key_map_type<decltype(x)>::Value, std::remove_const_t<T>>\
-		){\
+		if constexpr (std::is_same_v<\
+			holded_t<key_map_type<decltype(x)>::Value>,\
+			std::remove_const_t<T>\
+		>){\
 			auto f = x.find((integer_t)ptr);\
-			return f == std::end(x) ? nullptr : &f->second;\
+			return f == std::end(x) ? nullptr : f->second.get();\
 		}
 
-		ITERATE
+		ITERATE;
 #undef X
+		// if the compiler complain about no return value then that means that T is not part
+		// of the unordered maps.
 	}
 
 
 	template<typename T>
 	std::enable_if_t<!std::is_const_v<T>, T*> get(const Eid<T>& ptr) noexcept {
 #define X(x)\
-		if constexpr (std::is_same_v<key_map_type<decltype(x)>::Value, T>){\
+		if constexpr (std::is_same_v<holded_t<key_map_type<decltype(x)>::Value>, T>){\
 			auto f = x.find((integer_t)ptr);\
-			return f == std::end(x) ? nullptr : &f->second;\
+			return f == std::end(x) ? nullptr : f->second.get();\
 		}
 
-		ITERATE
+		ITERATE;
 #undef X
 	}
 	template<typename T>
@@ -64,18 +72,33 @@ public:
 		return get(x);
 	}
 
+	template<typename T>
+	Eid<T> integrate(std::unique_ptr<T>&& ptr) noexcept {
+#define X(x)\
+		if constexpr (std::is_same_v<holded_t<key_map_type<decltype(x)>::Value>, T>) {\
+			integer_t id = Eid<T>::N;\
+			x.insert(std::make_pair<integer_t, std::unique_ptr<T>>(\
+				std::forward<integer_t>(id), std::move(ptr)\
+			));\
+			return { Eid<T>::N++ };\
+		}
+
+		ITERATE
+#undef X
+	}
+
 	template<typename T, typename... Args>
 	Eid<T> make(Args&&... args) noexcept {
-		return copy(T{ std::forward<Args>(args)... });
+		return integrate<T>(std::make_unique<T>(std::forward<Args>(args)...));
 	}
 
 	template<typename T>
-	Eid<T> copy(T&& t) noexcept {
+	Eid<T> copy(const T& t) noexcept {
 #define X(x)\
-		if constexpr (std::is_same_v<key_map_type<decltype(x)>::Value, T>) {\
+		if constexpr (std::is_same_v<holded_t<key_map_type<decltype(x)>::Value>, T>) {\
 			integer_t id = Eid<T>::N;\
-			x.insert(std::make_pair<integer_t, T>(\
-				std::forward<integer_t>(id), std::forward<T>(t)\
+			x.insert(std::make_pair<integer_t, std::unique_ptr<T>>(\
+				std::forward<integer_t>(id), std::make_unique<T>(t)\
 			));\
 			return { Eid<T>::N++ };\
 		}
@@ -87,7 +110,7 @@ public:
 	template<typename T>
 	void destroy(const Eid<T>& ptr) noexcept {
 #define X(x) \
-		if constexpr (std::is_same_v<key_map_type<decltype(x)>::Value , T>) {\
+		if constexpr (std::is_same_v<holded_t<key_map_type<decltype(x)>::Value>, T>) {\
 			x.erase((integer_t)ptr);\
 		}
 

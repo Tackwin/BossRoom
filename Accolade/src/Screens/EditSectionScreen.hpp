@@ -39,6 +39,7 @@ public:
 
 	virtual Type getType() const noexcept override { return edit_screen; };
 
+	void input(double dt) noexcept;
 	virtual void update(double dt) override;
 	virtual void render(sf::RenderTarget& target) override;
 
@@ -67,6 +68,7 @@ private:
 		X(FirstBossInfo);
 		X(MeleeGuyInfo);
 		X(PortalInfo);
+		X(SourceInfo);
 		X(SlimeInfo);
 		X(FlyInfo);
 
@@ -113,6 +115,7 @@ private:
 	bool onClickEndedConfirmJsonEditPanel() noexcept;
 
 private:
+
 	SectionInfo sectionInfo_;
 
 	float _snapLevel{ 0.01f };
@@ -125,13 +128,15 @@ private:
 	Panel* jsonEditPanel{ nullptr };
 	ValuePicker* _savePicker{ nullptr };
 	Label* _snapGrid{ nullptr };
+	Widget* root_ui{ nullptr };
+
+	std::bitset<Widget::Input_Mask::Count> input_caught_by_ui;
 
 	sf::View _uiView;
 	OwnId<sf::View> cameraView;
 
 	Rectangle2f viewSize_;
 	nlohmann::json _json;
-
 
 	// Ok so what's the deal with this one ?
 	// first element is the JSON_ID of the things pointed by second

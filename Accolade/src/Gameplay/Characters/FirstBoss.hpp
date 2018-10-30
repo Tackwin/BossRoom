@@ -94,6 +94,11 @@ private:
 	void snipe() noexcept;
 	void randomFire() noexcept;
 
+	// Return the projectile shooted, maybe the caller would want to customize
+	// the collision reaction, or something.
+	std::shared_ptr<Projectile>
+	shoot(const nlohmann::json& info, const Vector2f& pos, float dir) noexcept;
+
 	FirstBossInfo info;
 
 	Scheduler scheduler;
