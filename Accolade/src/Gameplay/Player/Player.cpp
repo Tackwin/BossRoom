@@ -25,7 +25,7 @@
 
 Player::Player() noexcept : Player(C::game->getPlayerInfo()) {}
 
-Player::Player(PlayerInfo info) noexcept :
+Player::Player(const PlayerInfo& info) noexcept :
 	Object(), _info(info), _hitSound(AssetsManager::getSound("hit"))
 {
 	_life = _info.maxLife;
@@ -56,6 +56,12 @@ Player::Player(PlayerInfo info) noexcept :
 
 	collider->filterCollide =
 		std::bind(&Player::filterCollision, this, std::placeholders::_1);
+
+	for (auto& i : _info.items) {
+		OwnId<Item> item = es_instance->integrate(make_item(i));
+		es_instance->get(item)->mount();
+		own_items.push_back(std::move(item));
+	}
 }
 void Player::enterLevel(Level* level) noexcept {
  	_level = level;
@@ -204,7 +210,7 @@ bool Player::isEquiped() const noexcept {
 void Player::swapWeapon(std::string weapon) {
 	auto info = game->getPlayerInfo();
 	info.weapon = weapon;
-	game->setPlayerInfo(info);
+	game->setPlayerInfo(std::move(info));
 	if (isEquiped()) _weapon.unmount();
 	_weapon = Wearable(Wearable::GetWearableinfo(weapon));
 	_weapon.mount(shared_from_this());
@@ -410,6 +416,14 @@ PlayerInfo::PlayerInfo(nlohmann::json json) :
 {
 	auto vec = json.at("hit_box").get<std::vector<double>>();
 	hitBox = { (float)vec[0], (float)vec[1] };
+
+	if (auto json_items = json.find("items"); json_items != std::end(json)) {
+		assert(json_items->is_array());
+
+		for (auto json_item : json_items->get<nlohmann::json::array_t>()) {
+			items.push_back((ValuePtr<ItemInfo>)json_item);
+		}
+	}
 }
 
 void Player::enter(Section* section) noexcept {
@@ -417,9 +431,7 @@ void Player::enter(Section* section) noexcept {
 }
 void Player::leave() noexcept {
 	section_ = nullptr;
-	for (auto& i : own_items) {
-		es_instance->get(i)->unMount();
-	}
+	unmount();
 }
 
 // Magic spell stuff.
@@ -510,6 +522,10 @@ bool Player::filterCollision(Object& obj) noexcept {
 
 void Player::mountItem(OwnId<Item>&& item) noexcept {
 	es_instance->get(item)->mount();
+	auto p_info = game->getPlayerInfo();
+	p_info.items.push_back(std::move(es_instance->get(item)->getInfo()));
+	game->setPlayerInfo(std::move(p_info));
+
 	own_items.push_back(std::move(item));
 }
 

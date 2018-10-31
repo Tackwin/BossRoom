@@ -158,3 +158,42 @@ template<typename T>
 constexpr bool is_stl_container_v = is_stl_container<T>::value;
 
 
+// Primary template with a static assertion
+// for a meaningful error message
+// if it ever gets instantiated.
+// We could leave it undefined if we didn't care.
+#define GENERATE_MEMBER_DEDECTOR(x, sig)\
+\
+template<typename, typename T>\
+struct has_##x {\
+	static_assert(\
+		std::integral_constant<T, false>::value,\
+		"Second template parameter needs to be of function type.");\
+};\
+\
+\
+template<typename C, typename Ret, typename... Args>\
+struct has_##x<C, Ret(Args...)> {\
+private:\
+	template<typename T>\
+	static constexpr auto check(T*)\
+		-> typename\
+		std::is_same<\
+		decltype(std::declval<T>().x(std::declval<Args>()...)),\
+		Ret    /* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */ \
+		>::type;  /* attempt to call it and see if the return type is correct */ \
+		\
+	template<typename>\
+	static constexpr std::false_type check(...);\
+\
+	typedef decltype(check<C>(0)) type;\
+\
+public:\
+	static constexpr bool value = type::value;\
+};\
+template<typename T>\
+constexpr bool has_##x##_v = has_##x<T, sig>::value;
+
+GENERATE_MEMBER_DEDECTOR(clone, T*());
+
+#undef GENERATE_MEMBER_DEDECTOR

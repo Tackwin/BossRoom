@@ -86,6 +86,20 @@ public:
 		ITERATE
 #undef X
 	}
+	template<typename T>
+	Eid<T> integrate(T* ptr) noexcept {
+#define X(x)\
+		if constexpr (std::is_same_v<holded_t<key_map_type<decltype(x)>::Value>, T>) {\
+			integer_t id = Eid<T>::N;\
+			x.insert(std::make_pair<integer_t, std::unique_ptr<T>>(\
+				std::forward<integer_t>(id), std::unique_ptr<T>{ptr}\
+			));\
+			return { Eid<T>::N++ };\
+		}
+
+		ITERATE
+#undef X
+	}
 
 	template<typename T, typename... Args>
 	Eid<T> make(Args&&... args) noexcept {

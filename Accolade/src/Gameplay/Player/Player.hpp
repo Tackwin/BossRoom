@@ -31,6 +31,8 @@
 
 #include "Entity/EntityStore.hpp"
 
+#include "Memory/ValuePtr.hpp"
+
 struct PlayerInfo {
 	static constexpr auto BOLOSS = "char_boloss";
 
@@ -48,6 +50,7 @@ struct PlayerInfo {
 	std::string sprite{ "" };
 
 	std::optional<std::string> weapon{};
+	std::vector<ValuePtr<ItemInfo>> items;
 
 	PlayerInfo();
 	PlayerInfo(nlohmann::json json);
@@ -68,7 +71,7 @@ class Player :
 {
 public:
 	Player() noexcept;
-	Player(PlayerInfo info) noexcept;
+	Player(const PlayerInfo& info) noexcept;
 
 	void enterLevel(Level* level) noexcept;
 	void exitLevel() noexcept;

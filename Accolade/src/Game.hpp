@@ -36,7 +36,7 @@ public:
 
 	void pop();
 	const PlayerInfo& getPlayerInfo() const noexcept;
-	void setPlayerInfo(const PlayerInfo& playerInfo) noexcept;
+	void setPlayerInfo(PlayerInfo&& playerInfo) noexcept;
 
 	const KeyBindings& getCurrentKeyBindings() const noexcept;
 

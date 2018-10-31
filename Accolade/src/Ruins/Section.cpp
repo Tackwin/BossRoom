@@ -193,6 +193,8 @@ void Section::enter() noexcept {
 void Section::exit() noexcept {
 	unsubscribeToEvents();
 
+	_player->leave();
+
 	for (auto& source : _sources) {
 		source->exit();
 	}

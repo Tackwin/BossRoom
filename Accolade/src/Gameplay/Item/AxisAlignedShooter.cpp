@@ -3,6 +3,7 @@
 #include "Gameplay/Projectile.hpp"
 #include "Managers/AssetsManager.hpp"
 
+
 #define FROM(x) info.x = json.at(#x)
 
 void from_json(const nlohmann::json& json, AxisAlignedShooterInfo& info) noexcept {
@@ -75,10 +76,16 @@ void AAShooter::playerShooted(EM::EventCallbackParameter args) noexcept {
 
 	Player& player = *std::any_cast<Player*>(*args.begin());
 	
+	float angle = (float)player.getFacingDir().angleX();
+
+	angle /= PIf / 4.f;
+	angle = std::roundf(angle);
+	angle *= PIf / 4.f;
+
 	auto projectile = std::make_shared<Projectile>(
 		info.projectile,
-		player.support((float)player.getFacingDir().angleX(), info.projectile["radius"]),
-		player.getFacingDir(),
+		player.support(angle, info.projectile["radius"]),
+		Vector2f::createUnitVector(angle),
 		true
 	);
 	
@@ -95,4 +102,8 @@ Clonable* AAShooter::clone() const noexcept {
 
 sf::Texture& AAShooter::getIconTexture() const noexcept {
 	return AM::getTexture(info.texture);
+}
+
+ValuePtr<ItemInfo> AAShooter::getInfo() const noexcept {
+	return { new AxisAlignedShooterInfo(info) };
 }

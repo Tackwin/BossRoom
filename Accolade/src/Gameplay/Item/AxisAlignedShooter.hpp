@@ -6,7 +6,9 @@
 #include "Time/Scheduler.hpp"
 #include "Managers/EventManager.hpp"
 
-struct AxisAlignedShooterInfo {
+struct AxisAlignedShooterInfo : public ItemInfo {
+	static constexpr auto JSON_ID = "AxisAlignedShooterInfo";
+
 	std::string texture{ "axis_aligned_shooter" };
 
 	float fire_rate{ NAN };
@@ -36,6 +38,7 @@ public:
 	virtual void remove() noexcept override;
 	virtual bool toRemove() const noexcept override;
 
+	virtual ValuePtr<ItemInfo> getInfo() const noexcept override;
 	virtual Type getItemType() const noexcept override;
 	virtual sf::Texture& getIconTexture() const noexcept override;
 

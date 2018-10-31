@@ -146,8 +146,8 @@ const PlayerInfo& Game::getPlayerInfo() const noexcept {
 	return _playerInfo;
 }
 
-void Game::setPlayerInfo(const PlayerInfo& playerInfo) noexcept {
-	_playerInfo = playerInfo;
+void Game::setPlayerInfo(PlayerInfo&& playerInfo) noexcept {
+	_playerInfo = std::move(playerInfo);
 }
 const KeyBindings& Game::getCurrentKeyBindings() const noexcept {
 	return _keyBindings[_currentKeyBindings];
