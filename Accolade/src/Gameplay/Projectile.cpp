@@ -18,13 +18,6 @@ Projectile::Projectile(nlohmann::json json,
 	_json(json),
 	_update([](Projectile&, double) {}) 
 {
-	static int i = 0;
-
-	i++;
-
-	if (i == 7) {
-		printf("debug");
-	}
 	_speed = getJsonValue<float>(json, "speed");
 	_damage = getJsonValue<float>(json, "damage");
 	_radius = getJsonValue<float>(json, "radius");

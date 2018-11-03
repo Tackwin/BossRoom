@@ -60,13 +60,6 @@ void AAShooter::render(sf::RenderTarget&) noexcept {
 
 }
 
-void AAShooter::remove() noexcept {
-	to_remove = true;
-}
-bool AAShooter::toRemove() const noexcept {
-	return to_remove;
-}
-
 void AAShooter::playerShooted(EM::EventCallbackParameter args) noexcept {
 	assert(args.size() == 1);
 	assert(args.begin()->type() == typeid(Player*));

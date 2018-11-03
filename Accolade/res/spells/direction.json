@@ -1,6 +1,6 @@
 {
 	"speed": 5.0,
-	"radius": 1.0,
+	"radius": 0.25,
 	"capacity": 30,
 	"lifeTime": 10,
 	"damage": 10,

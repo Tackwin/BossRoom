@@ -1,13 +1,15 @@
 #include "Item.hpp"
 
 #include "AxisAlignedShooter.hpp"
+#include "ImmediateRangedSword.hpp"
 
 
 // Add Item,
 // first the class and it's info struct.
 
 #define LIST(x)\
-	x(AxisAlignedShooter, AxisAlignedShooterInfo)
+	x(AxisAlignedShooter, AxisAlignedShooterInfo)\
+	x(ImmediateRangedSword, ImmediateRangedSwordInfo)
 
 Item::Type Item::getItemType() const noexcept {
 	return Type::Generic;
@@ -24,11 +26,11 @@ ItemInfo* ItemInfo::clone() const noexcept {
 #define X(val, x)\
 	if (auto ptr = dynamic_cast<const x*>(this); ptr) {\
 		return new x(*ptr);\
-	}\
+	}
 
-	LIST(X)
-
+	LIST(X);
 #undef X
+	std::abort();
 }
 
 Item* make_item(const ValuePtr<ItemInfo>& item) noexcept {
@@ -66,4 +68,12 @@ void to_json(nlohmann::json& json, const ValuePtr<ItemInfo>& item) noexcept {
 	LIST(X);
 #undef X
 	std::abort(); // Must be unreachable
+}
+
+void Item::remove() noexcept {
+	to_remove = true;
+}
+
+bool Item::toRemove() const noexcept {
+	return to_remove;
 }

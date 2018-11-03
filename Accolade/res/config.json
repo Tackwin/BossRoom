@@ -273,7 +273,9 @@
 		"boss_1": "rooms/boss_1.json",
 		"up_right": "rooms/up_right.json",
 		"FirstBossInfo": "characters/first_boss.json",
-		"axis_aligned_shooter": "weapons/axis_aligned_shooter.json"
+		"axis_aligned_shooter": "items/axis_aligned_shooter.json",
+		"immediate_ranged_sword": "items/immediate_ranged_sword.json",
+		"definitions": "configs/definitions.json"
 	},
 	"StartRoom": "rooms/1x1.json",
 	"bosses": [

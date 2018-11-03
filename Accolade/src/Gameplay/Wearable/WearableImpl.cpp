@@ -105,6 +105,9 @@ void Wearable::InitWearable() {
 		me.setProp("spriteZone", json["spriteZone"].get<std::string>());
 		me.setProp("countdownTime", json["countdownTime"].get<double>());
 		me.setProp("recoilForce", json["recoilForce"].get<double>());
+
+
+
 	};
 	sword.onUnmount = [](Wearable& me) {
 		for (auto& k : me._keys) {

@@ -39,7 +39,7 @@ namespace str {
 		for (const auto& c : str.substr(minus ? 1 : 0)) {
 			//std::unordered_set<char> allowed{ '+', '-', '*', '/', '(', ')', ' ', '.' };
 
-			if (!std::isdigit(c, std::locale{})) return false;
+			if (!std::isdigit(c, std::locale{}) && c != '.') return false;
 		}
 		return !str.empty();
 	}

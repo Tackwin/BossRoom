@@ -129,7 +129,9 @@ void JsonTree::contructTree() noexcept {
 							ref_value = new_str;
 						}
 						if (
-							copy_value.is_boolean() && new_str == "true" || new_str == "false"
+							copy_value.is_boolean() &&
+							new_str == "true" ||
+							new_str == "false"
 						) {
 							ref_value = (new_str == "true");
 						}

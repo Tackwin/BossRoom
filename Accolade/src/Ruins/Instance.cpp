@@ -32,6 +32,24 @@ InstanceInfo InstanceInfo::loadJson(const nlohmann::json& json) noexcept {
 }
 #undef LOAD
 
+std::unordered_map<std::set<size_t>, std::vector<std::string>>
+load_maps_by_directions() noexcept {
+	const auto& json = AM::getJson("definitions");
+	const auto& rooms_by_opennings = json.at("rooms_by_opennings");
+
+	std::unordered_map<std::set<size_t>, std::vector<std::string>> results;
+	
+	for (const auto& element : rooms_by_opennings.get<nlohmann::json::array_t>()) {
+		auto room = element.at("room").get<std::string>();
+		auto directions = element.at("directions").get<std::set<size_t>>();
+
+		results[directions].push_back(room);
+	}
+
+	return results;
+}
+
+
 Instance::Instance(const InstanceInfo& info) noexcept : info(info) {}
 
 OrderedPair<size_t> pick_random_dir_to_dir() noexcept {

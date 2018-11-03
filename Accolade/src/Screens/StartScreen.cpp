@@ -11,6 +11,7 @@
 
 #include "Graphics/GUI/Button.hpp"
 
+#include "Gameplay/Item/ImmediateRangedSword.hpp"
 #include "Gameplay/Item/AxisAlignedShooter.hpp"
 #include "Gameplay/Wearable/Wearable.hpp"
 #include "Gameplay/Player/Player.hpp"
@@ -50,12 +51,17 @@ void StartScreen::initializeGui() {
 		}
 	}
 
+	ImmediateRangedSwordInfo im_sword_info = AM::getJson("immediate_ranged_sword");
 	AxisAlignedShooterInfo shooter_info = AM::getJson("axis_aligned_shooter");
 	auto shooter = es_instance->integrate<Item>(
 		std::make_unique<AxisAlignedShooter>(shooter_info)
+	); 
+	auto im_sword = es_instance->integrate<Item>(
+		std::make_unique<ImmediateRangedSword>(im_sword_info)
 	);
 
 	_shop->addItem(std::move(shooter));
+	_shop->addItem(std::move(im_sword));
 }
 
 void StartScreen::onEnter(std::any) {

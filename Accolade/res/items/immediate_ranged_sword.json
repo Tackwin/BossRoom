@@ -1,0 +1,11 @@
+{
+	"distance": 0.2,
+	"blast_radius": 0.5,
+	"damage": 1,
+	"remain_time": 0.25,
+	"cooldown": 1,
+	"recoil_force": 0.5,
+
+	"remain_texture": "slash",
+	"texture": "sword"
+}

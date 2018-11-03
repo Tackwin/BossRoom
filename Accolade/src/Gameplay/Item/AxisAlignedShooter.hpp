@@ -35,9 +35,6 @@ public:
 	virtual void update(double dt) noexcept override;
 	virtual void render(sf::RenderTarget& target) noexcept override;
 
-	virtual void remove() noexcept override;
-	virtual bool toRemove() const noexcept override;
-
 	virtual ValuePtr<ItemInfo> getInfo() const noexcept override;
 	virtual Type getItemType() const noexcept override;
 	virtual sf::Texture& getIconTexture() const noexcept override;
@@ -54,6 +51,5 @@ private:
 	Scheduler scheduler;
 
 	float fire_cooldown{ 0.f };
-	bool to_remove{ false };
 	bool mounted{ false };
 };

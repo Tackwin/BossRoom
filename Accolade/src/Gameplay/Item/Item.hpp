@@ -28,8 +28,8 @@ public:
 	virtual void update(double dt) noexcept = 0;
 	virtual void render(sf::RenderTarget& target) noexcept = 0;
 
-	virtual void remove() noexcept override = 0;
-	virtual bool toRemove() const noexcept override = 0;
+	virtual void remove() noexcept;
+	virtual bool toRemove() const noexcept;
 
 	virtual ValuePtr<ItemInfo> getInfo() const noexcept = 0;
 
@@ -42,6 +42,8 @@ protected:
 
 	std::string name;
 	size_t cost{ 0 };
+
+	bool to_remove{ false };
 };
 
 extern Item* make_item(const ValuePtr<ItemInfo>& item) noexcept;

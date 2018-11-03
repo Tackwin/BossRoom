@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <set>
 #include <random>
 #include <memory>
 #include <string>
@@ -131,6 +132,17 @@ namespace std {
 	struct hash<std::pair<T, T>> {
 		size_t operator()(const std::pair<size_t, size_t>& x) const noexcept {
 			return xstd::hash_combine(std::hash<T>()(x.first), x.second);
+		}
+	};
+
+	template<>
+	struct hash<std::set<size_t>> {
+		size_t operator()(const std::set<size_t>& x) const noexcept {
+			size_t seed = 0;
+			for (const auto& v : x) {
+				seed = xstd::hash_combine(seed, v);
+			}
+			return seed;
 		}
 	};
 };

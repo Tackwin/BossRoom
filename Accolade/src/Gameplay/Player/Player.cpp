@@ -519,13 +519,11 @@ bool Player::filterCollision(Object& obj) noexcept {
 	return true;
 }
 
-
 void Player::mountItem(OwnId<Item>&& item) noexcept {
 	es_instance->get(item)->mount();
 	auto p_info = game->getPlayerInfo();
 	p_info.items.push_back(std::move(es_instance->get(item)->getInfo()));
 	game->setPlayerInfo(std::move(p_info));
-
 	own_items.push_back(std::move(item));
 }
 

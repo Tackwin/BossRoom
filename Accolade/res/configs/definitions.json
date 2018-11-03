@@ -1,0 +1,8 @@
+{
+	"rooms_by_opennings": [
+		{
+			"room": "rooms/free_throw.json",
+			"directions": [0, 2]
+		}
+	]
+}

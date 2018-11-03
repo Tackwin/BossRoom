@@ -494,19 +494,6 @@ void EditSectionScreen::render(sf::RenderTarget& target) {
 	viewSize_.pos =
 		(Vector2f)es_instance->get(cameraView)->getCenter() - viewSize_.size / 2.f;
 
-	printf(
-		R"_(
-boomer: %u,
-direct: %u,
-common: %u,
-vaccum: %u,
-		)_",
-		sectionInfo_.sourcesBoomerang.size(),
-		sectionInfo_.sourcesDirection.size(),
-		sectionInfo_.sources.size(),
-		sectionInfo_.sourcesVaccum.size()
-	);
-
 	for (auto source : sectionInfo_.sourcesBoomerang) renderDebug(target, source.source);
 	for (auto source : sectionInfo_.sourcesDirection) renderDebug(target, source.source);
 	for (auto first_boss : sectionInfo_.first_bosses) renderDebug(target, first_boss);
