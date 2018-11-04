@@ -13,6 +13,7 @@
 
 #include "Gameplay/Item/ImmediateRangedSword.hpp"
 #include "Gameplay/Item/AxisAlignedShooter.hpp"
+#include "Gameplay/Item/Shooter.hpp"
 #include "Gameplay/Wearable/Wearable.hpp"
 #include "Gameplay/Player/Player.hpp"
 #include "Gameplay/Projectile.hpp"
@@ -45,22 +46,19 @@ void StartScreen::initializeGui() {
 	_guiRoot.addChild(_weaponIcon);
 	_guiRoot.addChild(_shop);
 
-	for (u32 i = 0u; i < 10; ++i) {
-		for (auto& k : Wearable::EVERY_WEARABLE) {
-			_shop->addWeapon(k);
-		}
-	}
-
-	ImmediateRangedSwordInfo im_sword_info = AM::getJson("immediate_ranged_sword");
-	AxisAlignedShooterInfo shooter_info = AM::getJson("axis_aligned_shooter");
-	auto shooter = es_instance->integrate<Item>(
-		std::make_unique<AxisAlignedShooter>(shooter_info)
+	ImmediateRangedSwordInfo im_sword_info = AM::getJson(ImmediateRangedSwordInfo::JSON_ID);
+	AxisAlignedShooterInfo aa_shooter_info = AM::getJson(AxisAlignedShooterInfo::JSON_ID);
+	ShooterInfo shooter_info = AM::getJson(ShooterInfo::JSON_ID);
+	auto aa_shooter = es_instance->integrate<Item>(
+		std::make_unique<AxisAlignedShooter>(aa_shooter_info)
 	); 
 	auto im_sword = es_instance->integrate<Item>(
 		std::make_unique<ImmediateRangedSword>(im_sword_info)
 	);
+	auto shooter = es_instance->integrate<Item>(std::make_unique<Shooter>(shooter_info));
 
 	_shop->addItem(std::move(shooter));
+	_shop->addItem(std::move(aa_shooter));
 	_shop->addItem(std::move(im_sword));
 }
 

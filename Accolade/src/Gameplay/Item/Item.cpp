@@ -1,13 +1,14 @@
 #include "Item.hpp"
 
+#include "Shooter.hpp"
 #include "AxisAlignedShooter.hpp"
 #include "ImmediateRangedSword.hpp"
-
 
 // Add Item,
 // first the class and it's info struct.
 
 #define LIST(x)\
+	x(Shooter, ShooterInfo)\
 	x(AxisAlignedShooter, AxisAlignedShooterInfo)\
 	x(ImmediateRangedSword, ImmediateRangedSwordInfo)
 

@@ -361,6 +361,7 @@
     <ClCompile Include="src\Gameplay\Characters\MeleeGuy.cpp" />
     <ClCompile Include="src\Gameplay\Characters\Slime.cpp" />
     <ClCompile Include="src\Gameplay\Item\ImmediateRangedSword.cpp" />
+    <ClCompile Include="src\Gameplay\Item\Shooter.cpp" />
     <ClCompile Include="src\Gameplay\Magic\Sources\Source.cpp" />
     <ClCompile Include="src\Gameplay\Magic\Sources\SourceDirection.cpp" />
     <ClCompile Include="src\Gameplay\Magic\Sources\SourceTarget.cpp" />
@@ -454,6 +455,7 @@
     <ClInclude Include="src\Gameplay\Characters\Fly.hpp" />
     <ClInclude Include="src\Gameplay\Characters\MeleeGuy.hpp" />
     <ClInclude Include="src\Gameplay\Characters\Slime.hpp" />
+    <ClInclude Include="src\Gameplay\Item\Shooter.hpp" />
     <ClInclude Include="src\Gameplay\Item\ImmediateRangedSword.hpp" />
     <ClInclude Include="src\Gameplay\Magic\Sources\SourceDirection.hpp" />
     <ClInclude Include="src\Gameplay\Magic\Sources\SourceTarget.hpp" />

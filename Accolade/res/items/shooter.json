@@ -1,0 +1,13 @@
+{
+	"fire_rate": 5,
+	"texture": "weapon1",
+	"recoil_force": 5,
+	"projectile": {
+		"damage": 0.5,
+		"speed": 25,
+		"radius": 0.05,
+		"lifespan": 5,
+		"destroyOthers": false,
+		"sprite": "projectiles-1"
+	}
+}
