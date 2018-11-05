@@ -234,6 +234,7 @@ void Section::update(double dt) noexcept {
 	update_vector(spells_);
 	update_vector(flies);
 	update_vector(first_bosses);
+	update_vector(loots);
 
 	removeDeadObject();
 	if (!aiming) updateAimAnimation(dt);
@@ -279,6 +280,7 @@ void Section::render(sf::RenderTarget& target) const noexcept {
 	render_vector(flies);
 	render_vector(_zones);
 	render_vector(first_bosses);
+	render_vector(loots);
 
 	for (auto& nav : _info.navigationPoints) {
 		nav.pos.plot(target, nav.range, { 1.0, 1.0, 0.0, 0.5 }, {}, 0.f);
@@ -400,6 +402,7 @@ void Section::removeDeadObject() noexcept {
 	removeDead(_slimes);
 	removeDead(_zones);
 	removeDead(flies);
+	removeDead(loots);
 }
 
 void Section::playerOnExit(Object*) noexcept {

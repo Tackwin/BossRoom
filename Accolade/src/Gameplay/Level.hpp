@@ -10,7 +10,7 @@
 
 #include "Zone.hpp"
 #include "Wearable/Wearable.hpp"
-#include "Loot.hpp"
+#include "Item/Loot.hpp"
 
 class Zone;
 class Boss;

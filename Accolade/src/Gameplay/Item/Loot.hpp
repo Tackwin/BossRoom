@@ -3,12 +3,15 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "./../Common.hpp"
+#include "Common.hpp"
 
-#include "./../Math/Vector.hpp"
+#include "Math/Vector.hpp"
 
-#include "Zone.hpp"
-#include "Wearable/Wearable.hpp"
+#include "Entity/OwnId.hpp"
+
+#include "Gameplay/Zone.hpp"
+#include "Gameplay/Wearable/Wearable.hpp"
+#include "Gameplay/Item/Item.hpp"
 
 class Loot : public Zone {
 public:
@@ -19,7 +22,7 @@ public:
 	};
 
 	Loot(float r);
-	virtual ~Loot() noexcept;
+	~Loot() noexcept;
 
 	Loot(Loot&) = delete;
 	Loot& operator=(Loot&) = delete;
@@ -30,8 +33,15 @@ public:
 	void setLootType(LOOT_TYPE type);
 	LOOT_TYPE getLootType() const;
 
+	// >DEPECRATED
 	void setWeapon(const std::string& weapon);
+	// >DEPECRATED
 	const std::string& getWeapon() const;
+
+	void update(double dt) noexcept;
+
+	void setItem(OwnId<Item>&& item) noexcept;
+	OwnId<Item>& getItem() noexcept;
 
 	void setLootable(bool lootable = true);
 	bool isLootable() const;
@@ -45,9 +55,11 @@ private:
 
 	LOOT_TYPE _lootType = LOOT_TYPE::NONE;
 
-	bool _lootable = false;
+	bool _lootable{ false };
 	bool _remove{ false };
-	float _lootImpossibleTime = 2.f;
+	float _lootImpossibleTime{ 2.f };
+
+	OwnId<Item> item;
 
 	sf::Sprite _lootSprite;
 	std::string _weapon;

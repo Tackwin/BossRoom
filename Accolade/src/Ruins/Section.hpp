@@ -28,6 +28,7 @@
 #include "Gameplay/Characters/Slime.hpp"
 #include "Gameplay/Characters/Fly.hpp"
 #include "Gameplay/Player/Player.hpp"
+#include "Gameplay/Item/Loot.hpp"
 #include "Gameplay/Boss.hpp"
 
 struct SectionInfo {
@@ -167,6 +168,7 @@ private:
 	std::vector<std::shared_ptr<Spell>>				spells_;
 
 	std::vector<std::shared_ptr<Zone>>				_zones;
+	std::vector<std::shared_ptr<Loot>>				loots;
 
 	std::vector<std::shared_ptr<DistanceGuy>>		distanceGuys_;
 	std::vector<std::shared_ptr<FirstBoss>>			first_bosses;

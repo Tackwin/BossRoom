@@ -519,6 +519,22 @@ bool Player::filterCollision(Object& obj) noexcept {
 	return true;
 }
 
+bool Player::canMount(const OwnId<Item>& item) noexcept {
+	auto i = es_instance->get(item);
+	switch (i->getItemType())
+	{
+	case Item::Type::Main_Weapon:
+		for (auto& x : own_items) {
+			if (es_instance->get(x)->getItemType() == Item::Type::Main_Weapon)
+				return false;
+		}
+		break;
+	default:
+		break;
+	}
+	return true;
+}
+
 void Player::mountItem(OwnId<Item>&& item) noexcept {
 	es_instance->get(item)->mount();
 	auto p_info = game->getPlayerInfo();

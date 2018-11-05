@@ -2,10 +2,10 @@
 
 #include <functional>
 
-#include "Player/Player.hpp"
+#include "Gameplay/Player/Player.hpp"
 
-#include "./../Managers/TimerManager.hpp"
-#include "./../Managers/AssetsManager.hpp"
+#include "Managers/TimerManager.hpp"
+#include "Managers/AssetsManager.hpp"
 
 Loot::Loot(float r) :
 	Zone(r) 
@@ -28,6 +28,15 @@ Loot::LOOT_TYPE Loot::getLootType() const {
 	return _lootType;
 }
 
+void Loot::setItem(OwnId<Item>&& item) noexcept {
+	this->item = std::move(item);
+	cleanSprites();
+	addSprite("icon", sf::Sprite{es_instance->get(this->item)->getIconTexture()});
+}
+OwnId<Item>& Loot::getItem() noexcept {
+	return item;
+}
+
 void Loot::setWeapon(const std::string& weapon) {
 	_weapon = weapon;
 	cleanSprites();
@@ -46,6 +55,8 @@ bool Loot::isLootable() const {
 	return _lootable;
 }
 
+void Loot::update(double) noexcept {}
+
 void Loot::render(sf::RenderTarget& target) {
 	switch (_lootType) {
 	case LOOT_TYPE::WEAPON:
@@ -56,11 +67,10 @@ void Loot::render(sf::RenderTarget& target) {
 
 void Loot::onEnter(Object* obj) { // we know decltype(obj) is necessarly Player*
 	if (!_lootable) return;
+	auto player = (Player*)obj;
 
 	switch (_lootType) {
 	case LOOT_TYPE::WEAPON :
-		Player* player = static_cast<Player*>(obj);
-	
 		auto player_weapon = player->getWeapon();
 		player->swapWeapon(_weapon);
 
@@ -81,6 +91,10 @@ void Loot::onEnter(Object* obj) { // we know decltype(obj) is necessarly Player*
 		);
 
 		break;
+	}
+	if (item && player->canMount(item)) {
+		player->mountItem(std::move(item));
+		remove();
 	}
 }
 

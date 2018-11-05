@@ -92,6 +92,7 @@ public:
 	void swapWeapon(std::string weapon);
 	bool isEquiped() const noexcept;
 
+	bool canMount(const OwnId<Item>& item) noexcept;
 	void mountItem(OwnId<Item>&& item) noexcept;
 	const std::vector<OwnId<Item>>& getItems() noexcept;
 
