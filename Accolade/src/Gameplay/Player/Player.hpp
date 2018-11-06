@@ -83,6 +83,7 @@ public:
 	void update(double dt);
 	void render(sf::RenderTarget& target);
 
+	void heal(float hp) noexcept;
 	virtual void hit(float damage) noexcept override;
 
 	bool isAlive() const;

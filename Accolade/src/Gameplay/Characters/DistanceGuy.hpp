@@ -9,6 +9,7 @@
 
 #include "Components/Removable.hpp"
 #include "Components/Hitable.hpp"
+#include "Components/Mortal.hpp"
 
 struct DistanceGuyInfo {
 	static constexpr auto JSON_ID = "Distance";
@@ -30,7 +31,9 @@ struct DistanceGuyInfo {
 };
 
 class Section;
-class DistanceGuy : public Removable, public Object, public Hitable {
+class DistanceGuy :
+	public Removable, public Object, public Hitable, public Mortal
+{
 
 public:
 
@@ -47,6 +50,8 @@ public:
 
 	virtual void remove() noexcept override;
 	virtual bool toRemove() const noexcept override;
+
+	virtual void die() noexcept override;
 
 private:
 

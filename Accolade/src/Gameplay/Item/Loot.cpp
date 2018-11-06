@@ -58,11 +58,7 @@ bool Loot::isLootable() const {
 void Loot::update(double) noexcept {}
 
 void Loot::render(sf::RenderTarget& target) {
-	switch (_lootType) {
-	case LOOT_TYPE::WEAPON:
-		Zone::render(target);
-		break;
-	}
+	Zone::render(target);
 }
 
 void Loot::onEnter(Object* obj) { // we know decltype(obj) is necessarly Player*
@@ -96,8 +92,4 @@ void Loot::onEnter(Object* obj) { // we know decltype(obj) is necessarly Player*
 		player->mountItem(std::move(item));
 		remove();
 	}
-}
-
-bool Loot::toRemove() const noexcept {
-	return _remove;
 }

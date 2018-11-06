@@ -176,6 +176,9 @@
 		"arch": {
 			"sheet": "images/arch.png"
 		},
+		"health_scroll": {
+			"sheet": "images/health_scroll.png"
+		},
 		"on_off": {
 			"sheet": "images/on_off.png",
 			"rect": [
@@ -276,7 +279,8 @@
 		"ShooterInfo": "items/shooter.json",
 		"AxisAlignedShooterInfo": "items/axis_aligned_shooter.json",
 		"ImmediateRangedSwordInfo": "items/immediate_ranged_sword.json",
-		"definitions": "configs/definitions.json"
+		"definitions": "configs/definitions.json",
+		"health_scroll": "items/health_scroll.json"
 	},
 	"StartRoom": "rooms/1x1.json",
 	"bosses": [

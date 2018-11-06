@@ -48,15 +48,12 @@ public:
 
 	void render(sf::RenderTarget& target);
 
-	bool toRemove() const noexcept;
-
 private:
 	void onEnter(Object* obj);
 
 	LOOT_TYPE _lootType = LOOT_TYPE::NONE;
 
 	bool _lootable{ false };
-	bool _remove{ false };
 	float _lootImpossibleTime{ 2.f };
 
 	OwnId<Item> item;

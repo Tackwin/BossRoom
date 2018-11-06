@@ -122,6 +122,8 @@ public:
 
 	double getTimeSinceEntered() const noexcept;
 
+	void spawnLoot(std::shared_ptr<Loot> loot) noexcept;
+
 	void startAimAnimation() noexcept;
 	void stopAimAnimation() noexcept;
 private:

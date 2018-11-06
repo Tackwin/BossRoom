@@ -5,6 +5,8 @@
 #include "Gameplay/Projectile.hpp"
 #include "Gameplay/Player/Player.hpp"
 #include "Gameplay/Magic/Spells/SpellDirection.hpp"
+#include "Gameplay/Item/Loot.hpp"
+#include "Gameplay/Item/HealthScroll.hpp"
 
 #include "Ruins/Section.hpp"
 
@@ -155,6 +157,7 @@ void DistanceGuy::onExit(Object*) noexcept {
 void DistanceGuy::hit(float damage) noexcept {
 	info_.health -= damage;
 	if (info_.health < 0.f) {
+		die();
 		remove();
 	}
 }
@@ -169,4 +172,15 @@ void DistanceGuy::remove() noexcept {
 
 bool DistanceGuy::toRemove() const noexcept {
 	return _remove;
+}
+
+void DistanceGuy::die() noexcept {
+	auto loot = std::make_shared<Loot>(0.1f);
+	HealthScrollInfo item_info = AM::getJson("health_scroll");
+	auto health_scroll = std::make_unique<HealthScroll>(item_info);
+	auto item = es_instance->integrate<Item>(std::move(health_scroll));
+	loot->setItem(std::move(item));
+	loot->pos = pos;
+
+	section_->spawnLoot(loot);
 }

@@ -16,6 +16,7 @@ public:
 	
 	enum class EventType : size_t {
 		Player_Use_Main_Weapon = 0,
+		Player_Consume_Binded,
 		Count
 	};
 

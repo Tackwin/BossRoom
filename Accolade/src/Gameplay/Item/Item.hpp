@@ -16,6 +16,7 @@ class Item : public Removable, public Clonable {
 public:
 	enum class Type : size_t {
 		Main_Weapon = 0,
+		Conso,
 		Generic,
 		Count
 	};

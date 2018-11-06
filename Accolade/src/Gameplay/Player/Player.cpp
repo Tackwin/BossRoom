@@ -82,7 +82,15 @@ void Player::update(double dt) {
 	}
 
 	_weapon.update(dt);
-	for (auto& x : own_items) es_instance->get(x)->update(dt);
+	for (size_t i = own_items.size() - 1; i + 1 > 0; i--) {
+		auto item = es_instance->get(own_items[i]);
+
+		item->update(dt);
+		if (item->toRemove()) {
+			item->unMount();
+			own_items.erase(std::begin(own_items) + i);
+		}
+	}
 
 	if (!_freeze) {
 		if (_knockBack) {
@@ -165,6 +173,9 @@ void Player::input() noexcept {
 	if (IM::isMousePressed(sf::Mouse::Left)) {
 		EM::fire(EM::EventType::Player_Use_Main_Weapon, { this });
 	}
+	if (IM::isKeyJustReleased(key_binding.getKey(KeyBindings::CONSUME_BINDED))) {
+		EM::fire(EM::EventType::Player_Consume_Binded, { this });
+	}
 }
 
 void Player::render(sf::RenderTarget &target) {
@@ -186,6 +197,11 @@ void Player::render(sf::RenderTarget &target) {
 	playerPosMark.setOrigin(0.05f, 0.05f);
 	playerPosMark.setPosition(pos);
 	target.draw(playerPosMark);
+}
+
+void Player::heal(float hp) noexcept {
+	_life += hp;
+	if (_life > _info.maxLife) _life = _info.maxLife;
 }
 
 void Player::hit(float d) noexcept {

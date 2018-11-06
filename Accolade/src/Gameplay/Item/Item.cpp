@@ -1,6 +1,7 @@
 #include "Item.hpp"
 
 #include "Shooter.hpp"
+#include "HealthScroll.hpp"
 #include "AxisAlignedShooter.hpp"
 #include "ImmediateRangedSword.hpp"
 
@@ -9,6 +10,7 @@
 
 #define LIST(x)\
 	x(Shooter, ShooterInfo)\
+	x(HealthScroll, HealthScrollInfo)\
 	x(AxisAlignedShooter, AxisAlignedShooterInfo)\
 	x(ImmediateRangedSword, ImmediateRangedSwordInfo)
 

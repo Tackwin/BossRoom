@@ -360,6 +360,7 @@
     <ClCompile Include="src\Gameplay\Characters\Fly.cpp" />
     <ClCompile Include="src\Gameplay\Characters\MeleeGuy.cpp" />
     <ClCompile Include="src\Gameplay\Characters\Slime.cpp" />
+    <ClCompile Include="src\Gameplay\Item\HealthScroll.cpp" />
     <ClCompile Include="src\Gameplay\Item\ImmediateRangedSword.cpp" />
     <ClCompile Include="src\Gameplay\Item\Loot.cpp" />
     <ClCompile Include="src\Gameplay\Item\Shooter.cpp" />
@@ -444,6 +445,7 @@
     <ClInclude Include="src\Components\Bumpable.hpp" />
     <ClInclude Include="src\Components\Clonable.hpp" />
     <ClInclude Include="src\Components\Hitable.hpp" />
+    <ClInclude Include="src\Components\Mortal.hpp" />
     <ClInclude Include="src\Components\Removable.hpp" />
     <ClInclude Include="src\Containers\DynArray.hpp" />
     <ClInclude Include="src\Containers\QuadTree.hpp" />
@@ -455,6 +457,7 @@
     <ClInclude Include="src\Gameplay\Characters\Fly.hpp" />
     <ClInclude Include="src\Gameplay\Characters\MeleeGuy.hpp" />
     <ClInclude Include="src\Gameplay\Characters\Slime.hpp" />
+    <ClInclude Include="src\Gameplay\Item\HealthScroll.hpp" />
     <ClInclude Include="src\Gameplay\Item\Loot.hpp" />
     <ClInclude Include="src\Gameplay\Item\Shooter.hpp" />
     <ClInclude Include="src\Gameplay\Item\ImmediateRangedSword.hpp" />

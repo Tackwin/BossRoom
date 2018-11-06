@@ -7,5 +7,6 @@
   "action": 0,
   "dash": -1,
   "jump": 57,
+  "consume_binded": 21,
   "passthrough": 18
 }

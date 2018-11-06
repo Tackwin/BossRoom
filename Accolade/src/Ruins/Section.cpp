@@ -627,3 +627,9 @@ void Section::startAimAnimation() noexcept {
 void Section::stopAimAnimation() noexcept {
 	aiming = false;
 }
+
+void Section::spawnLoot(std::shared_ptr<Loot> loot) noexcept {
+	_world.addObject(loot);
+	loot->setLootable(true);
+	loots.push_back(loot);
+}
