@@ -60,6 +60,8 @@ LevelScreen::LevelScreen(u32 n) :
 		{"font", "consola"},
 		{"charSize", 8}
 	});
+
+	inventory = std::make_unique<Inventory>();
 }
 
 LevelScreen::~LevelScreen() {
@@ -114,6 +116,23 @@ void LevelScreen::update(double dt) {
 		_gameView.setSize(_gameViewSize);
 
 	auto player = instance->getCurrentSection().getPlayer();
+
+	if (IM::isKeyJustPressed(sf::Keyboard::I)) {
+		inventory_is_up = !inventory_is_up;
+		if (inventory_is_up) {
+			inventory->clearItems();
+
+			std::vector<Eid<Item>> items;
+			for (auto& x : player->getItems()) {
+				items.push_back((Eid<Item>)x);
+			}
+			inventory->populateItems(items);
+		}
+	}
+
+	if (inventory_is_up && inventory->needToQuit()) {
+		inventory_is_up = false;
+	}
 
 	for (int i = 0; i < player->getPlayerInfo().maxLife; i++) {
 		_playerLife[i].setFillColor(
@@ -216,6 +235,10 @@ void LevelScreen::renderGui(sf::RenderTarget& target) {
 	}
 
 	section_id_label->propagateRender(target);
+
+	if (inventory_is_up) {
+		inventory->propagateRender(target);
+	}
 }
 
 void LevelScreen::shakeScreen(float power) {

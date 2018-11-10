@@ -20,6 +20,7 @@ public:
 	Panel(nlohmann::json json) noexcept;
 
 	void setTexture(std::string texture);
+	void setTexture(sf::Texture& texture) noexcept;
 	std::string getTexture() const noexcept;
 	sf::Sprite& getSprite();
 

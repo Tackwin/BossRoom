@@ -12,6 +12,7 @@
 #include "../Ruins/Section.hpp"
 
 #include "Ruins/Instance.hpp"
+#include "GUI/Inventory/Inventory.hpp"
 
 class Level;
 class Label;
@@ -49,5 +50,9 @@ private:
 	sf::Sprite _bossHealthTileSprite;
 	std::unique_ptr<Section> _section;
 	std::vector<sf::RectangleShape> _playerLife;
+
+	std::unique_ptr<Inventory> inventory;
+
+	bool inventory_is_up{ false };
 };
 

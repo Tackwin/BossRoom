@@ -213,6 +213,7 @@ void Player::hit(float d) noexcept {
 		_hitSound.play();
 
 	_life -= d;
+	_life = _life < 0 ? 0 : _life;
 	_sprite.getSprite().setColor(sf::Color(230, 230, 230));
 }
 

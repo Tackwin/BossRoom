@@ -6,17 +6,12 @@ template<typename T>
 class ValuePtr {
 public:
 
-	constexpr ValuePtr() noexcept {
-		printf("Empty");
-	}
+	constexpr ValuePtr() noexcept {}
 	~ValuePtr() noexcept { if(ptr) delete ptr; }
 
-	constexpr ValuePtr(T* ptr) noexcept : ptr(ptr) {
-		printf("Private");
-	}
+	constexpr ValuePtr(T* ptr) noexcept : ptr(ptr) {}
 
 	ValuePtr(const ValuePtr<T>& other) noexcept {
-		printf("Me: %p, Other: %p\n", ptr, other.ptr);
 		if constexpr (has_clone_v<T>) {
 			ptr = other.ptr->clone();
 		}
@@ -30,7 +25,6 @@ public:
 		typename = std::enable_if_t<std::is_base_of_v<T, U>, int>
 	>
 	constexpr ValuePtr(ValuePtr<U>&& other) noexcept : ptr((T*)other.ptr) {
-		printf("Move");
 		other.ptr = nullptr;
 	};
 

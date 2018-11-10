@@ -142,10 +142,7 @@ void DistanceGuy::onEnter(Object* object) noexcept {
 		player->hit(info_.contactDamage);
 	}
 	if (auto proj = (Projectile*)object;  object->idMask[Object::PROJECTILE]) {
-		info_.health -= proj->getDamage();
-		if (info_.health < 0) {
-			remove();
-		}
+		hit(proj->getDamage());
 		proj->remove();
 	}
 }
@@ -175,7 +172,7 @@ bool DistanceGuy::toRemove() const noexcept {
 }
 
 void DistanceGuy::die() noexcept {
-	auto loot = std::make_shared<Loot>(0.1f);
+	auto loot = std::make_shared<Loot>(0.25f);
 	HealthScrollInfo item_info = AM::getJson("health_scroll");
 	auto health_scroll = std::make_unique<HealthScroll>(item_info);
 	auto item = es_instance->integrate<Item>(std::move(health_scroll));

@@ -379,6 +379,8 @@
     <ClCompile Include="src\Graphics\GUI\PosPicker.cpp" />
     <ClCompile Include="src\Graphics\GUI\Switcher.cpp" />
     <ClCompile Include="src\Graphics\GUI\ValuePicker.cpp" />
+    <ClCompile Include="src\GUI\Inventory\Inventory.cpp" />
+    <ClCompile Include="src\GUI\Inventory\ItemLine.cpp" />
     <ClCompile Include="src\Math\algorithms.cpp" />
     <ClCompile Include="src\Navigation\NavigationLink.cpp" />
     <ClCompile Include="src\Navigation\NavigationPoint.cpp" />
@@ -475,6 +477,8 @@
     <ClInclude Include="src\Graphics\GUI\PosPicker.hpp" />
     <ClInclude Include="src\Graphics\GUI\Switcher.hpp" />
     <ClInclude Include="src\Graphics\GUI\ValuePicker.hpp" />
+    <ClInclude Include="src\GUI\Inventory\Inventory.hpp" />
+    <ClInclude Include="src\GUI\Inventory\ItemLine.hpp" />
     <ClInclude Include="src\Math\algorithms.hpp" />
     <ClInclude Include="src\Math\Circle.hpp" />
     <ClInclude Include="src\Math\RandomData.hpp" />

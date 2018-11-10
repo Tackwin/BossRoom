@@ -152,6 +152,8 @@ Section::Section(SectionInfo info) noexcept : _info(info) {
 		aim_sprite.getTextureRect().width * 0.5f,
 		aim_sprite.getTextureRect().height * 0.5f
 	);
+
+	inventory = std::make_unique<Inventory>();
 }
 
 void Section::enter() noexcept {

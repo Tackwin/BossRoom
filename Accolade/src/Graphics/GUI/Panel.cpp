@@ -75,6 +75,11 @@ void Panel::setTexture(std::string texture) {
 	_backSprite.setTexture(AM::getTexture(texture));
 	computeSize();
 }
+void Panel::setTexture(sf::Texture& texture) noexcept {
+	_texture = "";
+	_backSprite.setTexture(texture);
+	computeSize();
+}
 std::string Panel::getTexture() const noexcept {
 	return _texture;
 }

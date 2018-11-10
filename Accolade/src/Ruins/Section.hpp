@@ -31,6 +31,8 @@
 #include "Gameplay/Item/Loot.hpp"
 #include "Gameplay/Boss.hpp"
 
+#include "GUI/Inventory/Inventory.hpp"
+
 struct SectionInfo {
 	std::vector<NavigationPointInfo> navigationPoints;
 	std::vector<NavigationLinkInfo> navigationLinks;
@@ -186,4 +188,6 @@ private:
 	UUID _keyReleasedEvent{ UUID::zero() };
 
 	SectionInfo _info;
+
+	std::unique_ptr<Inventory> inventory;
 };
