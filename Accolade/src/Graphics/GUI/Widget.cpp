@@ -300,8 +300,8 @@ std::bitset<9u> Widget::input(const std::bitset<9u>& mask) {
 
 	if (mouseIsIn || _focused) {
 		if (InputsManager::isMouseJustPressed(sf::Mouse::Left) && !mask[0]) {
-			if (!mouseIsIn)	setFocus(false);
-			else			result[0] = _onClick.began();
+			if (!mouseIsIn && !lock_focus)	setFocus(false);
+			else							result[0] = _onClick.began();
 		}
 		if (InputsManager::isMousePressed(sf::Mouse::Left) && !mask[1]) {
 			result[1] = _onClick.going();
@@ -405,6 +405,9 @@ void Widget::setFocus(bool v) noexcept {
 	if (v != _focused) { if (v) onFocus.began(); else onFocus.ended(); }
 
 	_focused = v;
+}
+void Widget::lockFocus(bool v) noexcept {
+	lock_focus = v;
 }
 bool Widget::isFocus() const noexcept {
 	return _focused;

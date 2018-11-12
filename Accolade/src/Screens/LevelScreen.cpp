@@ -120,6 +120,7 @@ void LevelScreen::update(double dt) {
 	if (IM::isKeyJustPressed(sf::Keyboard::I)) {
 		inventory_is_up = !inventory_is_up;
 		if (inventory_is_up) {
+			inventory->open();
 			inventory->clearItems();
 
 			std::vector<Eid<Item>> items;
@@ -128,10 +129,14 @@ void LevelScreen::update(double dt) {
 			}
 			inventory->populateItems(items);
 		}
+		else {
+			inventory->quit();
+		}
 	}
 
-	if (inventory_is_up && inventory->needToQuit()) {
-		inventory_is_up = false;
+	if (inventory_is_up) {
+		inventory->postOrderInput({});
+		if (inventory->needToQuit()) inventory_is_up = false;
 	}
 
 	for (int i = 0; i < player->getPlayerInfo().maxLife; i++) {

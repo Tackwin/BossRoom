@@ -1,49 +1,137 @@
-/*#include "dyn_struct.hpp"
+#include "dyn_struct.hpp"
 
-#include <cassert>
-
-dyn_struct::dyn_struct(const dyn_struct& copy) noexcept : kind(copy.kind) {
-
-	std::unique_ptr<array_t> arr{ nullptr };
-	for (const auto&[k, v] : copy.values) {
-		switch (v.first)
-		{
-#define X(t) case Kind::t : \
-			values[k] = std::pair{\
-				Kind::t,\
-				std::make_unique<t##_t>(*static_cast<t##_t*>(v.second.get()))\
-			}; break;
-
-			X(integer);
-			X(real);
-			X(string);
-			X(boolean);
-		case Kind::structure:
-			values[k] = std::pair{
-				Kind::structure,
-				std::make_unique<structure_t>(
-					*static_cast<structure_t*>(v.second.get())->get()
-				)
-			};
-			break;
-		case Kind::array:
-			arr = std::make_unique<array_t>();
-			for (const auto& x : *static_cast<array_t*>(v.second.get())) {
-				arr->push_back(std::make_unique<dyn_struct>(*x));
-			}
-
-			values[k] =
-				std::pair{ Kind::array, std::unique_ptr<void>((void*)arr.release()) };
-			break;
-#undef X
-		default:
-			assert("SHOULD NOT HAPPEN PANIC :(");
-			break;
-		}
-	}
-
+dyn_struct dyn_struct::clone() noexcept {
+	return dyn_struct(*this);
 }
 
-dyn_struct& dyn_struct::operator=(const dyn_struct& copy) noexcept {
-	*this = dyn_struct(copy);
-}*/
+#define X(x)\
+void to_dyn_struct(dyn_struct& to, const dyn_struct::x& from) noexcept {\
+	dyn_struct::variant v;\
+	v = from;\
+	to.value = std::move(v);\
+	to.type_hash = typeid(from).hash_code();\
+}\
+void from_dyn_struct(const dyn_struct& from, dyn_struct::x& to) noexcept {\
+	to = std::get<dyn_struct::x>(from.value);\
+}\
+
+X(integer_t)
+X(real_t)
+X(string_t)
+X(boolean_t)
+X(structure_t)
+X(array_t)
+
+#undef X
+
+#define X(x)\
+void to_dyn_struct(dyn_struct& to, const x& from) noexcept {\
+	dyn_struct::variant v;\
+	v = dyn_struct::integer_t(from);\
+	to.value = std::move(v);\
+	to.type_hash = typeid(from).hash_code();\
+}\
+void from_dyn_struct(const dyn_struct& from, x& to) noexcept {\
+	to = x(std::get<dyn_struct::integer_t>(from.value));\
+}\
+
+X(int)
+X(long)
+X(unsigned)
+X(long unsigned)
+X(long long unsigned)
+X(short)
+X(unsigned short)
+
+#undef X
+
+#define X(x)\
+void to_dyn_struct(dyn_struct& to, const x& from) noexcept {\
+	dyn_struct::variant v;\
+	v = dyn_struct::real_t(from);\
+	to.value = std::move(v);\
+	to.type_hash = typeid(from).hash_code();\
+}\
+void from_dyn_struct(const dyn_struct& from, x& to) noexcept {\
+	to = x(std::get<dyn_struct::integer_t>(from.value));\
+}\
+
+X(float)
+X(double)
+
+#undef X
+
+std::string format(const dyn_struct& s, std::string_view indent) noexcept {
+	std::string result;
+	std::visit([&](auto v) noexcept {
+		using type = std::decay_t<decltype(v)>;
+
+		if constexpr (std::is_same_v<type, dyn_struct::integer_t>) {
+			result = std::to_string(v);
+		}
+		else if constexpr (std::is_same_v<type, dyn_struct::real_t>) {
+			result = std::to_string(v);
+		}
+		else if constexpr (std::is_same_v<type, dyn_struct::boolean_t>) {
+			result = v ? "true" : "false";
+		}
+		else if constexpr (std::is_same_v<type, dyn_struct::string_t>) {
+			result = v;
+		}
+		else if constexpr (std::is_same_v<type, dyn_struct::array_t>) {
+			result += '[';
+			for (size_t i = 0; i + 1 < v.size(); ++i) {
+				result += ' ';
+				result += format(*v[i], indent);
+				result += ',';
+			}
+
+			// We replace the trailling comma by a space
+			// [ 0, 1, ..., x,] => [ 0, 1, ..., x ].
+			if (!v.empty()) {
+				result.back() = ' ';
+			}
+			result += ']';
+		}
+		else if constexpr (std::is_same_v<type, dyn_struct::structure_t>) {
+			if (v.empty()) {
+				result = "{}";
+				return;
+			}
+
+			result += "{\n";
+			for (auto&[key, value] : v) {
+				result += indent;
+				result += key;
+				result += ": ";
+				
+				std::string to_indent = format(*value, indent);
+				for (size_t i = 0; i < to_indent.size(); ++i) {
+					if (to_indent[i] != '\n') continue;
+					to_indent.insert(
+						std::begin(to_indent) + i + 1, std::begin(indent), std::end(indent)
+					);
+				}
+
+				result += std::move(to_indent);
+
+				result += "\n";
+			}
+			result += "}";
+
+		}
+		else {
+			std::abort();
+		}
+
+	}, s.value);
+
+	return result;
+}
+std::string format(const dyn_struct& s, size_t space_indent) noexcept {
+	std::string indent(space_indent, ' ');
+	return format(s, indent);
+}
+std::string format(const dyn_struct& s) noexcept {
+	return format(s, "\t");
+}

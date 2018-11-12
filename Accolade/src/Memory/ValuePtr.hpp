@@ -1,6 +1,7 @@
 #pragma once
 
 #include <type_traits>
+#include "Utils/meta_algorithms.hpp"
 
 template<typename T>
 class ValuePtr {

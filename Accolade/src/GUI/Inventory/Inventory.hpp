@@ -24,8 +24,12 @@ public:
 
 	bool needToQuit() const noexcept;
 	void open() noexcept;
+	void quit() noexcept;
 
 	using Widget::propagateRender;
+	using Widget::postOrderInput;
+
+	virtual void setFocus(bool v) noexcept override;
 
 private:
 
@@ -41,6 +45,8 @@ private:
 	bool onFocusGoing() noexcept;
 	bool onFocusEnded() noexcept;
 
+	void setFocusedItem(size_t index) noexcept;
+
 	struct ItemLine {
 		Widget* widget{ nullptr };
 		Eid<Item> item;
@@ -53,6 +59,6 @@ private:
 	Panel* item_focus_mask{ nullptr };
 	Panel* main_panel{ nullptr };
 
-	bool quit{ false };
+	bool need_to_quit{ false };
 };
 

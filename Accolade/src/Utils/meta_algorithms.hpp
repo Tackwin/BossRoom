@@ -58,6 +58,10 @@ template<typename T>
 struct holded<std::unique_ptr<T>> {
 	using type = T;
 };
+template<typename T>
+struct holded<std::initializer_list<T>> {
+	using type = T;
+};
 
 template<typename T>
 struct key_map_type;

@@ -107,6 +107,7 @@ public:
 	void setName(std::string name) noexcept;
 
 	virtual void setFocus(bool v) noexcept;
+	virtual void lockFocus(bool v) noexcept;
 	bool isFocus() const noexcept;
 
 protected: //god this is growing into a god class... :(
@@ -121,6 +122,7 @@ protected: //god this is growing into a god class... :(
 	bool _passThrough = false;
 
 	bool _focused{ false };
+	bool lock_focus{ false };
 	bool _hovered{ false };
 
 	std::string _name{ "" };

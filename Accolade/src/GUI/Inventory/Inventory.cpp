@@ -55,8 +55,9 @@ Inventory::Inventory() noexcept : Widget() {
 	});
 	main_panel->getSprite().setColor(sf::Color{ 65, 71, 76, 255 });
 
-	item_focus_mask = makeChild<Panel>({
-		{"size", {main_panel->getSize().y + 5, 35} },
+	item_focus_mask = main_panel->makeChild<Panel>({
+		{"sprite", "panel_a"},
+		{"size", {main_panel->getSize().x + 7.5f, 35} },
 		{"origin", {2.5f / main_panel->getSize().y, 2.5f / 35.f}}
 	});
 	item_focus_mask->getSprite().setColor(sf::Color{ 255, 255, 255, 125 });
@@ -81,10 +82,11 @@ Inventory::Inventory() noexcept : Widget() {
 	main_panel->setOnFocus(on_focus);
 
 	item_list = main_panel->makeChild<Widget>({});
+	main_panel->lockFocus(true);
 }
 
 bool Inventory::needToQuit() const noexcept {
-	return quit;
+	return need_to_quit;
 }
 
 void Inventory::addItem(Eid<Item> item) noexcept {
@@ -100,6 +102,7 @@ void Inventory::addItem(Eid<Item> item) noexcept {
 
 void Inventory::render(sf::RenderTarget& target) noexcept {
 	Widget::render(target);
+	item_focus_mask->setVisible(focused_item.has_value());
 }
 
 void Inventory::populateItems(std::vector<Eid<Item>> items) noexcept {
@@ -115,11 +118,22 @@ bool Inventory::onClickBegan() noexcept {return false;}
 bool Inventory::onClickGoing() noexcept {return false;}
 bool Inventory::onClickEnded() noexcept {return false;}
 
-bool Inventory::onKeyBegan() noexcept {return false;}
+bool Inventory::onKeyBegan() noexcept {
+	if (IM::isKeyJustPressed(sf::Keyboard::Down) && !items.empty()) {
+		size_t new_index = focused_item ? (*focused_item + 1) % items.size() : 0;
+		setFocusedItem(new_index);
+	}
+	if (IM::isKeyJustPressed(sf::Keyboard::Up) && !items.empty()) {
+		size_t new_index =
+			focused_item ? (int(*focused_item - 1) % items.size()) : (items.size() - 1);
+		setFocusedItem(new_index);
+	}
+	return false;
+}
 bool Inventory::onKeyGoing() noexcept {return false;}
 bool Inventory::onKeyEnded() noexcept {
 	if (IM::isKeyJustReleased(sf::Keyboard::Escape)) {
-		quit = true;
+		need_to_quit = true;
 		return true;
 	}
 	return false;
@@ -129,7 +143,20 @@ bool Inventory::onFocusBegan() noexcept {return false;}
 bool Inventory::onFocusGoing() noexcept {return false;}
 bool Inventory::onFocusEnded() noexcept {return false;}
 
+void Inventory::quit() noexcept {
+	main_panel->setFocus(false);
+	need_to_quit = true;
+}
 void Inventory::open() noexcept {
-	quit = true;
+	need_to_quit = false;
+	main_panel->setFocus(true);
 }
 
+void Inventory::setFocusedItem(size_t index) noexcept {
+	focused_item = index;
+	item_focus_mask->setPosition({ -2.5f, -2.5f + 30.f * index });
+}
+
+void Inventory::setFocus(bool v) noexcept {
+	Widget::setFocus(v);
+}
