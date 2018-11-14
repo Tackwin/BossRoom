@@ -12,12 +12,12 @@
 #include <cstdio>
 #include <iostream>
 #include <typeinfo>
+#include <chrono>
 
 #include <SFML/Graphics.hpp>
 
 #include <functional>
 #include <queue>
-
 #include "Managers/MemoryManager.hpp"
 #include "Managers/AssetsManager.hpp"
 #include "Managers/InputsManager.hpp"
@@ -40,8 +40,8 @@
 
 #include "Ruins/Instance.hpp"
 #include "Entity/EntityStore.hpp"
-
 #include "RTTI/dyn_struct.hpp"
+
 
 
 double C::DT{ 0.0 };
@@ -90,31 +90,10 @@ int main(int, char**) {
 
 	//let's try to fit our game into 16MiB
 	//MemoryManager::I().initialize_buffer(1024 * 1024 * 16);
-	
-	dyn_struct s(dyn_struct::structure_t{
-		{std::string("one"), ValuePtr<dyn_struct>(new dyn_struct(0))},
-		{std::string("two"), ValuePtr<dyn_struct>(new dyn_struct(5.548965))},
-		{std::string("three"), ValuePtr<dyn_struct>(new dyn_struct(false))},
-		{std::string("four"), ValuePtr<dyn_struct>(new dyn_struct{1, 4, 5, 8, 94})},
-		{std::string("five"), ValuePtr<dyn_struct>(new dyn_struct(dyn_struct::structure_t{
-			{std::string("one"), ValuePtr<dyn_struct>(new dyn_struct(0))},
-			{std::string("two"), ValuePtr<dyn_struct>(new dyn_struct(5.548965))},
-			{std::string("three"), ValuePtr<dyn_struct>(new dyn_struct(false))}
-		}))},
-		{std::string("six"), ValuePtr<dyn_struct>(new dyn_struct(dyn_struct::structure_t{
-			{std::string("one"), ValuePtr<dyn_struct>(new dyn_struct(0))},
-			{std::string("two"), ValuePtr<dyn_struct>(new dyn_struct(5.548965))},
-			{std::string("three"), ValuePtr<dyn_struct>(new dyn_struct(false))},
-			{std::string("four"), ValuePtr<dyn_struct>(new dyn_struct{1, 4, 5, 8, 94})},
-			{std::string("five"), ValuePtr<dyn_struct>(new dyn_struct(dyn_struct::structure_t{
-				{std::string("one"), ValuePtr<dyn_struct>(new dyn_struct(0))},
-				{std::string("two"), ValuePtr<dyn_struct>(new dyn_struct(5.548965))},
-				{std::string("three"), ValuePtr<dyn_struct>(new dyn_struct(false))}
-			}))}
-		}))}
-	});
-	printf("%s\n", format(s, " . ").c_str());
-	return 0;
+	auto config = load_from_json_file(get_working_dir() / "res/config.json");
+
+	std::cout << format(*config, " .. ") << std::endl;
+
 	loadRessources();
 	startGame();
 	

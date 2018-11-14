@@ -30,11 +30,18 @@ public:
 	};
 
 	ValuePtr<T>& operator=(const ValuePtr<T>& other) noexcept {
-		ptr = new T(*other.ptr);
+		if (ptr) delete ptr;
+		if constexpr (has_clone_v<T>) {
+			ptr = other.ptr->clone();
+		}
+		else {
+			ptr = new T(*other.ptr);
+		}
 		return *this;
 	}
 
 	constexpr ValuePtr<T>& operator=(ValuePtr<T>&& other) noexcept {
+		if (ptr) delete ptr;
 		ptr = other.ptr;
 		other.ptr = nullptr;
 		return *this;
@@ -55,8 +62,10 @@ public:
 		return ptr;
 	}
 	[[nodiscard]]
-	constexpr T* release() const noexcept {
-		return ptr;
+	constexpr T* release() noexcept {
+		auto temp = ptr;
+		ptr = nullptr;
+		return temp;
 	}
 
 private:

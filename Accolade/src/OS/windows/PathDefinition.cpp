@@ -33,4 +33,8 @@ std::filesystem::path get_executable_dir() noexcept {
 	return get_executable_path().parent_path();
 }
 
+std::filesystem::path get_working_dir() noexcept {
+	return std::filesystem::current_path();
+}
+
 #endif

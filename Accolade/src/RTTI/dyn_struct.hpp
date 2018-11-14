@@ -1,5 +1,7 @@
-#pragma once
+#ifndef DYN_STRUCT_HPP
+#define DYN_STRUCT_HPP
 
+#include <any>
 #include <string>
 #include <memory>
 #include <vector>
@@ -17,17 +19,18 @@ struct dyn_struct {
 	using boolean_t = bool;
 	using structure_t = std::unordered_map<std::string, ValuePtr<dyn_struct>>;
 	using array_t = std::vector<ValuePtr<dyn_struct>>;
+	using null_t = std::nullptr_t;
 
 	using variant =
-		std::variant<integer_t, real_t, string_t, boolean_t, structure_t, array_t>;
+		std::variant<integer_t, real_t, string_t, boolean_t, structure_t, array_t, null_t>;
 
 	dyn_struct() = default;
 
-	dyn_struct(dyn_struct&) noexcept = default;
-	dyn_struct(dyn_struct&&) noexcept = default;
+	dyn_struct(const dyn_struct&) = default;
+	dyn_struct(dyn_struct&&) = default;
 
-	//dyn_struct operator=(dyn_struct&) noexcept = default;
-	//dyn_struct operator=(dyn_struct&&) noexcept = default;
+	dyn_struct& operator=(const dyn_struct&) = default;
+	dyn_struct& operator=(dyn_struct&&) = default;
 	template<typename T>
 	dyn_struct(std::initializer_list<T> list) noexcept {
 		array_t array;
@@ -39,60 +42,66 @@ struct dyn_struct {
 		value = array;
 	}
 
+	dyn_struct(std::initializer_list<std::pair<std::string, dyn_struct>> list) noexcept;
+
 	template<typename T> dyn_struct(T&& object) noexcept {
-		if constexpr (std::is_same_v<T, dyn_struct>) {
+		if constexpr (std::is_same_v<std::decay_t<T>, dyn_struct>) {
 			*this = std::forward<T>(object);
 		}
 		else {
-			extern void to_dyn_struct(dyn_struct&, const T&) noexcept;
 			to_dyn_struct(*this, std::forward<T>(object));
 		}
 	}
 
 	template<typename T> operator T() const noexcept {
 		T t;
-		extern void from_dyn_struct(const dyn_struct&, T&) noexcept;
 		from_dyn_struct(*this, t);
 		return t;
 	}
 
-	dyn_struct clone() noexcept;
+	ValuePtr<dyn_struct>& operator[](std::string_view str) noexcept;
+	ValuePtr<dyn_struct>& operator[](size_t idx) noexcept;
 
-	size_t type_hash{ 0 };
+	void push_back(const dyn_struct& v) noexcept;
+	void pop_back() noexcept;
+
+	dyn_struct* clone() noexcept;
+
+	size_t type_hash{ typeid(dyn_struct).hash_code() };
 	variant value;
-private:
-
-#define X(x)\
-	friend void to_dyn_struct(dyn_struct& to, const dyn_struct::x& from) noexcept;\
-	friend void from_dyn_struct(const dyn_struct& from, dyn_struct::x& to) noexcept;
-
-	X(integer_t);
-	X(real_t);
-	X(string_t);
-	X(boolean_t);
-	X(structure_t);
-	X(array_t);
-#undef X
-#define X(x)\
-	friend void to_dyn_struct(dyn_struct& to, const x& from) noexcept;\
-	friend void from_dyn_struct(const dyn_struct& from, x& to) noexcept;
-
-	X(int);
-	X(long);
-	X(unsigned);
-	X(long unsigned);
-	X(long long unsigned);
-	X(short);
-	X(unsigned short);
-	X(float);
-	X(double);
-
-#undef X
 };
+
+#define X(x)\
+	extern void to_dyn_struct(dyn_struct&, const x&) noexcept;\
+	extern void from_dyn_struct(const dyn_struct&, x&) noexcept;
+
+X(dyn_struct::integer_t)
+X(dyn_struct::real_t)
+X(dyn_struct::string_t)
+X(dyn_struct::boolean_t)
+X(dyn_struct::array_t)
+X(dyn_struct::structure_t)
+X(dyn_struct::null_t)
+X(int)
+X(long)
+X(unsigned)
+X(long unsigned)
+X(long long unsigned)
+X(short)
+X(unsigned short)
+X(float)
+X(double)
+
+#undef X
+
+extern dyn_struct&
+set(std::string_view str, const dyn_struct& value, dyn_struct& to) noexcept;
 
 extern std::string format(const dyn_struct& s) noexcept;
 extern std::string format(const dyn_struct& s, std::string_view indent) noexcept;
 extern std::string format(const dyn_struct& s, size_t space_indent) noexcept;
-extern std::optional<dyn_struct> load_from_file(const std::filesystem::path& path) noexcept;
+extern std::optional<dyn_struct> load_from_json_file(const std::filesystem::path& file) noexcept;
 extern size_t
-save_to_file(const dyn_struct& to_save, const std::filesystem::path& path) noexcept;
+save_to_file(const dyn_struct& to_save, const std::filesystem::path& file) noexcept;
+
+#endif

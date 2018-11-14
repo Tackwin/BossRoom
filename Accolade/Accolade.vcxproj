@@ -384,6 +384,7 @@
     <ClCompile Include="src\Math\algorithms.cpp" />
     <ClCompile Include="src\Navigation\NavigationLink.cpp" />
     <ClCompile Include="src\Navigation\NavigationPoint.cpp" />
+    <ClCompile Include="src\OS\windows\FileIO.cpp" />
     <ClCompile Include="src\OS\windows\OpenFile.cpp" />
     <ClCompile Include="src\OS\windows\PathDefinition.cpp" />
     <ClCompile Include="src\OS\windows\SystemConfiguration.cpp" />
@@ -436,6 +437,7 @@
     <ClCompile Include="src\System\Window.cpp" />
     <ClCompile Include="src\Time\Clock.cpp" />
     <ClCompile Include="src\Time\Scheduler.cpp" />
+    <ClCompile Include="src\Unicode\Unicode.cpp" />
     <ClCompile Include="src\Utils\json_algorithms.cpp" />
     <ClCompile Include="src\Utils\string_algorithms.cpp" />
     <ClCompile Include="src\Utils\UUID.cpp" />
@@ -488,6 +490,7 @@
     <ClInclude Include="src\Navigation\NavigationLink.hpp" />
     <ClInclude Include="src\Navigation\NavigationPoint.hpp" />
     <ClInclude Include="src\Order\OrderedPair.hpp" />
+    <ClInclude Include="src\OS\FileIO.hpp" />
     <ClInclude Include="src\OS\OpenFile.hpp" />
     <ClInclude Include="src\OS\PathDefinition.hpp" />
     <ClInclude Include="src\OS\SystemConfiguration.hpp" />
@@ -544,6 +547,7 @@
     <ClInclude Include="src\System\Window.hpp" />
     <ClInclude Include="src\Time\Clock.hpp" />
     <ClInclude Include="src\Time\Scheduler.hpp" />
+    <ClInclude Include="src\Unicode\Unicode.hpp" />
     <ClInclude Include="src\Utils\container_algorithm.hpp" />
     <ClInclude Include="src\Utils\Defer.hpp" />
     <ClInclude Include="src\Utils\json_algorithms.hpp" />
