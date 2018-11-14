@@ -19,3 +19,16 @@ read_whole_file(const std::filesystem::path& path) noexcept {
 
 	return std::move(bytes);
 }
+
+size_t overwrite_file(const std::filesystem::path& path, std::string_view str) noexcept {
+	FILE* f;
+	auto err = fopen_s(&f, path.generic_string().c_str(), "wb");
+	if (!f || err) return err;
+
+	defer{ fclose(f); };
+
+	auto wrote = fwrite(str.data(), 1, str.size(), f);
+	if (wrote != str.size()) return EIO;
+
+	return 0;
+}

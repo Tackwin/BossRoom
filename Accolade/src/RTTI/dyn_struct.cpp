@@ -207,9 +207,89 @@ std::string format(const dyn_struct& s, std::string_view indent) noexcept {
 
 	return result;
 }
+
+std::string format_to_json(const dyn_struct& s, std::string_view indent) noexcept {
+	std::string result;
+	std::visit([&](auto v) noexcept {
+		using type = std::decay_t<decltype(v)>;
+
+		if constexpr (std::is_same_v<type, dyn_struct::integer_t>) {
+			result = std::to_string(v);
+		}
+		else if constexpr (std::is_same_v<type, dyn_struct::real_t>) {
+			result = std::to_string(v);
+		}
+		else if constexpr (std::is_same_v<type, dyn_struct::boolean_t>) {
+			result = v ? "true" : "false";
+		}
+		else if constexpr (std::is_same_v<type, dyn_struct::string_t>) {
+			result = '"';
+			result += v;
+			result += '"';
+		}
+		else if constexpr (std::is_same_v<type, dyn_struct::array_t>) {
+			result += '[';
+			for (size_t i = 0; i < v.size(); ++i) {
+				result += ' ';
+				result += format_to_json(*v[i], indent);
+				result += ',';
+			}
+
+			// We replace the trailling comma by a space
+			// [ 0, 1, ..., x,] => [ 0, 1, ..., x ].
+			if (!v.empty()) {
+				result.back() = ' ';
+			}
+			result += ']';
+		}
+		else if constexpr (std::is_same_v<type, dyn_struct::structure_t>) {
+			if (v.empty()) {
+				result = "{}";
+				return;
+			}
+
+			result += "{";
+			for (auto&[key, value] : v) {
+				result += "\n";
+				result += indent;
+				result += '"';
+				result += key;
+				result += '"';
+				result += ": ";
+
+				std::string to_indent = format_to_json(*value, indent);
+				for (size_t i = 0; i < to_indent.size(); ++i) {
+					if (to_indent[i] != '\n') continue;
+					to_indent.insert(
+						std::begin(to_indent) + i + 1, std::begin(indent), std::end(indent)
+					);
+				}
+
+				result += std::move(to_indent);
+				result += ',';
+			}
+			result.pop_back();
+			result += "\n}";
+
+		}
+		else {
+			std::abort();
+		}
+
+	}, s.value);
+
+	return result;
+}
+std::string format_to_json(const dyn_struct& s, size_t space_indent) noexcept {
+	std::string str(space_indent, ' ');
+	return format_to_json(s, str);
+}
 std::string format(const dyn_struct& s, size_t space_indent) noexcept {
 	std::string indent(space_indent, ' ');
 	return format(s, indent);
+}
+std::string format_to_json(const dyn_struct& s) noexcept {
+	return format_to_json(s, "\t");
 }
 std::string format(const dyn_struct& s) noexcept {
 	return format(s, "\t");
@@ -476,4 +556,14 @@ std::optional<dyn_struct> load_from_json_file(const std::filesystem::path& file)
 	auto result = construct_object(tokens, 0);
 	if (!result) return std::nullopt;
 	return result->first;
+}
+
+size_t
+save_to_json_file(const dyn_struct& to_save, const std::filesystem::path& path) noexcept {
+	if (!std::holds_alternative<dyn_struct::structure_t>(to_save.value))
+		return dyn_struct_error::NOT_AN_OBJECT;
+
+	std::string to_write = format_to_json(to_save);
+
+	return overwrite_file(path, to_write);
 }

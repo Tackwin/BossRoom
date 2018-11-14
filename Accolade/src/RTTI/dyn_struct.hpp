@@ -100,8 +100,18 @@ set(std::string_view str, const dyn_struct& value, dyn_struct& to) noexcept;
 extern std::string format(const dyn_struct& s) noexcept;
 extern std::string format(const dyn_struct& s, std::string_view indent) noexcept;
 extern std::string format(const dyn_struct& s, size_t space_indent) noexcept;
-extern std::optional<dyn_struct> load_from_json_file(const std::filesystem::path& file) noexcept;
+
+extern std::string format_to_json(const dyn_struct& s) noexcept;
+extern std::string format_to_json(const dyn_struct& s, std::string_view indent) noexcept;
+extern std::string format_to_json(const dyn_struct& s, size_t space_indent) noexcept;
+
+namespace dyn_struct_error {
+	constexpr auto NOT_AN_OBJECT = 1;
+};
+
+extern std::optional<dyn_struct>
+load_from_json_file(const std::filesystem::path& file) noexcept;
 extern size_t
-save_to_file(const dyn_struct& to_save, const std::filesystem::path& file) noexcept;
+save_to_json_file(const dyn_struct& to_save, const std::filesystem::path& file) noexcept;
 
 #endif
