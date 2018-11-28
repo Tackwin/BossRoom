@@ -123,3 +123,10 @@ void ImmediateRangedSword::playerUseMainWeapon(EM::EventCallbackParameter args) 
 	});
 	player.addZone(zone);
 }
+
+dyn_struct ImmediateRangedSword::get_item_desc() const noexcept {
+	return {
+		{"Name", "Immediate Ranged Sword"},
+		{"Effect", "Nique des meres au cac"}
+	};
+}

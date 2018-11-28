@@ -316,7 +316,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>opengl32.lib;sfml-graphics.lib;sfml-system.lib;sfml-network.lib;sfml-audio.lib;sfml-window.lib;User32.lib;Comdlg32.lib;Kernel32.lib</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;sfml-audio.lib;sfml-graphics.lib;sfml-system.lib;sfml-network.lib;sfml-window.lib;User32.lib;Comdlg32.lib;Kernel32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <StackReserveSize>
       </StackReserveSize>
       <Profile>true</Profile>
@@ -344,7 +344,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <Profile>true</Profile>
-      <AdditionalDependencies>opengl32.lib;sfml-graphics.lib;sfml-system.lib;sfml-network.lib;sfml-audio.lib;sfml-window.lib;User32.lib;Comdlg32.lib;Kernel32.lib</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;sfml-audio.lib;sfml-graphics.lib;sfml-system.lib;sfml-network.lib;sfml-window.lib;User32.lib;Comdlg32.lib;Kernel32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <StackReserveSize>
       </StackReserveSize>
     </Link>
@@ -374,6 +374,7 @@
     <ClCompile Include="src\Gameplay\Item\AxisAlignedShooter.cpp" />
     <ClCompile Include="src\Graphics\GUI\algorithm.cpp" />
     <ClCompile Include="src\Graphics\GUI\BoolPicker.cpp" />
+    <ClCompile Include="src\Graphics\GUI\dyn_structTree.cpp" />
     <ClCompile Include="src\Graphics\GUI\InputText.cpp" />
     <ClCompile Include="src\Graphics\GUI\JsonTree.cpp" />
     <ClCompile Include="src\Graphics\GUI\PosPicker.cpp" />
@@ -474,6 +475,7 @@
     <ClInclude Include="src\Gameplay\Item\AxisAlignedShooter.hpp" />
     <ClInclude Include="src\Graphics\GUI\algorithm.hpp" />
     <ClInclude Include="src\Graphics\GUI\BoolPicker.hpp" />
+    <ClInclude Include="src\Graphics\GUI\dyn_structTree.hpp" />
     <ClInclude Include="src\Graphics\GUI\InputText.hpp" />
     <ClInclude Include="src\Graphics\GUI\JsonTree.hpp" />
     <ClInclude Include="src\Graphics\GUI\PosPicker.hpp" />

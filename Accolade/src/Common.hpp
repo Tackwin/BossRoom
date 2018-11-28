@@ -23,6 +23,47 @@ using u32 = std::uint32_t;
 using i64 = std::int64_t;
 using u64 = std::uint64_t;
 
+namespace xstd {
+	template<typename T>
+	constexpr int sign(T x) noexcept {
+		return (T(0) < x) - (x < T(0));
+	}
+
+	template<typename T, typename U>
+	std::enable_if_t<
+		std::is_convertible_v<T, std::string> && std::is_constructible_v<U, std::string>,
+		std::string
+	> append(T a, U b) {
+		return std::string{ a } +b;
+	}
+
+	template<typename T>
+	constexpr inline std::size_t hash_combine(std::size_t seed, const T& v) noexcept {
+		std::hash<T> h;
+		seed ^= h(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+		return seed;
+	}
+};
+
+namespace std {
+	template<typename T>
+	struct hash<std::pair<T, T>> {
+		size_t operator()(const std::pair<size_t, size_t>& x) const noexcept {
+			return xstd::hash_combine(std::hash<T>()(x.first), x.second);
+		}
+	};
+
+	template<>
+	struct hash<std::set<size_t>> {
+		size_t operator()(const std::set<size_t>& x) const noexcept {
+			size_t seed = 0;
+			for (const auto& v : x) {
+				seed = xstd::hash_combine(seed, v);
+			}
+			return seed;
+		}
+	};
+};
 
 class Game;
 class EntityStore;
@@ -100,49 +141,10 @@ namespace C {
 
 		return rng;
 	}
-
-};
-using namespace C;
-
-
-namespace xstd {
-	template<typename T>
-	int sign(T x) noexcept {
-		return (T(0) < x) - (x < T(0));
-	}
-
-	template<typename T, typename U>
-	std::enable_if_t<
-		std::is_convertible_v<T, std::string> && std::is_constructible_v<U, std::string>,
-		std::string
-	> append(T a, U b) {
-		return std::string{ a } +b;
-	}
-
-	template<typename T>
-	inline std::size_t hash_combine(std::size_t seed, const T& v) noexcept {
-		std::hash<T> h;
-		seed ^= h(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+	constexpr size_t operator""_id(const char* user, size_t size) {
+		size_t seed = 0;
+		for (size_t i = 0; i < size; ++i) seed = xstd::hash_combine(seed, user[i]);
 		return seed;
 	}
 };
-
-namespace std {
-	template<typename T>
-	struct hash<std::pair<T, T>> {
-		size_t operator()(const std::pair<size_t, size_t>& x) const noexcept {
-			return xstd::hash_combine(std::hash<T>()(x.first), x.second);
-		}
-	};
-
-	template<>
-	struct hash<std::set<size_t>> {
-		size_t operator()(const std::set<size_t>& x) const noexcept {
-			size_t seed = 0;
-			for (const auto& v : x) {
-				seed = xstd::hash_combine(seed, v);
-			}
-			return seed;
-		}
-	};
-};
+using namespace C;

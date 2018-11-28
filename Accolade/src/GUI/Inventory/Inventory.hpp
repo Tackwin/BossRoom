@@ -58,6 +58,7 @@ private:
 	Widget* item_list{ nullptr };
 	Panel* item_focus_mask{ nullptr };
 	Panel* main_panel{ nullptr };
+	Panel* item_desc{ nullptr };
 
 	bool need_to_quit{ false };
 };

@@ -103,3 +103,11 @@ void Shooter::playerUseMainWeapon(EM::EventCallbackParameter args) noexcept {
 
 	player.addProjectile(std::make_shared<Projectile>(info.projectile, pos, dir, true));
 }
+
+
+dyn_struct Shooter::get_item_desc() const noexcept {
+	return {
+		{"Name", "Shooter"},
+		{"Effect", "Nique des meres"}
+	};
+}

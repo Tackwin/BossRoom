@@ -10,7 +10,9 @@
 #include <filesystem>
 #include <unordered_map>
 
+#include "3rd/json.hpp"
 #include "Memory/ValuePtr.hpp"
+#include "Common.hpp"
 
 struct dyn_struct {
 	using integer_t = long long int;
@@ -59,21 +61,75 @@ struct dyn_struct {
 		return t;
 	}
 
-	ValuePtr<dyn_struct>& operator[](std::string_view str) noexcept;
-	ValuePtr<dyn_struct>& operator[](size_t idx) noexcept;
+	dyn_struct& operator[](std::string_view str) noexcept;
+	dyn_struct& operator[](size_t idx) noexcept;
+
+	const dyn_struct& operator[](std::string_view str) const noexcept;
+	const dyn_struct& operator[](size_t idx) const noexcept;
 
 	void push_back(const dyn_struct& v) noexcept;
 	void pop_back() noexcept;
 
 	dyn_struct* clone() noexcept;
 
-	size_t type_hash{ typeid(dyn_struct).hash_code() };
+	size_t type_tag{ "dyn_struct"_id };
 	variant value;
 };
 
+struct dyn_struct_array_iterator_tag {
+	dyn_struct::array_t* it;
+};
+struct dyn_struct_structure_iterator_tag {
+	dyn_struct::structure_t* it;
+};
+
+struct dyn_struct_array_iterator {
+	dyn_struct::array_t::iterator iterator;
+
+	const dyn_struct& operator*() const noexcept;
+	dyn_struct& operator*() noexcept;
+	const dyn_struct& operator->() const noexcept;
+	dyn_struct& operator->() noexcept;
+
+	dyn_struct_array_iterator& operator++() noexcept;
+	bool operator==(const dyn_struct_array_iterator& other) const noexcept;
+	bool operator!=(const dyn_struct_array_iterator& other) const noexcept;
+};
+struct dyn_struct_structure_iterator {
+	dyn_struct::structure_t::iterator iterator;
+
+	std::pair<std::string, const dyn_struct&> operator*() const noexcept;
+	std::pair<std::string, dyn_struct&> operator*() noexcept;
+	std::pair<std::string, const dyn_struct&> operator->() const noexcept;
+	std::pair<std::string, dyn_struct&> operator->() noexcept;
+
+	dyn_struct_structure_iterator& operator++() noexcept;
+	bool operator==(const dyn_struct_structure_iterator& other) const noexcept;
+	bool operator!=(const dyn_struct_structure_iterator& other) const noexcept;
+};
+
+namespace std {
+	template<>
+	struct iterator_traits<dyn_struct_array_iterator> {
+		typedef dyn_struct value_type;
+		typedef int difference_type;
+		typedef value_type& reference;
+		typedef value_type* pointer;
+		typedef forward_iterator_tag iterator_category;
+	};
+	template<>
+	struct iterator_traits<dyn_struct_structure_iterator> {
+		typedef std::pair<std::string&, dyn_struct&> value_type;
+		typedef int difference_type;
+		typedef value_type& reference;
+		typedef value_type* pointer;
+		typedef forward_iterator_tag iterator_category;
+	};
+};
+
 #define X(x)\
-	extern void to_dyn_struct(dyn_struct&, const x&) noexcept;\
-	extern void from_dyn_struct(const dyn_struct&, x&) noexcept;
+extern void to_dyn_struct(dyn_struct&, const x&) noexcept;\
+extern void from_dyn_struct(const dyn_struct&, x&) noexcept;
 
 X(dyn_struct::integer_t)
 X(dyn_struct::real_t)
@@ -93,9 +149,13 @@ X(float)
 X(double)
 
 #undef X
+extern void to_dyn_struct(dyn_struct&, const char*) noexcept;
 
 extern dyn_struct&
 set(std::string_view str, const dyn_struct& value, dyn_struct& to) noexcept;
+
+extern bool has(const dyn_struct& d_struct, std::string_view key) noexcept;
+extern const dyn_struct* at(const dyn_struct& d_struct, std::string_view key) noexcept;
 
 extern std::string format(const dyn_struct& s) noexcept;
 extern std::string format(const dyn_struct& s, std::string_view indent) noexcept;
@@ -105,6 +165,38 @@ extern std::string format_to_json(const dyn_struct& s) noexcept;
 extern std::string format_to_json(const dyn_struct& s, std::string_view indent) noexcept;
 extern std::string format_to_json(const dyn_struct& s, size_t space_indent) noexcept;
 
+extern const dyn_struct_array_iterator
+cbegin(const dyn_struct_array_iterator_tag& d_struct) noexcept;
+extern dyn_struct_array_iterator
+begin(dyn_struct_array_iterator_tag& d_struct) noexcept;
+extern const dyn_struct_array_iterator
+cend(const dyn_struct_array_iterator_tag& d_struct) noexcept;
+extern dyn_struct_array_iterator
+end(dyn_struct_array_iterator_tag& d_struct) noexcept;
+
+extern const dyn_struct_structure_iterator
+cbegin(const dyn_struct_structure_iterator_tag& d_struct) noexcept;
+extern dyn_struct_structure_iterator
+begin(dyn_struct_structure_iterator_tag& d_struct) noexcept;
+extern const dyn_struct_structure_iterator
+cend(const dyn_struct_structure_iterator_tag& d_struct) noexcept;
+extern dyn_struct_structure_iterator
+end(dyn_struct_structure_iterator_tag& d_struct) noexcept;
+
+extern dyn_struct_array_iterator_tag iterate_array(dyn_struct& d_struct) noexcept;
+extern dyn_struct_structure_iterator_tag iterate_structure(dyn_struct& d_struct) noexcept;
+
+constexpr extern bool holds_object(const dyn_struct& d_struct) noexcept;
+constexpr extern bool holds_array(const dyn_struct& d_struct) noexcept;
+
+constexpr extern bool holds_primitive(const dyn_struct& d_struct) noexcept;
+constexpr extern bool holds_integer(const dyn_struct& d_struct) noexcept;
+constexpr extern bool holds_real(const dyn_struct& d_struct) noexcept;
+constexpr extern bool holds_bool(const dyn_struct& d_struct) noexcept;
+constexpr extern bool holds_null(const dyn_struct& d_struct) noexcept;
+constexpr extern bool holds_string(const dyn_struct& d_struct) noexcept;
+constexpr extern bool holds_number(const dyn_struct& d_struct) noexcept;
+
 namespace dyn_struct_error {
 	constexpr auto NOT_AN_OBJECT = 1;
 };
@@ -113,5 +205,8 @@ extern std::optional<dyn_struct>
 load_from_json_file(const std::filesystem::path& file) noexcept;
 extern size_t
 save_to_json_file(const dyn_struct& to_save, const std::filesystem::path& file) noexcept;
+
+extern void from_json(const nlohmann::json& json, dyn_struct& d_struct) noexcept;
+extern void to_json(nlohmann::json& json, const dyn_struct& d_struct) noexcept;
 
 #endif

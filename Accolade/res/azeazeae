@@ -1,0 +1,593 @@
+{
+	"sounds": {
+		"shoot": "sounds/shoot.wav",
+		"shoot2": "sounds/shoot2.wav",
+		"sword": "sounds/sword.wav",
+		"hit": "sounds/hit.wav"
+	},
+	"sprites": {
+		"source_boomerang": {
+			"sheet": "images/source2.png"
+		},
+		"slime": {
+			"walk": {
+				"row": 0,
+				"loop": true,
+				"frames": 3,
+				"time": 0.330000
+			},
+			"sheet": "images/slime.png",
+			"origin": [ 0.500000, 0.150000 ],
+			"rect": [ 18, 10 ]
+		},
+		"source": {
+			"sheet": "images/source.png"
+		},
+		"axis_aligned_shooter": {
+			"sheet": "images/axis_aligned_shooter.png",
+			"rect": [ 27, 21 ],
+			"jiggle": {
+				"row": 0,
+				"loop": true,
+				"frames": 3,
+				"time": 0.330000
+			}
+		},
+		"distance": {
+			"sheet": "images/distance.png"
+		},
+		"fly": {
+			"sheet": "images/fly.png",
+			"origin": [ 0.500000, 0.500000 ],
+			"rect": [ 23, 22 ],
+			"idle": {
+				"row": 0,
+				"loop": true,
+				"frames": 3,
+				"time": 0.330000
+			}
+		},
+		"on_off": {
+			"on": {
+				"row": 0,
+				"col": 0,
+				"frames": 1
+			},
+			"sheet": "images/on_off.png",
+			"rect": [ 10, 10 ],
+			"off": {
+				"row": 0,
+				"col": 1,
+				"frames": 1
+			}
+		},
+		"aim_texture": {
+			"sheet": "images/aim.png"
+		},
+		"on_on_off": {
+			"sheet": "images/on_on_off.png",
+			"smooth": false
+		},
+		"FlyInfo": {
+			"sheet": "images/fly.png"
+		},
+		"health_tile": {
+			"sheet": "images/health_tile.png"
+		},
+		"start_background": {
+			"sheet": "images/start_background.png"
+		},
+		"panel_b": {
+			"sheet": "images/panel_b.png"
+		},
+		"phoenix": {
+			"sheet": "images/phoenix_fire.png",
+			"action": {
+				"row": 0,
+				"frames": 6,
+				"time": 0.200000
+			},
+			"rect": [ 600, 500 ],
+			"idle": {
+				"row": 0,
+				"loop": true,
+				"frames": 1,
+				"time": 10
+			}
+		},
+		"bossFace": {
+			"sheet": "images/boss0_idle.png",
+			"action": {
+				"frames": 1,
+				"loop": true,
+				"time": 10
+			},
+			"rect": [ 1000, 1000 ],
+			"idle": {
+				"frames": 1,
+				"loop": true,
+				"time": 10
+			}
+		},
+		"panel_a": {
+			"sheet": "images/panel_a.png"
+		},
+		"player": {
+			"sheet": "images/player.png",
+			"action": {
+				"row": 0,
+				"col": 1,
+				"frames": 1,
+				"time": 0.050000
+			},
+			"rect": [ 60, 60 ],
+			"idle": {
+				"row": 0,
+				"loop": true,
+				"col": 0,
+				"frames": 1,
+				"time": 10
+			}
+		},
+		"projectiles-1": {
+			"sheet": "images/projectiles.png"
+		},
+		"SourceVaccum": {
+			"sheet": "images/vaccum.png"
+		},
+		"projectiles-2": {
+			"sheet": "images/projectiles-2.png"
+		},
+		"particle_feather": {
+			"sheet": "images/particle_feather.png"
+		},
+		"particle_simple": {
+			"sheet": "images/particle.png"
+		},
+		"weapon0": {
+			"sheet": "images/weapon0.png"
+		},
+		"weapon1": {
+			"sheet": "images/weapon1.png"
+		},
+		"weapon2": {
+			"sheet": "images/weapon2.png"
+		},
+		"arch": {
+			"sheet": "images/arch.png"
+		},
+		"SourceDirection": {
+			"sheet": "images/direction.png"
+		},
+		"merchant_shop": {
+			"sheet": "images/merchant_shop.png"
+		},
+		"button_down": {
+			"sheet": "images/button_down.png"
+		},
+		"10damier": {
+			"sheet": "images/10damier.png",
+			"smooth": false,
+			"repeat": true
+		},
+		"dungeon_door": {
+			"sheet": "images/dungeon_door.png"
+		},
+		"slash": {
+			"sheet": "images/slash.png"
+		},
+		"dungeon": {
+			"sheet": "images/dungeon.png"
+		},
+		"shop_screen": {
+			"sheet": "images/shop_screen.png"
+		},
+		"panel": {
+			"sheet": "images/panel.png"
+		},
+		"panel2": {
+			"sheet": "images/panel2.png"
+		},
+		"button_up": {
+			"sheet": "images/button_up.png"
+		},
+		"potion_feu": {
+			"sheet": "images/pot_feu.png"
+		},
+		"sword": {
+			"sheet": "images/sword.png"
+		},
+		"off_on_off": {
+			"sheet": "images/off_on_off.png",
+			"smooth": false
+		},
+		"first_boss": {
+			"sheet": "images/First Boss.png"
+		},
+		"health_scroll": {
+			"sheet": "images/health_scroll.png"
+		},
+		"quit": {
+			"sheet": "images/quit.png"
+		},
+		"boulefeu": {
+			"sheet": "images/boulefeu.png"
+		},
+		"MeleeGuyInfo": {
+			"sheet": "images/melee_guy.png"
+		},
+		"panel_cross": {
+			"sheet": "images/panel_cross.png",
+			"smooth": false
+		},
+		"white_disk": {
+			"sheet": "images/white_disk.png"
+		},
+		"transparent": {
+			"sheet": "images/transparent.png"
+		},
+		"point": {
+			"sheet": "images/point.png",
+			"smooth": false
+		},
+		"cursor": {
+			"sheet": "images/panel_a.png"
+		}
+	},
+	"fonts": {
+		"consola": "fonts/consola.ttf"
+	},
+	"player": {
+		"characters": {
+			"char_boloss": "characters/boloss.json"
+		}
+	},
+	"bosses": [ {
+		"name": "boss 0",
+		"blinkColor": "FFBBBBBB",
+		"hitParticle": "particleBurstFeather",
+		"sprite": "phoenix",
+		"startpos": {
+			"x": 1100,
+			"y": 360
+		},
+		"life": 400,
+		"radius": 65,
+		"color": "FFFFFFFF"
+	}, {
+		"name": "boss 1",
+		"hitParticle": "particleBurstFeather",
+		"blinkColor": "FFBBBBBB",
+		"sprite": "bossFace",
+		"startpos": {
+			"x": 1100,
+			"y": 360
+		},
+		"life": 150,
+		"radius": 65,
+		"color": "FF3C8320"
+	}, {
+		"name": "boss 2",
+		"blinkColor": "FFBBBBBB",
+		"hitParticle": "particleBurstFeather",
+		"sprite": "bossFace",
+		"startpos": {
+			"x": 1100,
+			"y": 360
+		},
+		"life": 200,
+		"radius": 65,
+		"color": "FF3C8320"
+	}, {
+		"name": "boss 3",
+		"blinkColor": "FFBBBBBB",
+		"hitParticle": "particleBurstFeather",
+		"sprite": "bossFace",
+		"startpos": {
+			"x": 1100,
+			"y": 360
+		},
+		"life": 200,
+		"radius": 65,
+		"color": "FF3C8320"
+	}, {
+		"name": "boss 4",
+		"blinkColor": "FFBBBBBB",
+		"hitParticle": "particleBurstFeather",
+		"sprite": "bossFace",
+		"startpos": {
+			"x": 1100,
+			"y": 360
+		},
+		"life": 200,
+		"radius": 65,
+		"color": "FF3C8320"
+	} ],
+	"StartRoom": "rooms/1x1.json",
+	"jsons": {
+		"default_key": "keys/default.json",
+		"SourceTargetInfo": "sources/target.json",
+		"SourceVaccum": "sources/vaccum.json",
+		"roomA": "rooms/roomA.json",
+		"editScreen": "screens/edit.json",
+		"startZone": "rooms/start.json",
+		"source": "sources/common.json",
+		"SpellTargetInfo": "spells/target.json",
+		"genericParticuleGenerator": "particles/genericMagic.json",
+		"SpellDirectionInfo": "spells/direction.json",
+		"Slime": "characters/slime.json",
+		"Distance": "characters/distance.json",
+		"MeleeGuyInfo": "characters/melee.json",
+		"SourceDirectionInfo": "sources/direction.json",
+		"FlyInfo": "characters/fly.json",
+		"1x1": "rooms/1x1.json",
+		"left_down": "rooms/left_down.json",
+		"left_right": "rooms/left_right.json",
+		"left_up": "rooms/left_up.json",
+		"right_down": "rooms/right_down.json",
+		"up_down": "rooms/up_down.json",
+		"up_right": "rooms/up_right.json",
+		"boss_1": "rooms/boss_1.json",
+		"FirstBossInfo": "characters/first_boss.json",
+		"ShooterInfo": "items/shooter.json",
+		"AxisAlignedShooterInfo": "items/axis_aligned_shooter.json",
+		"ImmediateRangedSwordInfo": "items/immediate_ranged_sword.json",
+		"definitions": "configs/definitions.json",
+		"health_scroll": "items/health_scroll.json"
+	},
+	"weapons": {
+		"Fire ball": {
+			"countdownTime": 0.100000,
+			"radius": 30,
+			"sprite": "weapon1",
+			"sounds": {
+				"active": [ "shoot" ]
+			},
+			"recoil": 5,
+			"projectile": {
+				"damage": 0.500000,
+				"speed": 25,
+				"radius": 0.050000,
+				"lifespan": 5,
+				"destroyOthers": false,
+				"sprite": "projectiles-1"
+			}
+		},
+		"Sword": {
+			"countdownTime": 0.200000,
+			"remainTime": 0.100000,
+			"sprite": "sword",
+			"recoilForce": 10,
+			"offset": -0.300000,
+			"spriteZone": "slash",
+			"radius": 0.500000,
+			"damage": 5
+		}
+	},
+	"patterns": {
+		"cerclique": {
+			"radius": 150,
+			"vA": 1.400000,
+			"projectile": {
+				"damage": 1,
+				"speed": 200,
+				"radius": 5,
+				"lifespan": 30,
+				"destroyOthers": false,
+				"sprite": "boulefeu"
+			},
+			"dtHeight": 0.250000,
+			"height": 0.500000,
+			"nOrbs": 3,
+			"iTime": 0.750000
+		},
+		"randomFire": {
+			"nOrbs": 300,
+			"eTime": 2.500000,
+			"dtA": 6.283185,
+			"a": 0,
+			"projectile": {
+				"damage": 1,
+				"speed": 1700,
+				"explosion": {
+					"radius": 20,
+					"damage": 1,
+					"time": 0.050000,
+					"force": 100
+				},
+				"radius": 10,
+				"lifespan": 7.500000,
+				"destroyOthers": false,
+				"sprite": "boulefeu"
+			}
+		},
+		"entonnoir": {
+			"x": 0.100000,
+			"nOrbs": 20,
+			"projectile": {
+				"damage": 1,
+				"speed": 400,
+				"radius": 5,
+				"lifespan": 4,
+				"destroyOthers": false,
+				"sprite": "boulefeu"
+			}
+		},
+		"boomerang": {
+			"nBooms": 2,
+			"waitTime": 0.500000,
+			"projectile": {
+				"damage": 1,
+				"speed": 800,
+				"radius": 5,
+				"lifespan": 5,
+				"destroyOthers": false,
+				"sprite": "boulefeu"
+			},
+			"overShoot": 300
+		},
+		"directionalFire": {
+			"fireRate": 10,
+			"time": 0.700000,
+			"projectile": {
+				"damage": 1,
+				"speed": 1800,
+				"explosion": {
+					"radius": 45,
+					"damage": 1,
+					"time": 0.050000,
+					"force": 300
+				},
+				"radius": 10,
+				"lifespan": 5,
+				"destroyOthers": false,
+				"sprite": "boulefeu"
+			}
+		},
+		"barage": {
+			"nOrbs": 6,
+			"nWaves": 2,
+			"iTime": 0,
+			"projectile": {
+				"damage": 1,
+				"speed": 1500,
+				"radius": 5,
+				"lifespan": 4,
+				"destroyOthers": false,
+				"sprite": "boulefeu"
+			}
+		},
+		"snipe": {
+			"nShots": 2,
+			"aimTime": 1,
+			"iTime": 0.200000,
+			"projectile": {
+				"damage": 1,
+				"speed": 3800,
+				"radius": 7,
+				"lifespan": 2,
+				"destroyOthers": false,
+				"sprite": "boulefeu"
+			}
+		},
+		"rapprochement": {
+			"nOrbs": 4,
+			"eTime": 1.500000,
+			"inSpawnRadius": 300,
+			"outSpawnRadius": 350,
+			"projectile": {
+				"damage": 1,
+				"speed": 400,
+				"radius": 5,
+				"lifespan": 7,
+				"destroyOthers": false,
+				"sprites": "boulefeu"
+			}
+		},
+		"broyeur": {
+			"nOrbs": 20,
+			"projectile": {
+				"damage": 1,
+				"speed": 300,
+				"radius": 5,
+				"lifespan": 3,
+				"destroyOthers": false,
+				"sprite": "boulefeu"
+			}
+		},
+		"blastCosmopolitain": {
+			"projectile": {
+				"damage": 1,
+				"speed": 500,
+				"radius": 5,
+				"lifespan": 3,
+				"destroyOthers": false,
+				"sprite": "boulefeu"
+			},
+			"nBlasts": 3,
+			"nOrbs": 7,
+			"iTime": 0.200000,
+			"r": 50,
+			"waitTime": 1.500000
+		}
+	},
+	"particlesGenerator": {
+		"particleBurstFeather": {
+			"nParticles": {
+				"mean": 1000000,
+				"range": 5,
+				"type": "normal",
+				"real": false,
+				"min": 0
+			},
+			"iTime": {
+				"mean": 0.000000,
+				"range": 0.000000,
+				"type": "normal",
+				"real": true,
+				"min": 0
+			},
+			"lifetime": 0,
+			"particle": {
+				"sprite": "particle_feather",
+				"size": {
+					"mean": 0.500000,
+					"range": 0.050000,
+					"real": true,
+					"min": 0
+				},
+				"a": {
+					"mean": 0,
+					"range": 3.141593,
+					"real": true,
+					"type": "uniform"
+				},
+				"lifetime": {
+					"mean": 0.700000,
+					"range": 0.100000,
+					"type": "normal"
+				},
+				"speed": {
+					"mean": 6,
+					"range": 1,
+					"type": "normal"
+				}
+			}
+		},
+		"particleBurstHit": {
+			"nParticles": {
+				"mean": 20,
+				"range": 5,
+				"type": "normal",
+				"real": false,
+				"min": 0
+			},
+			"lifetime": 0,
+			"particle": {
+				"sprite": "particle_simple",
+				"size": {
+					"mean": 1,
+					"range": 0.300000,
+					"real": true,
+					"min": 0
+				},
+				"a": {
+					"mean": 0,
+					"range": 3.141593,
+					"real": true,
+					"type": "uniform"
+				},
+				"lifetime": {
+					"mean": 0.170000,
+					"range": 0.070000,
+					"type": "normal"
+				},
+				"speed": {
+					"mean": 270,
+					"range": 80,
+					"type": "normal"
+				}
+			}
+		}
+	}
+}

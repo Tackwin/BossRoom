@@ -23,11 +23,15 @@ private:
 	std::unordered_map<integer_t, std::unique_ptr<Vector2f>> vector2fs;
 	std::unordered_map<integer_t, std::unique_ptr<sf::View>> views;
 	std::unordered_map<integer_t, std::unique_ptr<Item>> items;
+	std::unordered_map<
+		integer_t, std::unique_ptr<std::function<void(const nlohmann::json&)>>
+	> changeCallbacks;
 #define ITERATE\
 	X(sections);\
 	X(vector2fs);\
 	X(items);\
-	X(views);
+	X(views);\
+	X(changeCallbacks);
 
 
 public:

@@ -23,6 +23,9 @@ Panel::Panel(nlohmann::json json) noexcept : Widget(json) {
 		toggleCollapse();
 	if (auto it = json.find("collapsed"); it != json.end())
 		setClipper(*it);
+	if (auto it = json.find("back_color"); it != std::end(json))
+		getSprite().setColor((Vector4f)*it);
+
 
 	Callback onClick;
 	onClick.began = [&]{

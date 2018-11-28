@@ -100,3 +100,11 @@ sf::Texture& AAShooter::getIconTexture() const noexcept {
 ValuePtr<ItemInfo> AAShooter::getInfo() const noexcept {
 	return { new AxisAlignedShooterInfo(info) };
 }
+
+dyn_struct AAShooter::get_item_desc() const noexcept {
+	return {
+		{"Name", "Axis Aligned Shooter"},
+		{"Effect", "Nique des peres"}
+	};
+}
+

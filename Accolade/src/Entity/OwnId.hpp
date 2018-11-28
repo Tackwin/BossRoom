@@ -93,3 +93,12 @@ void from_json(const nlohmann::json& json, OwnId<T>& x) noexcept {
 	x.ptr = json.get<EntityStore::integer_t>();
 }
 
+
+template<typename T>
+OwnId<T> take_ownership(Eid<T> id) noexcept {
+	return (OwnId<T>)id;
+}
+template<typename T>
+Eid<T> view(const OwnId<T>& id) noexcept {
+	return (Eid<T>)id;
+}

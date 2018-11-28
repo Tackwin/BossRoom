@@ -659,7 +659,12 @@ struct dyn_struct;
 template<typename T>
 void to_dyn_struct(dyn_struct& s, const Vector<2, T>& x) noexcept {
 	s = { x.x, x.y };
-	s.type_hash = typeid(Vector<2, T>).hash_code();
+	s.type_tag = "Vector2<T>"_id;
+}
+template<typename T>
+void from_dyn_struct(const dyn_struct& s, Vector<2, T>& x) noexcept {
+	x.x = s[0];
+	x.y = s[1];
 }
 
 #pragma warning(pop)

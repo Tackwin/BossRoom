@@ -5,6 +5,7 @@
 #include "Graphics/GUI/Panel.hpp"
 #include "Graphics/GUI/Label.hpp"
 #include "Managers/InputsManager.hpp"
+#include "Graphics/GUI/dyn_structTree.hpp"
 
 constexpr struct {
 	float icon = 5.f;
@@ -62,6 +63,13 @@ Inventory::Inventory() noexcept : Widget() {
 	});
 	item_focus_mask->getSprite().setColor(sf::Color{ 255, 255, 255, 125 });
 	item_focus_mask->setVisible(false);
+
+	item_desc = main_panel->makeChild<Panel>({
+		{"sripte", "panel_a"},
+		{"size", {main_panel->getSize().x / 3.f, main_panel->getSize().y}},
+		{"pos", {main_panel->getSize().x * 2.f / 3.f, 0}},
+		{"back_color", {0.565f, 0.576f, 0.627f, 1.f}}
+	});
 
 	Widget::Callback on_click;
 	on_click.began = std::bind(&Inventory::onClickBegan, this);
@@ -154,7 +162,13 @@ void Inventory::open() noexcept {
 
 void Inventory::setFocusedItem(size_t index) noexcept {
 	focused_item = index;
+	auto item = es_instance->get(items[index].item);
+	if (!item) std::abort();
+
 	item_focus_mask->setPosition({ -2.5f, -2.5f + 30.f * index });
+	item_desc->makeChild<dyn_structTree>({
+		{"structure", item->get_item_desc()}
+	});
 }
 
 void Inventory::setFocus(bool v) noexcept {

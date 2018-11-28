@@ -20,22 +20,35 @@ dyn_struct* dyn_struct::clone() noexcept {
 	return new dyn_struct(*this);
 }
 
-ValuePtr<dyn_struct>& dyn_struct::operator[](std::string_view str) noexcept {
+dyn_struct& dyn_struct::operator[](std::string_view str) noexcept {
 	assert(std::holds_alternative<structure_t>(value));
 
 	auto& struc = std::get<structure_t>(value);
-	if (struc.count(std::string(str)) == 0) {
-		struc[std::string(str)] = ValuePtr(new dyn_struct());
-	}
 
-	return struc.at(std::string(str));
+
+	if (struc.count(std::string(str)) == 0) set(str, {}, *this);
+	return *struc.at(std::string(str));
 }
-ValuePtr<dyn_struct>& dyn_struct::operator[](size_t idx) noexcept {
+dyn_struct& dyn_struct::operator[](size_t idx) noexcept {
 	assert(std::holds_alternative<array_t>(value));
 	assert(std::get<array_t>(value).size() > idx);
 
 	auto& arr = std::get<array_t>(value);
-	return arr[idx];
+	return *arr[idx];
+}
+
+const dyn_struct& dyn_struct::operator[](std::string_view str) const noexcept {
+	assert(std::holds_alternative<structure_t>(value));
+
+	auto& struc = std::get<structure_t>(value);
+	return *struc.at(std::string(str));
+}
+const dyn_struct& dyn_struct::operator[](size_t idx) const noexcept {
+	assert(std::holds_alternative<array_t>(value));
+	assert(std::get<array_t>(value).size() > idx);
+
+	auto& arr = std::get<array_t>(value);
+	return *arr[idx];
 }
 
 void dyn_struct::push_back(const dyn_struct& v) noexcept {
@@ -62,7 +75,6 @@ void to_dyn_struct(dyn_struct& to, const dyn_struct::x& from) noexcept {\
 	dyn_struct::variant v;\
 	v = from;\
 	to.value = std::move(v);\
-	to.type_hash = typeid(from).hash_code();\
 }\
 void from_dyn_struct(const dyn_struct& from, dyn_struct::x& to) noexcept {\
 	to = std::get<dyn_struct::x>(from.value);\
@@ -82,7 +94,6 @@ void to_dyn_struct(dyn_struct& to, const x& from) noexcept {\
 	dyn_struct::variant v;\
 	v = dyn_struct::integer_t(from);\
 	to.value = std::move(v);\
-	to.type_hash = typeid(from).hash_code();\
 }\
 void from_dyn_struct(const dyn_struct& from, x& to) noexcept {\
 	to = x(std::get<dyn_struct::integer_t>(from.value));\
@@ -103,7 +114,6 @@ void to_dyn_struct(dyn_struct& to, const x& from) noexcept {\
 	dyn_struct::variant v;\
 	v = dyn_struct::real_t(from);\
 	to.value = std::move(v);\
-	to.type_hash = typeid(from).hash_code();\
 }\
 void from_dyn_struct(const dyn_struct& from, x& to) noexcept {\
 	to = x(std::get<dyn_struct::integer_t>(from.value));\
@@ -118,29 +128,33 @@ void to_dyn_struct(dyn_struct& to, const dyn_struct::variant& from) noexcept {
 	dyn_struct::variant v;
 	v = from;
 	to.value = std::move(v);
-	to.type_hash = typeid(from).hash_code();
 }
 void from_dyn_struct(const dyn_struct& from, dyn_struct::variant& to) noexcept {
 	to = from.value;
 }
+
+void to_dyn_struct(dyn_struct& to, const char*& from) noexcept {
+	dyn_struct::variant v;
+	v = std::string{ from };
+	to.value = std::move(v);
+}
+
 void to_dyn_struct(dyn_struct& to, const dyn_struct::null_t& from) noexcept {
 	dyn_struct::variant v;
 	v = from;
 	to.value = std::move(v);
-	to.type_hash = typeid(from).hash_code();
 }
 void from_dyn_struct(const dyn_struct&, dyn_struct::null_t&) noexcept {}
 
-void to_dyn_struct(dyn_struct& to, char const* const& from) noexcept {
+void to_dyn_struct(dyn_struct& to, char const* from) noexcept {
 	dyn_struct::variant v;
 	v = std::string(from);
 	to.value = std::move(v);
-	to.type_hash = typeid(std::string).hash_code();
 }
 
 std::string format(const dyn_struct& s, std::string_view indent) noexcept {
 	std::string result;
-	std::visit([&](auto v) noexcept {
+	std::visit([&](auto& v) noexcept {
 		using type = std::decay_t<decltype(v)>;
 
 		if constexpr (std::is_same_v<type, dyn_struct::integer_t>) {
@@ -208,9 +222,13 @@ std::string format(const dyn_struct& s, std::string_view indent) noexcept {
 	return result;
 }
 
+constexpr auto __type_tag__ = "__type_tag__";
+constexpr auto __value__ = "__value__";
+
 std::string format_to_json(const dyn_struct& s, std::string_view indent) noexcept {
 	std::string result;
-	std::visit([&](auto v) noexcept {
+
+	std::visit([&](auto& v) noexcept {
 		using type = std::decay_t<decltype(v)>;
 
 		if constexpr (std::is_same_v<type, dyn_struct::integer_t>) {
@@ -278,6 +296,14 @@ std::string format_to_json(const dyn_struct& s, std::string_view indent) noexcep
 
 	}, s.value);
 
+	if (s.type_tag != "dyn_struct"_id) {
+		dyn_struct copy = s;
+		copy.type_tag = "dyn_struct"_id;
+		return format_to_json({
+			{__type_tag__, s.type_tag},
+			{__value__, copy}
+		}, indent);
+	}
 	return result;
 }
 std::string format_to_json(const dyn_struct& s, size_t space_indent) noexcept {
@@ -511,6 +537,7 @@ std::optional<dyn_struct> load_from_json_file(const std::filesystem::path& file)
 
 			dyn_struct value;
 			std::tie(value, idx) = *value_opt;
+
 			set(key, value, result);
 
 			if (idx >= tokens.size()) return std::nullopt;
@@ -519,6 +546,15 @@ std::optional<dyn_struct> load_from_json_file(const std::filesystem::path& file)
 				if (idx >= tokens.size()) return std::nullopt;
 			}
 		}
+
+		auto type_tag = at(result, std::string_view{ __type_tag__ });
+		if (type_tag) {
+			auto value = at(result, std::string_view{ __value__ });
+			if (!value) return std::nullopt;
+			result = *value;
+			result.type_tag = *type_tag;
+		}
+
 		return std::pair{ result, idx + 1 };
 	};
 
@@ -566,4 +602,202 @@ save_to_json_file(const dyn_struct& to_save, const std::filesystem::path& path) 
 	std::string to_write = format_to_json(to_save);
 
 	return overwrite_file(path, to_write);
+}
+
+const dyn_struct& dyn_struct_array_iterator::operator*() const noexcept {
+	return **iterator;
+}
+dyn_struct& dyn_struct_array_iterator::operator*() noexcept {
+	return **iterator;
+}
+const dyn_struct& dyn_struct_array_iterator::operator->() const noexcept {
+	return **iterator;
+}
+dyn_struct& dyn_struct_array_iterator::operator->() noexcept {
+	return **iterator;
+}
+dyn_struct_array_iterator& dyn_struct_array_iterator::operator++() noexcept {
+	++iterator;
+	return *this;
+}
+bool
+dyn_struct_array_iterator::operator==(const dyn_struct_array_iterator& other) const noexcept
+{
+	return iterator == other.iterator;
+}
+bool
+dyn_struct_array_iterator::operator!=(const dyn_struct_array_iterator& other) const noexcept
+{
+	return iterator != other.iterator;
+}
+std::pair<std::string, const dyn_struct&>
+dyn_struct_structure_iterator::operator*() const noexcept {
+	return std::pair<std::string, const dyn_struct&>{ iterator->first, *iterator->second };
+}
+std::pair<std::string, dyn_struct&> dyn_struct_structure_iterator::operator*() noexcept {
+	return std::pair<std::string, dyn_struct&>{ iterator->first, *iterator->second };
+}
+std::pair<std::string, const dyn_struct&>
+dyn_struct_structure_iterator::operator->() const noexcept {
+	return std::pair<std::string, const dyn_struct&>{ iterator->first, *iterator->second };
+}
+std::pair<std::string, dyn_struct&>
+dyn_struct_structure_iterator::operator->() noexcept {
+	return std::pair<std::string, dyn_struct&>{ iterator->first, *iterator->second };
+}
+dyn_struct_structure_iterator& dyn_struct_structure_iterator::operator++() noexcept {
+	++iterator;
+	return *this;
+}
+bool dyn_struct_structure_iterator::operator==(
+	const dyn_struct_structure_iterator& other
+) const noexcept {
+	return iterator == other.iterator;
+}
+bool dyn_struct_structure_iterator::operator!=(
+	const dyn_struct_structure_iterator& other
+) const noexcept {
+	return iterator != other.iterator;
+}
+
+const dyn_struct* at(const dyn_struct& d_struct, std::string_view key) noexcept {
+	if (!has(d_struct, key)) return nullptr;
+	return &d_struct[key];
+}
+
+constexpr bool holds_object(const dyn_struct& d_struct) noexcept {
+	return std::holds_alternative<dyn_struct::structure_t>(d_struct.value);
+}
+constexpr bool holds_array(const dyn_struct& d_struct) noexcept {
+	return std::holds_alternative<dyn_struct::array_t>(d_struct.value);
+}
+
+constexpr bool holds_primitive(const dyn_struct& d_struct) noexcept {
+	return
+		holds_bool(d_struct) ||
+		holds_number(d_struct) ||
+		holds_null(d_struct) ||
+		holds_string(d_struct);
+}
+constexpr bool holds_integer(const dyn_struct& d_struct) noexcept {
+	return std::holds_alternative<dyn_struct::integer_t>(d_struct.value);
+}
+constexpr bool holds_real(const dyn_struct& d_struct) noexcept {
+	return std::holds_alternative<dyn_struct::real_t>(d_struct.value);
+}
+constexpr bool holds_bool(const dyn_struct& d_struct) noexcept {
+	return std::holds_alternative<dyn_struct::boolean_t>(d_struct.value);
+}
+constexpr bool holds_null(const dyn_struct& d_struct) noexcept {
+	return std::holds_alternative<dyn_struct::null_t>(d_struct.value);
+}
+constexpr bool holds_string(const dyn_struct& d_struct) noexcept {
+	return std::holds_alternative<dyn_struct::string_t>(d_struct.value);
+}
+constexpr bool holds_number(const dyn_struct& d_struct) noexcept {
+	return holds_integer(d_struct) || holds_real(d_struct);
+}
+
+const dyn_struct_array_iterator
+cbegin(const dyn_struct_array_iterator_tag& d_struct) noexcept {
+	return { d_struct.it->begin() };
+}
+dyn_struct_array_iterator begin(dyn_struct_array_iterator_tag& d_struct) noexcept {
+	return { d_struct.it->begin() };
+}
+const dyn_struct_array_iterator
+cend(const dyn_struct_array_iterator_tag& d_struct) noexcept {
+	return { d_struct.it->end() };
+}
+dyn_struct_array_iterator end(dyn_struct_array_iterator_tag& d_struct) noexcept {
+	return { d_struct.it->end() };
+}
+
+const dyn_struct_structure_iterator
+cbegin(const dyn_struct_structure_iterator_tag& d_struct) noexcept {
+	return { d_struct.it->begin() };
+}
+dyn_struct_structure_iterator begin(dyn_struct_structure_iterator_tag& d_struct) noexcept {
+	return { d_struct.it->begin() };
+}
+const dyn_struct_structure_iterator
+cend(const dyn_struct_structure_iterator_tag& d_struct) noexcept {
+	return { d_struct.it->end() };
+}
+dyn_struct_structure_iterator end(dyn_struct_structure_iterator_tag& d_struct) noexcept {
+	return { d_struct.it->end() };
+}
+
+dyn_struct_array_iterator_tag iterate_array(dyn_struct& d_struct) noexcept {
+	assert(std::holds_alternative<dyn_struct::array_t>(d_struct.value));
+	return { &std::get<dyn_struct::array_t>(d_struct.value) };
+}
+
+dyn_struct_structure_iterator_tag iterate_structure(dyn_struct& d_struct) noexcept {
+	assert(std::holds_alternative<dyn_struct::structure_t>(d_struct.value));
+	return { &std::get<dyn_struct::structure_t>(d_struct.value) };
+}
+
+bool has(const dyn_struct& d_struct, std::string_view key) noexcept {
+	return std::holds_alternative<dyn_struct::structure_t>(d_struct.value) &&
+		std::get<dyn_struct::structure_t>(d_struct.value).count(std::string{ key }) != 0;
+}
+
+void from_json(const nlohmann::json& json, dyn_struct& d_struct) noexcept {
+	if (json.is_object()) {
+		d_struct = dyn_struct::structure_t{};
+		for (auto&[k, v] : json.get<nlohmann::json::object_t>()) {
+			d_struct[k] = v;
+		}
+	}
+	else if (json.is_array()) {
+		d_struct = dyn_struct::array_t{};
+		for (auto& v : json.get<nlohmann::json::array_t>()) {
+			dyn_struct d;
+			from_json(v, d);
+			d_struct.push_back(d);
+		}
+	}
+	else if (json.is_null()) {
+		d_struct = dyn_struct::null_t{};
+	}
+	else if (json.is_number_float()) {
+		d_struct = (dyn_struct::real_t)json;
+	}
+	else if (json.is_number()) {
+		d_struct = (dyn_struct::integer_t)json;
+	}
+	else if (json.is_string()) {
+		d_struct = json.get<std::string>();
+	}
+}
+
+void to_json(nlohmann::json& json, const dyn_struct& d_struct) noexcept {
+	if (holds_object(d_struct)) {
+		for (auto&[k, v] : std::get<dyn_struct::structure_t>(d_struct.value)) {
+			json[k] = *v;
+		}
+	}
+	else if (holds_array(d_struct)) {
+		for (auto& v : std::get<dyn_struct::array_t>(d_struct.value)) {
+			json.push_back((nlohmann::json)*v);
+		}
+	}
+	else if (holds_null(d_struct)) {
+		json = nullptr;
+	}
+	else if (holds_real(d_struct)) {
+		json = (dyn_struct::real_t)d_struct;
+	}
+	else if (holds_integer(d_struct)) {
+		json = (dyn_struct::integer_t)d_struct;
+	}
+	else if (holds_string(d_struct)) {
+		std::string str;
+		from_dyn_struct(d_struct, str);
+		json = str;
+	}
+	else if (holds_bool(d_struct)) {
+		json = (dyn_struct::boolean_t)d_struct;
+	}
 }

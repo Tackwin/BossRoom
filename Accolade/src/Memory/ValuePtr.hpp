@@ -51,10 +51,10 @@ public:
 		return ptr != nullptr;
 	}
 
-	constexpr T operator*() const noexcept {
+	constexpr T& operator*() const noexcept {
 		return *ptr;
 	}
-	constexpr T operator->() const noexcept {
+	constexpr T& operator->() const noexcept {
 		return *ptr;
 	}
 

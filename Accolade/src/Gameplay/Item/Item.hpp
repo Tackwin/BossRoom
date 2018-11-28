@@ -7,6 +7,7 @@
 #include "Components/Removable.hpp"
 #include "Components/Clonable.hpp"
 #include "Memory/ValuePtr.hpp"
+#include "RTTI/dyn_struct.hpp"
 
 struct ItemInfo {
 	virtual ItemInfo* clone() const noexcept;
@@ -39,6 +40,8 @@ public:
 	virtual size_t getCost() const noexcept;
 
 	virtual Type getItemType() const noexcept;
+
+	virtual dyn_struct get_item_desc() const noexcept = 0;
 protected:
 
 	std::string name;

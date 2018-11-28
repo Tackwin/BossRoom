@@ -40,6 +40,8 @@ public:
 	virtual sf::Texture& getIconTexture() const noexcept override;
 
 	virtual Clonable* clone() const noexcept override;
+
+	virtual dyn_struct get_item_desc() const noexcept override;
 private:
 
 	void playerShooted(EM::EventCallbackParameter args) noexcept;

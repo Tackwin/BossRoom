@@ -71,3 +71,10 @@ void HealthScroll::playerUseItem(EM::EventCallbackParameter args) noexcept {
 	player.heal(info.health_regen);
 	remove();
 }
+
+dyn_struct HealthScroll::get_item_desc() const noexcept {
+	return {
+		{"Name", "Health Scroll"},
+		{"Effect", "Soigne des meres"}
+	};
+}
