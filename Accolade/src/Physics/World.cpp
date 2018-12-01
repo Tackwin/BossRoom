@@ -22,82 +22,74 @@ void World::updateInc(double dt, u32 itLevel) {
 #pragma warning(push)
 #pragma warning(disable:4239)
 void World::update(double dt) {
-	// removeNeeded();
 
-	for (auto& it : _objectsMap) {
-		auto obj1Id = it.first;
-		auto obj1 = it.second.lock();
-
-		// TODO
-		// Really it's a bit of a hack, we might want to revisit this whole system
-		// It's kind of slow in debug, and not really robust...
-		// I like the API though.
-		if (obj1->maskChanged) {
-			buildUnionCache();
-			obj1->maskChanged = false;
-		}
+	for (auto& [id, weak_obj] : _objectsMap) {
+		if (weak_obj.expired()) continue;
+		auto obj = weak_obj.lock();
 
 		Vector2f flatForces = std::accumulate(
-			obj1->flatForces.begin(), 
-			obj1->flatForces.end(),
+			obj->flatForces.begin(),
+			obj->flatForces.end(),
 			Vector2f(0, 0)
 		);
 		Vector2f flatVelocities = std::accumulate(
-			obj1->flatVelocities.begin(), 
-			obj1->flatVelocities.end(), 
+			obj->flatVelocities.begin(),
+			obj->flatVelocities.end(),
 			Vector2f(0, 0)
 		);
 
-		Vector2f pos = obj1->pos;
+		Vector2f pos = obj->pos;
 
-		Vector2f new_vel = obj1->velocity + (obj1->force + flatForces) * dt;
-		Vector2f nPos = obj1->pos + (new_vel + flatVelocities) * dt * 0.5f;
+		Vector2f new_vel = obj->velocity + (obj->force + flatForces) * dt;
+		Vector2f nPos = obj->pos + (new_vel + flatVelocities) * dt * 0.5f;
 
 		// We set twice the velocity beacause the user callback might want to know
 		// this info.
-		obj1->velocity = new_vel;
-		
+		obj->velocity = new_vel;
+
 		bool xCollider = false;
 		bool yCollider = false;
 
-		auto& collisionState = _collisionStates[obj1Id];
+		auto& collisionState = _collisionStates[id];
 
-		for (auto& obj2Id : _unionsCache[obj1Id]) {
-			auto obj2 = _objectsMap[obj2Id].lock();
+		for (auto&[id2, weak_obj2] : _objectsMap) {
+			if (id == id2) continue;
+			if (weak_obj2.expired()) continue;
 
-			if (obj1.get() == obj2.get()) continue;
+			auto obj2 = weak_obj2.lock();
+			if ((obj->collisionMask & obj2->idMask).none()) continue;
 
 			bool flag = false;
 			if (!xCollider) {
-				obj1->pos.x = nPos.x;
-				obj1->collider->setPos({ nPos.x, pos.y });
+				obj->pos.x = nPos.x;
+				obj->collider->setPos({ nPos.x, pos.y });
 
 				if (
-					obj1->collider->collideWith(obj2->collider.get()) &&
-					obj1->collider->filterCollide(*obj2.get())
+					obj->collider->collideWith(obj2->collider.get()) &&
+					obj->collider->filterCollide(*obj2.get())
 				) {
-					if (!obj1->collider->sensor) {
+					if (!obj->collider->sensor) {
 						new_vel.x = 0;
-						obj1->pos.x = pos.x;
+						obj->pos.x = pos.x;
 						nPos.x = pos.x;
 						xCollider = true;
 					}
-				
+
 					flag = true;
 				}
 			}
 
 			if (!yCollider) {
-				obj1->pos.y = nPos.y;
-				obj1->collider->setPos({ pos.x, nPos.y });
+				obj->pos.y = nPos.y;
+				obj->collider->setPos({ pos.x, nPos.y });
 
 				if (
-					obj1->collider->collideWith(obj2->collider.get())
-				){
- 					if (obj1->collider->filterCollide(*obj2.get())) {
-						if (!obj1->collider->sensor) {
+					obj->collider->collideWith(obj2->collider.get())
+				) {
+					if (obj->collider->filterCollide(*obj2.get())) {
+						if (!obj->collider->sensor) {
 							new_vel.y = 0;
-							obj1->pos.y = pos.y;
+							obj->pos.y = pos.y;
 							nPos.y = pos.y;
 							yCollider = true;
 						}
@@ -107,14 +99,14 @@ void World::update(double dt) {
 				}
 			}
 
-			auto& collisionStateRef = collisionState[obj2Id];
+			auto& collisionStateRef = collisionState[id2];
 
 			if (!flag && collisionStateRef) {
-				obj1->collider->onExit(obj2.get());
+				obj->collider->onExit(obj2.get());
 				//obj2->collider->onExit(obj1.get());
 			}
 			if (flag && !collisionStateRef) {
-				obj1->collider->onEnter(obj2.get());
+				obj->collider->onEnter(obj2.get());
 				//obj2->collider->onEnter(obj1.get());
 			}
 			collisionStateRef = flag;
@@ -124,12 +116,12 @@ void World::update(double dt) {
 			}
 		}
 
-		obj1->force = { 0, 0 };
-		obj1->velocity = new_vel;
-		obj1->pos = nPos;
+		obj->force = { 0, 0 };
+		obj->velocity = new_vel;
+		obj->pos = nPos;
 
-		if (obj1->collider)
-			obj1->collider->setPos(nPos);
+		if (obj->collider)
+			obj->collider->setPos(nPos);
 	}
 }
 
@@ -232,7 +224,7 @@ void World::removeNeeded() {
 	for (auto& id : toRemove) {
 		_objectsMap.erase(id);
 	}
-	buildUnionCache();
+	//buildUnionCache();
 }
 #pragma warning(pop)
 

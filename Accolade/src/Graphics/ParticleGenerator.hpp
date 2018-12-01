@@ -13,11 +13,13 @@
 #include "./../Math/Vector.hpp"
 
 #include "./../Utils/UUID.hpp"
+#include "RTTI/dyn_struct.hpp"
 
 class Particle;
 class ParticleGenerator {
 public:
 	ParticleGenerator();
+	ParticleGenerator(const dyn_struct& d_struct) noexcept;
 	ParticleGenerator(nlohmann::json json_, Vector2f pos_);
 
 	void loadJson(const nlohmann::json& json);
@@ -37,6 +39,7 @@ public:
 
 private:
 
+	dyn_struct d_struct;
 	nlohmann::json _json{};
 	nlohmann::json _particule{};
 

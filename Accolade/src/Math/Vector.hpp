@@ -663,8 +663,8 @@ void to_dyn_struct(dyn_struct& s, const Vector<2, T>& x) noexcept {
 }
 template<typename T>
 void from_dyn_struct(const dyn_struct& s, Vector<2, T>& x) noexcept {
-	x.x = s[0];
-	x.y = s[1];
+	x.x = (T)s[0];
+	x.y = (T)s[1];
 }
 
 #pragma warning(pop)

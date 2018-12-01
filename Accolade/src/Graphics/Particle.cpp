@@ -3,26 +3,27 @@
 #include "./../Managers/AssetsManager.hpp"
 #include "./../Managers/TimerManager.hpp"
 
-Particle::Particle(nlohmann::json json_, Vector2f pos_, Vector2f dir_, Function update_) :
-	_json(json_),
+Particle::Particle(
+	const nlohmann::json& json_, Vector2f pos_, Vector2f dir_, Function update_
+) noexcept :
 	_pos(pos_),
 	_dir(dir_),
 	_update(update_)
 {
-	std::string strSprite = _json["sprite"];
+	std::string strSprite = json_["sprite"];
 	_sprite.setTexture(AssetsManager::getTexture(strSprite));
 	_sprite.setOrigin(
-		_sprite.getTextureRect().width / 2.f, 
+		_sprite.getTextureRect().width / 2.f,
 		_sprite.getTextureRect().height / 2.f
 	);
-	_countdownLifetime = getJsonValue<double>(_json, "lifetime");
+	_countdownLifetime = getJsonValue<double>(json_, "lifetime");
 
-	_json["speed"] = getJsonValue<float>(_json, "speed"); //collapse the wave function :p
-	if (_json.find("a") != _json.end()) {
-		_sprite.setRotation(getJsonValue<float>(_json, "a") * 360 / 3.1415926f);
+	speed = getJsonValue<float>(json_, "speed"); //collapse the wave function :p
+	if (json_.find("a") != json_.end()) {
+		_sprite.setRotation(getJsonValue<float>(json_, "a") * 360 / 3.1415926f);
 	}
-	if (_json.find("size") != _json.end()) {
-		const auto& size = getJsonValue<float>(_json, "size");
+	if (json_.find("size") != json_.end()) {
+		const auto& size = getJsonValue<float>(json_, "size");
 		_sprite.setScale(
 			size / _sprite.getTextureRect().width,
 			size / _sprite.getTextureRect().height
@@ -30,8 +31,38 @@ Particle::Particle(nlohmann::json json_, Vector2f pos_, Vector2f dir_, Function 
 	}
 }
 
+Particle::Particle(
+	std::normal_distribution<> size_dist,
+	std::normal_distribution<> speed_dist,
+	std::normal_distribution<> lifetime_dist,
+	std::normal_distribution<> angle_dist,
+	sf::Texture& texture,
+	Vector2f pos_,
+	Vector2f dir_,
+	Function update_
+) noexcept :
+	_pos(pos_),
+	_dir(dir_),
+	_update(update_)
+{
+	_sprite.setTexture(texture);
+	_sprite.setOrigin(
+		_sprite.getTextureRect().width / 2.f,
+		_sprite.getTextureRect().height / 2.f
+	);
+	_countdownLifetime = lifetime_dist(C::RD);
+
+	speed = (float)speed_dist(C::RD);
+	_sprite.setRotation((float)angle_dist(C::RD) * 360 / 3.1415926f);
+	const auto& size = (float)size_dist(C::RD);
+	_sprite.setScale(
+		size / _sprite.getTextureRect().width,
+		size / _sprite.getTextureRect().height
+	);
+}
+
 void Particle::update(double dt) {
-	_pos += _dir * dt * _json["speed"].get<float>();
+	_pos += _dir * dt * speed;
 	_countdownLifetime -= dt;
 	_update(dt);
 }

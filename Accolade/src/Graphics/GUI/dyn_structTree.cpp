@@ -15,6 +15,8 @@ dyn_structTree::dyn_structTree(const nlohmann::json& json) noexcept : Widget(jso
 	if (auto it = json.find("structure"); it != std::end(json)) {
 		structure = *it;
 		contruct_tree();
+	} if (auto it = json.find("editable"); it != std::end(json)) {
+		set_editable(*it);
 	}
 }
 
@@ -23,7 +25,7 @@ void dyn_structTree::set_dyn_struct(const dyn_struct& d_struct) noexcept {
 }
 
 void dyn_structTree::contruct_tree() noexcept {
-	if (structure.type_tag == "Vector2<T>"_id) {
+ 	if (structure.type_tag == "Vector2<T>"_id) {
 		auto pos_picker = makeChild<PosPicker>({
 			{"pos", _pos},
 			{"name", "value"},
@@ -31,9 +33,10 @@ void dyn_structTree::contruct_tree() noexcept {
 			{"label", {
 				{"font", "consola"},
 				{"charSize", 13}
-			}}
+			}},
+			{"editable", is_editable()}
 		});
-		pos_picker->listenChange(
+		if (is_editable()) pos_picker->listenChange(
 			[&, &ref_value = structure](const Vector2f& pos) {
 				ref_value = pos;
 				for (auto&[_, f] : change_listeners) {
@@ -60,17 +63,24 @@ void dyn_structTree::contruct_tree() noexcept {
 				{"textColor", {1, 1, 1, 1}}
 			});
 
+			Vector2f offset;
+			if (holds_object(v)) offset = { (float)INDENT_SIZE, label->getSize().y };
+			else offset = { label->getSize().x + 5, 0 };
+
 			auto child = makeChild<dyn_structTree>({
 				{"name", k + "_value"},
-				{"pos", {p.x + INDENT_SIZE, p.y + label->getSize().y}},
-				{"structure", v}
+				{"pos", p + offset},
+				{"structure", v},
+				{"editable", is_editable()}
 			});
-			child->listen_change([&, &ref_value = v](const dyn_struct& s) {
-				ref_value = s;
-				for (auto&[_, f] : change_listeners) {
-					f(structure);
+			if (is_editable()) child->listen_change(
+				[&, &ref_value = v](const dyn_struct& s) {
+					ref_value = s;
+					for (auto&[_, f] : change_listeners) {
+						f(structure);
+					}
 				}
-			});
+			);
 
 			size.x = std::max(size.x, INDENT_SIZE + child->getSize().x);
 			p.y += std::max(label->getSize().y, child->getSize().y);
@@ -90,7 +100,8 @@ void dyn_structTree::contruct_tree() noexcept {
 			auto child = makeChild<dyn_structTree>({
 				{"name", i + "_value"},
 				{"pos", {p.x + INDENT_SIZE, p.y}},
-				{"structure", v}
+				{"structure", v},
+				{"editable", is_editable()}
 			});
 
 			size.x = std::max(size.x, INDENT_SIZE + child->getSize().x);
@@ -115,23 +126,26 @@ void dyn_structTree::contruct_tree() noexcept {
 				{"pos", _pos},
 				{"name", "value"},
 				{"size", {15, 15}},
-				{"x", (bool)structure}
+				{"x", (bool)structure},
+				{"editable", is_editable()}
 			});
 
-			boolPicker->listenChange([&, &ref_value = structure] (bool x) mutable {
-				ref_value = x;
+			if (is_editable()) boolPicker->listenChange(
+				[&, &ref_value = structure] (bool x) mutable {
+					ref_value = x;
 
-				for (auto&[_, f] : change_listeners) {
-					f(structure);
+					for (auto&[_, f] : change_listeners) {
+						f(structure);
+					}
 				}
-			});
+			);
 
 			setSize(boolPicker->getSize());
 			return;
 		}
 
 		auto valuePicker = makeChild<ValuePicker>({
-			{"pos", _pos },
+			{"pos", Vector2f{0, 0} },
 			{"name", "value"},
 			//{"origin", {0, 0.5}},
 			{"unfocusedColor", {0.2, 0.2, 0.2, 0.2}},
@@ -139,10 +153,11 @@ void dyn_structTree::contruct_tree() noexcept {
 			{"font", "consola"},
 			{"size", {100, 15}},
 			{"charSize", 14},
-			{"text", str}
-			});
+			{"text", str},
+			{"editable", is_editable()}
+		});
 
-		valuePicker->listenChange(
+		if (is_editable()) valuePicker->listenChange(
 			[&, copy_value = structure, &ref_value = structure]
 			(const std::string& new_str) mutable {
 				if (holds_number(copy_value)) {
@@ -181,4 +196,11 @@ UUID dyn_structTree::listen_change(dyn_structTree::ChangeCallback&& f) noexcept 
 void dyn_structTree::stop_listening_change(UUID id) noexcept {
 	assert(change_listeners.count(id) != 0);
 	change_listeners.erase(id);
+}
+
+bool dyn_structTree::is_editable() const noexcept {
+	return editable;
+}
+void dyn_structTree::set_editable(bool v) noexcept {
+	editable = v;
 }

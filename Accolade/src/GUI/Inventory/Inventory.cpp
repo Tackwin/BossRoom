@@ -166,8 +166,10 @@ void Inventory::setFocusedItem(size_t index) noexcept {
 	if (!item) std::abort();
 
 	item_focus_mask->setPosition({ -2.5f, -2.5f + 30.f * index });
+	item_desc->killEveryChilds();
 	item_desc->makeChild<dyn_structTree>({
-		{"structure", item->get_item_desc()}
+		{"structure", item->get_item_desc()},
+		{"editable", false}
 	});
 }
 

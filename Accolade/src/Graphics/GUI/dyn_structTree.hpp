@@ -26,6 +26,8 @@ public:
 	UUID listen_change(ChangeCallback&& f) noexcept;
 	void stop_listening_change(UUID id) noexcept;
 
+	bool is_editable() const noexcept;
+	void set_editable(bool v) noexcept;
 private:
 	static constexpr auto INDENT_SIZE = 10;
 
@@ -35,5 +37,6 @@ private:
 private:
 	dyn_struct structure;
 
+	bool editable{ false };
 	std::unordered_map<UUID, ChangeCallback> change_listeners;
 };

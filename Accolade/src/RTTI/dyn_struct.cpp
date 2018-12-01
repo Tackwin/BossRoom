@@ -63,6 +63,11 @@ void dyn_struct::pop_back() noexcept {
 	std::get<array_t>(value).pop_back();
 }
 
+dyn_struct& get(std::string_view str, const dyn_struct& d_struct) noexcept {
+	assert(std::holds_alternative<dyn_struct::structure_t>(d_struct.value));
+	return *std::get<dyn_struct::structure_t>(d_struct.value).at(str.data());
+}
+
 dyn_struct& set(std::string_view str, const dyn_struct& value, dyn_struct& to) noexcept {
 	assert(std::holds_alternative<dyn_struct::structure_t>(to.value));
 	std::get<dyn_struct::structure_t>(to.value)
@@ -552,7 +557,7 @@ std::optional<dyn_struct> load_from_json_file(const std::filesystem::path& file)
 			auto value = at(result, std::string_view{ __value__ });
 			if (!value) return std::nullopt;
 			result = *value;
-			result.type_tag = *type_tag;
+			result.type_tag = (size_t)*type_tag;
 		}
 
 		return std::pair{ result, idx + 1 };
@@ -702,14 +707,14 @@ const dyn_struct_array_iterator
 cbegin(const dyn_struct_array_iterator_tag& d_struct) noexcept {
 	return { d_struct.it->begin() };
 }
-dyn_struct_array_iterator begin(dyn_struct_array_iterator_tag& d_struct) noexcept {
+dyn_struct_array_iterator begin(const dyn_struct_array_iterator_tag& d_struct) noexcept {
 	return { d_struct.it->begin() };
 }
 const dyn_struct_array_iterator
 cend(const dyn_struct_array_iterator_tag& d_struct) noexcept {
 	return { d_struct.it->end() };
 }
-dyn_struct_array_iterator end(dyn_struct_array_iterator_tag& d_struct) noexcept {
+dyn_struct_array_iterator end(const dyn_struct_array_iterator_tag& d_struct) noexcept {
 	return { d_struct.it->end() };
 }
 
@@ -717,14 +722,14 @@ const dyn_struct_structure_iterator
 cbegin(const dyn_struct_structure_iterator_tag& d_struct) noexcept {
 	return { d_struct.it->begin() };
 }
-dyn_struct_structure_iterator begin(dyn_struct_structure_iterator_tag& d_struct) noexcept {
+dyn_struct_structure_iterator begin(const dyn_struct_structure_iterator_tag& d_struct) noexcept {
 	return { d_struct.it->begin() };
 }
 const dyn_struct_structure_iterator
 cend(const dyn_struct_structure_iterator_tag& d_struct) noexcept {
 	return { d_struct.it->end() };
 }
-dyn_struct_structure_iterator end(dyn_struct_structure_iterator_tag& d_struct) noexcept {
+dyn_struct_structure_iterator end(const dyn_struct_structure_iterator_tag& d_struct) noexcept {
 	return { d_struct.it->end() };
 }
 

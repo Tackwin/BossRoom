@@ -55,7 +55,7 @@ struct dyn_struct {
 		}
 	}
 
-	template<typename T> operator T() const noexcept {
+	template<typename T> explicit operator T() const noexcept {
 		T t;
 		from_dyn_struct(*this, t);
 		return t;
@@ -119,7 +119,7 @@ namespace std {
 	};
 	template<>
 	struct iterator_traits<dyn_struct_structure_iterator> {
-		typedef std::pair<std::string&, dyn_struct&> value_type;
+		typedef std::pair<std::string, dyn_struct&> value_type;
 		typedef int difference_type;
 		typedef value_type& reference;
 		typedef value_type* pointer;
@@ -151,6 +151,7 @@ X(double)
 #undef X
 extern void to_dyn_struct(dyn_struct&, const char*) noexcept;
 
+extern dyn_struct& get(std::string_view str, const dyn_struct& d_struct) noexcept;
 extern dyn_struct&
 set(std::string_view str, const dyn_struct& value, dyn_struct& to) noexcept;
 
@@ -168,20 +169,20 @@ extern std::string format_to_json(const dyn_struct& s, size_t space_indent) noex
 extern const dyn_struct_array_iterator
 cbegin(const dyn_struct_array_iterator_tag& d_struct) noexcept;
 extern dyn_struct_array_iterator
-begin(dyn_struct_array_iterator_tag& d_struct) noexcept;
+begin(const dyn_struct_array_iterator_tag& d_struct) noexcept;
 extern const dyn_struct_array_iterator
 cend(const dyn_struct_array_iterator_tag& d_struct) noexcept;
 extern dyn_struct_array_iterator
-end(dyn_struct_array_iterator_tag& d_struct) noexcept;
+end(const dyn_struct_array_iterator_tag& d_struct) noexcept;
 
 extern const dyn_struct_structure_iterator
 cbegin(const dyn_struct_structure_iterator_tag& d_struct) noexcept;
 extern dyn_struct_structure_iterator
-begin(dyn_struct_structure_iterator_tag& d_struct) noexcept;
+begin(const dyn_struct_structure_iterator_tag& d_struct) noexcept;
 extern const dyn_struct_structure_iterator
 cend(const dyn_struct_structure_iterator_tag& d_struct) noexcept;
 extern dyn_struct_structure_iterator
-end(dyn_struct_structure_iterator_tag& d_struct) noexcept;
+end(const dyn_struct_structure_iterator_tag& d_struct) noexcept;
 
 extern dyn_struct_array_iterator_tag iterate_array(dyn_struct& d_struct) noexcept;
 extern dyn_struct_structure_iterator_tag iterate_structure(dyn_struct& d_struct) noexcept;

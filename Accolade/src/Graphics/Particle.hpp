@@ -22,16 +22,31 @@ private:
 	Vector2f _pos;
 	Vector2f _dir;
 
+	float speed{ NAN };
 	double _countdownLifetime{ 0.0 };
 
 	Function _update;
 
-	nlohmann::json _json;
 
 	std::unordered_map<std::string, UUID> _keys;
 
 public:
-	Particle(nlohmann::json json_, Vector2f pos_, Vector2f dir_, Function update_ = [](double) {});
+	Particle(
+		const nlohmann::json& json_,
+		Vector2f pos_,
+		Vector2f dir_,
+		Function update_ = [](double) {}
+	) noexcept;
+	Particle(
+		std::normal_distribution<> size_dist,
+		std::normal_distribution<> speed_dist,
+		std::normal_distribution<> lifetime_dist,
+		std::normal_distribution<> angle_dist,
+		sf::Texture& texture,
+		Vector2f pos_,
+		Vector2f dir_,
+		Function update_ = [](double) {}
+	) noexcept;
 
 	void update(double dt);
 	void render(sf::RenderTarget& target);

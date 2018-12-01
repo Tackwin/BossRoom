@@ -1,7 +1,7 @@
 {
  "nParticles": -1,
   "iTime": {
-    "mean": 0.01,
+    "mean": 0.05,
     "range": 0.005,
     "type": "normal",
     "min": 0,
