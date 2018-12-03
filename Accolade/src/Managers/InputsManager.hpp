@@ -46,9 +46,13 @@ public:
 	static bool isTextJustEntered() noexcept;
 	static sf::Uint32 getTextEntered() noexcept;
 
-	static bool isLastSequence(std::initializer_list<sf::Keyboard::Key> keys) noexcept;
+	static bool isLastSequence(
+		std::initializer_list<sf::Keyboard::Key> keys,
+		std::initializer_list<sf::Keyboard::Key> modifiers = {}
+	) noexcept;
 	static bool isLastSequenceJustFinished(
-		std::initializer_list<sf::Keyboard::Key> keys
+		std::initializer_list<sf::Keyboard::Key> keys,
+		std::initializer_list<sf::Keyboard::Key> modifiers = {}
 	) noexcept;
 
 	static int countKeyPressed() noexcept;

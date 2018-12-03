@@ -120,20 +120,22 @@ struct Rectangle {
 
 		Rectangle<T> result = *this;
 
-		if (x < area.x) {
-			result.x = area.x;
-		}
+		// there is a reason it's made like that
+		// if for instance area is a narrow (in height) space, then *this can jump up and
+		// down if instead of if (result.x ...) it where if (x ...)
 		if (x + w > area.x + area.w) {
 			result.x = area.x + area.w - w;
 		}
-
-		if (y < area.y) {
-			result.y = area.y;
+		if (result.x < area.x) {
+			result.x = area.x;
 		}
+
 		if (y + h > area.y + area.h) {
 			result.y = area.y + area.h - h;
 		}
-
+		if (result.y < area.y) {
+			result.y = area.y;
+		}
 		return result;
 	}
 

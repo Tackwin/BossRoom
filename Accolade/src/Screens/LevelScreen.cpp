@@ -162,7 +162,7 @@ void LevelScreen::update(double dt) {
 			game->enterHeritage();
 		}
 	}*/
-	if (IM::isLastSequenceJustFinished({ sf::Keyboard::LControl, sf::Keyboard::E })) {
+	if (IM::isLastSequenceJustFinished({ sf::Keyboard::E }, { sf::Keyboard::LControl })) {
 		C::game->enterScreen(
 			std::make_shared<EditSectionScreen>(&instance->getCurrentSection())
 		);

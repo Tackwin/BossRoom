@@ -164,7 +164,10 @@ sf::Uint32 InputsManager::getTextEntered() noexcept {
 	return textEntered;
 }
 
-bool InputsManager::isLastSequence(std::initializer_list<sf::Keyboard::Key> keys) noexcept {
+bool InputsManager::isLastSequence(
+	std::initializer_list<sf::Keyboard::Key> keys,
+	std::initializer_list<sf::Keyboard::Key> modifiers
+) noexcept {
 	if (keys.size() > currentSequence.size()) return false;
 
 	auto end_pair = std::pair{ std::end(keys), std::end(currentSequence) };
@@ -173,14 +176,19 @@ bool InputsManager::isLastSequence(std::initializer_list<sf::Keyboard::Key> keys
 		i != std::begin(keys);
 		--i, --j
 	) {
+		printf("Check: %s %s\n", nameOfKey(*(i - 1)).c_str(), nameOfKey(*(j - 1)).c_str());
 		if (*(i - 1) != *(j - 1)) return false;
 	}
+
+	for (auto& x : modifiers) if (!isKeyPressed(x)) return false;
+
 	return true;
 }
 bool InputsManager::isLastSequenceJustFinished(
-	std::initializer_list<sf::Keyboard::Key> keys
+	std::initializer_list<sf::Keyboard::Key> keys,
+	std::initializer_list<sf::Keyboard::Key> modifiers
 ) noexcept {
-	return (wasKeyJustPressed && isLastSequence(keys));
+	return (wasKeyJustPressed && isLastSequence(keys, modifiers));
 }
 
 bool InputsManager::isKeyJustPressed() noexcept {
@@ -253,7 +261,9 @@ void InputsManager::update(sf::RenderWindow &window) {
 		auto pressed = sf::Keyboard::isKeyPressed((sf::Keyboard::Key)i);
 
 		keyJustPressed[i] = !keyPressed[i] && pressed;
+		wasKeyJustPressed |= keyJustPressed[i];
 		keyJustReleased[i] = keyPressed[i] && !pressed;
+		wasKeyJustReleased |= keyJustReleased[i];
 		keyPressed[i] = pressed;
 
 		if (keyJustPressed[i]) {
@@ -268,6 +278,11 @@ void InputsManager::update(sf::RenderWindow &window) {
 			else {
 				currentSequence.push_back((sf::Keyboard::Key)i);
 			}
+
+			for (auto x : currentSequence) {
+				printf("%s ", nameOfKey(x).c_str());
+			}
+			printf("\n");
 		}
 	}
 
@@ -287,7 +302,6 @@ void InputsManager::update(sf::RenderWindow &window) {
 
 		if(event.type == sf::Event::KeyPressed) {
 			nKeyPressed++;
-			wasKeyJustPressed = true;
 			if (event.key.code == sf::Keyboard::Unknown)
 				continue;
 
@@ -296,7 +310,6 @@ void InputsManager::update(sf::RenderWindow &window) {
 		}
 		if(event.type == sf::Event::KeyReleased) {
 			nKeyPressed--;
-			wasKeyJustReleased = true;
 			if (event.key.code == sf::Keyboard::Unknown)
 				continue;
 
