@@ -116,7 +116,7 @@ struct Rectangle {
 	}
 
 	Rectangle<T> restrictIn(Rectangle<T> area) const noexcept {
-		if (area.area() <= this->area()) return { area.center(), size };
+		if (area.area() <= this->area()) return { area.center() - size / 2, size };
 
 		Rectangle<T> result = *this;
 

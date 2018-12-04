@@ -90,13 +90,6 @@ int main(int, char**) {
 
 	//let's try to fit our game into 16MiB
 	//MemoryManager::I().initialize_buffer(1024 * 1024 * 16);
-	auto config = load_from_json_file(get_working_dir() / "res/config.json");
-	save_to_json_file(*config, "res/azeazeae");
-	auto config2 = load_from_json_file("res/azeazeae");
-
-	std::cout << format_to_json(*config, 4) << std::endl;
-	std::cout << format_to_json(*config2, 4) << std::endl;
-
 	loadRessources();
 	startGame();
 	

@@ -10,6 +10,8 @@
 #include "Gameplay/Projectile.hpp"
 #include "Gameplay/Player/Player.hpp"
 
+#include "Game.hpp"
+
 #define LOAD(x, y) if (auto i = json.find(#x); i != json.end()) info.x = y(*i);
 #define SAVE(x, y) json[#x] = y(info.x);
 
@@ -99,8 +101,13 @@ void Slime::update(double dt) noexcept {
 		// we need to steer
 		currentPoint_ = _section->getNextNavigationPointFrom(currentPoint_.id, playerPos);
 	}
-
-	walkToward();
+	
+	auto ray_mask = Object::opaque_mask;
+	ray_mask.set((size_t)Object::PLAYER);
+	auto cast_hit =
+		_section->ray_cast({ pos, (float)(playerPos - pos).angleX() }, ray_mask);
+	if (cast_hit && cast_hit->collider->uuid == _section->getPlayer()->uuid)
+		walkToward();
 }
 
 void Slime::render(sf::RenderTarget& target) noexcept {
@@ -115,6 +122,14 @@ void Slime::render(sf::RenderTarget& target) noexcept {
 	mark.setPosition(pos);
 	sprite.render(target);
 	target.draw(mark);
+
+	auto ray_mask = Object::opaque_mask;
+	ray_mask.set((size_t)Object::PLAYER);
+	auto cast_hit =
+		_section->ray_cast({ pos, (float)(_section->getPlayerPos() - pos).angleX() }, ray_mask);
+	if (cast_hit) {
+		Vector2f::renderLine(target, cast_hit->origin, cast_hit->point, {1, 1, 1, 1});
+	}
 }
 
 void Slime::hit(float damage) noexcept {

@@ -109,25 +109,31 @@ void Player::update(double dt) {
 				auto& vel = jumpVelocity_.value();
 				vel *= std::pow(0.2, dt);
 				flatVelocities.push_back(vel);
-
+				
+				if (!downed_jump && IM::isKeyJustPressed(kb.getKey(KeyBindings::MOVE_DOWN)))
+				{
+					*jumpVelocity_ *= .5f;
+					continueToJump_ = false;
+					downed_jump = false;
+				}
 				if (vel.length2() < .01f) jumpVelocity_.reset();
 			}
 
-			if (continueToJump_ && IM::isKeyPressed(kb.getKey(KeyBindings::MOVE_UP))) {
-				flatVelocities.push_back(
-					{ 0, -_info.jumpHeight * _info.jumpBoostMultiplier }
-				);
+			if (continueToJump_) {
+				if (!InputsManager::isKeyPressed(kb.getKey(KeyBindings::JUMP))) {
+					continueToJump_ = false;
+				} else {
+					flatVelocities.push_back({ 0, -_info.jumpHeight });
+				}
+
+				if (IM::isKeyPressed(kb.getKey(KeyBindings::MOVE_UP))) {
+					flatVelocities.push_back(
+						{ 0, -_info.jumpHeight * _info.jumpBoostMultiplier }
+					);
+				}
+
 			}
 
-			if (continueToJump_ && 
-				!InputsManager::isKeyPressed(kb.getKey(KeyBindings::JUMP))
-			) {
-				continueToJump_ = false;
-			}
-
-			if (InputsManager::isKeyPressed(kb.getKey(KeyBindings::JUMP)) && continueToJump_) {
-				flatVelocities.push_back({ 0, -_info.jumpHeight });
-			}
 
 			_dir.normalize();
 		
@@ -282,6 +288,7 @@ void Player::floored() {
 	_floored = true;
 
 	pass_though_semiPlateforme = false;
+	downed_jump = false;
 	clearKnockBack();
 	clearJump();
 }

@@ -3,6 +3,7 @@
 #include <random>
 #include <memory>
 #include <string>
+#include <bitset>
 #include <filesystem>
 #include <type_traits>
 #include <unordered_set>
@@ -42,6 +43,29 @@ namespace xstd {
 		std::hash<T> h;
 		seed ^= h(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 		return seed;
+	}
+
+	template<size_t S>
+	constexpr std::bitset<S> full_bitset() noexcept {
+		std::bitset<S> bitset;
+		for (size_t i = 0; i < S; ++i) bitset.set(i, true);
+		return bitset;
+	}
+
+	template<size_t S>
+	constexpr std::bitset<S> consecutive_to_bitset() noexcept {
+		return std::bitset<S>{};
+	}
+
+	template<size_t S, typename... Args>
+	constexpr std::bitset<S> consecutive_to_bitset(size_t x, Args... args) noexcept {
+		std::bitset<S> bs;
+		bs.set(x, true);
+		if constexpr (sizeof...(Args) == 0) {
+			return bs;
+		}
+
+		return bs | consecutive_to_bitset<S>(args...);
 	}
 };
 

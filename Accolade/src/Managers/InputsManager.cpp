@@ -176,7 +176,6 @@ bool InputsManager::isLastSequence(
 		i != std::begin(keys);
 		--i, --j
 	) {
-		printf("Check: %s %s\n", nameOfKey(*(i - 1)).c_str(), nameOfKey(*(j - 1)).c_str());
 		if (*(i - 1) != *(j - 1)) return false;
 	}
 
@@ -279,10 +278,6 @@ void InputsManager::update(sf::RenderWindow &window) {
 				currentSequence.push_back((sf::Keyboard::Key)i);
 			}
 
-			for (auto x : currentSequence) {
-				printf("%s ", nameOfKey(x).c_str());
-			}
-			printf("\n");
 		}
 	}
 

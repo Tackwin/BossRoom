@@ -5,6 +5,8 @@
 #include "Vector.hpp"
 #include "Segment.hpp"
 #include "Rectangle.hpp"
+#include "Circle.hpp"
+#include "Ray.hpp"
 
 template<typename T>
 T min_dist2(const Segment2<T>& seg, const Vector2<T>& p) noexcept {
@@ -32,3 +34,8 @@ extern
 std::optional<Vector2f> segment_rec(const Segment2f& seg, const Rectangle2f& rec) noexcept;
 extern
 std::optional<Vector2f> segment_segment(const Segment2f& A, const Segment2f& B) noexcept;
+extern
+std::optional<Vector2f> ray_circle(const Rayf& ray, const Circlef& c) noexcept;
+extern
+std::optional<Vector2f> ray_rectangle(const Rayf& seg, const Rectangle2f& c) noexcept;
+extern std::optional<Vector2f> ray_segment(const Rayf& A, const Segment2f& B) noexcept;

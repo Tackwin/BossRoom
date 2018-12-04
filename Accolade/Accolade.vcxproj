@@ -486,6 +486,7 @@
     <ClInclude Include="src\Math\algorithms.hpp" />
     <ClInclude Include="src\Math\Circle.hpp" />
     <ClInclude Include="src\Math\RandomData.hpp" />
+    <ClInclude Include="src\Math\Ray.hpp" />
     <ClInclude Include="src\Math\Segment.hpp" />
     <ClInclude Include="src\Memory\ValuePtr.hpp" />
     <ClInclude Include="src\Metaprogramming\TypeList.hpp" />

@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <numeric>
 
+#include "Math/algorithms.hpp"
+
 void World::updateInc(double dt, u32 itLevel) {
 	removeNeeded();
 
@@ -270,4 +272,38 @@ std::weak_ptr<Object> World::getObject(UUID id) const noexcept {
 	}
 
 	return {};
+}
+
+std::optional<RayCollision> World::ray_cast(
+	const Rayf& ray, std::bitset<Object::SIZE> mask
+) const noexcept {
+	std::optional<RayCollision> closest;
+
+	for (auto&[id, weak_obj] : _objectsMap) {
+		if (weak_obj.expired()) continue;
+		auto obj = weak_obj.lock();
+
+		if ((obj->idMask & mask).none()) continue;
+
+		if (obj->collider->type == Collider::Type::BOX) {
+			auto pt = ray_rectangle(
+				ray, dynamic_cast<Box*>(obj->collider.get())->getGlobalBoundingBox()
+			);
+			if (pt) {
+				float d2 = (ray.pos - *pt).length2();
+				float best_d2 = (ray.pos - closest->point).length2();
+				if (!closest || d2 < best_d2) closest = RayCollision{ ray.pos, *pt, obj };
+			}
+		}
+		if (obj->collider->type == Collider::Type::DISK) {
+			auto disk = dynamic_cast<Disk*>(obj->collider.get());
+			auto pt = ray_circle(ray, { disk->getGlobalPos(), disk->r });
+			if (pt) {
+				float d2 = (ray.pos - *pt).length2();
+				float best_d2 = (ray.pos - closest->point).length2();
+				if (!closest || d2 < best_d2) closest = RayCollision{ ray.pos, *pt, obj };
+			}
+		}
+	}
+	return closest;
 }

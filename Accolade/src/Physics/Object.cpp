@@ -3,6 +3,12 @@
 
 u64 Object::N = 0u;
 
+std::bitset<Object::SIZE> Object::opaque_mask = xstd::consecutive_to_bitset<Object::SIZE>(
+	Object::FLOOR,
+	Object::PLAYER,
+	Object::STRUCTURE
+);
+
 Object::Object() : uuid() {
 	N++;
 }

@@ -5,16 +5,25 @@
 #include <map>
 #include <memory>
 #include <vector>
+#include <optional>
+#include <bitset>
 #include <unordered_map>
 
 #include <SFML/Graphics.hpp>
 
 #include "./../Common.hpp"
 
-#include "./../Math/Vector.hpp"
+#include "Math/Vector.hpp"
+#include "Math/Ray.hpp"
 
 #include "./../Physics/Object.hpp"
 #include "./../Utils/UUID.hpp"
+
+struct RayCollision {
+	Vector2f origin;
+	Vector2f point;
+	std::shared_ptr<Object> collider;
+};
 
 class World {
 public:
@@ -29,6 +38,12 @@ public:
 	std::weak_ptr<Object> getObject(UUID id) const noexcept;
 
 	void purge();
+
+	std::optional<RayCollision> ray_cast(
+		const Rayf& ray,
+		std::bitset<Object::SIZE> mask = xstd::full_bitset<Object::SIZE>()
+	) const noexcept;
+
 private:
 
 	void buildUnionCache();

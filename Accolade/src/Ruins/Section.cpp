@@ -635,3 +635,9 @@ void Section::spawnLoot(std::shared_ptr<Loot> loot) noexcept {
 	loot->setLootable(true);
 	loots.push_back(loot);
 }
+
+std::optional<RayCollision> Section::ray_cast(
+	const Rayf& ray, std::bitset<Object::SIZE> mask
+) const noexcept {
+	return _world.ray_cast(ray, mask);
+}

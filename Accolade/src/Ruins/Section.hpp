@@ -128,6 +128,10 @@ public:
 
 	void startAimAnimation() noexcept;
 	void stopAimAnimation() noexcept;
+
+	std::optional<RayCollision> ray_cast(
+		const Rayf& ray, std::bitset<Object::SIZE> mask = xstd::full_bitset<Object::SIZE>()
+	) const noexcept;
 private:
 
 	void updateAimAnimation(double dt) noexcept;

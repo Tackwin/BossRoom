@@ -48,6 +48,8 @@ struct Object {
 	bool maskChanged = false;
 
 	const UUID uuid;
+
+	static std::bitset<Object::SIZE> opaque_mask;
 };
 
 extern Vector2f get_summed_velocities(Object& obj) noexcept;

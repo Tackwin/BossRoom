@@ -185,6 +185,7 @@ private: //TODO: Make private
 	bool remove_{ false };
 	bool continueToJump_{ false };
 	bool _boostingJump{ false };
+	bool downed_jump{ false };
 
 	bool _focus{ true };
 
