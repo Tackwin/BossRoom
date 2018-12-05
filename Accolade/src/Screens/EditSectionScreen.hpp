@@ -120,6 +120,8 @@ private:
 
 	float _snapLevel{ 0.01f };
 
+	bool focused_screen{ false };
+
 	std::unordered_map<std::string, Widget*> _widgets;
 
 	SpriteSwitcher* ennemySwitcher_{ nullptr };

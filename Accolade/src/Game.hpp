@@ -26,6 +26,7 @@ public:
 
 	void enterScreen(std::shared_ptr<Screen> s);
 	void exitScreen();
+	void go_back_screen();
 
 	void update(double dt) noexcept;
 	void updateDebugText(double dt);

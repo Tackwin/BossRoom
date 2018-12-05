@@ -66,7 +66,7 @@ void EditSectionScreen::input(double dt) noexcept {
 		IM::isKeyJustPressed(sf::Keyboard::E)
 	) {
 		saveSection(str::trim_whitespace(_savePicker->getStdString()));
-		exit_screen = true;
+		go_back_screen = true;
 		return;
 	}
 
@@ -552,17 +552,22 @@ void EditSectionScreen::render(sf::RenderTarget& target) {
 	target.setView(old);
 }
 
-void EditSectionScreen::onEnter(std::any) {
+void EditSectionScreen::onEnter(std::any x) {
+	Screen::onEnter(x);
 	_json = AM::getJson("editScreen");
 
 	constructUI();
+	focused_screen = true;
 }
 
 std::any EditSectionScreen::onExit() {
+	if (!focused_screen) return ReturnType{};
 	filepath_ = _savePicker->getStdString();
 	for (auto&[key, value] : _widgets) {
 		delete value;
+		value = nullptr;
 	}
+	focused_screen = false;
 	return ReturnType{sectionInfo_, filepath_};
 }
 

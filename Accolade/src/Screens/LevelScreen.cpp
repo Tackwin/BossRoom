@@ -48,11 +48,6 @@ LevelScreen::LevelScreen(u32 n) :
 	std::filesystem::path startRoom = AM::getJson(JSON_KEY)["StartRoom"].get<std::string>();
 	AM::loadJson("StartRoom", (ASSETS_PATH / startRoom).string());
 
-	auto sectionInfo = SectionInfo::loadJson(AM::getJson("StartRoom"));
-	_section = std::make_unique<Section>(sectionInfo);
-	_section->setFileName(startRoom.filename());
-	_section->setFilepath(startRoom);
-
 	section_id_label = std::make_unique<Label>(nlohmann::json{
 		{"pos", {WIDTH - 10, 10}},
 		{"origin", {1, 0}},
@@ -68,6 +63,7 @@ LevelScreen::~LevelScreen() {
 }
 
 void LevelScreen::onEnter(std::any input) {
+	Screen::onEnter(input);
 	if (game->getLastScreen() == Screen::edit_screen) {
 		auto returnValue = std::any_cast<EditSectionScreen::ReturnType>(input);
 
@@ -163,9 +159,15 @@ void LevelScreen::update(double dt) {
 		}
 	}*/
 	if (IM::isLastSequenceJustFinished({ sf::Keyboard::E }, { sf::Keyboard::LControl })) {
-		C::game->enterScreen(
-			std::make_shared<EditSectionScreen>(&instance->getCurrentSection())
-		);
+		// if we came from the edit screen then we can just go back to it.
+		if (game->getLastScreen() == Screen::edit_screen) {
+			game->go_back_screen();
+		}
+		else {
+			C::game->enterScreen(
+				std::make_shared<EditSectionScreen>(&instance->getCurrentSection())
+			);
+		}
 		return;
 	}
 }

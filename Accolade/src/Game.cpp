@@ -80,6 +80,9 @@ void Game::update(double dt) noexcept {
 	if (_screens.top()->toExitScreen()) {
 		exitScreen();
 	}
+	if (_screens.top()->to_back_screen()) {
+		go_back_screen();
+	}
 }
 
 void Game::exitScreen() {
@@ -95,6 +98,21 @@ void Game::enterScreen(std::shared_ptr<Screen> s) {
 	}
 	s->onEnter(_lastScreen);
 	_screens.push(s);
+}
+
+void Game::go_back_screen() {
+	// if this is true, it's basically a no-op
+	if (_screens.size() <= 1) return;
+
+	_lastScreen = _screens.top()->getType();
+	_returnedFromScreen = _screens.top()->onExit();
+	auto last_screen = std::move(_screens.top());
+	_screens.pop();
+	auto front_screen = std::move(_screens.top());
+	_screens.pop();
+	_screens.push(std::move(last_screen));
+	front_screen->onEnter(_returnedFromScreen);
+	_screens.push(std::move(front_screen));
 }
 
 void Game::enterRoom(u32 n) {

@@ -48,7 +48,6 @@ private:
 
 	std::unique_ptr<Label> section_id_label{ nullptr };
 	sf::Sprite _bossHealthTileSprite;
-	std::unique_ptr<Section> _section;
 	std::vector<sf::RectangleShape> _playerLife;
 
 	std::unique_ptr<Inventory> inventory;

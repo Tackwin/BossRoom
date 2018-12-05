@@ -49,15 +49,19 @@ std::optional<Vector2f> ray_circle(const Rayf& ray, const Circlef& c) noexcept {
 }
 
 std::optional<Vector2f> ray_rectangle(const Rayf& ray, const Rectangle2f& rec) noexcept {
-	if (auto x = ray_segment(ray, { rec.pos, {rec.x, rec.y + rec.h} }))
-		return x;
-	if (auto x = ray_segment(ray, { {rec.x, rec.y + rec.h}, rec.pos + rec.size }))
-		return x;
-	if (auto x = ray_segment(ray, { rec.pos + rec.size, {rec.x + rec.w, rec.y} }))
-		return x;
-	if (auto x = ray_segment(ray, { {rec.x + rec.w, rec.y}, rec.pos }))
-		return x;
-	return {};
+	std::optional<Vector2f> x = std::nullopt;
+	
+	if (ray.pos.x < rec.x)
+		x = ray_segment(ray, { rec.pos, {rec.x, rec.y + rec.h} });
+	else if (ray.pos.x > rec.x + rec.size.x)
+		x = ray_segment(ray, { rec.pos + rec.size, {rec.x + rec.w, rec.y} });
+
+	if (ray.pos.y < rec.y)
+		x = ray_segment(ray, { {rec.x + rec.w, rec.y}, rec.pos });
+	else if (ray.pos.y > rec.y + rec.size.y)
+		x = ray_segment(ray, { {rec.x, rec.y + rec.h}, rec.pos + rec.size });
+	
+	return x;
 }
 
 std::optional<Vector2f> ray_segment(const Rayf& A, const Segment2f& B) noexcept {
