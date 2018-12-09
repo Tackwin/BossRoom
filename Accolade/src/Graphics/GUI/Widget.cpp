@@ -10,6 +10,7 @@
 #include "Switcher.hpp"
 #include "PosPicker.hpp"
 #include "BoolPicker.hpp"
+#include "dyn_structTree.hpp"
 #include "Button.hpp"
 
 const Widget::Callback::type Widget::Callback::FALSE = []() { return false; };
@@ -46,6 +47,7 @@ Widget::Widget(nlohmann::json json) noexcept {
 				X(Button);
 				X(PosPicker);
 				X(BoolPicker);
+				X(dyn_structTree);
 #undef X
 			}
 			else {

@@ -128,6 +128,7 @@ private:
 	SpriteSwitcher* sourceSwitcher_{ nullptr };
 	SpriteSwitcher* structureSwitcher{ nullptr };
 	Panel* jsonEditPanel{ nullptr };
+	Panel* metadata_edit_panel{ nullptr };
 	ValuePicker* _savePicker{ nullptr };
 	Label* _snapGrid{ nullptr };
 	Widget* root_ui{ nullptr };

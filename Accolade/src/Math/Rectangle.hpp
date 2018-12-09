@@ -118,21 +118,30 @@ struct Rectangle {
 	Rectangle<T> restrictIn(Rectangle<T> area) const noexcept {
 		Rectangle<T> result = *this;
 
-		// there is a reason it's made like that
-		// if for instance area is a narrow (in height) space, then *this can jump up and
-		// down if instead of if (result.x ...) it where if (x ...)
-		if (x + w > area.x + area.w) {
-			result.x = area.x + area.w - w;
+		if (w > area.w) {
+			result.x = area.center().x - result.size.x / 2;
 		}
-		if (result.x < area.x) {
-			result.x = area.x;
+		else {
+			// there is a reason it's made like that
+			// if for instance area is a narrow (in height) space, then *this can jump up
+			// and down if instead of if (result.x ...) it were if (x ...)
+			if (x + w > area.x + area.w) {
+				result.x = area.x + area.w - w;
+			}
+			if (result.x < area.x) {
+				result.x = area.x;
+			}
 		}
 
-		if (y + h > area.y + area.h) {
-			result.y = area.y + area.h - h;
-		}
-		if (result.y < area.y) {
-			result.y = area.y;
+		if (h > area.h) {
+			result.y = area.center().y - result.size.y / 2;
+		} else {
+			if (y + h > area.y + area.h) {
+				result.y = area.y + area.h - h;
+			}
+			if (result.y < area.y) {
+				result.y = area.y;
+			}
 		}
 		return result;
 	}

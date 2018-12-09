@@ -242,5 +242,24 @@
         "holdTexture": "panel_a"
       }
     }
+  },
+  "metadata_editor": {
+    "type": "Panel",
+    "size": [200, 500],
+    "pos": [600, 0],
+    "sprite": "panel_cross",
+    "title": "properties",
+    "draggable": true,
+    "resizable": true,
+    "collapsable": true,
+    "collapsed": true,
+    "clipper": true,
+    "childs": {
+      "properties":{
+        "type": "dyn_structTree",
+        "name": "properties",
+        "expandable": true
+      }
+    }
   }
 }

@@ -33,6 +33,8 @@
 
 #include "GUI/Inventory/Inventory.hpp"
 
+#include "RTTI/dyn_struct.hpp"
+
 struct SectionInfo {
 	std::vector<NavigationPointInfo> navigationPoints;
 	std::vector<NavigationLinkInfo> navigationLinks;
@@ -51,6 +53,8 @@ struct SectionInfo {
 	std::vector<SourceTargetInfo> sourcesBoomerang;
 	std::vector<SourceVaccumInfo> sourcesVaccum;
 	std::vector<SourceDirectionInfo> sourcesDirection;
+
+	dyn_struct meta_data;
 
 	Rectangle2f maxRectangle;
 	Vector2f startPos;

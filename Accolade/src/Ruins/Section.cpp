@@ -57,6 +57,9 @@ SectionInfo SectionInfo::loadJson(const nlohmann::json& json) noexcept {
 	load_vectors(info.meleeGuys);
 	load_vectors(info.slimes);
 	load_vectors(info.flies);
+
+	if (json.count("meta_data") != 0) info.meta_data = json["meta_data"];
+
 	return info;
 }
 
@@ -95,6 +98,8 @@ nlohmann::json SectionInfo::saveJson(SectionInfo info) noexcept {
 	save_vectors(info.meleeGuys);
 	save_vectors(info.slimes);
 	save_vectors(info.flies);
+
+	json["meta_data"] = info.meta_data;
 
 	return json;
 }

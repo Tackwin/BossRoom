@@ -17,7 +17,7 @@ class dyn_structTree : public Widget {
 public:
 	using ChangeCallback = std::function<void(const dyn_struct&)>;
 
-	static constexpr auto NAME = "JsonTree";
+	static constexpr auto NAME = "dyn_structTree";
 
 	dyn_structTree(const nlohmann::json& json) noexcept;
 
@@ -28,6 +28,10 @@ public:
 
 	bool is_editable() const noexcept;
 	void set_editable(bool v) noexcept;
+
+	bool is_expendable() const noexcept;
+	void set_expendable(bool v) noexcept;
+
 private:
 	static constexpr auto INDENT_SIZE = 10;
 
@@ -38,5 +42,6 @@ private:
 	dyn_struct structure;
 
 	bool editable{ false };
+	bool expendable{ false };
 	std::unordered_map<UUID, ChangeCallback> change_listeners;
 };

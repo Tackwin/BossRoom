@@ -17,6 +17,8 @@ dyn_structTree::dyn_structTree(const nlohmann::json& json) noexcept : Widget(jso
 		contruct_tree();
 	} if (auto it = json.find("editable"); it != std::end(json)) {
 		set_editable(*it);
+	} if (auto it = json.find("expandable"); it != std::end(json)) {
+		set_expendable(*it);
 	}
 }
 
@@ -204,3 +206,11 @@ bool dyn_structTree::is_editable() const noexcept {
 void dyn_structTree::set_editable(bool v) noexcept {
 	editable = v;
 }
+
+bool dyn_structTree::is_expendable() const noexcept {
+	return expendable;
+}
+void dyn_structTree::set_expendable(bool v) noexcept {
+	expendable = v;
+}
+

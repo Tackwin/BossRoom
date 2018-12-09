@@ -23,6 +23,7 @@
 #include "Graphics/GUI/PosPicker.hpp"
 #include "Graphics/GUI/algorithm.hpp"
 #include "Graphics/GUI/JsonTree.hpp"
+#include "Graphics/GUI/dyn_structTree.hpp"
 
 #include "Utils/string_algorithms.hpp"
 
@@ -1193,7 +1194,6 @@ void EditSectionScreen::loadSectionFile(std::filesystem::path path) noexcept {
 
 	namespace fs = std::filesystem;
 
-
 	fs::path path_os{ path };
 	auto relative_path = fs::relative(path_os, EXE_DIR / ASSETS_PATH).generic_string();
 	_savePicker->setStdString(relative_path);
@@ -1211,11 +1211,12 @@ void EditSectionScreen::constructUI() noexcept {
 			// You can't pass type to a local lambda as argument :(
 #define X(x) if (type == x::NAME) _widgets[key] = new x{ json };
 			X(Label);
-			X(ValuePicker);
-			X(SpriteSwitcher);
-			X(PosPicker);
 			X(Panel);
 			X(Button);
+			X(PosPicker);
+			X(ValuePicker);
+			X(SpriteSwitcher);
+			X(dyn_structTree);
 #undef X
 		}
 		else {
@@ -1230,6 +1231,7 @@ void EditSectionScreen::constructUI() noexcept {
 	ennemySwitcher_ = (SpriteSwitcher*)(root_ui->findChild("ennemySwitcher"));
 	sourceSwitcher_ = (SpriteSwitcher*)(root_ui->findChild("sourceSwitcher"));
 	jsonEditPanel = (Panel*)_widgets.at("propertiesEditor");
+	metadata_edit_panel = (Panel*)_widgets.at("metadata_editor");
 	_savePicker = (ValuePicker*)(_widgets.at("root")->findChild("savePicker"));
 	_savePicker->setStdString(filepath_.generic_string());
 	_snapGrid = (Label*)(_widgets.at("root")->findChild("snapGrid"));
@@ -1239,6 +1241,14 @@ void EditSectionScreen::constructUI() noexcept {
 	Widget::Callback onClick;
 	onClick.ended = std::bind(&EditSectionScreen::onClickEndedConfirmJsonEditPanel, this);
 	confirmButton->setOnClick(onClick);
+
+	auto* d_structTree = 
+		(dyn_structTree*)metadata_edit_panel->findChild(root_properties_name);
+	d_structTree->set_dyn_struct(sectionInfo_.meta_data);
+
+	if (has(sectionInfo_.meta_data, "filepath")) {
+		filepath_ = (std::string)get("filepath", sectionInfo_.meta_data);
+	}
 }
 
 bool EditSectionScreen::onClickEndedConfirmJsonEditPanel() noexcept {
