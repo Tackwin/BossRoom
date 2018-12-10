@@ -1,4 +1,6 @@
 ﻿#include "Instance.hpp"
+
+#include <iostream>
 #include "Common.hpp"
 
 #include "Math/Segment.hpp"
@@ -194,6 +196,30 @@ InstanceInfo InstanceInfo::generateMaze(size_t width, size_t height) noexcept {
 	info.sections.push_back(boss_section);
 
 	return info;
+}
+
+
+InstanceInfo InstanceInfo::generate_graph(
+	size_t n, const std::filesystem::path& pool_of_rooms
+) noexcept {
+	assert(std::filesystem::is_directory(pool_of_rooms));
+	std::unordered_map<std::unordered_set<size_t>, std::vector<size_t>> dirs_to_index;
+	std::vector<SectionInfo> room_pool;
+
+	for (auto f : std::filesystem::recursive_directory_iterator(pool_of_rooms)) {
+		auto d_struct = load_from_json_file(f);
+		if (!d_struct) {
+			std::cerr << "Couldn't load file: " << f << std::endl;
+			continue;
+		}
+
+		room_pool.push_back((SectionInfo)*d_struct);
+
+		auto all_dir = get_all_accessible_dir(room_pool.back());
+		dirs_to_index[all_dir].push_back(room_pool.size() - 1);
+	}
+
+	return {};
 }
 
 void Instance::generateGrid(size_t n) noexcept {

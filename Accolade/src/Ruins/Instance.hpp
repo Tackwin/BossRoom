@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <filesystem>
 #include <optional>
 #include <vector>
 
@@ -25,6 +26,9 @@ struct InstanceInfo {
 	static nlohmann::json saveJson(const InstanceInfo& info) noexcept;
 
 	static InstanceInfo generateMaze(size_t width, size_t height) noexcept;
+	static InstanceInfo generate_graph(
+		size_t n, const std::filesystem::path& pool_of_rooms
+	) noexcept;
 };
 
 class Instance {

@@ -72,6 +72,8 @@ nlohmann::json SectionInfo::saveJson(SectionInfo info) noexcept {
 			auto json_array = nlohmann::json::array();
 
 			for (auto& e : x){
+				// >HACK i should provide proper overload of [to|from]_dyn_struct
+				// but ...
 				json_array.push_back(T::saveJson(e));
 			}
 			json[T::JSON_ID] = json_array;
@@ -102,6 +104,90 @@ nlohmann::json SectionInfo::saveJson(SectionInfo info) noexcept {
 	json["meta_data"] = info.meta_data;
 
 	return json;
+}
+
+void to_dyn_struct(dyn_struct& d_struct, const SectionInfo& info) noexcept {
+	auto save_vector =
+		[&](auto& x) -> std::enable_if_t<is_stl_container_v<decltype(x)>> {
+			using T = holded_t<decltype(x)>;
+
+			auto array = dyn_struct_array(x.size());
+
+			for (size_t i = 0; i < x.size(); ++i) {
+				// >HACK i should provide proper overload of [to|from]_dyn_struct
+				// but ...
+				array[i] = T::saveJson(x[i]);
+			}
+			d_struct[T::JSON_ID] = array;
+		};
+
+
+	d_struct["maxRect"] = info.maxRectangle;
+	d_struct["startPos"] = info.startPos;
+	d_struct["viewSize"] = info.viewSize;
+
+	save_vector(info.semiPlateformes);
+	save_vector(info.plateformes);
+	save_vector(info.portals);
+
+	save_vector(info.sourcesBoomerang);
+	save_vector(info.sourcesDirection);
+	save_vector(info.sourcesVaccum);
+	save_vector(info.sources);
+
+	save_vector(info.navigationPoints);
+	save_vector(info.navigationLinks);
+
+	save_vector(info.first_bosses);
+	save_vector(info.distanceGuys);
+	save_vector(info.meleeGuys);
+	save_vector(info.slimes);
+	save_vector(info.flies);
+
+	d_struct["meta_data"] = info.meta_data;
+}
+
+void from_dyn_struct(const dyn_struct& d_struct, SectionInfo& info) noexcept {
+	auto load_vector =
+		[&](auto& x)->std::enable_if_t<is_stl_container_v<decltype(x)>> {
+			using T = holded_t<decltype(x)>;
+
+			if (has(d_struct, T::JSON_ID)) {
+				x = load_json_vector<T>(*at(d_struct, T::JSON_ID));
+			}
+		};
+
+	if (has(d_struct, "maxRect")) {
+		info.maxRectangle = (Rectangle2f)*at(d_struct, "maxRect");
+	}
+
+	if (has(d_struct, "startPos")) {
+		info.startPos = (Vector2f)*at(d_struct, "startPos");
+	}
+
+	if (has(d_struct, "viewSize")) {
+		info.viewSize = (Vector2f)*at(d_struct, "viewSize");
+	}
+
+	load_vector(info.navigationPoints);
+	load_vector(info.navigationLinks);
+
+	load_vector(info.sourcesBoomerang);
+	load_vector(info.sourcesDirection);
+	load_vector(info.sourcesVaccum);
+	load_vector(info.sources);
+
+	load_vector(info.semiPlateformes);
+	load_vector(info.plateformes);
+	load_vector(info.portals);
+
+	load_vector(info.first_bosses);
+	load_vector(info.distanceGuys);
+	load_vector(info.meleeGuys);
+	load_vector(info.slimes);
+	load_vector(info.flies);
+
+	if (has(d_struct, "meta_data") != 0) info.meta_data = d_struct["meta_data"];
 }
 
 Section::Section(SectionInfo info) noexcept : _info(info) {
@@ -646,3 +732,16 @@ std::optional<RayCollision> Section::ray_cast(
 ) const noexcept {
 	return _world.ray_cast(ray, mask);
 }
+
+std::unordered_set<size_t> get_all_accessible_dir(const SectionInfo& info) noexcept {
+	std::unordered_set<size_t> dirs;
+
+	for (auto p : info.portals) {
+		dirs.emplace(p.spot);
+	}
+
+	return dirs;
+}
+
+
+

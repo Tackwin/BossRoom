@@ -28,6 +28,21 @@ void from_json(const nlohmann::json& j, SemiPlateformeInfo& p) noexcept {
 	p = SemiPlateformeInfo::loadJson(j);
 }
 
+#define SAVE(x, y) d_struct[#x] = y(info.x);
+
+void to_dyn_struct(dyn_struct& d_struct, const SemiPlateformeInfo& info) noexcept {
+	SAVE(rec, );
+}
+#undef SAVE
+#define LOAD(x, y) if (has(d_struct, #x)) info.x = y(d_struct[#x]);
+
+void from_dyn_struct(const dyn_struct& d_struct, SemiPlateformeInfo& info) noexcept {
+	LOAD(rec, Rectangle2f::loadJson);
+}
+
+#undef LOAD
+
+
 SemiPlateforme::SemiPlateforme(const SemiPlateformeInfo& info) noexcept : info(info) {
 	auto box = std::make_unique<Box>();
 	box->setSize(info.rec.size);

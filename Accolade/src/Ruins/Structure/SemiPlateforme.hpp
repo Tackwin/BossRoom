@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "3rd/json.hpp"
+#include "RTTI/dyn_struct.hpp"
 #include "Math/Rectangle.hpp"
 #include "Physics/Object.hpp"
 
@@ -17,6 +18,9 @@ struct SemiPlateformeInfo {
 
 extern void to_json(nlohmann::json& j, const SemiPlateformeInfo& p) noexcept;
 extern void from_json(const nlohmann::json& j, SemiPlateformeInfo& p) noexcept;
+
+extern void to_dyn_struct(dyn_struct& d_struct, const SemiPlateformeInfo& p) noexcept;
+extern void from_dyn_struct(const dyn_struct& d_struct, SemiPlateformeInfo& p) noexcept;
 
 class SemiPlateforme : public Object {
 public:

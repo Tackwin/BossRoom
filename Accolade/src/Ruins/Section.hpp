@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <optional>
+#include <unordered_set>
 
 #include "3rd/json.hpp"
 
@@ -63,6 +64,9 @@ struct SectionInfo {
 	static SectionInfo loadJson(const nlohmann::json& json) noexcept;
 	static nlohmann::json saveJson(SectionInfo info) noexcept;
 };
+
+extern void to_dyn_struct(dyn_struct& d_struct, const SectionInfo& info) noexcept;
+extern void from_dyn_struct(const dyn_struct& d_struct, SectionInfo& info) noexcept;
 
 class Section {
 public:
@@ -199,3 +203,7 @@ private:
 
 	std::unique_ptr<Inventory> inventory;
 };
+
+
+
+extern std::unordered_set<size_t> get_all_accessible_dir(const SectionInfo& info) noexcept;

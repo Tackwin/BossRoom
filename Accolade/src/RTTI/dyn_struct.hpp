@@ -187,6 +187,9 @@ end(const dyn_struct_structure_iterator_tag& d_struct) noexcept;
 extern dyn_struct_array_iterator_tag iterate_array(dyn_struct& d_struct) noexcept;
 extern dyn_struct_structure_iterator_tag iterate_structure(dyn_struct& d_struct) noexcept;
 
+extern dyn_struct dyn_struct_array(size_t n = 0) noexcept;
+extern size_t size(const dyn_struct&) noexcept;
+
 constexpr extern bool holds_object(const dyn_struct& d_struct) noexcept;
 constexpr extern bool holds_array(const dyn_struct& d_struct) noexcept;
 

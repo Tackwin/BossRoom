@@ -121,7 +121,15 @@ void to_dyn_struct(dyn_struct& to, const x& from) noexcept {\
 	to.value = std::move(v);\
 }\
 void from_dyn_struct(const dyn_struct& from, x& to) noexcept {\
-	to = x(std::get<dyn_struct::integer_t>(from.value));\
+	if (holds_real(from)) {\
+		to = (x)dyn_struct::real_t(from);\
+	}\
+	else if (holds_integer(from)) {\
+		to = (x)dyn_struct::integer_t(from); \
+	}\
+	else {\
+		assert(false);\
+	}\
 }\
 
 X(float)
@@ -805,4 +813,17 @@ void to_json(nlohmann::json& json, const dyn_struct& d_struct) noexcept {
 	else if (holds_bool(d_struct)) {
 		json = (dyn_struct::boolean_t)d_struct;
 	}
+}
+
+dyn_struct dyn_struct_array(size_t n) noexcept {
+	dyn_struct d;
+	d.value = dyn_struct::array_t(n);
+	return d;
+}
+
+size_t size(const dyn_struct& d_struct) noexcept {
+	if (holds_array(d_struct)) return std::get<dyn_struct::array_t>(d_struct.value).size();
+	if (holds_object(d_struct))
+		return std::get<dyn_struct::structure_t>(d_struct.value).size();
+	return 1;
 }

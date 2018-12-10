@@ -87,6 +87,16 @@ namespace std {
 			return seed;
 		}
 	};
+	template<>
+	struct hash<std::unordered_set<size_t>> {
+		size_t operator()(const std::unordered_set<size_t>& x) const noexcept {
+			size_t seed = 0;
+			for (const auto& v : x) {
+				seed = xstd::hash_combine(seed, v);
+			}
+			return seed;
+		}
+	};
 };
 
 class Game;

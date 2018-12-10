@@ -236,3 +236,29 @@ void to_json(nlohmann::json& json, const Rectangle<T>& x) noexcept {
 	json.push_back(x.h);
 }
 #endif
+
+template<typename T>
+void from_dyn_struct(const dyn_struct& d_struct, Rectangle<T>& x) noexcept {
+	assert(holds_array(d_struct));
+
+	if (size(d_struct) == 2) {
+		x.pos = (Vector2<T>)d_struct[0];
+		x.size = (Vector2<T>)d_struct[1];
+	}
+	else {
+		x.x = (T)d_struct[0];
+		x.y = (T)d_struct[1];
+		x.w = (T)d_struct[2];
+		x.h = (T)d_struct[3];
+	}
+}
+
+template<typename T>
+void to_dyn_struct(dyn_struct& d_struct, const Rectangle<T>& x) noexcept {
+	d_struct = dyn_struct_array(4);
+	d_struct[0] = x.x;
+	d_struct[1] = x.y;
+	d_struct[2] = x.w;
+	d_struct[3] = x.h;
+}
+

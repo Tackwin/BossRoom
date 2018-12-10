@@ -1,4 +1,5 @@
 #pragma once
+#include "RTTI/dyn_struct.hpp"
 #include "3rd/json.hpp"
 
 #include <vector>
@@ -13,6 +14,16 @@ std::vector<T> load_json_vector(const nlohmann::json::array_t& json) noexcept {
 	vec.reserve(json.size());
 	for (auto t : json) {
 		vec.push_back(typename T::loadJson(t));
+	}
+	return vec;
+}
+
+template<typename T>
+std::vector<T> load_json_vector(const dyn_struct& d_struct) noexcept {
+	assert(holds_array(d_struct));
+	std::vector<T> vec(size(d_struct));
+	for (size_t i = 0; i < vec.size(); ++i) {
+		vec[i] = T::loadJson(d_struct[i]);
 	}
 	return vec;
 }
