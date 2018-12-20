@@ -22,7 +22,7 @@ template<
 >
 class QuadTree {
 public:
-	using ThisQuadTree = QuadTree<S, T, F>;
+	using ThisQuadTree = QuadTree<S, T, Body, F>;
 	using Predicat = std::function<Body(T)>;
 	using _T = T;
 	static constexpr size_t bucket_size = S;
@@ -191,12 +191,12 @@ public:
 	}
 
 	void noAllocQueryCircle(
-		const Circle& c, vector& result, std::vector<const ThisQuadTree*>& open
+		const Circle<F>& c, vector& result, std::vector<const ThisQuadTree*>& open
 	) const {
 		auto point = pred(c.c);
 		
 
-		if (is_fully_in(scope, c)) {
+		if (is_fully_in(scope_, c)) {
 			result.insert(std::end(result), std::begin(items), std::begin(items) + size_);
 		}
 
@@ -239,7 +239,7 @@ public:
 			}
 			else if (is_in(q->scope(), c)) {
 				const auto& g = q->array();
-				result.insert(std::end(result), &g[0], &g[0] + q->size_());
+				result.insert(std::end(result), &g[0], &g[0] + q->size());
 			}
 		}
 	}

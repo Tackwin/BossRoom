@@ -5,6 +5,7 @@
 
 #include "Math/Segment.hpp"
 #include "Math/algorithms.hpp"
+#include "Containers/Graph.hpp"
 
 #include "Managers/AssetsManager.hpp"
 
@@ -198,7 +199,9 @@ InstanceInfo InstanceInfo::generateMaze(size_t width, size_t height) noexcept {
 	return info;
 }
 
-
+struct Node_Data {
+	Vector2f instance_pos;
+};
 InstanceInfo InstanceInfo::generate_graph(
 	size_t n, const std::filesystem::path& pool_of_rooms
 ) noexcept {
@@ -217,6 +220,47 @@ InstanceInfo InstanceInfo::generate_graph(
 
 		auto all_dir = get_all_accessible_dir(room_pool.back());
 		dirs_to_index[all_dir].push_back(room_pool.size() - 1);
+	}
+
+	auto section_sites = poisson_disc_sampling(0.4, { 10, 5 }, { {1, 0}, {3, 4}, { 5, 4 }, {7, 4} });
+
+	Graph<Node_Data> graph;
+	for (auto p : section_sites) {
+		Node_Data n;
+		n.instance_pos = p;
+		add_node(graph, n, {});
+	}
+	gen_lab_merge<Node_Data>(graph,
+		[i = 0](const Node_Data& A, const Node_Data& B) mutable noexcept {
+			return (B.instance_pos - A.instance_pos).length2() / (0.65f * 0.65f);
+		}
+	);
+
+	sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT, 24), "Boss room");
+	sf::View view{ Vector2f{5.f, 2.5f}, Vector2f{10.f, 5.f} };
+	while (window.isOpen()) {
+		sf::Event e;
+		while (window.pollEvent(e)) {
+			if (e.type == sf::Event::Closed) window.close();
+		}
+
+		window.clear();
+
+		window.setView(view);
+
+		for (auto& [_, node] : graph.nodes) {
+			sf::CircleShape mark{ 0.1f };
+			mark.setOrigin(0.1, 0.1);
+			mark.setPosition(node.data.instance_pos);
+
+			for (auto& other_id : node.edges) {
+				auto other = graph.nodes.at(other_id);
+				Vector2f::renderLine(window, node.data.instance_pos, other.data.instance_pos, { 1, 1, 1, 1 });
+			}
+			window.draw(mark);
+		}
+
+		window.display();
 	}
 
 	return {};

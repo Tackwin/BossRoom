@@ -47,7 +47,7 @@ public:
 			return f == std::end(x) ? nullptr : f->second.get();\
 		}
 
-		ITERATE;
+		ITERATE
 #undef X
 		// if the compiler complain about no return value then that means that T is not part
 		// of the unordered maps.
@@ -62,7 +62,7 @@ public:
 			return f == std::end(x) ? nullptr : f->second.get();\
 		}
 
-		ITERATE;
+		ITERATE
 #undef X
 	}
 	template<typename T>

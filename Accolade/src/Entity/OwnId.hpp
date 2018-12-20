@@ -102,3 +102,12 @@ template<typename T>
 Eid<T> view(const OwnId<T>& id) noexcept {
 	return (Eid<T>)id;
 }
+
+namespace std {
+	template<typename T>
+	struct hash<OwnId<T>> {
+		size_t operator()(const OwnId<T>& x) const noexcept {
+			return (size_t)x;
+		}
+	};
+};

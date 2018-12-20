@@ -15,8 +15,8 @@
 #include "Section.hpp"
 
 struct InstanceInfo {
-
 	std::vector<SectionInfo> sections;
+
 
 	size_t nSamples{ 0 };
 	std::vector<Vector2f> roofSamples;

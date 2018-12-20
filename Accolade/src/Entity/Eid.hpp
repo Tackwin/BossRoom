@@ -60,3 +60,12 @@ template<typename T>
 void from_json(const nlohmann::json& json, Eid<T>& x) noexcept {
 	x.ptr = json.get<EntityStore::integer_t>();
 }
+
+namespace std {
+	template<typename T>
+	struct hash<Eid<T>> {
+		size_t operator()(const Eid<T>& x) const noexcept {
+			return (size_t)x;
+		}
+	};
+};

@@ -39,3 +39,7 @@ std::optional<Vector2f> ray_circle(const Rayf& ray, const Circlef& c) noexcept;
 extern
 std::optional<Vector2f> ray_rectangle(const Rayf& seg, const Rectangle2f& c) noexcept;
 extern std::optional<Vector2f> ray_segment(const Rayf& A, const Segment2f& B) noexcept;
+
+extern std::vector<Vector2f> poisson_disc_sampling(
+	float r, Vector2f size, const std::vector<Vector2f>& initial_pool = {}
+) noexcept;

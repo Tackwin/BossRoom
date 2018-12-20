@@ -41,9 +41,7 @@ void populate_widget_with_editable_json_object_form(
 				{"text", it.key()},
 				{"textColor", {1, 1, 1, 1}}
 			});
-			auto offsetLabel = Vector2f{
-				pos.x + label->getGlobalBoundingBox().w + 5, pos.y
-			};
+			auto offsetLabel = Vector2f{ pos.x + label->getGlobalBoundingBox().w + 5, pos.y };
 
 			if (it.value().is_boolean()) {
 				p->makeChild<BoolPicker>({
