@@ -41,7 +41,7 @@ LevelScreen::LevelScreen(u32 n) :
 	);
 	_bossHealthTileSprite.setPosition(35, 35);
 
-	InstanceInfo info = InstanceInfo::generateMaze(5, 5);
+	InstanceInfo info = InstanceInfo::generate_graph(10, "res/rooms/working/");;
 	instance = std::make_unique<Instance>(info);
 	instance->startAt(0);
 

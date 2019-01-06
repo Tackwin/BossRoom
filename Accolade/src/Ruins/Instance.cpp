@@ -199,14 +199,31 @@ InstanceInfo InstanceInfo::generateMaze(size_t width, size_t height) noexcept {
 	return info;
 }
 
-struct Node_Data {
-	Vector2f instance_pos;
-};
 InstanceInfo InstanceInfo::generate_graph(
 	size_t n, const std::filesystem::path& pool_of_rooms
 ) noexcept {
 	assert(std::filesystem::is_directory(pool_of_rooms));
-	std::unordered_map<std::unordered_set<size_t>, std::vector<size_t>> dirs_to_index;
+
+	enum class Dir {
+		Left,
+		Top,
+		Right,
+		Bot,
+		Count
+	};
+
+	auto complementary_dir = [](Dir d) {
+		if (d == Dir::Left) return Dir::Right;
+		if (d == Dir::Right) return Dir::Left;
+		if (d == Dir::Top) return Dir::Bot;
+		if (d == Dir::Bot) return Dir::Top;
+		assert(true);
+		return Dir::Left;
+	};
+
+	struct DirHash { std::size_t operator()(Dir t) const { return static_cast<std::size_t>(t); } };
+
+	std::vector<std::unordered_set<Dir, DirHash>> dirs_to_index;
 	std::vector<SectionInfo> room_pool;
 
 	for (auto f : std::filesystem::recursive_directory_iterator(pool_of_rooms)) {
@@ -218,52 +235,140 @@ InstanceInfo InstanceInfo::generate_graph(
 
 		room_pool.push_back((SectionInfo)*d_struct);
 
-		auto all_dir = get_all_accessible_dir(room_pool.back());
-		dirs_to_index[all_dir].push_back(room_pool.size() - 1);
+		//>TODO harmonize direction away from size_t (soooo stupid)
+		auto all_dir_in_uint = get_all_accessible_dir(room_pool.back());
+		std::unordered_set<Dir, DirHash> all_dir;
+		for (auto x : all_dir_in_uint) all_dir.insert((Dir)x);
+
+		dirs_to_index.push_back(all_dir);
 	}
 
-	auto section_sites = poisson_disc_sampling(0.4, { 10, 5 }, { {1, 0}, {3, 4}, { 5, 4 }, {7, 4} });
+	// obtained with the help of wolfram alpha and desmos.com :D
+	// there is probably a formula for the estimated radius of n circles packed in an unit square
+	// but whatever.
+	float estimated_radius;
+	{
+		double a = 0.023833;
+		double b = 5.62943;
+		double c = -0.996572;
+		double f = 0.000370036;
 
+		estimated_radius = (float)std::log(b * (std::pow((double)n, a) + c)) / std::log(f);
+	}
+	auto section_sites = poisson_disc_sampling(estimated_radius, { 1, 1 });
+
+	struct Node_Data {
+		Vector2f instance_pos;
+		std::optional<size_t> section_index;
+	};
 	Graph<Node_Data> graph;
 	for (auto p : section_sites) {
 		Node_Data n;
 		n.instance_pos = p;
 		add_node(graph, n, {});
 	}
-	gen_lab_merge<Node_Data>(graph,
-		[i = 0](const Node_Data& A, const Node_Data& B) mutable noexcept {
-			return (B.instance_pos - A.instance_pos).length2() / (0.65f * 0.65f);
+	graph_min_spanning_tree<Node_Data>(
+		graph,
+		[](const Node<Node_Data>& A, const Node<Node_Data>& B) {
+			return std::abs(
+				(A.data.instance_pos - B.data.instance_pos).length2() /
+				std::powf(std::cosf(2 * A.data.instance_pos.angleTo(B.data.instance_pos)), 4.f)
+			);
 		}
 	);
 
-	sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT, 24), "Boss room");
-	sf::View view{ Vector2f{5.f, 2.5f}, Vector2f{10.f, 5.f} };
-	while (window.isOpen()) {
-		sf::Event e;
-		while (window.pollEvent(e)) {
-			if (e.type == sf::Event::Closed) window.close();
-		}
+	InstanceInfo instance_info;
 
-		window.clear();
+	for (auto&[id, n] : graph) {
+		std::vector<Dir> section_outgoing_dir;
+		std::vector<UUID> section_outgoing_neighboor;
 
-		window.setView(view);
+		for (auto& edge : n.edges) {
+			auto pos_dt = (graph.at(edge).data.instance_pos - n.data.instance_pos);
+			auto angle = pos_dt.angleX();
+			Dir discrete_angle;
+			if (-C::PIf / 4 < angle && angle < C::PIf / 4) discrete_angle = Dir::Right;
+			if (C::PIf / 4 < angle && angle < 3 * C::PIf / 4) discrete_angle = Dir::Bot;
+			if (3 * C::PIf / 4 < angle || angle < -3 * C::PIf / 4) discrete_angle = Dir::Left;
+			if (-3 * C::PIf / 4 < angle && angle < -C::PIf / 4) discrete_angle = Dir::Top;
 
-		for (auto& [_, node] : graph.nodes) {
-			sf::CircleShape mark{ 0.1f };
-			mark.setOrigin(0.1, 0.1);
-			mark.setPosition(node.data.instance_pos);
+			if (auto it = std::find(
+				std::begin(section_outgoing_dir), std::end(section_outgoing_dir), discrete_angle
+			); it != std::end(section_outgoing_dir)) {
+				// we need to insert an intermediary section.
+				// it's a Y switch.
 
-			for (auto& other_id : node.edges) {
-				auto other = graph.nodes.at(other_id);
-				Vector2f::renderLine(window, node.data.instance_pos, other.data.instance_pos, { 1, 1, 1, 1 });
+				// for now a path get "forgotten" meaning it's not connected to main component
+
+				//>TODO
 			}
-			window.draw(mark);
+
+			section_outgoing_dir.push_back(discrete_angle);
+			section_outgoing_neighboor.push_back(edge);
 		}
 
-		window.display();
+		std::unordered_set<Dir, DirHash> set_of_dir(
+			std::begin(section_outgoing_dir), std::end(section_outgoing_dir)
+		);
+
+		std::vector<size_t> available_indexes;
+		for (size_t i = 0; i < dirs_to_index.size(); ++i) {
+			if (dirs_to_index[i] == set_of_dir) {
+				available_indexes.push_back(i);
+			}
+		}
+
+		assert(!available_indexes.empty());
+
+		size_t idx = available_indexes[(size_t)(unitaryRng(RD) * available_indexes.size())];
+		SectionInfo section_info = room_pool[idx];
+
+		std::transform( //we don't care for the default id we reset them.
+			std::begin(section_info.portals),
+			std::end(section_info.portals),
+			std::begin(section_info.portals),
+			[](const PortalInfo& i) {
+				auto copy = i;
+				copy.id = UUID{};
+				return copy;
+			}
+		);
+
+		for (size_t i = 0; i < section_outgoing_dir.size(); ++i) {
+			auto& neighboor = graph.at(section_outgoing_neighboor[i]);
+			if (!neighboor.data.section_index) continue;
+			auto& neighboor_section = instance_info.sections[*neighboor.data.section_index];
+
+			// That mean we can connect the two.
+
+			auto my_portal = std::find_if(
+				std::begin(section_info.portals),
+				std::end(section_info.portals),
+				[&](const PortalInfo& portal_info) {
+					return (Dir)portal_info.spot == section_outgoing_dir[i];
+				}
+			);
+			assert(my_portal != std::end(section_info.portals));
+
+			auto their_portal = std::find_if(
+				std::begin(neighboor_section.portals),
+				std::end(neighboor_section.portals),
+				[&](const PortalInfo& portal_info) {
+					return (Dir)portal_info.spot == complementary_dir(section_outgoing_dir[i]);
+				}
+			);
+			assert(their_portal != std::end(neighboor_section.portals));
+
+			my_portal->tp_to = their_portal->id;
+			their_portal->tp_to = my_portal->id;
+		}
+
+		n.data.section_index = instance_info.sections.size();
+		instance_info.sections.push_back(section_info);
 	}
 
-	return {};
+
+	return instance_info;
 }
 
 void Instance::generateGrid(size_t n) noexcept {

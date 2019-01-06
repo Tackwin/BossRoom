@@ -204,6 +204,11 @@ const sf::SoundBuffer& AssetsManager::getSound(const std::string &key) {
 	return it->second;
 }
 
+void AssetsManager::invalidateJson(const std::string& key) noexcept {
+	assert(AM::haveJson(key));
+
+	_jsons.erase(key);
+}
 bool AssetsManager::haveJson(const std::string& key) {
 	return _jsons.find(key) != std::end(_jsons);
 }

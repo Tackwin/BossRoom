@@ -31,6 +31,7 @@ public:
 	static bool loadSound(const std::string& key, const std::string& path);
 	static const sf::SoundBuffer& getSound(const std::string& key);
 
+	static void invalidateJson(const std::string& key) noexcept;
 	static bool haveJson(const std::string& key);
 	static bool loadJson(const std::string& key, const std::string& path);
 	static const nlohmann::json& getJson(const std::string& key);

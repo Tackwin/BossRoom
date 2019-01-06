@@ -9,7 +9,7 @@ struct OrderedPair {
 	constexpr OrderedPair() = default;
 	constexpr OrderedPair(const OrderedPair<T>& x) = default;
 	constexpr OrderedPair(OrderedPair<T>&& x) = default;
-	constexpr OrderedPair(T&& t, T&& u) noexcept : a(t), b(u) {
+	constexpr OrderedPair(const T& t, const T& u) noexcept : a(t), b(u) {
 		if (t > u) { a = u; b = t; }
 	};
 

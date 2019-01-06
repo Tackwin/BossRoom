@@ -1,6 +1,7 @@
 #pragma once
 #include <unordered_set>
 #include "Common.hpp"
+#include "Order/OrderedPair.hpp"
 #include "Utils/UUID.hpp"
 
 template<typename T>
@@ -11,14 +12,21 @@ struct Node {
 };
 
 template<typename T>
-struct Graph {
-	std::unordered_map<UUID, Node<T>> nodes;
-	std::unordered_map<UUID, std::bitset<32>> flags;
-};
+using Graph = std::unordered_map<UUID, Node<T>>;
 
 template<typename T> void link_nodes(Node<T>& A, Node<T>& B) noexcept {
 	A.edges.emplace(B.me);
 	B.edges.emplace(A.me);
+}
+template<typename T> void graph_unlink_nodes(Node<T>& A, Node<T>& B) noexcept {
+	auto it = A.edges.find(B.me);
+	auto jt = B.edges.find(A.me);
+
+	assert(it != std::end(A.edges));
+	assert(jt != std::end(B.edges));
+
+	A.edges.erase(B.me);
+	B.edges.erase(A.me);
 }
 template<typename T> bool is_linked(const Node<T>& A, const Node<T>& B) noexcept {
 	return A.edges.count(B.me) != 0 || B.edges.count(A.me) != 0;
@@ -39,9 +47,9 @@ void add_node(Graph<T>& graph, const T& data, std::unordered_set<UUID> neighboor
 	auto id = n.me;
 	n.data = data;
 	for (auto& x : neighboor) {
-		if (graph.nodes.count(x)) link_nodes(n, graph.nodes.at(x));
+		if (graph.count(x)) link_nodes(n, graph.at(x));
 	}
-	graph.nodes[id] = std::move(n);
+	graph[id] = std::move(n);
 }
 
 template<typename T>
@@ -60,8 +68,8 @@ void walk_connexe_coponent(
 		pred(n);
 		close.emplace(n);
 
-		if (graph.nodes.count(n) == 0) continue;
-		auto& node = graph.nodes.at(n);
+		if (graph.count(n) == 0) continue;
+		auto& node = graph.at(n);
 
 		for (auto x : node.edges) {
 			open.push_back(x);
@@ -70,52 +78,69 @@ void walk_connexe_coponent(
 }
 
 template<typename T>
-void gen_lab_merge(
+void graph_min_spanning_tree(
 	Graph<T>& graph,
-	std::function<float(const T&, const T&)> score = [](auto, auto) { return .0; },
-	float connected_factor = 1.f/17.f
-) noexcept
-{
-	std::vector<UUID> open;
-	open.reserve(graph.nodes.size());
+	std::function<float(const Node<T>&, const Node<T>&)> cost,
+	bool cache_cost = false
+) noexcept {
+	std::unordered_set<UUID> Q;
+	std::unordered_map<UUID, std::optional<UUID>> E;
+	std::unordered_map<UUID, float> C;
+	std::unordered_map<OrderedPair<UUID>, float> cost_cache;
+	for (auto&[id, _] : graph) {
+		Q.insert(id);
+		C.insert({ id, FLT_MAX });
+		E.insert({ id, std::nullopt });
+	}
 
-	std::vector<UUID> admissible_directions;
-	open.push_back(graph.nodes.begin()->first);
+	C.at(std::begin(graph)->first) = FLT_MAX / 2.f;
 
-	while (!open.empty()) {
-		auto next = open.back();
-		open.pop_back();
+	auto min_key = [&]{
+		float min = FLT_MAX;
+		UUID min_index{ UUID::zero() };
 
-		admissible_directions.clear();
-		for (const auto&[id, x] : graph.nodes) {
-			if (std::count(std::begin(open), std::end(open), id) != 0) continue;
-			if (id == next) continue;
+		for (auto&[id, w] : C) {
+			if (Q.count(id) && C.at(id) < min) {
+				min = C.at(id);
+				min_index = id;
+			}
+		}
+		return min_index;
+	};
 
-			// So we accept only nodes that are not yet connected, to avoid having a maximally
-			// connected, but we introduce a bit of a randomness, we don't want a tree so we accept
-			// a few cycles.
-			bool can_connect =
-				!is_remotely_linked(graph, graph.nodes[id], graph.nodes[next]) ||
-				unitaryRng(RD) < connected_factor;
+	while (!Q.empty()) {
+		auto v = min_key();
 
-			if (can_connect && score(graph.nodes[next].data, graph.nodes[id].data) < 1.f)
-				admissible_directions.push_back(id);
+		Q.erase(v);
+		if (E.at(v)) {
+			link_nodes(graph.at(v), graph.at(*E.at(v)));
 		}
 
-		if (admissible_directions.empty()) continue;
-		std::sort(
-			std::begin(admissible_directions), std::end(admissible_directions),
-			[&](const auto& A, const auto& B) {
-				auto s = graph.nodes[next].data;
-				return score(graph.nodes[A].data, s) < score(graph.nodes[B].data, s);
+		if (cache_cost) {
+			for (auto&[id, w] : graph) {
+				if (!Q.count(id)) continue;
+				auto p = OrderedPair<UUID>(id, v);
+
+				if (!cost_cache.count(p)) {
+					cost_cache[p] = cost(graph.at(v), w);
+				}
+				auto candidate = cost_cache.at(p);
+				if (candidate < C.at(id)) {
+					C.at(id) = candidate;
+					E.at(id) = v;
+				}
 			}
-		);
+		}
+		else {
+			for (auto&[id, w] : graph) {
+				if (!Q.count(id)) continue;
 
-		link_nodes(graph.nodes[admissible_directions[0]], graph.nodes[next]);
-
-
-		open.insert(
-			std::end(open), std::begin(admissible_directions), std::end(admissible_directions)
-		);
+				auto candidate = cost(graph.at(v), w);
+				if (candidate < C.at(id)) {
+					C.at(id) = candidate;
+					E.at(id) = v;
+				}
+			}
+		}
 	}
 }

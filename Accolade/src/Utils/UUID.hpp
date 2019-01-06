@@ -59,3 +59,4 @@ namespace std {
 
 extern void to_json(nlohmann::json& json, const UUID& id);
 extern void from_json(const nlohmann::json& json, UUID& id);
+extern void print(const UUID& id) noexcept;
