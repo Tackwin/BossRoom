@@ -253,7 +253,7 @@ InstanceInfo InstanceInfo::generate_graph(
 		double c = -0.996572;
 		double f = 0.000370036;
 
-		estimated_radius = (float)std::log(b * (std::pow((double)n, a) + c)) / std::log(f);
+		estimated_radius = (float)(std::log(b * (std::pow((double)n, a) + c)) / std::log(f));
 	}
 	auto section_sites = poisson_disc_sampling(estimated_radius, { 1, 1 });
 
@@ -263,28 +263,102 @@ InstanceInfo InstanceInfo::generate_graph(
 	};
 	Graph<Node_Data> graph;
 	for (auto p : section_sites) {
-		Node_Data n;
-		n.instance_pos = p;
-		add_node(graph, n, {});
+		Node_Data node;
+		node.instance_pos = p;
+		add_node(graph, node, {});
 	}
 	graph_min_spanning_tree<Node_Data>(
 		graph,
 		[](const Node<Node_Data>& A, const Node<Node_Data>& B) {
 			return std::abs(
 				(A.data.instance_pos - B.data.instance_pos).length2() /
-				std::powf(std::cosf(2 * A.data.instance_pos.angleTo(B.data.instance_pos)), 4.f)
+				std::powf(
+					std::cosf(2 * (float)A.data.instance_pos.angleTo(B.data.instance_pos)), 4.f
+				)
 			);
 		}
 	);
 
+	// We add a few edges at random since we don't want to make a tree, a few cycle is encoraged.
+	size_t n_added_edges = (size_t)(unitaryRng(RD) * n / 2.f);
+
+	auto nodes_to_add_edges = reservoir_sampling_predicated<UUID, Node<Node_Data>>(
+		graph,
+		[](const Node<Node_Data>& x) {
+			return x.edges.size() == 1;
+		},
+		n_added_edges,
+		RD
+	);
+
+	for (auto& node : nodes_to_add_edges) {
+		UUID min = graph.begin()->first;
+		auto angle =
+			(float)node->data.instance_pos.angleTo(graph.begin()->second.data.instance_pos);
+		float min_score =
+			(node->data.instance_pos - graph.begin()->second.data.instance_pos).length2() /
+			std::powf(std::cosf(2 * angle), 4.f);
+
+		for (auto&[id, candidate] : graph) {
+			if (node == &candidate) continue;
+			if (is_linked(*node, candidate)) continue;
+
+			auto angle = (float)node->data.instance_pos.angleTo(candidate.data.instance_pos);
+			
+			// If the corresponding room already have someone on that side we don't insert ourself.
+			// >TODO remove this when i'll handle multiple way out.
+			Dir discrete_angle;
+			if (-C::PIf / 4 < angle && angle < C::PIf / 4) discrete_angle = Dir::Right;
+			if (C::PIf / 4 < angle && angle < 3 * C::PIf / 4) discrete_angle = Dir::Bot;
+			if (3 * C::PIf / 4 < angle || angle < -3 * C::PIf / 4) discrete_angle = Dir::Left;
+			if (-3 * C::PIf / 4 < angle && angle < -C::PIf / 4) discrete_angle = Dir::Top;
+
+			bool already_have{ false };
+			for (auto& x : candidate.edges) {
+				float x_angle =
+					(float)graph.at(x).data.instance_pos.angleTo(candidate.data.instance_pos);
+
+				// >TODO make a Dir Enum in a proper header file for evryone to use.
+				Dir discrete_x_angle;
+				if (-C::PIf / 4 < x_angle && x_angle < C::PIf / 4) discrete_x_angle = Dir::Right;
+				if (C::PIf / 4 < x_angle && x_angle < 3 * C::PIf / 4) discrete_x_angle = Dir::Bot;
+				if (3 * C::PIf / 4 < x_angle || x_angle < -3 * C::PIf / 4)
+					discrete_x_angle = Dir::Left;
+				if (-3 * C::PIf / 4 < x_angle && x_angle < -C::PIf / 4)
+					discrete_x_angle = Dir::Top;
+
+				if (discrete_angle == discrete_x_angle) {
+					already_have = true;
+					break;
+				}
+			}
+
+			if (already_have) continue;
+
+
+			auto candidate_score =
+				(node->data.instance_pos - candidate.data.instance_pos).length2() /
+				std::powf(std::cosf(2 * angle), 4.f);
+
+
+
+			if (candidate_score < min_score) {
+				min = id;
+				min_score = candidate_score;
+			}
+		}
+
+		link_nodes(*node, graph.at(min));
+	}
+
 	InstanceInfo instance_info;
 
-	for (auto&[id, n] : graph) {
+	for (auto&[id, node] : graph) {
 		std::vector<Dir> section_outgoing_dir;
 		std::vector<UUID> section_outgoing_neighboor;
 
-		for (auto& edge : n.edges) {
-			auto pos_dt = (graph.at(edge).data.instance_pos - n.data.instance_pos);
+		for (auto& edge : node.edges) {
+			auto pos_dt = (graph.at(edge).data.instance_pos - node.data.instance_pos);
 			auto angle = pos_dt.angleX();
 			Dir discrete_angle;
 			if (-C::PIf / 4 < angle && angle < C::PIf / 4) discrete_angle = Dir::Right;
@@ -322,6 +396,7 @@ InstanceInfo InstanceInfo::generate_graph(
 
 		size_t idx = available_indexes[(size_t)(unitaryRng(RD) * available_indexes.size())];
 		SectionInfo section_info = room_pool[idx];
+		section_info.instance_pos = node.data.instance_pos;
 
 		std::transform( //we don't care for the default id we reset them.
 			std::begin(section_info.portals),
@@ -363,10 +438,9 @@ InstanceInfo InstanceInfo::generate_graph(
 			their_portal->tp_to = my_portal->id;
 		}
 
-		n.data.section_index = instance_info.sections.size();
+		node.data.section_index = instance_info.sections.size();
 		instance_info.sections.push_back(section_info);
 	}
-
 
 	return instance_info;
 }
@@ -469,10 +543,11 @@ void Instance::update(double dt) noexcept {
 				portal_to_enter_from = section->getPortal(p.tp_to);
 			}
 			else {
+				size_t current_section_info_idx;
 				auto nextToInstantiate =
 					find<SectionInfo>(
 						info.sections,
-						[&portal_to_enter_from, id = p.tp_to](const SectionInfo& i) {
+						[&, id = p.tp_to, idx = 0](const SectionInfo& i) mutable {
 							auto it = std::find_if(
 								std::begin(i.portals),
 								std::end(i.portals),
@@ -482,8 +557,10 @@ void Instance::update(double dt) noexcept {
 							);
 							if (it != std::end(i.portals)) {
 								portal_to_enter_from = *it;
+								current_section_info_idx = idx;
 								return true;
 							}
+							++idx;
 							return false;
 						}
 					);
@@ -491,6 +568,7 @@ void Instance::update(double dt) noexcept {
 				assert(nextToInstantiate);
 				sections.push_back(entity_store.make<Section>(*nextToInstantiate));
 				current_section = sections.back();
+				entity_store.get(current_section)->original_info_idx = current_section_info_idx;
 			}
 			
 			section = entity_store.get(current_section);
@@ -511,6 +589,37 @@ void Instance::renderDebug(sf::RenderTarget& target) noexcept {
 	assert(section);
 
 	section->renderDebug(target);
+}
+
+void Instance::render_map(sf::RenderTarget& target) noexcept {
+	for (size_t i = 0; i < info.sections.size(); ++i) {
+		const auto& s = info.sections[i];
+		for (const auto& p : s.portals) {
+			if (p.tp_to == UUID::zero()) continue;
+			auto edge = find<SectionInfo>(info.sections, [&](const SectionInfo& x) {
+				return find<PortalInfo>(x.portals, [&](const PortalInfo& b) {
+					return b.id == p.tp_to;
+				}) != nullptr;
+			});
+			assert(edge);
+
+			Vector2f::renderLine(target, s.instance_pos, edge->instance_pos, { 1, 1, 1, 1 });
+		}
+	}
+
+	for (size_t i = 0; i < info.sections.size(); ++i) {
+		const auto& s = info.sections[i];
+
+		sf::CircleShape mark{ 0.01f };
+		mark.setOrigin(0.01f, 0.01f);
+		mark.setPosition(s.instance_pos);
+
+		if (i == entity_store.get(current_section)->original_info_idx) {
+			mark.setFillColor({ 255, 0, 0, 255 });
+		}
+
+		target.draw(mark);
+	}
 }
 
 Section& Instance::getCurrentSection() noexcept {

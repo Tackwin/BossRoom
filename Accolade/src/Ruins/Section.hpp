@@ -142,6 +142,10 @@ public:
 	std::optional<RayCollision> ray_cast(
 		const Rayf& ray, std::bitset<Object::SIZE> mask = xstd::full_bitset<Object::SIZE>()
 	) const noexcept;
+
+	// I'm trying to get away from hidden dependencies, or really anything hidden
+	// so moving away from private, class etc...
+	size_t original_info_idx{ 0 };
 private:
 
 	void updateAimAnimation(double dt) noexcept;

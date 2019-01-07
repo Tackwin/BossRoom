@@ -41,7 +41,7 @@ LevelScreen::LevelScreen(u32 n) :
 	);
 	_bossHealthTileSprite.setPosition(35, 35);
 
-	InstanceInfo info = InstanceInfo::generate_graph(10, "res/rooms/working/");;
+	InstanceInfo info = InstanceInfo::generate_graph(100, "res/rooms/working/");;
 	instance = std::make_unique<Instance>(info);
 	instance->startAt(0);
 
@@ -94,6 +94,8 @@ void LevelScreen::onEnter(std::any input) {
 			(C::HEIGHT - 10) - _playerLife[i].getSize().y
 		);
 	}
+
+
 }
 
 std::any LevelScreen::onExit() {
@@ -129,6 +131,9 @@ void LevelScreen::update(double dt) {
 			inventory->quit();
 		}
 	}
+	if (IM::isKeyJustPressed(sf::Keyboard::M)) {
+		instance_map_is_up = !instance_map_is_up;
+	}
 
 	if (inventory_is_up) {
 		inventory->postOrderInput({});
@@ -152,12 +157,6 @@ void LevelScreen::update(double dt) {
 		"Section: " + std::to_string(instance->getCurrentSectionIndex())
 	);
 
-	/*if (_level) {
-		_level->update(dt);
-		if (_level->lost()) {
-			game->enterHeritage();
-		}
-	}*/
 	if (IM::isLastSequenceJustFinished({ sf::Keyboard::E }, { sf::Keyboard::LControl })) {
 		// if we came from the edit screen then we can just go back to it.
 		if (game->getLastScreen() == Screen::edit_screen) {
@@ -189,8 +188,25 @@ void LevelScreen::render(sf::RenderTarget& target) {
 	for (auto& i : _playerLife)
 		target.draw(i);
 
+	if (instance_map_is_up) render_instance_map(target);
+
 	target.setView(initialView);
 }
+
+void LevelScreen::render_instance_map(sf::RenderTarget& target) noexcept {
+	assert(instance_map_is_up);
+
+	const auto& old_view = target.getView();
+	target.setView(instance_map_view);
+	instance_map_view.setViewport({ 0.25f, 0.25f, 0.5f, 0.5f });
+	instance_map_view.setSize({ 1.f, 1.f });
+	instance_map_view.setCenter({ 0.5f, 0.5f });
+
+	instance->render_map(target);
+
+	target.setView(old_view);
+}
+
 
 void LevelScreen::renderGui(sf::RenderTarget& target) {
 	constexpr u32 nTiles = 10;
@@ -277,7 +293,6 @@ void LevelScreen::shakeScreen(float power) {
 	};
 
 	TimerManager::addFunction(iTimeShakes, lambda);
-
 }
 
 u32 LevelScreen::getIndex() const {

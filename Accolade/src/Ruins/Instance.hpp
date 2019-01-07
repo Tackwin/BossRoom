@@ -43,6 +43,8 @@ public:
 	void render(sf::RenderTarget& target) noexcept;
 	void renderDebug(sf::RenderTarget& target) noexcept;
 
+	void render_map(sf::RenderTarget& target) noexcept;
+
 	void hardSetCurrentSection(const SectionInfo& sec) noexcept;
 
 	const Section& getCurrentSection() const noexcept;

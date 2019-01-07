@@ -29,6 +29,7 @@ public:
 	virtual void update(double dt) override;
 	virtual void render(sf::RenderTarget& target) override;
 	void renderGui(sf::RenderTarget& target_);
+	void render_instance_map(sf::RenderTarget& target) noexcept;
 
 	void shakeScreen(float power = 1.0f);
 
@@ -42,8 +43,6 @@ private:
 	sf::View _guiView;
 	sf::View _gameView;
 
-	MM::unique_ptr<Level> _level;
-	
 	std::unique_ptr<Instance> instance;
 
 	std::unique_ptr<Label> section_id_label{ nullptr };
@@ -53,5 +52,9 @@ private:
 	std::unique_ptr<Inventory> inventory;
 
 	bool inventory_is_up{ false };
+	bool instance_map_is_up{ false };
+
+	sf::RenderTexture instance_map_render_texture;
+	sf::View instance_map_view;
 };
 

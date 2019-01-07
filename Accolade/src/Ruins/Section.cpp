@@ -40,6 +40,10 @@ SectionInfo SectionInfo::loadJson(const nlohmann::json& json) noexcept {
 		info.viewSize = Vector2f::loadJson(json.at("viewSize"));
 	}
 
+	if (json.count("instance_pos") != 0) {
+		info.instance_pos = json.at("instance_pos");
+	}
+
 	load_vectors(info.navigationPoints);
 	load_vectors(info.navigationLinks);
 
@@ -82,6 +86,7 @@ nlohmann::json SectionInfo::saveJson(SectionInfo info) noexcept {
 	json["maxRect"] = Rectangle2f::saveJson(info.maxRectangle);
 	json["startPos"] = Vector2f::saveJson(info.startPos);
 	json["viewSize"] = Vector2f::saveJson(info.viewSize);
+	json["instance_pos"] = info.instance_pos;
 
 	save_vectors(info.semiPlateformes);
 	save_vectors(info.plateformes);
