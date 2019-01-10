@@ -44,6 +44,12 @@ namespace xstd {
 		seed ^= h(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 		return seed;
 	}
+	constexpr inline std::size_t hash_combine(std::size_t a, size_t b) noexcept {
+#pragma warning(push)
+#pragma warning(disable: 4307)
+		return a + 0x9e3779b9u + (b << 6) + (b >> 2);
+#pragma warning(pop)
+	}
 
 	template<size_t S>
 	constexpr std::bitset<S> full_bitset() noexcept {
@@ -177,7 +183,7 @@ namespace C {
 	}
 	constexpr size_t operator""_id(const char* user, size_t size) {
 		size_t seed = 0;
-		for (size_t i = 0; i < size; ++i) seed = xstd::hash_combine(seed, user[i]);
+		for (size_t i = 0; i < size; ++i) seed = xstd::hash_combine(seed, (size_t)user[i]);
 		return seed;
 	}
 };

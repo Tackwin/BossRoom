@@ -21,8 +21,8 @@ Panel::Panel(nlohmann::json json) noexcept : Widget(json) {
 		setResizable(*it);
 	if (auto it = json.find("collapsed"); it != json.end() && it->get<bool>())
 		toggleCollapse();
-	if (auto it = json.find("collapsed"); it != json.end())
-		setClipper(*it);
+	//if (auto it = json.find("collapsed"); it != json.end())
+	//	setClipper(*it);
 	if (auto it = json.find("back_color"); it != std::end(json))
 		getSprite().setColor((Vector4f)*it);
 
@@ -32,6 +32,7 @@ Panel::Panel(nlohmann::json json) noexcept : Widget(json) {
 		_focused = true;
 		auto mousePos = IM::getMouseScreenPos();
 
+		if (!isDraggable()) return false;
 		if (isInHeader(mousePos)) {
 			deltaDrag = mousePos - getGlobalPosition();
 

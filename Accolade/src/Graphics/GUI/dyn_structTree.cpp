@@ -27,7 +27,7 @@ void dyn_structTree::set_dyn_struct(const dyn_struct& d_struct) noexcept {
 }
 
 void dyn_structTree::contruct_tree() noexcept {
- 	if (structure.type_tag == "Vector2<T>"_id) {
+ 	if (structure.type_tag == Vector2_Type_Tag) {
 		auto pos_picker = makeChild<PosPicker>({
 			{"pos", _pos},
 			{"name", "value"},

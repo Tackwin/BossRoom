@@ -86,32 +86,38 @@ void DistanceGuy::update(double dt) noexcept {
 
 	if (reloadTimer_ < .3f) {
 		colorToAttack_ = {
-			1.f - (1/.3f) * (.3f - reloadTimer_),
-			1.f - (1/.3f) * (.3f - reloadTimer_),
+			std::max(1.f - (1 / .3f) * (.3f - reloadTimer_), 1.f),
+			std::max(1.f - (1 / .3f) * (.3f - reloadTimer_), 1.f),
 			1.f, 
 			1.f
 		};
 	}
 
 	if ((playerPos - pos).length2() < info_.range * info_.range && reloadTimer_ < 0.f) {
-		SpellDirectionInfo info =
-			SpellDirectionInfo::loadJson(AM::getJson(SpellDirectionInfo::JSON_ID));
-		info.damage = info_.spellDamage;
+		auto ray_mask = Object::opaque_mask;
+		ray_mask.set((size_t)Object::PLAYER);
+		auto cast_hit =
+			section_->ray_cast({ pos, (float)(playerPos - pos).angleX() }, ray_mask);
+		if (cast_hit && cast_hit->collider->uuid == section_->getPlayer()->uuid) {
+			SpellDirectionInfo info =
+				SpellDirectionInfo::loadJson(AM::getJson(SpellDirectionInfo::JSON_ID));
+			info.damage = info_.spellDamage;
 
-		info.lifeTime *= info_.lifeTimeBoost;
-		auto ptr = std::make_shared<SpellDirection>(
-			section_, section_->getObject(uuid), info
-		);
-		auto targetMask = std::bitset<Object::SIZE>();
-		targetMask.set(Object::PLAYER);
-		auto dir = (section_->getPlayerPos() - pos).normalize();
+			info.lifeTime *= info_.lifeTimeBoost;
+			auto ptr = std::make_shared<SpellDirection>(
+				section_, section_->getObject(uuid), info
+			);
+			auto targetMask = std::bitset<Object::SIZE>();
+			targetMask.set(Object::PLAYER);
+			auto dir = (section_->getPlayerPos() - pos).normalize();
 
-		ptr->launch(dir, targetMask);
-		ptr->setPos(support((float)dir.angleX(), 0.f));
-		section_->addSpell(ptr);
+			ptr->launch(dir, targetMask);
+			ptr->setPos(support((float)dir.angleX(), 0.f));
+			section_->addSpell(ptr);
 
-		reloadTimer_ = info_.reloadTime;
-		colorToAttack_ = { 1.f, 1.f, 1.f, 1.f };
+			reloadTimer_ = info_.reloadTime;
+			colorToAttack_ = { 1.f, 1.f, 1.f, 1.f };
+		}
 	}
 
 

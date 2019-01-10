@@ -5,7 +5,7 @@
 #include "Graphics/GUI/Panel.hpp"
 #include "Graphics/GUI/Label.hpp"
 #include "Managers/InputsManager.hpp"
-#include "Graphics/GUI/dyn_structTree.hpp"
+#include "Graphics/GUI/StructViewer.hpp"
 
 constexpr struct {
 	float icon = 5.f;
@@ -58,17 +58,18 @@ Inventory::Inventory() noexcept : Widget() {
 
 	item_focus_mask = main_panel->makeChild<Panel>({
 		{"sprite", "panel_a"},
-		{"size", {main_panel->getSize().x + 7.5f, 35} },
+		{"size", { 2.f * main_panel->getSize().x / 3.f - 7.5f, 35} },
 		{"origin", {2.5f / main_panel->getSize().y, 2.5f / 35.f}}
 	});
 	item_focus_mask->getSprite().setColor(sf::Color{ 255, 255, 255, 125 });
 	item_focus_mask->setVisible(false);
 
 	item_desc = main_panel->makeChild<Panel>({
-		{"sripte", "panel_a"},
+		{"sprite", "panel_a"},
 		{"size", {main_panel->getSize().x / 3.f, main_panel->getSize().y}},
 		{"pos", {main_panel->getSize().x * 2.f / 3.f, 0}},
-		{"back_color", {0.565f, 0.576f, 0.627f, 1.f}}
+		{"back_color", {0.3f, 0.3f, 0.3f, 1.f}},
+		{"draggable", false}
 	});
 
 	Widget::Callback on_click;
@@ -167,10 +168,12 @@ void Inventory::setFocusedItem(size_t index) noexcept {
 
 	item_focus_mask->setPosition({ -2.5f, -2.5f + 30.f * index });
 	item_desc->killEveryChilds();
-	item_desc->makeChild<dyn_structTree>({
-		{"structure", item->get_item_desc()},
-		{"editable", false}
-	});
+	//item_desc->getSprite().setColor({ 30, 30, 30, 255 });
+
+	StructViewerOpts opts;
+	opts.draggable = false;
+	opts.d_struct = item->get_item_desc();
+	item_desc->addChild(new StructViewer{ opts });
 }
 
 void Inventory::setFocus(bool v) noexcept {

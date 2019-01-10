@@ -43,7 +43,7 @@ LevelScreen::LevelScreen(u32 n) :
 
 	InstanceInfo info = InstanceInfo::generate_graph(100, "res/rooms/working/");;
 	instance = std::make_unique<Instance>(info);
-	instance->startAt(0);
+	instance->enter();
 
 	std::filesystem::path startRoom = AM::getJson(JSON_KEY)["StartRoom"].get<std::string>();
 	AM::loadJson("StartRoom", (ASSETS_PATH / startRoom).string());

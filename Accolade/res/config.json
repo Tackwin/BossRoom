@@ -129,6 +129,12 @@
 		"merchant_shop": {
 			"sheet": "images/merchant_shop.png"
 		},
+		"plus_button": {
+			"sheet": "images/plus_button.png"
+		},
+		"minus_button": {
+			"sheet": "images/minus_button.png"
+		},
 		"dungeon_door": {
 			"sheet": "images/dungeon_door.png"
 		},

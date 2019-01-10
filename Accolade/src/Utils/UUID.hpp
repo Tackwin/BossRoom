@@ -41,6 +41,8 @@ private:
 
 	unsigned long long uuid;
 	friend std::hash<UUID>;
+
+	friend void print(const UUID&) noexcept;
 public:
 	static constexpr UUID zero() noexcept {
 		return { 0 };

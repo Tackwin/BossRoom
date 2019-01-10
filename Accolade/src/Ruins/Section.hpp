@@ -36,7 +36,17 @@
 
 #include "RTTI/dyn_struct.hpp"
 
+#include "Cardinals/Dir.hpp"
+
+enum class Section_Type {
+	Start,
+	Normal,
+	Boss
+};
+
 struct SectionInfo {
+	Section_Type section_type;
+
 	std::vector<NavigationPointInfo> navigationPoints;
 	std::vector<NavigationLinkInfo> navigationLinks;
 
@@ -212,4 +222,4 @@ private:
 
 
 
-extern std::unordered_set<size_t> get_all_accessible_dir(const SectionInfo& info) noexcept;
+extern std::unordered_set<Dir> get_all_accessible_dir(const SectionInfo& info) noexcept;

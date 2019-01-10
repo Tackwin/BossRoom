@@ -127,6 +127,7 @@ void ImmediateRangedSword::playerUseMainWeapon(EM::EventCallbackParameter args) 
 dyn_struct ImmediateRangedSword::get_item_desc() const noexcept {
 	return {
 		{"Name", "Immediate Ranged Sword"},
-		{"Effect", "Nique des meres au cac"}
+		{"Effect", "Nique des meres au cac"},
+		{"Damage", std::to_string(info.damage)}
 	};
 }

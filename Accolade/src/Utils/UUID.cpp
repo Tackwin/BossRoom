@@ -12,6 +12,6 @@ void from_json(const nlohmann::json& json, UUID& id) {
 }
 
 void print(const UUID& id) noexcept {
-	printf("%d", id);
+	printf("%llu", id.uuid);
 }
 

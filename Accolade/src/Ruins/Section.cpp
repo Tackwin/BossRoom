@@ -738,12 +738,10 @@ std::optional<RayCollision> Section::ray_cast(
 	return _world.ray_cast(ray, mask);
 }
 
-std::unordered_set<size_t> get_all_accessible_dir(const SectionInfo& info) noexcept {
-	std::unordered_set<size_t> dirs;
+std::unordered_set<Dir> get_all_accessible_dir(const SectionInfo& info) noexcept {
+	std::unordered_set<Dir> dirs;
 
-	for (auto p : info.portals) {
-		dirs.emplace(p.spot);
-	}
+	for (auto p : info.portals) dirs.emplace(get_spot_in_dir(p));
 
 	return dirs;
 }

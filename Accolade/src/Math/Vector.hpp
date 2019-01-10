@@ -12,6 +12,8 @@
 #define COLOR_UNROLL(x) (x).r, (x).g, (x).b, (x).a
 #define XYZW_UNROLL(v) (v).x, (v).y, (v).z, (v).w
 
+static constexpr auto Vector2_Type_Tag = "Vector2<T>"_id;
+
 template<size_t D, typename T>
 struct __vec_member {
 	T components[D];
@@ -659,7 +661,7 @@ struct dyn_struct;
 template<typename T>
 void to_dyn_struct(dyn_struct& s, const Vector<2, T>& x) noexcept {
 	s = { x.x, x.y };
-	s.type_tag = "Vector2<T>"_id;
+	s.type_tag = Vector2_Type_Tag;
 }
 template<typename T>
 void from_dyn_struct(const dyn_struct& s, Vector<2, T>& x) noexcept {

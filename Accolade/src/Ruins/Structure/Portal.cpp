@@ -42,3 +42,11 @@ void render(const PortalInfo& p, sf::RenderTarget& target) noexcept {
 	// TODO
 	p.frontier.render(target, { 1, 1, 1, 1 });
 }
+
+Dir get_spot_in_dir(const PortalInfo& p) noexcept {
+	if (p.spot == 0) return Dir::Left;
+	if (p.spot == 1) return Dir::Top;
+	if (p.spot == 2) return Dir::Right;
+	if (p.spot == 3) return Dir::Bot;
+	return Dir::Left;
+}

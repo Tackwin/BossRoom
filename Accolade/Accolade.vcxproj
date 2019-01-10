@@ -165,7 +165,7 @@
       <SDLCheck>true</SDLCheck>
       <TreatWarningAsError>false</TreatWarningAsError>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <DisableSpecificWarnings>4201;4458;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4201;4458;4307;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -190,7 +190,7 @@
       <SDLCheck>true</SDLCheck>
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <DisableSpecificWarnings>4201;4458;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4201;4458;4307;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -216,7 +216,7 @@
       <SDLCheck>true</SDLCheck>
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <DisableSpecificWarnings>4201;4458;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4201;4458;4307;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -303,7 +303,7 @@
       <SDLCheck>true</SDLCheck>
       <TreatWarningAsError>false</TreatWarningAsError>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <DisableSpecificWarnings>4201;4458;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4201;4458;4307;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -352,6 +352,7 @@
   <ItemGroup>
     <ClCompile Include="src\brx\Parser.cpp" />
     <ClCompile Include="src\brx\Serializer.cpp" />
+    <ClCompile Include="src\Cardinals\Dir.cpp" />
     <ClCompile Include="src\Containers\DynArray.cpp" />
     <ClCompile Include="src\Containers\Graph.cpp" />
     <ClCompile Include="src\Containers\QuadTree.cpp" />
@@ -379,6 +380,7 @@
     <ClCompile Include="src\Graphics\GUI\InputText.cpp" />
     <ClCompile Include="src\Graphics\GUI\JsonTree.cpp" />
     <ClCompile Include="src\Graphics\GUI\PosPicker.cpp" />
+    <ClCompile Include="src\Graphics\GUI\StructViewer.cpp" />
     <ClCompile Include="src\Graphics\GUI\Switcher.cpp" />
     <ClCompile Include="src\Graphics\GUI\ValuePicker.cpp" />
     <ClCompile Include="src\GUI\Inventory\Inventory.cpp" />
@@ -448,6 +450,7 @@
     <ClInclude Include="src\brx\Brx.hpp" />
     <ClInclude Include="src\brx\Parser.hpp" />
     <ClInclude Include="src\brx\Serializer.hpp" />
+    <ClInclude Include="src\Cardinals\Dir.hpp" />
     <ClInclude Include="src\Components\Bumpable.hpp" />
     <ClInclude Include="src\Components\Clonable.hpp" />
     <ClInclude Include="src\Components\Hitable.hpp" />
@@ -481,6 +484,7 @@
     <ClInclude Include="src\Graphics\GUI\InputText.hpp" />
     <ClInclude Include="src\Graphics\GUI\JsonTree.hpp" />
     <ClInclude Include="src\Graphics\GUI\PosPicker.hpp" />
+    <ClInclude Include="src\Graphics\GUI\StructViewer.hpp" />
     <ClInclude Include="src\Graphics\GUI\Switcher.hpp" />
     <ClInclude Include="src\Graphics\GUI\ValuePicker.hpp" />
     <ClInclude Include="src\GUI\Inventory\Inventory.hpp" />

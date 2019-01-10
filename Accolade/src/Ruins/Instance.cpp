@@ -13,25 +13,18 @@
 
 #include "Order/OrderedPair.hpp"
 
-#define SAVE(x, y) json[#x] = y(info.x);
-nlohmann::json InstanceInfo::saveJson(const InstanceInfo& info) noexcept {
-	nlohmann::json json;
-	SAVE(nSamples, );
-	//SAVE(roofSamples, );
-	//SAVE(roughTowers, );
-	return json;
+#include "Cardinals/Dir.hpp"
 
+#define SAVE(x, y) json[#x] = y(info.x);
+nlohmann::json InstanceInfo::saveJson(const InstanceInfo&) noexcept {
+	return {};
 }
 
 #undef SAVE
 #define LOAD(x, y) if (auto i = json.find(#x); i != json.end()) info.x = y(*i);
 
-InstanceInfo InstanceInfo::loadJson(const nlohmann::json& json) noexcept {
-	InstanceInfo info;
-	LOAD(nSamples, );
-	//LOAD(roofSamples, );
-	//LOAD(roughTowers, );
-	return info;
+InstanceInfo InstanceInfo::loadJson(const nlohmann::json&) noexcept {
+	return {};
 }
 #undef LOAD
 
@@ -199,18 +192,98 @@ InstanceInfo InstanceInfo::generateMaze(size_t width, size_t height) noexcept {
 	return info;
 }
 
+struct Node_Data {
+	Vector2f instance_pos;
+	Section_Type section_type{ Section_Type::Normal };
+	std::optional<size_t> section_index;
+};
+
+SectionInfo create_normal_section(
+	Node<Node_Data>& node,
+	Graph<Node_Data>& graph,
+	InstanceInfo& instance_info,
+	const std::function<SectionInfo(const std::unordered_set<Dir>&)>& choose_section_from_dirs
+) noexcept {
+	std::vector<Dir> section_outgoing_dir;
+	std::vector<UUID> section_outgoing_neighboor;
+
+	for (auto& edge : node.edges) {
+		auto pos_dt = (graph.at(edge).data.instance_pos - node.data.instance_pos);
+		auto angle = pos_dt.angleX();
+		Dir discrete_angle = dir_from_rad(angle);
+
+		if (auto it = std::find(
+			std::begin(section_outgoing_dir), std::end(section_outgoing_dir), discrete_angle
+		); it != std::end(section_outgoing_dir)) {
+			// we need to insert an intermediary section.
+			// it's a Y switch.
+
+			// for now a path get "forgotten" meaning it's not connected to main component
+
+			//>TODO
+		}
+
+		section_outgoing_dir.push_back(discrete_angle);
+		section_outgoing_neighboor.push_back(edge);
+	}
+
+	std::unordered_set<Dir> set_of_dir(
+		std::begin(section_outgoing_dir), std::end(section_outgoing_dir)
+	);
+
+	auto section_info = choose_section_from_dirs(set_of_dir);
+	section_info.instance_pos = node.data.instance_pos;
+
+	std::transform( //we don't care for the default id we reset them.
+		std::begin(section_info.portals),
+		std::end(section_info.portals),
+		std::begin(section_info.portals),
+		[](const PortalInfo& i) {
+		auto copy = i;
+		copy.id = UUID{};
+		return copy;
+	}
+	);
+
+	for (size_t i = 0; i < section_outgoing_dir.size(); ++i) {
+		auto& neighboor = graph.at(section_outgoing_neighboor[i]);
+		if (!neighboor.data.section_index) continue;
+		auto& neighboor_section = instance_info.sections[*neighboor.data.section_index];
+
+		// That mean we can connect the two.
+
+		auto my_portal = std::find_if(
+			std::begin(section_info.portals),
+			std::end(section_info.portals),
+			[&](const PortalInfo& portal_info) {
+			return get_spot_in_dir(portal_info) == section_outgoing_dir[i];
+		}
+		);
+		assert(my_portal != std::end(section_info.portals));
+
+		auto their_portal = std::find_if(
+			std::begin(neighboor_section.portals),
+			std::end(neighboor_section.portals),
+			[&](const PortalInfo& portal_info) {
+			return get_spot_in_dir(portal_info) == dir_complementary(section_outgoing_dir[i]);
+		}
+		);
+		assert(their_portal != std::end(neighboor_section.portals));
+
+		my_portal->tp_to = their_portal->id;
+		their_portal->tp_to = my_portal->id;
+	}
+
+	return section_info;
+}
+
 InstanceInfo InstanceInfo::generate_graph(
 	size_t n, const std::filesystem::path& pool_of_rooms
 ) noexcept {
 	assert(std::filesystem::is_directory(pool_of_rooms));
 
-	enum class Dir {
-		Left,
-		Top,
-		Right,
-		Bot,
-		Count
-	};
+	const auto& boss_room_file = ASSETS_PATH / "rooms" / "boss_rooms" / "boss_1.json";
+	assert(std::filesystem::is_regular_file(boss_room_file));
 
 	auto complementary_dir = [](Dir d) {
 		if (d == Dir::Left) return Dir::Right;
@@ -221,10 +294,11 @@ InstanceInfo InstanceInfo::generate_graph(
 		return Dir::Left;
 	};
 
-	struct DirHash { std::size_t operator()(Dir t) const { return static_cast<std::size_t>(t); } };
-
-	std::vector<std::unordered_set<Dir, DirHash>> dirs_to_index;
+	std::vector<std::unordered_set<Dir>> dirs_to_index;
 	std::vector<SectionInfo> room_pool;
+	auto opt_room_boss = load_from_json_file(boss_room_file);
+	assert(opt_room_boss);
+	SectionInfo room_boss = (SectionInfo)*opt_room_boss;
 
 	for (auto f : std::filesystem::recursive_directory_iterator(pool_of_rooms)) {
 		auto d_struct = load_from_json_file(f);
@@ -235,12 +309,7 @@ InstanceInfo InstanceInfo::generate_graph(
 
 		room_pool.push_back((SectionInfo)*d_struct);
 
-		//>TODO harmonize direction away from size_t (soooo stupid)
-		auto all_dir_in_uint = get_all_accessible_dir(room_pool.back());
-		std::unordered_set<Dir, DirHash> all_dir;
-		for (auto x : all_dir_in_uint) all_dir.insert((Dir)x);
-
-		dirs_to_index.push_back(all_dir);
+		dirs_to_index.push_back(get_all_accessible_dir(room_pool.back()));
 	}
 
 	// obtained with the help of wolfram alpha and desmos.com :D
@@ -255,27 +324,43 @@ InstanceInfo InstanceInfo::generate_graph(
 
 		estimated_radius = (float)(std::log(b * (std::pow((double)n, a) + c)) / std::log(f));
 	}
-	auto section_sites = poisson_disc_sampling(estimated_radius, { 1, 1 });
+	auto section_sites = poisson_disc_sampling(
+		estimated_radius,
+		{ 1, 1 },
+		{ { 0.05f, 0.05f }, {0.15f, 0.95f} }
+	);
 
-	struct Node_Data {
-		Vector2f instance_pos;
-		std::optional<size_t> section_index;
-	};
 	Graph<Node_Data> graph;
 	for (auto p : section_sites) {
 		Node_Data node;
 		node.instance_pos = p;
+		if (p == Vector2f{0.05f, 0.05f }) node.section_type = Section_Type::Start;
+		if (p == Vector2f{ 0.15f, 0.95f }) node.section_type = Section_Type::Boss;
+
 		add_node(graph, node, {});
 	}
 	graph_min_spanning_tree<Node_Data>(
 		graph,
 		[](const Node<Node_Data>& A, const Node<Node_Data>& B) {
-			return std::abs(
+			auto initial_cost = std::abs(
 				(A.data.instance_pos - B.data.instance_pos).length2() /
 				std::powf(
 					std::cosf(2 * (float)A.data.instance_pos.angleTo(B.data.instance_pos)), 4.f
 				)
 			);
+
+			if (A.data.section_type == Section_Type::Boss) {
+				if (dir_from_rad(A.data.instance_pos.angleTo(B.data.instance_pos)) != Dir::Left)
+					initial_cost = FLT_MAX;
+				if (A.edges.size() > 1) initial_cost = FLT_MAX;
+			}
+			if (B.data.section_type == Section_Type::Boss) {
+				if (dir_from_rad(B.data.instance_pos.angleTo(A.data.instance_pos)) != Dir::Left)
+					initial_cost = FLT_MAX;
+				if (B.edges.size() > 1) initial_cost = FLT_MAX;
+			}
+
+			return initial_cost;
 		}
 	);
 
@@ -285,7 +370,7 @@ InstanceInfo InstanceInfo::generate_graph(
 	auto nodes_to_add_edges = reservoir_sampling_predicated<UUID, Node<Node_Data>>(
 		graph,
 		[](const Node<Node_Data>& x) {
-			return x.edges.size() == 1;
+			return x.edges.size() == 1 && x.data.section_type != Section_Type::Boss;
 		},
 		n_added_edges,
 		RD
@@ -303,29 +388,18 @@ InstanceInfo InstanceInfo::generate_graph(
 			if (node == &candidate) continue;
 			if (is_linked(*node, candidate)) continue;
 
-			auto angle = (float)node->data.instance_pos.angleTo(candidate.data.instance_pos);
+			angle = (float)node->data.instance_pos.angleTo(candidate.data.instance_pos);
 			
 			// If the corresponding room already have someone on that side we don't insert ourself.
 			// >TODO remove this when i'll handle multiple way out.
-			Dir discrete_angle;
-			if (-C::PIf / 4 < angle && angle < C::PIf / 4) discrete_angle = Dir::Right;
-			if (C::PIf / 4 < angle && angle < 3 * C::PIf / 4) discrete_angle = Dir::Bot;
-			if (3 * C::PIf / 4 < angle || angle < -3 * C::PIf / 4) discrete_angle = Dir::Left;
-			if (-3 * C::PIf / 4 < angle && angle < -C::PIf / 4) discrete_angle = Dir::Top;
+			Dir discrete_angle = dir_from_rad(angle);
 
 			bool already_have{ false };
 			for (auto& x : candidate.edges) {
 				float x_angle =
 					(float)graph.at(x).data.instance_pos.angleTo(candidate.data.instance_pos);
 
-				// >TODO make a Dir Enum in a proper header file for evryone to use.
-				Dir discrete_x_angle;
-				if (-C::PIf / 4 < x_angle && x_angle < C::PIf / 4) discrete_x_angle = Dir::Right;
-				if (C::PIf / 4 < x_angle && x_angle < 3 * C::PIf / 4) discrete_x_angle = Dir::Bot;
-				if (3 * C::PIf / 4 < x_angle || x_angle < -3 * C::PIf / 4)
-					discrete_x_angle = Dir::Left;
-				if (-3 * C::PIf / 4 < x_angle && x_angle < -C::PIf / 4)
-					discrete_x_angle = Dir::Top;
+				Dir discrete_x_angle = dir_from_rad(x_angle);
 
 				if (discrete_angle == discrete_x_angle) {
 					already_have = true;
@@ -340,8 +414,6 @@ InstanceInfo InstanceInfo::generate_graph(
 				(node->data.instance_pos - candidate.data.instance_pos).length2() /
 				std::powf(std::cosf(2 * angle), 4.f);
 
-
-
 			if (candidate_score < min_score) {
 				min = id;
 				min_score = candidate_score;
@@ -354,91 +426,57 @@ InstanceInfo InstanceInfo::generate_graph(
 	InstanceInfo instance_info;
 
 	for (auto&[id, node] : graph) {
-		std::vector<Dir> section_outgoing_dir;
-		std::vector<UUID> section_outgoing_neighboor;
+		SectionInfo section_info;
+		section_info.section_type = node.data.section_type;
+		if (
+			section_info.section_type == Section_Type::Normal ||
+			section_info.section_type == Section_Type::Start
+		) {
+			section_info = create_normal_section(
+				node,
+				graph,
+				instance_info, [&](auto set_of_dir){
+					std::vector<size_t> available_indexes;
+					for (size_t i = 0; i < dirs_to_index.size(); ++i) {
+						if (dirs_to_index[i] == set_of_dir) {
+							available_indexes.push_back(i);
+						}
+					}
+					assert(!available_indexes.empty());
 
-		for (auto& edge : node.edges) {
-			auto pos_dt = (graph.at(edge).data.instance_pos - node.data.instance_pos);
-			auto angle = pos_dt.angleX();
-			Dir discrete_angle;
-			if (-C::PIf / 4 < angle && angle < C::PIf / 4) discrete_angle = Dir::Right;
-			if (C::PIf / 4 < angle && angle < 3 * C::PIf / 4) discrete_angle = Dir::Bot;
-			if (3 * C::PIf / 4 < angle || angle < -3 * C::PIf / 4) discrete_angle = Dir::Left;
-			if (-3 * C::PIf / 4 < angle && angle < -C::PIf / 4) discrete_angle = Dir::Top;
-
-			if (auto it = std::find(
-				std::begin(section_outgoing_dir), std::end(section_outgoing_dir), discrete_angle
-			); it != std::end(section_outgoing_dir)) {
-				// we need to insert an intermediary section.
-				// it's a Y switch.
-
-				// for now a path get "forgotten" meaning it's not connected to main component
-
-				//>TODO
-			}
-
-			section_outgoing_dir.push_back(discrete_angle);
-			section_outgoing_neighboor.push_back(edge);
-		}
-
-		std::unordered_set<Dir, DirHash> set_of_dir(
-			std::begin(section_outgoing_dir), std::end(section_outgoing_dir)
-		);
-
-		std::vector<size_t> available_indexes;
-		for (size_t i = 0; i < dirs_to_index.size(); ++i) {
-			if (dirs_to_index[i] == set_of_dir) {
-				available_indexes.push_back(i);
-			}
-		}
-
-		assert(!available_indexes.empty());
-
-		size_t idx = available_indexes[(size_t)(unitaryRng(RD) * available_indexes.size())];
-		SectionInfo section_info = room_pool[idx];
-		section_info.instance_pos = node.data.instance_pos;
-
-		std::transform( //we don't care for the default id we reset them.
-			std::begin(section_info.portals),
-			std::end(section_info.portals),
-			std::begin(section_info.portals),
-			[](const PortalInfo& i) {
-				auto copy = i;
-				copy.id = UUID{};
-				return copy;
-			}
-		);
-
-		for (size_t i = 0; i < section_outgoing_dir.size(); ++i) {
-			auto& neighboor = graph.at(section_outgoing_neighboor[i]);
-			if (!neighboor.data.section_index) continue;
-			auto& neighboor_section = instance_info.sections[*neighboor.data.section_index];
-
-			// That mean we can connect the two.
-
-			auto my_portal = std::find_if(
-				std::begin(section_info.portals),
-				std::end(section_info.portals),
-				[&](const PortalInfo& portal_info) {
-					return (Dir)portal_info.spot == section_outgoing_dir[i];
+					std::uniform_int_distribution<size_t> dist{ 0, available_indexes.size() - 1 };
+					return room_pool[available_indexes[dist(RD)]];
 				}
 			);
-			assert(my_portal != std::end(section_info.portals));
+		}
+		else if (section_info.section_type == Section_Type::Boss) {
+			assert(node.edges.size() == 1);
+			section_info = room_boss;
 
-			auto their_portal = std::find_if(
-				std::begin(neighboor_section.portals),
-				std::end(neighboor_section.portals),
-				[&](const PortalInfo& portal_info) {
-					return (Dir)portal_info.spot == complementary_dir(section_outgoing_dir[i]);
-				}
-			);
-			assert(their_portal != std::end(neighboor_section.portals));
+			auto& neighboor_node = graph.at(*std::begin(node.edges));
+			if (auto opt = neighboor_node.data.section_index; opt) {
+				auto& neighboor_section = instance_info.sections[*opt];
 
-			my_portal->tp_to = their_portal->id;
-			their_portal->tp_to = my_portal->id;
+				auto their_portal = std::find_if(
+					std::begin(neighboor_section.portals),
+					std::end(neighboor_section.portals),
+					[](const PortalInfo& x) {
+						return x.spot == 2;
+					}
+				);
+				assert(their_portal != std::end(neighboor_section.portals));
+
+				section_info.portals[0].tp_to = their_portal->id;
+				their_portal->tp_to = section_info.portals[0].id;
+
+				section_info.instance_pos = node.data.instance_pos;
+
+			}
 		}
 
 		node.data.section_index = instance_info.sections.size();
+		if (section_info.section_type == Section_Type::Start)
+			instance_info.start_section_idx = *node.data.section_index;
 		instance_info.sections.push_back(section_info);
 	}
 
@@ -499,6 +537,10 @@ void Instance::generateGrid(size_t n) noexcept {
 			info.sections.push_back(sec);
 		}
 	}
+}
+
+void Instance::enter() noexcept {
+	startAt(info.start_section_idx);
 }
 
 void Instance::startAt(size_t p) noexcept {
@@ -618,6 +660,13 @@ void Instance::render_map(sf::RenderTarget& target) noexcept {
 			mark.setFillColor({ 255, 0, 0, 255 });
 		}
 
+		if (s.section_type == Section_Type::Boss) {
+			mark.setFillColor(sf::Color::Yellow);
+		}
+		if (s.section_type == Section_Type::Start) {
+			mark.setFillColor(sf::Color::Blue);
+		}
+
 		target.draw(mark);
 	}
 }
@@ -628,398 +677,6 @@ Section& Instance::getCurrentSection() noexcept {
 const Section& Instance::getCurrentSection() const noexcept {
 	return *entity_store.get(current_section.to_const());
 }
-
-void Instance::runAlgo(sf::RenderWindow& window) noexcept {
-	v = sf::View{ {WIDTH / 2.f, HEIGHT / 2.f}, {(float)WIDTH, (float)HEIGHT} };
-
-	auto old = window.getView();
-	samples(window); if (rerun) return;
-	smoothSamples(window); if (rerun) return;
-	selectSamples(window); if (rerun) return;
-	generateRoughTowers(window); if (rerun) return;
-	// spaceTowers(window); if (rerun) return;
-	// generateTowersBridge(window); if (rerun) return;
-	window.setView(old);
-}
-void Instance::samples(sf::RenderWindow& window) noexcept {
-	size_t n_current = 0;
-	size_t i = 0;
-	while (window.isOpen())
-	{
-		sf::Event event;
-		while (window.pollEvent(event))
-		{
-			if (event.type == sf::Event::Closed)
-				window.close();
-			if (event.type == sf::Event::KeyPressed) {
-				if (event.key.code == sf::Keyboard::D)
-					v.move(10, 0);
-				if (event.key.code == sf::Keyboard::Q)
-					v.move(-10, 0);
-				if (event.key.code == sf::Keyboard::Z)
-					v.move(0, 10);
-				if (event.key.code == sf::Keyboard::S)
-					v.move(0, -10);
-				if (event.key.code == sf::Keyboard::Return) {
-					rerun = true;
-					return;
-				}
-				if (event.key.code == sf::Keyboard::Space && n_current >= info.nSamples) {
-					return;
-				}
-			}
-		}
-
-		window.setView(v);
-		window.clear();
-
-		if (n_current < info.nSamples * 5) {
-			if (i % 20 == 0) {
-				info.roofSamples.push_back(
-					{ unitaryRng(RD) * 70 + 50, unitaryRng(RD) * 700 }
-				);
-				n_current++;
-			}
-		}
-
-		float x_pos = 0;
-		for (const auto& s : info.roofSamples) {
-			Segment2f{ {x_pos, s.y}, {x_pos + s.x, s.y } }.render(window, { 0, 1, 0, 1 });
-			x_pos += s.x;
-		}
-
-		window.display();
-		i++;
-	}
-}
-void Instance::smoothSamples(sf::RenderWindow& window) noexcept {
-	size_t i = 0;
-	size_t n_frames = 0;
-	while (window.isOpen())
-	{
-		sf::Event event;
-		while (window.pollEvent(event))
-		{
-			if (event.type == sf::Event::Closed)
-				window.close();
-			if (event.type == sf::Event::KeyPressed) {
-				if (event.key.code == sf::Keyboard::D)
-					v.move(10, 0);
-				if (event.key.code == sf::Keyboard::Q)
-					v.move(-10, 0);
-				if (event.key.code == sf::Keyboard::Z)
-					v.move(0, 10);
-				if (event.key.code == sf::Keyboard::S)
-					v.move(0, -10);
-				if (event.key.code == sf::Keyboard::Return) {
-					rerun = true;
-					return;
-				}
-				if (
-					event.key.code == sf::Keyboard::Space &&
-					i + 1 >= info.roofSamples.size()
-				) {
-					return;
-				}
-			}
-		}
-
-		window.setView(v);
-		window.clear();
-
-		if (n_frames % 20 == 0 && i + 1 < info.roofSamples.size()) {
-			auto& it = info.roofSamples[i].y;
-			auto& it1 = info.roofSamples[i + 1].y;
-
-			auto dist = std::abs(it - it1);
-
-			constexpr auto A = 4;
-			constexpr auto P = -0.43f;
-
-			auto f = [=](auto x) {
-				return (float)std::fmin(A / std::powf(x, P), x);
-			};
-
-			auto comeClose = f(dist) / 2;
-
-			it += (std::signbit(it1 - it) ? -1 : 1) * comeClose;
-			it1 += (std::signbit(it - it1) ? -1 : 1) * comeClose;
-
-			i += 2;
-		}
-
-		float x_pos = 0;
-		for (const auto& s : info.roofSamples) {
-			Segment2f{ {x_pos, s.y}, {x_pos + s.x, s.y } }.render(window, { 0, 1, 0, 1 });
-			x_pos += s.x;
-		}
-
-		window.display();
-		n_frames++;
-	}
-}
-void Instance::selectSamples(sf::RenderWindow& window) noexcept {
-	size_t n_frames = 0;
-	while (window.isOpen())
-	{
-		sf::Event event;
-		while (window.pollEvent(event))
-		{
-			if (event.type == sf::Event::Closed)
-				window.close();
-			if (event.type == sf::Event::KeyPressed) {
-				if (event.key.code == sf::Keyboard::D)
-					v.move(10, 0);
-				if (event.key.code == sf::Keyboard::Q)
-					v.move(-10, 0);
-				if (event.key.code == sf::Keyboard::Z)
-					v.move(0, 10);
-				if (event.key.code == sf::Keyboard::S)
-					v.move(0, -10);
-				if (event.key.code == sf::Keyboard::Return) {
-					rerun = true;
-					return;
-				}
-				if (
-					event.key.code == sf::Keyboard::Space &&
-					info.roofSamples.size() >= info.nSamples
-				) {
-					return;
-				}
-			}
-		}
-
-		window.setView(v);
-		window.clear();
-
-		if (n_frames % 20 == 0 && info.nSamples < info.roofSamples.size()) {
-			int choosen = int(unitaryRng(RD) * info.roofSamples.size());
-			info.roofSamples.erase(std::begin(info.roofSamples) + choosen);
-		}
-
-		float x_pos = 0;
-		for (const auto& s : info.roofSamples) {
-			Segment2f{ {x_pos, s.y}, {x_pos + s.x, s.y } }.render(window, { 0, 1, 0, 1 });
-			x_pos += s.x;
-		}
-
-		window.display();
-		n_frames++;
-	}
-}
-void Instance::generateRoughTowers(sf::RenderWindow& window) noexcept {
-	size_t n_frames = 0;
-	size_t i = 0;
-	float sum_x = 0;
-	while (window.isOpen())
-	{
-		sf::Event event;
-		while (window.pollEvent(event))
-		{
-			if (event.type == sf::Event::Closed)
-				window.close();
-			if (event.type == sf::Event::KeyPressed) {
-				if (event.key.code == sf::Keyboard::D)
-					v.move(10, 0);
-				if (event.key.code == sf::Keyboard::Q)
-					v.move(-10, 0);
-				if (event.key.code == sf::Keyboard::Z)
-					v.move(0, 10);
-				if (event.key.code == sf::Keyboard::S)
-					v.move(0, -10);
-				if (event.key.code == sf::Keyboard::Return) {
-					rerun = true;
-					return;
-				}
-				if (
-					event.key.code == sf::Keyboard::Space &&
-					info.roughTowers.size() >= info.nSamples
-					) {
-					return;
-				}
-			}
-		}
-
-		window.setView(v);
-		window.clear();
-
-		if (n_frames % 20 == 0 && info.nSamples > info.roughTowers.size()) {
-			int n_features = (int)(unitaryRng(RD) * 3 + 1);
-
-			std::vector<Rectangle2f> rectangles{};
-			Rectangle2f core{
-				{sum_x, 0},
-				{info.roofSamples[i].x, info.roofSamples[i].y}
-			};
-			rectangles.push_back(core);
-
-			for (int j = 0; j < n_features; ++j) {
-				float margin_x = unitaryRng(RD) * (info.roofSamples[i].x / 10.f) + 5;
-				float height = unitaryRng(RD) * (50 - 20) + 20;
-				float pos_y = unitaryRng(RD) * (info.roofSamples[i].y * 0.8f) + 50;
-
-				if (pos_y >= info.roofSamples[i].y) continue;
-
-				rectangles.push_back({
-					{sum_x - margin_x, pos_y - height / 2},
-					{info.roofSamples[i].x + margin_x * 2, height}
-					});
-			}
-			sum_x += info.roofSamples[i].x;
-			i++;
-			info.roughTowers.push_back(rectangles);
-		}
-
-		for (auto& t : info.roughTowers) {
-			for (auto& r : t) {
-				r.render(window, { 0, 0, 0, 0 }, { 1, 1, 1, 1 }, 0.05f);
-			}
-		}
-
-		window.display();
-		n_frames++;
-	}
-}
-void Instance::spaceTowers(sf::RenderWindow& window) noexcept {
-	size_t n_frames = 0;
-	size_t i = 0;
-
-	size_t median_height = 0;
-	std::vector<size_t> indexes(info.roughTowers.size());
-	std::generate(std::begin(indexes), std::end(indexes), [i = 0] () mutable {
-		return i++;
-	});
-	std::sort(std::begin(indexes), std::end(indexes), [&](size_t a, size_t b) {
-		return info.roughTowers[a][0].h < info.roughTowers[b][0].h;
-	});
-
-	median_height = indexes.size() / 2;
-
-	while (window.isOpen())
-	{
-		sf::Event event;
-		while (window.pollEvent(event))
-		{
-			if (event.type == sf::Event::Closed)
-				window.close();
-			if (event.type == sf::Event::KeyPressed) {
-				if (event.key.code == sf::Keyboard::D)
-					v.move(10, 0);
-				if (event.key.code == sf::Keyboard::Q)
-					v.move(-10, 0);
-				if (event.key.code == sf::Keyboard::Z)
-					v.move(0, 10);
-				if (event.key.code == sf::Keyboard::S)
-					v.move(0, -10);
-				if (event.key.code == sf::Keyboard::Return) {
-					rerun = true;
-					return;
-				}
-				if (
-					event.key.code == sf::Keyboard::Space &&
-					i >= info.nSamples
-				) {
-					return;
-				}
-			}
-		}
-
-		window.setView(v);
-		window.clear();
-
-		if (n_frames % 20 == 0 && indexes.size() > 2 * i) {
-			info.roughTowers.emplace(
-				std::begin(info.roughTowers) + indexes[i * 2 + 1],
-				info.roughTowers[indexes[i + median_height]]
-			);
-			info.roughTowers.erase(std::begin(info.roughTowers) + indexes[i + median_height] + 1);
-			i++;
-		}
-
-		for (auto& t : info.roughTowers) {
-			for (auto& r : t) {
-				r.render(window, { 0, 0, 0, 0 }, { 1, 1, 1, 1 }, 0.05f);
-			}
-		}
-
-		window.display();
-		n_frames++;
-	}
-}
-void Instance::generateTowersBridge(sf::RenderWindow& window) noexcept {
-	size_t n_frames = 0;
-	size_t i = 0;
-	float sum_x = 0;
-	while (window.isOpen())
-	{
-		sf::Event event;
-		while (window.pollEvent(event))
-		{
-			if (event.type == sf::Event::Closed)
-				window.close();
-			if (event.type == sf::Event::KeyPressed) {
-				if (event.key.code == sf::Keyboard::D)
-					v.move(10, 0);
-				if (event.key.code == sf::Keyboard::Q)
-					v.move(-10, 0);
-				if (event.key.code == sf::Keyboard::Z)
-					v.move(0, 10);
-				if (event.key.code == sf::Keyboard::S)
-					v.move(0, -10);
-				if (event.key.code == sf::Keyboard::Return) {
-					rerun = true;
-					return;
-				}
-				if (
-					event.key.code == sf::Keyboard::Space &&
-					info.roughTowers.size() >= info.nSamples
-				) {
-					return;
-				}
-			}
-		}
-
-		window.setView(v);
-		window.clear();
-
-		if (n_frames % 20 == 0 && info.nSamples > info.roughTowers.size()) {
-			int n_features = (int)(unitaryRng(RD) * 3 + 1);
-
-			std::vector<Rectangle2f> rectangles{};
-			Rectangle2f core{
-				{sum_x, 0},
-				{info.roofSamples[i].x, info.roofSamples[i].y}
-			};
-			rectangles.push_back(core);
-
-			for (int j = 0; j < n_features; ++j) {
-				float margin_x = unitaryRng(RD) * (info.roofSamples[i].x / 10) + 5;
-				float height = unitaryRng(RD) * (50 - 20) + 20;
-				float pos_y = unitaryRng(RD) * (info.roofSamples[i].y * 0.8f) + 50;
-
-				if (pos_y >= info.roofSamples[i].y) continue;
-
-				rectangles.push_back({
-					{sum_x - margin_x, pos_y - height / 2},
-					{info.roofSamples[i].x + margin_x * 2, height}
-					});
-			}
-			sum_x += info.roofSamples[i].x;
-			i++;
-			info.roughTowers.push_back(rectangles);
-		}
-
-		for (auto& t : info.roughTowers) {
-			for (auto& r : t) {
-				r.render(window, { 0, 0, 0, 0 }, { 1, 1, 1, 1 }, 0.05f);
-			}
-		}
-
-		window.display();
-		n_frames++;
-	}
-}
-
 std::optional<Eid<Section>>
 Instance::getNextSectionIfInstantiated(const PortalInfo& portal) const noexcept {
 	auto tp_to = portal.tp_to;

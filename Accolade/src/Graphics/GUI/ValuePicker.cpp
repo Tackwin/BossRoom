@@ -77,6 +77,10 @@ void ValuePicker::render(sf::RenderTarget& target) {
 
 	if (_focused) _inputColor = _focusedColor;
 
+	if (inputBox.w < _label->getSize().x) {
+		inputBox.w = _label->getSize().x + 2;
+	}
+
 	inputBox.render(target, _inputColor);
 }
 

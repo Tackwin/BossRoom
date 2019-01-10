@@ -16,11 +16,7 @@
 
 struct InstanceInfo {
 	std::vector<SectionInfo> sections;
-
-
-	size_t nSamples{ 0 };
-	std::vector<Vector2f> roofSamples;
-	std::vector<std::vector<Rectangle2f>> roughTowers;
+	size_t start_section_idx;
 
 	static InstanceInfo loadJson(const nlohmann::json& json) noexcept;
 	static nlohmann::json saveJson(const InstanceInfo& info) noexcept;
@@ -37,6 +33,7 @@ public:
 
 	void generateGrid(size_t n) noexcept;
 
+	void enter() noexcept;
 	void startAt(size_t p) noexcept;
 
 	void update(double dt) noexcept;
@@ -63,20 +60,4 @@ private:
 	EntityStore entity_store;
 
 	size_t complementary_dir(size_t dir) const noexcept;
-
-// bad stuff do not use
-public:
-	void runAlgo(sf::RenderWindow& window) noexcept;
-
-	bool rerun{ false };
-private:
-
-	void samples(sf::RenderWindow& window) noexcept;
-	void smoothSamples(sf::RenderWindow& window) noexcept;
-	void selectSamples(sf::RenderWindow& window) noexcept;
-	void generateRoughTowers(sf::RenderWindow& window) noexcept;
-	void spaceTowers(sf::RenderWindow& window) noexcept;
-	void generateTowersBridge(sf::RenderWindow& window) noexcept;
-
-	sf::View v;
 };

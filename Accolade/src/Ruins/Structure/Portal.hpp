@@ -9,6 +9,7 @@
 #include "Math/Segment.hpp"
 #include "Math/Rectangle.hpp"
 
+#include "Cardinals/Dir.hpp"
 
 struct PortalInfo {
 	static constexpr auto JSON_ID = "PortalInfo";
@@ -28,3 +29,4 @@ struct PortalInfo {
 
 extern bool is_in_portal(const PortalInfo& p, const Rectangle2f& rec) noexcept;
 extern void render(const PortalInfo& p, sf::RenderTarget& target) noexcept;
+extern Dir get_spot_in_dir(const PortalInfo& p) noexcept;
